@@ -507,7 +507,15 @@ $$
 
 ### 5.3 Why Xavier Initialization Works
 
-Let input x have n elements, each with variance Var(x). Weight W has i.i.d. elements with mean 0 and variance Var(W).
+Let input x have n elements, each with variance Var(x). Weight W has **i.i.d.** elements with mean 0 and variance Var(W).
+
+> **What does i.i.d. mean?**
+> 
+> i.i.d. = **i**ndependent and **i**dentically **d**istributed
+> - **Independent**: Each weight's value doesn't affect others
+> - **Identically distributed**: All weights are sampled from the same distribution
+> 
+> Think of it as: "all weights are rolled from the same dice, independently."
 
 $$
 \begin{aligned}
