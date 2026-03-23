@@ -389,8 +389,12 @@ test_loader = DataLoader(test_dataset, batch_size=1000)
 # 3. Training
 device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
 model = MLP().to(device)
+criterion = nn.CrossEntropyLoss()  # Loss function
+
+# Optimizer: the algorithm that updates weights based on gradients
+# Adam = Adaptive Moment Estimation, a popular choice that works well out-of-the-box
+# It automatically adjusts learning rate for each parameter
 optimizer = optim.Adam(model.parameters(), lr=0.001)
-criterion = nn.CrossEntropyLoss()
 
 for epoch in range(5):
     model.train()

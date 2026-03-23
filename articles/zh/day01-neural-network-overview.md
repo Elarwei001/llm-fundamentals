@@ -394,8 +394,12 @@ test_loader = DataLoader(test_dataset, batch_size=1000)
 # 3. 训练
 device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
 model = MLP().to(device)
+criterion = nn.CrossEntropyLoss()  # 损失函数
+
+# 优化器：根据梯度更新权重的算法
+# Adam = Adaptive Moment Estimation，开箱即用效果好的常用选择
+# 它会自动为每个参数调整学习率
 optimizer = optim.Adam(model.parameters(), lr=0.001)
-criterion = nn.CrossEntropyLoss()
 
 for epoch in range(5):
     model.train()
