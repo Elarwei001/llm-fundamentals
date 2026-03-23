@@ -565,6 +565,13 @@ This is half true, half false.
 - Why overparameterization helps generalization
 - What "representations" neural networks learn internally
 
+> **Overparameterization & Generalization**
+> 
+> - **Overparameterization**: Model has WAY more parameters than training samples. GPT-3 has 175B parameters but was trained on "only" ~300B tokens.
+> - **Generalization**: How well the model performs on **data it has never seen**. Good generalization = works well on both training and test data. Poor generalization (overfitting) = great on training data, terrible on test data.
+> 
+> **The mystery**: Traditional statistics says too many parameters → memorize training data → poor generalization. But in practice, larger models often generalize BETTER. This counterintuitive phenomenon is called **double descent** and is a hot research topic.
+
 **What we have solid theory for**:
 - Universal Approximation Theorem explains expressiveness
 - Statistical learning theory (VC dimension, Rademacher complexity) explains generalization
@@ -643,5 +650,52 @@ Tomorrow we'll discuss RNNs—neural networks' first attempt at handling sequent
 
 ---
 
+## Appendix: SGD (Stochastic Gradient Descent) Explained
+
+Throughout this article, we mentioned SGD several times. Here's a complete explanation:
+
+### What's the difference between GD and SGD?
+
+**Gradient Descent (GD)** - "Batch" Gradient Descent:
+```
+for each epoch:
+    gradient = compute_gradient(ALL training samples)  # Use entire dataset
+    weights = weights - learning_rate * gradient       # Update once per epoch
+```
+- Uses ALL data to compute one gradient
+- Very accurate gradient, but SLOW (one update per full pass through data)
+- Memory-intensive: need to hold all data in memory
+
+**Stochastic Gradient Descent (SGD)**:
+```
+for each epoch:
+    for each mini-batch (e.g., 64 samples):
+        gradient = compute_gradient(mini_batch)        # Use small batch
+        weights = weights - learning_rate * gradient   # Update frequently
+```
+- Uses a small random ("stochastic") sample to estimate gradient
+- Less accurate per step, but MANY more updates
+- Actually converges faster in practice!
+
+### Why is SGD "noisy" and why does that help?
+
+Each mini-batch gives a slightly different gradient estimate. This noise:
+1. **Helps escape saddle points**: Random kicks can push you out of flat regions
+2. **Helps escape bad local minima**: Might bounce out of shallow valleys
+3. **Acts as regularization**: The noise prevents overfitting to training data
+
+### The SGD Family
+
+| Optimizer | Formula | Key Idea |
+|-----------|---------|----------|
+| SGD | `θ = θ - η·∇L` | Basic update |
+| Momentum | `v = βv + ∇L; θ = θ - η·v` | Accumulate velocity like a rolling ball |
+| RMSprop | Adapt η per-parameter based on gradient history | Don't overshoot on steep dimensions |
+| Adam | Momentum + RMSprop combined | Best of both worlds |
+
+**In practice**: Adam is the most popular "just works" choice. SGD + Momentum can sometimes achieve better final performance but requires more tuning.
+
+---
+
 *Day 1 of 60 | LLM Fundamentals*
-*Word count: ~4200 | Reading time: ~18 minutes*
+*Word count: ~4500 | Reading time: ~20 minutes*
