@@ -229,6 +229,12 @@ Advantages:
 - Computationally simple, 6x faster than sigmoid
 - Sparse activation: ~50% of neurons output 0, providing regularization
 
+> **What does "sparse activation" mean?**
+> 
+> ReLU outputs 0 for any negative input. In practice, about half of neurons in a layer receive negative inputs and output zero—they're "off."
+> 
+> This is like having a huge team, but only half are working on any given task. It prevents the network from memorizing training data too precisely (overfitting), because different subsets of neurons are active for different inputs. This implicit "dropout" effect is a form of **regularization**—it forces the network to learn more robust features rather than relying on any single neuron.
+
 Disadvantage:
 - When x < 0, gradient is 0, neurons can "die"
 
