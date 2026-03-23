@@ -399,8 +399,14 @@ transform = transforms.Compose([
 train_dataset = datasets.MNIST('./data', train=True, download=True, transform=transform)
 test_dataset = datasets.MNIST('./data', train=False, transform=transform)
 
+# DataLoader 把数据分成批次（batch）
+# batch_size=64 意思是：每次取 64 个样本，计算梯度，更新权重
+# 为什么不一次用全部 60,000 个样本？
+#   1. 内存：60K 张图片装不进 GPU 显存
+#   2. 速度：每 64 个样本更新一次比等全部算完更快收敛
+#   3. 噪声：小批量带来的随机性帮助逃离局部最小值
 train_loader = DataLoader(train_dataset, batch_size=64, shuffle=True)
-test_loader = DataLoader(test_dataset, batch_size=1000)
+test_loader = DataLoader(test_dataset, batch_size=1000)  # 测试时可以用大批量（不需要算梯度）
 
 # 3. 训练
 device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')

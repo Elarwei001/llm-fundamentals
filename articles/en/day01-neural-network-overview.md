@@ -394,8 +394,14 @@ transform = transforms.Compose([
 train_dataset = datasets.MNIST('./data', train=True, download=True, transform=transform)
 test_dataset = datasets.MNIST('./data', train=False, transform=transform)
 
+# DataLoader splits data into batches
+# batch_size=64 means: take 64 samples at a time, compute gradients, update weights
+# Why not use all 60,000 samples at once? 
+#   1. Memory: 60K images won't fit in GPU memory
+#   2. Speed: updating after every 64 samples is faster convergence than waiting for all
+#   3. Noise: small batches add randomness that helps escape local minima
 train_loader = DataLoader(train_dataset, batch_size=64, shuffle=True)
-test_loader = DataLoader(test_dataset, batch_size=1000)
+test_loader = DataLoader(test_dataset, batch_size=1000)  # Larger batches OK for testing (no gradients)
 
 # 3. Training
 device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
