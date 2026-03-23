@@ -695,7 +695,46 @@ Each mini-batch gives a slightly different gradient estimate. This noise:
 
 **In practice**: Adam is the most popular "just works" choice. SGD + Momentum can sometimes achieve better final performance but requires more tuning.
 
+### Double Descent Phenomenon
+
+Traditional machine learning wisdom says:
+- Too few parameters → underfitting (can't capture patterns)
+- Just right parameters → good generalization
+- Too many parameters → overfitting (memorizes training data)
+
+This gives a U-shaped curve: test error first decreases, then increases as model complexity grows.
+
+**But deep learning broke this rule!**
+
+Researchers discovered that if you keep adding parameters past the "overfitting" zone, something strange happens: test error starts **decreasing again**!
+
+```
+Test Error
+    │
+    │  ╲                    ╱╲
+    │   ╲                  ╱  ╲
+    │    ╲                ╱    ╲
+    │     ╲______________╱      ╲___________
+    │       ↑            ↑                 ↑
+    │   Classical    Interpolation    Modern
+    │   regime       threshold        regime
+    └────────────────────────────────────────→
+                    Model complexity
+```
+
+This is called **double descent**:
+1. **First descent**: Classical regime, more params = better fit
+2. **Peak**: Interpolation threshold (params ≈ training samples), worst generalization
+3. **Second descent**: Overparameterized regime, more params = better generalization again!
+
+**Why does this happen?** We don't fully understand, but theories include:
+- Larger models find "simpler" solutions (lower norm)
+- More parameters = smoother loss landscape = easier optimization
+- Implicit regularization from SGD
+
+This is why GPT-3 with 175B parameters generalizes well—we're deep in the second descent regime!
+
 ---
 
 *Day 1 of 60 | LLM Fundamentals*
-*Word count: ~4500 | Reading time: ~20 minutes*
+*Word count: ~5000 | Reading time: ~22 minutes*
