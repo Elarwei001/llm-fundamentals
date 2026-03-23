@@ -192,6 +192,9 @@ But empirically, in high-dimensional spaces, most local minima have similarly go
 > - **Saddle point**: A point that's a minimum in some directions but a maximum in others—like sitting on a horse saddle. The surface curves up in front/behind you, but curves down to your left/right. Gradient is zero here, but it's not actually a minimum.
 > - **SGD (Stochastic Gradient Descent)**: Standard gradient descent computes gradients on the entire dataset. SGD randomly samples a small batch each time, adding noise that helps escape saddle points.
 
+![Saddle Point](../zh/images/day01/saddle-point.png)
+*Figure: A saddle point visualized. At the center, gradient is zero, but it's a minimum along one axis (green arrows, loss curves up) and a maximum along the other (red arrows, loss curves down). SGD's noise helps escape along the "downhill" direction.*
+
 Why does this work? It's still an open research question. But it works, and works remarkably well.
 
 ---
