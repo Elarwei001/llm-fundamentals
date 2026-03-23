@@ -247,9 +247,23 @@ Disadvantage:
 > This can happen when the learning rate is too high, causing weights to jump too far in the wrong direction. That's why LeakyReLU exists: it outputs 0.01x instead of 0 for negative inputs, keeping a tiny gradient alive.
 
 **ReLU Variants**
-- LeakyReLU: max(0.01x, x), allows small gradient in negative region
-- GELU: x · Φ(x), used in GPT and BERT, smoother
-- SiLU/Swish: x · σ(x), popular recently
+
+- **LeakyReLU**: `max(0.01x, x)`
+  - Instead of outputting 0 for negative inputs, outputs a small value (0.01x)
+  - Solves the "dying ReLU" problem—neurons always have some gradient
+  - The 0.01 slope is a hyperparameter; PReLU learns it automatically
+
+- **GELU** (Gaussian Error Linear Unit): `x · Φ(x)` where Φ is the standard normal CDF
+  - Outputs x weighted by "how likely x is to be greater than other inputs"
+  - Smoother than ReLU—no sharp corner at x=0
+  - **Default activation in GPT and BERT**. Why? Transformers benefit from smooth gradients
+  - Approximation: `0.5x(1 + tanh(√(2/π)(x + 0.044715x³)))`
+
+- **SiLU/Swish**: `x · σ(x)` where σ is sigmoid
+  - Discovered by Google Brain through automated search (2017)
+  - Like GELU, it's smooth and allows small negative outputs
+  - Used in EfficientNet, GPT-NeoX, and many recent models
+  - Fun fact: "Swish" was named arbitrarily—researchers just needed a name
 
 ### 3.2 The Importance of Initialization
 
