@@ -270,6 +270,9 @@ ReLU(x) = max(0, x)
   - 用于 EfficientNet、GPT-NeoX 等新模型
   - 冷知识："Swish"这个名字是随便取的——研究员只是需要个名字
 
+![ReLU 变体对比](./images/day01/relu-variants.png)
+*图：LeakyReLU、GELU、SiLU/Swish 对比。灰色虚线是标准 ReLU 作为参照。注意 GELU 和 Swish 在 x=0 处平滑（无尖角），且允许小的负输出。*
+
 ### 3.2 初始化的重要性
 
 参数的初始值对训练影响巨大。

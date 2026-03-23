@@ -265,6 +265,9 @@ Disadvantage:
   - Used in EfficientNet, GPT-NeoX, and many recent models
   - Fun fact: "Swish" was named arbitrarily—researchers just needed a name
 
+![ReLU Variants](../zh/images/day01/relu-variants.png)
+*Figure: Comparison of LeakyReLU, GELU, and SiLU/Swish. Gray dashed line shows standard ReLU for reference. Note how GELU and Swish are smooth (no sharp corner at x=0) and allow small negative outputs.*
+
 ### 3.2 The Importance of Initialization
 
 Parameter initial values greatly impact training.
