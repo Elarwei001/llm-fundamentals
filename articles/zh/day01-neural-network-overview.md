@@ -490,51 +490,37 @@ $$
 
 ### 5.2 反向传播的推导
 
-设损失函数为交叉熵：
-```
-L = -Σₖ yₖ log ŷₖ
-```
+设损失函数为交叉熵，定义误差信号并计算梯度：
 
-定义误差信号：
-```
-δ⁽ˡ⁾ = ∂L/∂z⁽ˡ⁾
-```
-
-对于输出层（使用 softmax + 交叉熵的特殊性质）：
-```
-δ⁽ᴸ⁾ = ŷ - y
-```
-
-对于隐藏层（链式法则）：
-```
-δ⁽ˡ⁾ = (W⁽ˡ⁺¹⁾)ᵀ δ⁽ˡ⁺¹⁾ ⊙ σ'(z⁽ˡ⁾)
-```
+$$
+\begin{aligned}
+L &= -\sum_k y_k \log \hat{y}_k \quad &\text{(交叉熵损失)} \\
+\delta^{(l)} &= \frac{\partial L}{\partial z^{(l)}} \quad &\text{(误差信号)} \\
+\delta^{(L)} &= \hat{y} - y \quad &\text{(输出层)} \\
+\delta^{(l)} &= (W^{(l+1)})^T \delta^{(l+1)} \odot \sigma'(z^{(l)}) \quad &\text{(隐藏层)}
+\end{aligned}
+$$
 
 参数的梯度：
-```
-∂L/∂W⁽ˡ⁾ = δ⁽ˡ⁾ (h⁽ˡ⁻¹⁾)ᵀ
 
-∂L/∂b⁽ˡ⁾ = δ⁽ˡ⁾
-```
+$$
+\begin{aligned}
+\frac{\partial L}{\partial W^{(l)}} &= \delta^{(l)} (h^{(l-1)})^T \\
+\frac{\partial L}{\partial b^{(l)}} &= \delta^{(l)}
+\end{aligned}
+$$
 
 ### 5.3 为什么 Xavier 初始化有效？
 
 设输入 x 有 n 个元素，每个元素方差为 Var(x)。权重 W 的每个元素独立同分布，均值为 0，方差为 Var(W)。
 
-线性层输出：
-```
-z = Σᵢ Wᵢ xᵢ
-```
-
-输出方差：
-```
-Var(z) = n · Var(W) · Var(x)
-```
-
-为了让 Var(z) = Var(x)（方差不变），需要：
-```
-Var(W) = 1/n
-```
+$$
+\begin{aligned}
+z &= \sum_{i=1}^{n} W_i x_i \quad &\text{(线性层输出)} \\
+\text{Var}(z) &= n \cdot \text{Var}(W) \cdot \text{Var}(x) \quad &\text{(输出方差)} \\
+\text{Var}(W) &= \frac{1}{n} \quad &\text{(保持方差不变)}
+\end{aligned}
+$$
 
 这就是 Xavier 初始化的来源。
 
