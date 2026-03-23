@@ -700,7 +700,7 @@ for each epoch:
 
 **实践中**：Adam 是最常用的"开箱即用"选择。SGD + Momentum 有时能达到更好的最终效果，但需要更多调参。
 
-### Double Descent（双下降）现象
+## 附录：Double Descent（双下降）现象
 
 传统机器学习的观点：
 - 参数太少 → 欠拟合（学不到规律）

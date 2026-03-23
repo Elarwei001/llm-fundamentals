@@ -695,7 +695,7 @@ Each mini-batch gives a slightly different gradient estimate. This noise:
 
 **In practice**: Adam is the most popular "just works" choice. SGD + Momentum can sometimes achieve better final performance but requires more tuning.
 
-### Double Descent Phenomenon
+## Appendix: Double Descent Phenomenon
 
 Traditional machine learning wisdom says:
 - Too few parameters → underfitting (can't capture patterns)
