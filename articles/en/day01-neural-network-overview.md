@@ -187,7 +187,12 @@ Neural network loss functions are **non-convex**, with countless local minima. T
 
 But empirically, in high-dimensional spaces, most local minima have similarly good loss values. Moreover, saddle points are more common than local minima, and SGD can escape saddle points.
 
-Why is this? It's still an open research question. But it works, and works remarkably well.
+> **Quick terminology**:
+> - **Local minimum**: A point where loss is lower than all nearby points, but not necessarily the global lowest. Like being at the bottom of a small valley—you can't go further down by taking small steps, but there might be deeper valleys elsewhere.
+> - **Saddle point**: A point that's a minimum in some directions but a maximum in others—like sitting on a horse saddle. The surface curves up in front/behind you, but curves down to your left/right. Gradient is zero here, but it's not actually a minimum.
+> - **SGD (Stochastic Gradient Descent)**: Standard gradient descent computes gradients on the entire dataset. SGD randomly samples a small batch each time, adding noise that helps escape saddle points.
+
+Why does this work? It's still an open research question. But it works, and works remarkably well.
 
 ---
 
