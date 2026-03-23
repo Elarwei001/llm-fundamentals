@@ -454,6 +454,17 @@ Key points:
 3. **model.train() / model.eval()** switches modes: Dropout only active during training
 4. **with torch.no_grad()** inference doesn't need gradients, saves memory
 
+> **Why doesn't testing need gradients?**
+> 
+> | Phase | Purpose | Gradients? |
+> |-------|---------|------------|
+> | **Training** | Update weights to improve model | ✅ Yes (gradients tell us how to update) |
+> | **Testing/Inference** | Evaluate performance or make predictions | ❌ No (weights are frozen) |
+> 
+> During training, PyTorch builds a "computation graph" to track how each operation affects the output—this is needed to compute gradients via backpropagation. This graph uses memory.
+> 
+> During testing, we just want the output. `torch.no_grad()` tells PyTorch: "don't bother tracking operations, I won't call backward()". This saves memory, which is why test `batch_size` can be larger.
+
 ---
 
 ## 5. Math Derivation [Optional]
