@@ -331,6 +331,23 @@ L_total = L_task + λ · ||θ||²
 ```
 这会惩罚太大的参数，让网络更"简单"。
 
+> **Dropout 和 L2 正则化是不同的技术！**
+> 
+> 这是两种**独立的**正则化方法：
+> - **Dropout**：训练时随机关闭神经元（如 `nn.Dropout(0.2)` 关闭 20%）
+> - **L2 正则化**：在损失函数里加惩罚项，让权重变小
+> 
+> 在 PyTorch 里，Dropout 是模型里的一层，而 L2 正则化在优化器里设置：
+> ```python
+> # Dropout：在模型定义里
+> nn.Dropout(0.2)
+> 
+> # L2 正则化：在优化器里（weight_decay 参数）
+> optimizer = torch.optim.Adam(model.parameters(), lr=0.001, weight_decay=1e-4)
+> ```
+> 
+> 两者可以同时使用——它们是互补的！
+
 ---
 
 ## 4. 代码示例：从零实现一个神经网络

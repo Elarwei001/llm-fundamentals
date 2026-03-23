@@ -326,6 +326,23 @@ L_total = L_task + λ · ||θ||²
 ```
 This penalizes large parameters, making the network "simpler."
 
+> **Dropout vs L2 Regularization: Different Techniques!**
+> 
+> These are two **separate** regularization methods:
+> - **Dropout**: Randomly disables neurons during training (e.g., `nn.Dropout(0.2)` turns off 20%)
+> - **L2 Regularization**: Adds a penalty term to the loss function, shrinking weights
+> 
+> In PyTorch, Dropout is a layer in your model, while L2 regularization is set in the optimizer:
+> ```python
+> # Dropout: in model definition
+> nn.Dropout(0.2)
+> 
+> # L2 regularization: in optimizer (weight_decay parameter)
+> optimizer = torch.optim.Adam(model.parameters(), lr=0.001, weight_decay=1e-4)
+> ```
+> 
+> You can use both together—they complement each other!
+
 ---
 
 ## 4. Code Example: Complete Training Pipeline
