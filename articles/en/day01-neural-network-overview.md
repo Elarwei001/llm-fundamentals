@@ -214,6 +214,12 @@ Outputs between (0, 1), has probability interpretation.
 
 Problem: When |x| is large, σ'(x) ≈ 0. Gradients decay exponentially through deep networks—this is called **vanishing gradient**, a nightmare for deep network training.
 
+> **Why is vanishing gradient so bad?**
+> 
+> During backpropagation, gradients are multiplied layer by layer (chain rule). With Sigmoid, each layer multiplies by at most 0.25. After just 10 layers: 0.25¹⁰ ≈ 0.000001. The gradient essentially disappears!
+> 
+> **Consequence**: Early layers receive near-zero gradients and almost don't update. The network can only learn shallow patterns—deep layers learn, but early layers stay random. This is why deep networks with Sigmoid simply couldn't train before ReLU came along.
+
 **ReLU (2010s to present)**
 ```
 ReLU(x) = max(0, x)
