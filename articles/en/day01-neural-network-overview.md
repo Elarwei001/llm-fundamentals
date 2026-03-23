@@ -283,6 +283,21 @@ W = np.random.randn(fan_in, fan_out) * np.sqrt(1 / fan_in)
 W = np.random.randn(fan_in, fan_out) * np.sqrt(2 / fan_in)
 ```
 
+> **What is this formula actually doing?**
+> 
+> Let's break it down:
+> - `np.random.randn(fan_in, fan_out)` → Random numbers from standard normal distribution (mean=0, variance=1)
+> - `fan_in` → Number of input connections to this layer (e.g., 784 for first layer after MNIST input)
+> - `* np.sqrt(2 / fan_in)` → Scale down the random numbers
+> 
+> **Why scale by √(2/fan_in)?** 
+> 
+> When you multiply many random numbers together (which happens as signals flow through layers), variances multiply too. If each layer's output has variance > 1, it explodes; if < 1, it vanishes.
+> 
+> Math: If input has variance 1, and weights have variance 2/fan_in, then output variance ≈ 1 (for ReLU, which zeroes half the values, hence the "2"). This keeps signals stable across layers.
+> 
+> The "He" in He initialization is Kaiming He (何恺明)—the same researcher behind ResNet!
+
 Core idea: keep each layer's output variance stable—not growing or shrinking.
 
 ### 3.3 Regularization: Preventing Overfitting
