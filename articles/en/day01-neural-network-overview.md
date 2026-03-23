@@ -238,6 +238,12 @@ Advantages:
 Disadvantage:
 - When x < 0, gradient is 0, neurons can "die"
 
+> **What does "neurons die" mean?**
+> 
+> Here x is the neuron's input: x = Σ(weights × previous layer outputs) + bias. If the weights update in a way that makes x always negative for all training examples, this neuron will always output 0 and receive 0 gradient—it stops learning forever. It's "dead."
+> 
+> This can happen when the learning rate is too high, causing weights to jump too far in the wrong direction. That's why LeakyReLU exists: it outputs 0.01x instead of 0 for negative inputs, keeping a tiny gradient alive.
+
 **ReLU Variants**
 - LeakyReLU: max(0.01x, x), allows small gradient in negative region
 - GELU: x · Φ(x), used in GPT and BERT, smoother
