@@ -26,13 +26,13 @@ See full curriculum: [English](CURRICULUM-EN.md) | [中文](CURRICULUM.md)
 
 ### Week 1: From Neural Networks to Transformer
 
-| Day | Topic | EN | 中文 | PDF |
-|-----|-------|-----|------|-----|
-| 1 | Neural Network Overview | [Read](articles/en/day01-neural-network-overview.md) | [阅读](articles/zh/day01-neural-network-overview.md) | [EN](articles/pdf/day01-neural-network-overview-en.pdf) / [中文](articles/pdf/day01-neural-network-overview-zh.pdf) |
-| 2 | Rise and Fall of RNN | Coming soon | 即将发布 | - |
-| 3 | Birth of Attention | Coming soon | 即将发布 | - |
-| 4 | Transformer Architecture | Coming soon | 即将发布 | - |
-| 5 | Encoder-Decoder to Decoder-only | Coming soon | 即将发布 | - |
+| Day | Topic | EN | 中文 |
+|-----|-------|-----|------|
+| 1 | Neural Network Overview | [Read](articles/en/day01-neural-network-overview.md) | [阅读](articles/zh/day01-neural-network-overview.md) |
+| 2 | Rise and Fall of RNN | Coming soon | 即将发布 |
+| 3 | Birth of Attention | Coming soon | 即将发布 |
+| 4 | Transformer Architecture | Coming soon | 即将发布 |
+| 5 | Encoder-Decoder to Decoder-only | Coming soon | 即将发布 |
 
 *More articles added daily (weekdays).*
 
