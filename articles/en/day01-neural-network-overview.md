@@ -242,6 +242,8 @@ Disadvantage:
 > 
 > Here x is the neuron's input: x = Σ(weights × previous layer outputs) + bias. If the weights update in a way that makes x always negative for all training examples, this neuron will always output 0 and receive 0 gradient—it stops learning forever. It's "dead."
 > 
+> *But wait—why would x be negative?* Even if raw inputs (like pixel values 0-255) are non-negative, we typically **normalize** them first: subtract the mean, divide by standard deviation. This centers the data around 0, so inputs can be positive or negative. Plus, weights themselves are randomly initialized around 0 (positive and negative), and biases can also be negative. So: positive input × negative weight = negative contribution, and the sum can easily end up negative.
+> 
 > This can happen when the learning rate is too high, causing weights to jump too far in the wrong direction. That's why LeakyReLU exists: it outputs 0.01x instead of 0 for negative inputs, keeping a tiny gradient alive.
 
 **ReLU Variants**
