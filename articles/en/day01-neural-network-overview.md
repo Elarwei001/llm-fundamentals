@@ -486,51 +486,50 @@ $$
 ### 5.2 Backpropagation Derivation
 
 Let the loss function be cross-entropy:
-$$
-L = -\sum_k y_k \log \hat{y}_k
-$$
+```
+L = -Σₖ yₖ log ŷₖ
+```
 
 Define error signal:
-$$
-\delta^{(l)} = \frac{\partial L}{\partial z^{(l)}}
-$$
+```
+δ⁽ˡ⁾ = ∂L/∂z⁽ˡ⁾
+```
 
 For the output layer (using special property of softmax + cross-entropy):
-$$
-\delta^{(L)} = \hat{y} - y
-$$
+```
+δ⁽ᴸ⁾ = ŷ - y
+```
 
 For hidden layers (chain rule):
-$$
-\delta^{(l)} = (W^{(l+1)})^T \delta^{(l+1)} \odot \sigma'(z^{(l)})
-$$
+```
+δ⁽ˡ⁾ = (W⁽ˡ⁺¹⁾)ᵀ δ⁽ˡ⁺¹⁾ ⊙ σ'(z⁽ˡ⁾)
+```
 
 Parameter gradients:
-$$
-\frac{\partial L}{\partial W^{(l)}} = \delta^{(l)} (h^{(l-1)})^T
-$$
-$$
-\frac{\partial L}{\partial b^{(l)}} = \delta^{(l)}
-$$
+```
+∂L/∂W⁽ˡ⁾ = δ⁽ˡ⁾ (h⁽ˡ⁻¹⁾)ᵀ
+
+∂L/∂b⁽ˡ⁾ = δ⁽ˡ⁾
+```
 
 ### 5.3 Why Xavier Initialization Works
 
 Let input x have n elements, each with variance Var(x). Weight W has i.i.d. elements with mean 0 and variance Var(W).
 
 Linear layer output:
-$$
-z = \sum_{i=1}^{n} W_i x_i
-$$
+```
+z = Σᵢ Wᵢ xᵢ
+```
 
 Output variance:
-$$
-\text{Var}(z) = n \cdot \text{Var}(W) \cdot \text{Var}(x)
-$$
+```
+Var(z) = n · Var(W) · Var(x)
+```
 
 To keep Var(z) = Var(x) (variance preserved), we need:
-$$
-\text{Var}(W) = \frac{1}{n}
-$$
+```
+Var(W) = 1/n
+```
 
 This is the origin of Xavier initialization.
 
