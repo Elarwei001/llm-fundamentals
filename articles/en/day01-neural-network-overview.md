@@ -172,6 +172,17 @@ Mathematically:
 - ∇L(θ) is the gradient (points toward steepest increase in loss)
 - η is the learning rate (step size)
 
+> **This formula IS what an optimizer does!**
+> 
+> In code, `optimizer.step()` executes exactly this: `θ = θ - η · ∇L`. The optimizer stores the parameters and their gradients, and applies this update rule.
+> 
+> Different optimizers use variations of this formula:
+> - **SGD**: Exactly `θ = θ - η · ∇L`
+> - **SGD + Momentum**: Adds velocity term, like a ball rolling downhill with inertia
+> - **Adam**: Adapts η for each parameter based on gradient history (hence "Adaptive")
+> 
+> Adam is popular because it automatically adjusts learning rates—you don't need to tune η as carefully.
+
 ![Gradient Descent](../zh/images/day01/gradient-descent.png)
 *Figure 5: Gradient descent visualization. The left panel shows iteration along the "downhill" direction in 2D; the right panel shows a high-dimensional loss surface, with red dot as starting position and green star as convergence point.*
 
