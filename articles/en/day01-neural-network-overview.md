@@ -554,6 +554,14 @@ This is half true, half false.
 
 **What we truly don't understand**:
 - Why non-convex optimization finds good solutions
+
+> **What does "non-convex" mean?**
+> 
+> A **convex** function is bowl-shaped: there's only ONE lowest point, and gradient descent will always find it.
+> 
+> A **non-convex** function has bumps and valleys: many local minima (low points that aren't the global lowest). Gradient descent could get stuck in any of them.
+> 
+> Neural network loss functions are non-convex because of the nonlinear activations (ReLU, etc.) and the way layers compose. With billions of parameters, the loss "landscape" has countless hills and valleys. Yet somehow, SGD usually finds good solutions—we don't fully understand why!
 - Why overparameterization helps generalization
 - What "representations" neural networks learn internally
 
