@@ -264,6 +264,21 @@ $$
 > - $i_t \odot \tilde{C}_t$ = [0.72, -0.03, 0.35, ...] ← element-wise filtering
 > 
 > It's not "pick 1 from 5 dishes"—it's "a buffet where you decide how much of each item to take" 🍽️
+> 
+> **Q: Is the gate $i_t$ learned or hand-tuned?**
+> 
+> **Learned!** The formula $i_t = \sigma(W_i \cdot [h_{t-1}, x_t] + b_i)$ means:
+> 
+> | Part | Who decides |
+> |------|-------------|
+> | $W_i, b_i$ | Learned during training (fixed after) |
+> | $i_t$ value | **Dynamically computed** each time step based on input |
+> 
+> Think of it as:
+> - $W_i, b_i$ = your "judgment criteria" (learned during training)
+> - $i_t$ = your **real-time decision** on "should I remember this specific info?"
+> 
+> The network learns the **rules** for "when to remember, when to forget"—not fixed switch values.
 
 **4. Output Gate**: What should we output based on the cell state?
 
