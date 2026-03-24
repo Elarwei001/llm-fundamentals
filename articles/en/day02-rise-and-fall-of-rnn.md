@@ -538,25 +538,27 @@ Gradient Flow Comparison
 ==================================================
 
 Sequence length: 10
-Vanilla RNN gradient norm: 4.23e-02
-LSTM gradient norm: 2.87e-01
+Vanilla RNN gradient norm: 4.23e-02    ← OK, still learning
+LSTM gradient norm: 2.87e-01           ← Healthy
 Ratio (LSTM/RNN): 6.8x
 
 Sequence length: 50
-Vanilla RNN gradient norm: 1.56e-08
-LSTM gradient norm: 1.42e-01
-Ratio (LSTM/RNN): 9102564.1x
+Vanilla RNN gradient norm: 1.56e-08    ← Almost ZERO! (0.0000000156)
+LSTM gradient norm: 1.42e-01           ← Still healthy
+Ratio (LSTM/RNN): 9102564.1x           ← LSTM is 9 MILLION times better!
 
 Sequence length: 100
-Vanilla RNN gradient norm: 2.31e-17
-LSTM gradient norm: 8.93e-02
-Ratio (LSTM/RNN): 3866233766233766.5x
+Vanilla RNN gradient norm: 2.31e-17    ← Completely DEAD
+LSTM gradient norm: 8.93e-02           ← Still learning fine
+Ratio (LSTM/RNN): 3866233766233766.5x  ← LSTM is 3800 TRILLION times better!
 
 Sequence length: 200
-Vanilla RNN gradient norm: 0.00e+00
-LSTM gradient norm: 5.21e-02
-Ratio (LSTM/RNN): inf
+Vanilla RNN gradient norm: 0.00e+00    ← 💀 ZERO, game over
+LSTM gradient norm: 5.21e-02           ← Still going strong!
+Ratio (LSTM/RNN): inf                  ← Can't even compare
 ```
+
+> **How to read this:** Look at the Vanilla RNN column—it goes from 0.04 → 0.00000001 → 0 as sequence length increases. Meanwhile LSTM stays around 0.05-0.3 the whole time. That's why LSTM can handle long sequences!
 
 The numbers are dramatic: at sequence length 100, vanilla RNN gradients are effectively zero ($10^{-17}$), while LSTM gradients remain healthy (0.089).
 
