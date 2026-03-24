@@ -638,5 +638,55 @@ Tomorrow, we'll see exactly how Transformers achieve this in **Day 3: Birth of A
 
 ---
 
+## Appendix: How BPTT (Backpropagation Through Time) Works
+
+During training, how does the gradient flow backward through time steps?
+
+### Gradients Flow Right to Left
+
+Suppose at t=4 we have loss L₄, and we want to compute ∂L₄/∂W:
+
+```
+L₄ ← ŷ₄ ← h₄ ← h₃ ← h₂ ← h₁
+                ↑    ↑    ↑    ↑
+                W    W    W    W   (same W!)
+```
+
+### Chain Rule Expansion
+
+Since h₄ depends on h₃, h₃ depends on h₂..., gradients must **multiply all the way back**:
+
+```
+∂L₄/∂W = ∂L₄/∂h₄ · ∂h₄/∂W                           ← direct influence
+       + ∂L₄/∂h₄ · ∂h₄/∂h₃ · ∂h₃/∂W                 ← indirect via h₃
+       + ∂L₄/∂h₄ · ∂h₄/∂h₃ · ∂h₃/∂h₂ · ∂h₂/∂W       ← indirect via h₂
+       + ...
+```
+
+### The Key: ∂hₜ/∂hₜ₋₁ Gets Multiplied Repeatedly
+
+Each step: hₜ = tanh(W·xₜ + U·**hₜ₋₁**)
+
+So:
+```
+∂hₜ/∂hₜ₋₁ = U · diag(tanh'(...))
+```
+
+From t=4 back to t=1, we multiply this **3 times**:
+```
+∂h₄/∂h₁ = ∂h₄/∂h₃ · ∂h₃/∂h₂ · ∂h₂/∂h₁
+```
+
+### This Is Why Gradients Vanish or Explode!
+
+- If |∂hₜ/∂hₜ₋₁| < 1 → multiplied product approaches **0** (vanishing)
+- If |∂hₜ/∂hₜ₋₁| > 1 → multiplied product approaches **∞** (exploding)
+
+For a 100-step sequence, we multiply 99 times: 0.9⁹⁹ ≈ 0.00003 😱
+
+This is the fundamental mathematical reason why vanilla RNNs struggle with long sequences—and why LSTM's "gates" that allow gradients to flow unchanged are so important.
+
+---
+
 *Day 2 of 60 | LLM Fundamentals*  
-*Word count: ~4200 | Reading time: ~19 minutes*
+*Word count: ~4500 | Reading time: ~20 minutes*
