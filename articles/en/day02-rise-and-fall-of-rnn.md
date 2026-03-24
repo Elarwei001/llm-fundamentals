@@ -289,6 +289,23 @@ h_t &= o_t \odot \tanh(C_t)
 \end{aligned}
 $$
 
+> **Why tanh here if $o_t$ is already a gate?**
+> 
+> They do different jobs:
+> 
+> | Part | Role | Range |
+> |------|------|-------|
+> | $o_t$ | Gate: "how much to output" | 0~1 |
+> | $\tanh(C_t)$ | Normalize: squash cell state to reasonable range | -1~1 |
+> | $h_t$ | Final output | -1~1 |
+> 
+> $C_t$ can grow large (accumulated over many steps). Without tanh, it might be 100 or -50, which would blow up downstream computations.
+> 
+> Analogy:
+> - $C_t$ = raw memories in your head (could be extreme)
+> - $\tanh$ = "calm down," organize thoughts into normal expression
+> - $o_t$ = "how much to say out loud this time"
+
 ### 4.2 Why LSTMs Work
 
 The magic is in the cell state update equation:
