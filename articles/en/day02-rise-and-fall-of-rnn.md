@@ -322,6 +322,22 @@ $$
 > - $C_t$ = your "working memory" while reading a book (different for each book)
 > 
 > We train the **gate parameters** (learn when to remember/forget). Cell state is just a "memory container" that follows the learned rules.
+> 
+> **Q: If parameters are shared, won't all positions have the same gate values?**
+> 
+> No! Because $f_t = \sigma(W_f \cdot [h_{t-1}, x_t] + b_f)$ depends on **$h_{t-1}$ and $x_t$**, which change every step:
+> 
+> | Time step | $x_t$ (current input) | $h_{t-1}$ (previous hidden state) | $f_t$ |
+> |-----------|----------------------|-----------------------------------|-------|
+> | t=1 | "The" | $h_0$ (initial) | 0.3 |
+> | t=2 | "cat" | $h_1$ (contains "The") | 0.9 |
+> | t=3 | "which" | $h_2$ (contains "The cat") | 0.95 |
+> 
+> Same $W_f$, but different inputs → different outputs!
+> 
+> $h_{t-1}$ **encodes context**: after seeing "cat", $h$ contains "this is a noun/subject". When the next word is "which", the gate knows to "preserve the subject info".
+> 
+> **$W_f$ learns "how to judge based on context", $h$ provides that context!**
 
 ### 4.2 Why LSTMs Work
 
