@@ -176,6 +176,26 @@ $$
 
 梯度爆炸更容易处理（梯度裁剪），但梯度消失是隐蔽的——网络只是默默地无法学习长距离模式。
 
+> **什么是梯度裁剪（Gradient Clipping）？**
+> 
+> 给梯度设一个"天花板"——超过就等比例缩小：
+> ```python
+> # 如果梯度的范数超过阈值，就等比例缩小
+> if ||gradient|| > max_norm:
+>     gradient = gradient * (max_norm / ||gradient||)
+> ```
+> 
+> PyTorch 代码：
+> ```python
+> torch.nn.utils.clip_grad_norm_(model.parameters(), max_norm=1.0)
+> ```
+> 
+> **为什么爆炸比消失"更好处理"？**
+> - **爆炸**：梯度太大 → 裁掉就行，信息还在
+> - **消失**：梯度太小 → 没法"放大"，信息已经丢了
+> 
+> 所以消失更阴险——网络悄悄地学不到东西，你还不知道。
+
 ### 3.4 为什么这对语言很重要
 
 考虑这个句子："The cat, which my neighbor who lives in the blue house on the corner near the old oak tree adopted last summer, is sleeping."

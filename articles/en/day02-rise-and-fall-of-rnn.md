@@ -176,6 +176,26 @@ The opposite can also happen. If $\|W_{hh}\| > 1$, gradients can **explode**:
 
 Exploding gradients are easier to handle (gradient clipping), but vanishing gradients are insidious—the network just silently fails to learn long-range patterns.
 
+> **What is Gradient Clipping?**
+> 
+> Setting a "ceiling" for gradients—if they exceed it, scale them down:
+> ```python
+> # If gradient norm exceeds threshold, proportionally shrink it
+> if ||gradient|| > max_norm:
+>     gradient = gradient * (max_norm / ||gradient||)
+> ```
+> 
+> In PyTorch:
+> ```python
+> torch.nn.utils.clip_grad_norm_(model.parameters(), max_norm=1.0)
+> ```
+> 
+> **Why is exploding "easier" than vanishing?**
+> - **Exploding**: Gradient too big → clip it, information still preserved
+> - **Vanishing**: Gradient too small → can't "amplify" it, information already lost
+> 
+> That's why vanishing is more insidious—the network silently fails to learn, and you don't even notice.
+
 ### 3.4 Why This Matters for Language
 
 Consider this sentence: "The cat, which my neighbor who lives in the blue house on the corner near the old oak tree adopted last summer, is sleeping."
