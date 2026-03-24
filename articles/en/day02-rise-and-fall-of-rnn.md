@@ -126,6 +126,21 @@ Now we arrive at RNNs' fatal flaw. Look at the tanh function and its derivative:
 ![Tanh Saturation](../zh/images/day02/tanh-saturation.png)
 *Figure 4: The tanh activation (left) and its derivative (right). The derivative is at most 1 (at x=0) and drops to near zero in saturated regions.*
 
+> **What does "saturated" mean?**
+> 
+> Think of a sponge absorbing water:
+> - At first: absorbs quickly (steep curve)
+> - When full: adding more water doesn't help (flat curve) ← **saturated**
+> 
+> In the tanh plot:
+> | Region | x value | tanh(x) | Derivative |
+> |--------|---------|---------|------------|
+> | Left (red) | x < -2 | ≈ -1 | **≈ 0** |
+> | Middle (blue) | -2 < x < 2 | changing | normal |
+> | Right (red) | x > 2 | ≈ +1 | **≈ 0** |
+> 
+> Saturated regions have **near-zero derivatives** → gradients vanish!
+
 Key observation: $\tanh'(x) \leq 1$ for all $x$, and equals 1 only at $x = 0$.
 
 When we multiply many of these terms together:
