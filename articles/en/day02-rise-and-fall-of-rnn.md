@@ -240,6 +240,21 @@ $$
 C_t = f_t \odot C_{t-1} + i_t \odot \tilde{C}_t
 $$
 
+> **Don't confuse $C_{t-1}$ and $\tilde{C}_t$!**
+> 
+> | Symbol | Meaning | Source |
+> |--------|---------|--------|
+> | $C_{t-1}$ | Old memory | Passed from previous time step |
+> | $\tilde{C}_t$ | Candidate new memory | Computed from current $x_t$ and $h_{t-1}$ |
+> | $C_t$ | Updated memory | Weighted combination of old + new |
+> 
+> The tilde (~) in $\tilde{C}_t$ means "candidate/temporary"—it's not written to memory yet.
+> 
+> Think of it as:
+> - $C_{t-1}$ = "what you already remember"
+> - $\tilde{C}_t$ = "new stuff you just thought of"
+> - $C_t$ = selectively keep old + selectively add new
+
 **4. Output Gate**: What should we output based on the cell state?
 
 $$
