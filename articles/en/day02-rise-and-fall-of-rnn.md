@@ -16,7 +16,7 @@ For over two decades, RNNs were the dominant paradigm for sequence modeling. The
 
 Then, in 2017, a paper titled "Attention Is All You Need" declared: you don't need recurrence. The Transformer was born, and within a few years, RNNs had nearly vanished from state-of-the-art research.
 
-![Sequence Modeling Evolution](../zh/images/day02/sequence-modeling-evolution.png)
+![Sequence Modeling Evolution](../zh/images/day02/sequence-modeling-evolution-v2.png)
 *Figure 1: The evolution of sequence modeling. RNNs dominated from 1990-2017, with LSTM/GRU improving on vanilla RNNs. The Transformer (2017) fundamentally changed the paradigm.*
 
 What happened? Why did an architecture that seemed so natural for sequences get replaced? Understanding RNNs—their elegance and their fatal flaw—is essential for appreciating why Transformers work so well.

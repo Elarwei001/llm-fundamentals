@@ -16,7 +16,7 @@
 
 然后，2017 年，一篇题为 "Attention Is All You Need" 的论文宣告：你不需要循环。Transformer 诞生了，几年之内，RNN 几乎从最前沿的研究中消失了。
 
-![序列建模演进](./images/day02/sequence-modeling-evolution.png)
+![序列建模演进](./images/day02/sequence-modeling-evolution-v2.png)
 *图 1：序列建模的演进。RNN 主导了 1990-2017 年的研究，LSTM/GRU 改进了原始 RNN。Transformer（2017）从根本上改变了范式。*
 
 发生了什么？为什么一个看起来如此自然地适合序列的架构会被取代？理解 RNN——它的优雅之处和它的致命缺陷——对于理解 Transformer 为何如此有效至关重要。
