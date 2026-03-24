@@ -741,7 +741,7 @@ Neither is universally superior.
 
 1. **If LSTM's forget gate is always set to 1 (never forget) and input gate always set to 0 (never add), what happens? Is this a valid configuration? When might this be useful?**
 
-2. **Transformers process sequences in parallel, while RNNs process sequentially. But language has inherent temporal order. How do Transformers capture word order without recurrence?** (Hint: Think about positional encoding)
+2. **GRU combines the forget and input gates into a single "update gate". What are the trade-offs of this simplification compared to LSTM?** (Hint: Think about fine-grained control vs. computational efficiency)
 
 3. **In the gradient flow comparison code, LSTM gradients remained healthy even at 200 steps. But in practice, very long sequences (10,000+ tokens) still challenge LSTMs. Why?**
 
