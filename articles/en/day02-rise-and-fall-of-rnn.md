@@ -254,6 +254,16 @@ $$
 > - $C_{t-1}$ = "what you already remember"
 > - $\tilde{C}_t$ = "new stuff you just thought of"
 > - $C_t$ = selectively keep old + selectively add new
+> 
+> **Q: Is there just one candidate, or multiple?**
+> 
+> Just **one** candidate $\tilde{C}_t$! But it's a **vector** (e.g., 256 dimensions). The Input Gate $i_t$ decides **how much of each dimension** to add:
+> 
+> - $\tilde{C}_t$ = [0.8, -0.3, 0.5, ...]
+> - $i_t$ = [0.9, 0.1, 0.7, ...]
+> - $i_t \odot \tilde{C}_t$ = [0.72, -0.03, 0.35, ...] ← element-wise filtering
+> 
+> It's not "pick 1 from 5 dishes"—it's "a buffet where you decide how much of each item to take" 🍽️
 
 **4. Output Gate**: What should we output based on the cell state?
 
