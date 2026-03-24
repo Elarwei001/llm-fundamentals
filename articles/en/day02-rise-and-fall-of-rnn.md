@@ -306,6 +306,23 @@ $$
 > - $\tanh$ = "calm down," organize thoughts into normal expression
 > - $o_t$ = "how much to say out loud this time"
 
+> **Q: Are Gates and Cell State trained differently?**
+> 
+> No, both use backpropagation. But there's a key difference:
+> 
+> | Part | Has learnable parameters? | How it's updated |
+> |------|---------------------------|------------------|
+> | **Gates** ($f_t, i_t, o_t$) | ✅ Yes ($W_f, W_i, W_o, b$) | Gradient descent updates $W, b$ |
+> | **Cell State** ($C_t$) | ❌ No parameters of its own | It's a **computed value**, not a parameter |
+> 
+> $C_t$ is calculated from the formula—it's **data flow**, not a model parameter. Different input sequences produce different $C_t$ values.
+> 
+> Analogy:
+> - $W_f, W_i, W_o$ = your "judgment ability" (learned, then fixed)
+> - $C_t$ = your "working memory" while reading a book (different for each book)
+> 
+> We train the **gate parameters** (learn when to remember/forget). Cell state is just a "memory container" that follows the learned rules.
+
 ### 4.2 Why LSTMs Work
 
 The magic is in the cell state update equation:
