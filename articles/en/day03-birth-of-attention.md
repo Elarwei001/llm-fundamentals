@@ -177,6 +177,10 @@ Convert scores to a probability distribution (weights sum to 1):
 
 Now αᵢ ∈ [0, 1] and Σαᵢ = 1. These are the **attention weights**.
 
+> **Key distinction:**
+> - **Score** = scaled dot product (raw similarity)
+> - **Attention Weight** = softmax(score) (normalized attention distribution)
+
 **Step 3: Weighted Sum**
 
 Compute the context vector as a weighted combination of values:

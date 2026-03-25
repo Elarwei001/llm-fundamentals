@@ -177,6 +177,10 @@ score_i = similarity(q, k_i)
 
 现在 αᵢ ∈ [0, 1] 且 Σαᵢ = 1。这些就是**注意力权重**。
 
+> **关键区分：**
+> - **Score** = scaled 点积（原始相似度）
+> - **Attention Weight** = softmax(score)（归一化后的关注程度）
+
 **步骤 3：加权和**
 
 将上下文向量计算为值的加权组合：
