@@ -101,6 +101,22 @@ Common similarity functions:
 - **Scaled dot product**: `score = (q · k) / √d_k` (what Transformers use)
 - **Additive**: `score = v^T · tanh(W_q q + W_k k)` (original Bahdanau)
 
+![Similarity functions comparison](./images/day03/similarity-functions-comparison.png)
+*Figure: Comparison of three similarity functions. Dot product is simple but scores explode with high dimensions. Scaled dot product fixes this by dividing by √d_k. Additive is more expressive but slower.*
+
+> **Why does dot product "explode"?**
+> 
+> If each element of q and k has variance 1, then each term qᵢkᵢ also has variance 1. The dot product sums d terms, so total variance = d.
+> 
+> | Dimension d | Std Dev of score | Typical range |
+> |-------------|------------------|---------------|
+> | 64 | √64 = 8 | -24 ~ +24 |
+> | 512 | √512 ≈ 22.6 | -68 ~ +68 |
+> 
+> Large scores → softmax becomes nearly one-hot → gradients vanish → training fails.
+> 
+> **Solution**: Divide by √d_k to normalize variance back to 1.
+
 **Step 2: Normalize via Softmax**
 
 Convert scores to a probability distribution (weights sum to 1):
