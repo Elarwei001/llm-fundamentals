@@ -716,6 +716,20 @@ Use attention visualizations as rough guides, not ground truth.
 
 3. **We discussed that attention weights aren't reliable for interpretation. If you needed to understand what parts of the input your model is using, what alternatives might you try?**
 
+> **Hint**: Since attention shows "where the model looked" but not "what actually influenced the output", consider methods that directly measure causal impact:
+> 
+> | Method | How it works |
+> |--------|--------------|
+> | **Gradient-based** | Compute gradient of output w.r.t. input — large gradient = high influence |
+> | **Integrated Gradients** | Integrate gradients from baseline to input — more stable |
+> | **SHAP** | Use game theory to compute each feature's contribution |
+> | **Ablation** | Remove part of input, measure output change — direct causality |
+> | **Probing** | Train small classifiers on intermediate representations |
+> 
+> Key difference:
+> - Attention: "I gave 0.8 weight to this position" ← doesn't mean it's important
+> - Gradient: "Changing this position changes output by 0.8" ← directly measures causal impact
+
 ---
 
 ## Summary
