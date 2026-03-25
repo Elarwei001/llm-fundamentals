@@ -536,6 +536,18 @@ The term (δᵢⱼ - αⱼ) comes from the softmax gradient. This shows:
 - If αⱼ is close to 0, gradient is also small (not contributing)
 - Gradient is largest for intermediate attention weights
 
+> **Intuitive Understanding**
+> 
+> | Situation | Meaning | Gradient |
+> |-----------|---------|----------|
+> | α ≈ 1 | "I'm 100% focused on this" | Small — nothing to learn |
+> | α ≈ 0 | "I'm ignoring this completely" | Small — doesn't contribute anyway |
+> | α ≈ 0.5 | "I'm not sure whether to attend" | **Large — actively learning!** |
+> 
+> **Key insight: Attention learns fastest where it's uncertain, and slowest where it's already decided.**
+> 
+> This is the essence of softmax: **ignore certainty, focus on uncertainty**.
+
 ### 6.3 Connection to Kernel Methods
 
 There's a beautiful connection between attention and kernel machines. The attention weight can be written as:
