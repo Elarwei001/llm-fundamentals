@@ -263,6 +263,17 @@ $$
 
 3. **softmax**：按行应用。每行和为 1。
 
+> **为什么按行做 softmax？** 
+> 
+> 每一行代表一个 Query 对所有 Keys 的注意力分布：
+> 
+> $$QK^T = \begin{bmatrix} q_1 \cdot k_1 & q_1 \cdot k_2 & \cdots & q_1 \cdot k_m \\ q_2 \cdot k_1 & q_2 \cdot k_2 & \cdots & q_2 \cdot k_m \\ \vdots & \vdots & \ddots & \vdots \\ q_n \cdot k_1 & q_n \cdot k_2 & \cdots & q_n \cdot k_m \end{bmatrix}$$
+> 
+> - **第 1 行** = Query 1 对所有 Keys 的相似度 → softmax → Query 1 的注意力权重（和为 1）
+> - **第 2 行** = Query 2 对所有 Keys 的相似度 → softmax → Query 2 的注意力权重（和为 1）
+> 
+> 每个 Query 独立决定"关注哪些 Keys"。如果按列做 softmax，含义就变成"每个 Key 被关注的总量和为 1"——这不是我们想要的！
+
 4. **V**：值矩阵。形状 (m, d_v)。输出形状 (n, d_v)。
 
 ![缩放点积注意力](./images/day03/scaled-dot-product-attention.png)

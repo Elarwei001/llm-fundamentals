@@ -263,6 +263,17 @@ Let's unpack this:
 
 3. **softmax**: Applied row-wise. Each row sums to 1.
 
+> **Why row-wise softmax?** 
+> 
+> Each row represents one Query's attention distribution over all Keys:
+> 
+> $$QK^T = \begin{bmatrix} q_1 \cdot k_1 & q_1 \cdot k_2 & \cdots & q_1 \cdot k_m \\ q_2 \cdot k_1 & q_2 \cdot k_2 & \cdots & q_2 \cdot k_m \\ \vdots & \vdots & \ddots & \vdots \\ q_n \cdot k_1 & q_n \cdot k_2 & \cdots & q_n \cdot k_m \end{bmatrix}$$
+> 
+> - **Row 1** = Query 1's similarity to all Keys → softmax → Query 1's attention weights (sums to 1)
+> - **Row 2** = Query 2's similarity to all Keys → softmax → Query 2's attention weights (sums to 1)
+> 
+> Each Query independently decides "which Keys to attend to". Column-wise softmax would mean "each Key's total attention received sums to 1" — not what we want!
+
 4. **V**: The values matrix. Shape (m, d_v). The output has shape (n, d_v).
 
 ![Scaled dot-product attention](../zh/images/day03/scaled-dot-product-attention.png)
