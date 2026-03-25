@@ -259,6 +259,19 @@ Let's unpack this:
 
 1. **QK^T**: Matrix of dot products. If Q has shape (n, d_k) and K has shape (m, d_k), then QK^T has shape (n, m). Entry (i, j) is the similarity between query i and key j.
 
+> **What does Q look like?**
+> 
+> Each **row** of Q is one token's query vector:
+> ```
+> Q = ┌─────────────────────────────┐
+>     │ q₁ = [0.1, 0.3, -0.2, ...]  │  ← Row 1: "I"'s query
+>     │ q₂ = [0.5, -0.1, 0.4, ...]  │  ← Row 2: "love"'s query
+>     │ q₃ = [-0.3, 0.2, 0.1, ...]  │  ← Row 3: "cats"'s query
+>     └─────────────────────────────┘
+>     Shape: (3, d_k) = (num_tokens, query_dimension)
+> ```
+> Each q is not a word — it's a **vector representation** of a word after embedding + linear projection.
+
 2. **√d_k**: The scaling factor. d_k is the dimension of keys/queries.
 
 3. **softmax**: Applied row-wise. Each row sums to 1.
