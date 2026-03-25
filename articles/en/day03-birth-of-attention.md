@@ -631,10 +631,47 @@ The attention heatmaps are beautiful and suggestive, but interpretation is trick
 
 ### ❌ "Higher attention weight means that position is more important"
 
-Not necessarily. Research by Jain & Wallace (2019) showed that:
-- Randomly permuting attention weights sometimes doesn't hurt performance
-- Adversarial attention weights (maximally different but same output) exist
-- Attention ≠ explanation
+Not necessarily. Research by Jain & Wallace (2019) showed surprising results:
+
+**Experiment 1: Randomly shuffling attention weights**
+```
+Original weights:  [0.7, 0.2, 0.1]  → output: "cat"
+Shuffled weights:  [0.1, 0.7, 0.2]  → output: still "cat"!
+```
+Sometimes shuffling weights **doesn't change the output**. So those "high weight" positions may not matter that much.
+
+**Experiment 2: Finding adversarial weights**
+```
+Weights A: [0.8, 0.1, 0.1]  → output: "cat"
+Weights B: [0.2, 0.5, 0.3]  → output: also "cat"!
+```
+Completely different weight distributions can produce **identical outputs**.
+
+> **Why does this happen?**
+> 
+> The key: **Value vectors may be similar to each other**.
+> 
+> | Scenario | Analogy |
+> |----------|---------|
+> | Values very different | Red wine, milk, coffee — ratio matters a lot |
+> | Values very similar | Three similar red wines — any mix tastes like red wine |
+> 
+> If v₁ ≈ v₂ ≈ v₃, then:
+> $$0.8 \cdot v_1 + 0.1 \cdot v_2 + 0.1 \cdot v_3 \approx 0.1 \cdot v_1 + 0.8 \cdot v_2 + 0.1 \cdot v_3$$
+> 
+> **Attention weights only decide "where to take values from" — if those values are similar anyway, the weights don't matter much.**
+
+> **Deeper insight: Redundancy in weight space**
+> 
+> If multiple weight combinations → same output, this reveals:
+> 1. **The weight space has redundancy** — different weights are "equivalent"
+> 2. **Effective dimension < actual dimension** — compressible!
+> 3. **Value vectors don't span full space** — they live in a low-rank subspace
+> 
+> This insight inspired research on:
+> - **Low-rank Attention**: Since it's redundant, use low-rank approximation
+> - **LoRA**: Fine-tune only the low-rank part
+> - **Pruning**: Remove redundant heads or dimensions
 
 Use attention visualizations as rough guides, not ground truth.
 
