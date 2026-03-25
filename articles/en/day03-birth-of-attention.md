@@ -486,6 +486,27 @@ $$
 
 This means the output always lies in the **convex hull** of the value vectors. Attention doesn't create new directions—it interpolates between existing ones.
 
+![Convex combination visualization](./images/day03/convex-combination.png)
+*Figure: Left: A convex combination of 3 points always lands inside the triangle. Right: Attention output is "pulled" toward high-weight values but stays inside the convex hull.*
+
+> **Cocktail Analogy** 🍸
+> 
+> Think of it like mixing cocktails:
+> - You have red wine, white wine, and juice 🍷🥂🧃
+> - You can mix them in any proportion
+> - But you can **never** make coffee ☕ — it's not in your ingredients!
+> 
+> **2D Example**: If you only have v₁=(0,0) and v₂=(4,0):
+> ```
+>         ❌ (2, 5) impossible!
+>         
+> A ●─────●─────● B      ← Output can only be on this line
+> (0,0)  (2,0)  (4,0)
+>        ↑
+>     ✅ possible outputs
+> ```
+> Any point with y≠0 is impossible — your Values don't have that direction!
+
 ### 6.2 Gradient of Attention
 
 Let's compute the gradient of attention output w.r.t. the query. This shows how attention learns.
