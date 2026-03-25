@@ -12,7 +12,7 @@ Imagine being asked to translate a 100-word legal document into French, but you 
 
 The bottleneck was obvious: long sentences performed terribly. Information was lost. The decoder had to somehow extract "European Economic Area agreement" from a compressed blob that also contained everything else.
 
-Then came Bahdanau, Cho, and Bengio's 2014 paper: "Neural Machine Translation by Jointly Learning to Align and Translate." The key insight was simple but profound: **instead of compressing everything into one vector, let the decoder look back at all encoder states and decide which ones are relevant for each output word.**
+Then came Bahdanau, Cho, and Bengio's 2014 paper: "Neural Machine Translation by Jointly Learning to Align and Translate." The key insight was simple but profound: **instead of compressing everything into one vector (the final encoder hidden state), let the decoder look back at all encoder states and decide which ones are relevant for each output word.**
 
 This was the birth of attention.
 

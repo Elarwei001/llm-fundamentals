@@ -12,7 +12,7 @@
 
 瓶颈是显而易见的：长句子表现很差。信息丢失了。解码器必须从一个同时包含所有其他内容的压缩 blob 中提取 "European Economic Area agreement"。
 
-然后，Bahdanau、Cho 和 Bengio 在 2014 年发表了论文："Neural Machine Translation by Jointly Learning to Align and Translate"。关键洞察简单但深刻：**不是把所有内容压缩到一个向量中，而是让解码器回看所有编码器状态，并决定哪些与每个输出词相关。**
+然后，Bahdanau、Cho 和 Bengio 在 2014 年发表了论文："Neural Machine Translation by Jointly Learning to Align and Translate"。关键洞察简单但深刻：**不是把所有内容压缩到一个向量（encoder 最后一个隐藏状态）中，而是让解码器回看所有编码器状态，并决定哪些与每个输出词相关。**
 
 这就是注意力（Attention）的诞生。
 
