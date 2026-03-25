@@ -70,6 +70,14 @@ Attention computes a weighted sum of values, where the weights are determined by
 - **Keys (K)**: What do I have available?
 - **Values (V)**: What do I retrieve?
 
+> **Library analogy**: Think of a library search.
+> - **Query** = your search description: "I need a book about machine learning"
+> - **Keys** = labels/indices on each book: "ML Intro", "Deep Learning", "Cooking"...
+> - **Values** = the actual content inside the books
+> 
+> Keys tell you what **options exist** (available). Values are what you **actually get** (retrieve).
+> Why separate them? The search criteria and the returned content can be different!
+
 In the original seq2seq attention:
 - Query = current decoder hidden state (what I need to generate next)
 - Keys = all encoder hidden states (what I can look at)
