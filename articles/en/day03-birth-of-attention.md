@@ -198,11 +198,11 @@ That's it! The context vector is a weighted average of all values, where the wei
 > | **Original Seq2Seq** | Fixed (encoder's final hidden state) | **Static**, same for all decoder steps |
 > | **Attention** | Dynamic weighted sum based on Query | **Dynamic**, different at each step |
 > 
-> Example: Translating "I love cats" → "我 爱 猫"
+> Example: Translating "I love cats" → "J'aime les chats"
 > ```
-> Generate "我" → context focuses on "I"    (weights: I=0.8, love=0.1, cats=0.1)
-> Generate "爱" → context focuses on "love" (weights: I=0.1, love=0.8, cats=0.1)
-> Generate "猫" → context focuses on "cats" (weights: I=0.1, love=0.1, cats=0.8)
+> Generate "J'aime" → context focuses on "I love"  (weights: I=0.4, love=0.5, cats=0.1)
+> Generate "les"    → context focuses on "cats"    (weights: I=0.1, love=0.1, cats=0.8)
+> Generate "chats"  → context focuses on "cats"    (weights: I=0.1, love=0.1, cats=0.8)
 > ```
 > 
 > **Attention transforms the context vector from a "fixed photo" to a "camera that can refocus anytime"** 📷
