@@ -558,6 +558,50 @@ $$
 
 Where K(q, k) = exp(q^T k / √d_k) is a **kernel function** (specifically, a scaled exponential of the linear kernel).
 
+> **What is a kernel function?**
+> 
+> A kernel K(x, y) measures "how similar" two vectors are:
+> 
+> | Kernel | Formula | Meaning |
+> |--------|---------|---------|
+> | Linear | $K(x,y) = x^T y$ | Dot product |
+> | RBF | $K(x,y) = \exp(-\|x-y\|^2)$ | Closer = more similar |
+> | **Softmax** | $K(q,k) = \exp(q^T k / \sqrt{d_k})$ | **What Attention uses!** |
+> 
+> Attention weight in plain English:
+> $$\alpha_i = \frac{\text{how similar q is to } k_i}{\text{total similarity to all keys}}$$
+
+> **Why not just use traditional kernels?**
+> 
+> Traditional kernel methods use **fixed** comparison:
+> ```
+> Input: x, y (raw vectors)
+> Output: K(x, y) = similarity  ← fixed formula
+> ```
+> 
+> Attention uses **learned** comparison:
+> ```
+> Input: x, y (raw vectors)
+>     ↓ learned projections
+> Q = W_q · x    (extract "what I'm looking for")
+> K = W_k · y    (extract "what I have")
+> V = W_v · y    (extract "what to return")
+>     ↓
+> Output: softmax(QK^T)V
+> ```
+> 
+> | Method | Analogy |
+> |--------|---------|
+> | **Traditional kernel** | Measure everything with a fixed ruler |
+> | **Attention** | First learn "what angle to look from", then measure |
+> 
+> Plus, Attention **decouples** three things:
+> - Q: What am I looking for?
+> - K: What to match against?
+> - V: What to return if matched?
+> 
+> **Kernel = fixed similarity; Attention = learnable similarity with query-match-return separation.**
+
 This perspective led to work on "linear attention" and infinite-context transformers, which we'll touch on later in the course.
 
 ---
