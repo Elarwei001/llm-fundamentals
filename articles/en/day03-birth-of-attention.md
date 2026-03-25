@@ -285,7 +285,22 @@ This is a subtle but important detail. Without scaling, attention breaks for hig
 
 **The Problem**:
 
-Assume query and key elements are independent random variables with mean 0 and variance 1. The dot product q · k is the sum of d_k products:
+Assume query and key elements are independent random variables with mean 0 and variance 1.
+
+> **What does this mean in plain English?**
+> 
+> Imagine q and k as lists of numbers that two people randomly wrote:
+> ```
+> q = [0.5, -1.2, 0.8, ...]   ← Alice's random numbers
+> k = [1.1, 0.3, -0.9, ...]   ← Bob's random numbers
+> ```
+> - "mean 0" = numbers average to ~0 (positives and negatives roughly cancel)
+> - "variance 1" = numbers fluctuate in a similar range (not too big or small)
+> - "independent" = Alice and Bob write independently, no peeking!
+> 
+> This is how neural networks typically **initialize weights** — random numbers with mean 0 and variance 1. So this assumption matches real training conditions.
+
+The dot product q · k is the sum of d_k products:
 
 $$
 q \cdot k = \sum_{i=1}^{d_k} q_i \cdot k_i
