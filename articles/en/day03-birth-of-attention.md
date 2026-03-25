@@ -115,11 +115,38 @@ Common similarity functions:
 > 
 > Large scores → softmax becomes nearly one-hot → gradients vanish → training fails.
 > 
-> **What is "one-hot"?** A vector where only one position is 1, all others are 0:
+> **What is "one-hot"?** A vector where only one position is 1, all others are 0.
+> 
+> **Why do large scores cause one-hot?** Because softmax uses **exponential function**, which is extremely sensitive to large values:
+> 
+> | x | e^x |
+> |---|-----|
+> | 1 | 2.7 |
+> | 10 | 22,026 |
+> | 20 | 485,165,195 |
+> | 30 | 10,686,474,581,524 |
+> 
+> A difference of 10 → exponential difference of **20,000x**!
+> 
+> **Small scores** → `softmax([1, 2, 3])`:
 > ```
-> softmax([1, 2, 3])   → [0.09, 0.24, 0.67]  # smooth, attends to multiple positions
-> softmax([10, 20, 30]) → [0.00, 0.00, 1.00]  # nearly one-hot! only looks at one position
+> e^1 = 2.7,  e^2 = 7.4,  e^3 = 20.1
+> sum = 30.2
+> → [2.7/30.2, 7.4/30.2, 20.1/30.2]
+> → [0.09, 0.24, 0.67]  ✅ smooth distribution
 > ```
+> 
+> **Large scores** → `softmax([10, 20, 30])`:
+> ```
+> e^10 = 22,026
+> e^20 = 485,165,195
+> e^30 = 10,686,474,581,524  ← dominates everything!
+> sum ≈ e^30
+> → [≈0, ≈0, ≈1]  ❌ one-hot
+> ```
+> 
+> The exponential makes big values bigger and small values smaller. When scores differ too much, the max "eats" all others → one-hot.
+> 
 > When softmax output is nearly 0 or 1, gradients approach 0 → parameters stop updating → training fails.
 > 
 > **Solution**: Divide by √d_k to normalize variance back to 1.
