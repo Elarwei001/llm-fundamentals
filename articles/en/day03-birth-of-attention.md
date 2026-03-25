@@ -106,10 +106,26 @@ Common similarity functions:
 
 > **Why does dot product "explode"?**
 > 
-> If each element of q and k has variance 1, then each term qᵢkᵢ also has variance 1. The dot product sums d terms, so total variance = d.
+> **Coin flip analogy**: Imagine flipping coins where each shows +1 or -1:
+> 
+> | Coins | Possible sums | Range |
+> |-------|---------------|-------|
+> | 1 coin | -1, +1 | ±1 |
+> | 3 coins | -3, -1, +1, +3 | ±3 |
+> | 100 coins | -100 to +100 | ±100 |
+> 
+> More coins = more "fluctuation sources" adding up = wider range of results.
+> 
+> **Dot product is the same:**
+> $$q \cdot k = \underbrace{q_1 k_1}_{\text{source 1}} + \underbrace{q_2 k_2}_{\text{source 2}} + ... + \underbrace{q_d k_d}_{\text{source d}}$$
+> 
+> Each qᵢkᵢ is a "fluctuation source" with variance 1. Sum d sources → total variance = d.
+> 
+> **The higher the dimension, the more likely the dot product "runs far away"!**
 > 
 > | Dimension d | Std Dev of score | Typical range |
 > |-------------|------------------|---------------|
+> | 1 | 1 | -3 ~ +3 |
 > | 64 | √64 = 8 | -24 ~ +24 |
 > | 512 | √512 ≈ 22.6 | -68 ~ +68 |
 > 
