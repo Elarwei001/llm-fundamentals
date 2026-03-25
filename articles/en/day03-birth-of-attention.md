@@ -8,7 +8,7 @@
 
 In 2014, neural machine translation was exciting but frustrating. Seq2seq models could translate sentences, but they had a fatal flaw: no matter how long the input sentence, everything had to be compressed into a single fixed-size vector.
 
-Imagine being asked to translate a 100-word legal document into French. Your only notes? A single Post-it. That's what seq2seq models were doing.
+Imagine being asked to translate a 100-word legal document into French, but you can only take notes on a single Post-it. That's what seq2seq models were doing.
 
 The bottleneck was obvious: long sentences performed terribly. Information was lost. The decoder had to somehow extract "European Economic Area agreement" from a compressed blob that also contained everything else.
 
