@@ -115,6 +115,13 @@ Common similarity functions:
 > 
 > Large scores → softmax becomes nearly one-hot → gradients vanish → training fails.
 > 
+> **What is "one-hot"?** A vector where only one position is 1, all others are 0:
+> ```
+> softmax([1, 2, 3])   → [0.09, 0.24, 0.67]  # smooth, attends to multiple positions
+> softmax([10, 20, 30]) → [0.00, 0.00, 1.00]  # nearly one-hot! only looks at one position
+> ```
+> When softmax output is nearly 0 or 1, gradients approach 0 → parameters stop updating → training fails.
+> 
 > **Solution**: Divide by √d_k to normalize variance back to 1.
 
 **Step 2: Normalize via Softmax**
