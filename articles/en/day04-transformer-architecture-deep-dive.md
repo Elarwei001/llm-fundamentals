@@ -896,7 +896,86 @@ The model learns:
 
 Like binary numbers: each bit is just 0 or 1, but 32 bits can represent 4 billion values.
 
-### A.6 Why Not Other Functions?
+### A.6 The Multi-Base Number System Intuition
+
+**Key insight:** Positional encoding is like a continuous, multi-base number system!
+
+**Why multiple frequencies?** Single frequency has collisions:
+
+```
+Positions:  1   2   3   4   5
+mod 3:      1   2   0   1   2   ← Position 1 and 4 both map to 1!
+```
+
+**But add a second frequency:**
+
+```
+Positions:  1   2   3   4   5
+mod 3:      1   2   0   1   2
+mod 5:      1   2   3   4   0
+
+Position 1: (1, 1)
+Position 4: (1, 4)  ← Different combination!
+```
+
+**This is exactly how number systems work:**
+
+```
+Decimal 1234:
+  ones digit  = 4      (mod 10)
+  tens digit  = 3      (mod 10)  
+  hundreds    = 2      (mod 10)
+  thousands   = 1      (mod 10)
+
+Positional Encoding 1234:
+  dims 0-1 = sin/cos(1234/1)     (high-freq "ones")
+  dims 2-3 = sin/cos(1234/10)    (mid-freq "tens")
+  dims 4-5 = sin/cos(1234/100)   (low-freq "hundreds")
+  dims 6-7 = sin/cos(1234/1000)  (ultra-low "thousands")
+```
+
+**Why continuous sin/cos instead of discrete digits?**
+
+| Discrete (0-9) | Continuous sin/cos |
+|----------------|-------------------|
+| 9→10 is a jump | Smooth transition |
+| Not differentiable | Differentiable ✅ |
+| Adjacent positions differ wildly | Adjacent positions are similar ✅ |
+
+Neural networks love **smooth** inputs!
+
+> **One sentence:** Positional encoding = continuous multi-base number system, using different frequency sin/cos as different "digit places", smooth and differentiable.
+
+### A.7 The Odometer Analogy
+
+Think of a car's odometer:
+
+```
+Odometer: [ones] [tens] [hundreds] [thousands]
+
+Position 0:    0      0      0        0
+Position 1:    1      0      0        0     ← ones changed
+Position 9:    9      0      0        0
+Position 10:   0      1      0        0     ← tens changed
+Position 99:   9      9      0        0
+Position 100:  0      0      1        0     ← hundreds changed
+Position 999:  9      9      9        0
+Position 1000: 0      0      0        1     ← thousands changed
+```
+
+- **Ones digit = high frequency** (changes every step)
+- **Thousands digit = low frequency** (changes every 1000 steps)
+
+Positional encoding works the same way:
+
+| Dimension Type | Role | Analogy |
+|----------------|------|---------|
+| **High-freq dims** | Distinguish nearby: 50 vs 51 | Odometer ones |
+| **Low-freq dims** | Distinguish far: 50 vs 5000 | Odometer thousands |
+
+Any single dimension can't uniquely identify position—but the combination can!
+
+### A.8 Why Not Other Functions?
 
 | Function | Problem |
 |----------|---------|
@@ -905,7 +984,7 @@ Like binary numbers: each bit is just 0 or 1, but 32 bits can represent 4 billio
 | Polynomial (pos²) | Relative distance isn't a simple linear transform |
 | **Sin/Cos** | ✅ Bounded, relative distance is linear transform, extrapolates |
 
-### A.7 Modern Alternatives
+### A.9 Modern Alternatives
 
 Sinusoidal isn't the only option—or even the best:
 
@@ -918,7 +997,7 @@ Sinusoidal isn't the only option—or even the best:
 
 > **Modern LLMs mostly use RoPE** because it combines the extrapolation benefits of sinusoidal with better performance.
 
-### A.8 Python Implementation
+### A.10 Python Implementation
 
 ```python
 import numpy as np
