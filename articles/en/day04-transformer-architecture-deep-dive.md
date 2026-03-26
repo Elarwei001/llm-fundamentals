@@ -197,6 +197,38 @@ Why not use 512 heads with d_k=1? Or 1 head with d_k=512?
 
 The ratio d_model/h is typically between 64 and 128.
 
+### 2.5 Multi-Head vs Context Window: A Common Confusion
+
+**Q: If a model has 1M context window and 8 heads, does each head handle 1M/8 = 125K tokens?**
+
+**A: No!** Each head sees the **full** 1M tokens. Multi-head splits **feature dimensions**, not **sequence length**.
+
+```
+Input: 1M tokens × 512 dimensions
+
+                    1M tokens
+                        ↓
+    ┌───────────────────┼───────────────────┐
+    ↓                   ↓                   ↓
+ [Head 1]           [Head 2]     ...    [Head 8]
+ 1M × 64            1M × 64             1M × 64
+ (full seq,         (full seq,          (full seq,
+  fewer dims)        fewer dims)         fewer dims)
+    ↓                   ↓                   ↓
+    └───────────Concat──┼───────────────────┘
+                        ↓
+                 1M × 512
+```
+
+> **Key distinction:**
+> - **n (sequence length)** = how many tokens (1M) → determines context window
+> - **d_k (feature dimension)** = how many numbers describe each token (64) → split across heads
+> 
+> The attention matrix is **n × n** (1M × 1M), which is why context window is limited by O(n²).
+> The d_k only affects the "richness" of each head's representation, not the context length.
+
+**One sentence:** Multi-head doesn't divide the context window—it divides the feature space. Every head sees all tokens.
+
 ---
 
 ## 3. Positional Encoding: Teaching Order to a Bag
