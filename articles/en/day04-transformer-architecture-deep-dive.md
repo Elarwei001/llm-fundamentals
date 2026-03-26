@@ -10,7 +10,7 @@ On June 12, 2017, a paper appeared on arXiv with an audacious title: "Attention 
 
 But the authors weren't bluffing. They had built an architecture using only attention mechanisms, and it crushed the state-of-the-art in machine translation. The model was called the **Transformer**.
 
-![Transformer Architecture](../zh/images/day04/transformer-architecture.png)
+![Transformer Architecture](../zh/images/day04/transformer-architecture-v2.png)
 *Figure 1: The complete Transformer architecture. Encoder (left) processes the input sequence; Decoder (right) generates the output sequence. Cross-attention connects them, allowing the decoder to "look at" encoder outputs. Residual connections (orange lines) help gradient flow.*
 
 What made this architecture so revolutionary? And why has every major language model since—BERT, GPT, T5, LLaMA, Claude—been built on Transformers?

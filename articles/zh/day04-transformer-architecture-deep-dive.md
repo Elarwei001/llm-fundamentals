@@ -10,7 +10,7 @@
 
 但作者们并非在虚张声势。他们仅使用注意力机制就构建了一个架构，在机器翻译任务上粉碎了当时的最先进水平。这个模型叫做 **Transformer**。
 
-![Transformer 架构](./images/day04/transformer-architecture.png)
+![Transformer 架构](./images/day04/transformer-architecture-v2.png)
 *图 1：完整的 Transformer 架构。编码器（左）处理输入序列；解码器（右）生成输出序列。交叉注意力连接它们，允许解码器"查看"编码器输出。残差连接（橙色线）帮助梯度流动。*
 
 是什么让这个架构如此具有革命性？为什么从那以后的每一个主要语言模型——BERT、GPT、T5、LLaMA、Claude——都建立在 Transformer 上？
