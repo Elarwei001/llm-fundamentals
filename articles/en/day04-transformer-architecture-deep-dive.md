@@ -91,6 +91,39 @@ Self-attention computes all positions simultaneously. On a GPU, this is massivel
 | Training speed | Slow | Fast |
 | Long-range dependencies | Struggles | Handles well |
 
+### 1.4 Context Window: The Price of Self-Attention
+
+The "context window" you hear about (4K, 8K, 128K tokens) is fundamentally **limited by self-attention**.
+
+**Why?** Self-attention has O(n²) complexity:
+
+```
+n tokens, each attends to all n tokens
+→ n × n = n² attention scores
+→ n × n attention matrix stored in memory
+```
+
+| Context Length | Attention Matrix Size | Memory (FP16) |
+|----------------|----------------------|---------------|
+| 2K | 2K × 2K = 4M | ~8 MB |
+| 8K | 8K × 8K = 64M | ~128 MB |
+| 128K | 128K × 128K = 16B | ~32 GB |
+| 1M | 1M × 1M = 1T | ~2 TB 😱 |
+
+> **Context window = the maximum range self-attention can "see"**, limited by O(n²) memory and compute.
+
+**How do we extend it?**
+
+| Method | Idea |
+|--------|------|
+| **Sparse Attention** | Don't compute full n²—use local + global patterns |
+| **Flash Attention** | Optimize I/O, avoid storing full matrix |
+| **Ring Attention** | Distribute sequence across devices |
+| **RoPE extrapolation** | Extend positional encoding beyond training length |
+| **Linear Attention** | Replace O(n²) with O(n) |
+
+We'll explore these in later chapters on efficient Transformers.
+
 ---
 
 ## 2. Multi-Head Attention: Attending in Different Ways
