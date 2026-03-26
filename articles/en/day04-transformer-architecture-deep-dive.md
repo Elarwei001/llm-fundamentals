@@ -795,5 +795,153 @@ Tomorrow we'll explore how this encoder-decoder design evolved: Why did GPT drop
 
 ---
 
+## Appendix A: Deep Dive into Positional Encoding
+
+### A.1 Why Not Just Use Position Numbers?
+
+Why can't we just add the position as a number?
+
+```
+Position 0:    embedding + [0]
+Position 1:    embedding + [1]
+Position 1M:   embedding + [1000000]  ← Explodes!
+```
+
+| Problem | Consequence |
+|---------|-------------|
+| **Numerical instability** | Position 1M drowns out the semantic embedding |
+| **Training difficulty** | Huge numerical differences cause unstable gradients |
+| **No generalization** | Model never saw position 1M during training |
+
+Sin/cos keeps all values in [-1, 1], matching the scale of embeddings.
+
+### A.2 Step-by-Step Calculation Example
+
+For **position = 3**, **d_model = 8**:
+
+**Formulas:**
+$$PE_{(pos, 2i)} = \sin(pos / 10000^{2i/d})$$
+$$PE_{(pos, 2i+1)} = \cos(pos / 10000^{2i/d})$$
+
+**Calculate denominator for each dimension pair:**
+
+| i | 2i/d | 10000^(2i/d) | Denominator |
+|---|------|--------------|-------------|
+| 0 | 0/8 = 0 | 10000^0 | **1** |
+| 1 | 2/8 = 0.25 | 10000^0.25 | **10** |
+| 2 | 4/8 = 0.5 | 10000^0.5 | **100** |
+| 3 | 6/8 = 0.75 | 10000^0.75 | **1000** |
+
+**Why 1, 10, 100, 1000?** Because $10000 = 10^4$:
+$$10000^{0.25} = (10^4)^{0.25} = 10^1 = 10$$
+
+**Calculate each dimension:**
+
+```
+Dim 0 (i=0, sin): sin(3/1)    = sin(3)     = 0.141
+Dim 1 (i=0, cos): cos(3/1)    = cos(3)     = -0.990
+Dim 2 (i=1, sin): sin(3/10)   = sin(0.3)   = 0.296
+Dim 3 (i=1, cos): cos(3/10)   = cos(0.3)   = 0.955
+Dim 4 (i=2, sin): sin(3/100)  = sin(0.03)  = 0.030
+Dim 5 (i=2, cos): cos(3/100)  = cos(0.03)  = 0.9995
+Dim 6 (i=3, sin): sin(3/1000) = sin(0.003) = 0.003
+Dim 7 (i=3, cos): cos(3/1000) = cos(0.003) = 0.9999
+```
+
+**Result:**
+```
+PE(3) = [0.141, -0.990, 0.296, 0.955, 0.030, 0.9995, 0.003, 0.9999]
+         sin    cos     sin    cos    sin     cos     sin     cos
+         └─i=0─┘       └─i=1─┘       └─i=2─┘         └─i=3─┘
+        high freq ←──────────────────────────────→ low freq
+```
+
+### A.3 Why Pair Sin and Cos Together?
+
+Each dimension pair (sin, cos) shares the same frequency:
+
+```
+Dimensions:  [0]   [1]   [2]   [3]   [4]   [5]   [6]   [7]
+             sin   cos   sin   cos   sin   cos   sin   cos
+              └─i=0─┘     └─i=1─┘     └─i=2─┘     └─i=3─┘
+```
+
+**The magic:** Any relative distance k can be expressed as a rotation matrix!
+
+$$\begin{bmatrix} \sin(pos+k) \\ \cos(pos+k) \end{bmatrix} = \begin{bmatrix} \cos k & \sin k \\ -\sin k & \cos k \end{bmatrix} \begin{bmatrix} \sin(pos) \\ \cos(pos) \end{bmatrix}$$
+
+This means the model can learn "distance = k" as a simple linear transformation, regardless of absolute position.
+
+### A.4 How Does This Encode Relative Distance?
+
+Like a clock:
+```
+3:00 → 5:00 = rotate 2 hours
+8:00 → 10:00 = rotate 2 hours
+
+The "rotate 2 hours" operation is the same, regardless of starting point!
+```
+
+The model learns:
+> "Distance of 2" is the same transformation whether at position 50→52 or 9998→10000.
+
+### A.5 Can It Handle 1M Positions?
+
+**Yes!** Even though values stay in [-1, 1]:
+
+- Sin/cos output is always bounded, no matter how large the input
+- 512 dimensions with different frequencies create a unique "fingerprint" for every position
+- Low-frequency dimensions distinguish far positions
+- High-frequency dimensions distinguish nearby positions
+
+Like binary numbers: each bit is just 0 or 1, but 32 bits can represent 4 billion values.
+
+### A.6 Why Not Other Functions?
+
+| Function | Problem |
+|----------|---------|
+| Linear (pos) | Explodes for long sequences |
+| Exponential (e^pos) | Explodes even faster |
+| Polynomial (pos²) | Relative distance isn't a simple linear transform |
+| **Sin/Cos** | ✅ Bounded, relative distance is linear transform, extrapolates |
+
+### A.7 Modern Alternatives
+
+Sinusoidal isn't the only option—or even the best:
+
+| Method | Year | Used By | Key Feature |
+|--------|------|---------|-------------|
+| **Sinusoidal** | 2017 | Original Transformer | Fixed, extrapolates |
+| **Learned PE** | 2018 | BERT, GPT-2/3 | Trained, slightly better but can't extrapolate |
+| **RoPE** | 2021 | LLaMA, Qwen | Rotary encoding, excellent extrapolation |
+| **ALiBi** | 2022 | BLOOM | Modifies attention scores directly |
+
+> **Modern LLMs mostly use RoPE** because it combines the extrapolation benefits of sinusoidal with better performance.
+
+### A.8 Python Implementation
+
+```python
+import numpy as np
+
+def positional_encoding(max_len, d_model):
+    """Generate positional encoding matrix."""
+    PE = np.zeros((max_len, d_model))
+    
+    for pos in range(max_len):
+        for i in range(d_model // 2):
+            denominator = 10000 ** (2 * i / d_model)
+            PE[pos, 2*i] = np.sin(pos / denominator)
+            PE[pos, 2*i + 1] = np.cos(pos / denominator)
+    
+    return PE
+
+# Example: 100 positions, 8 dimensions
+PE = positional_encoding(100, 8)
+print(f"Position 3 encoding: {PE[3]}")
+# [0.141, -0.990, 0.296, 0.955, 0.030, 0.9995, 0.003, 0.9999]
+```
+
+---
+
 *Day 4 of 60 | LLM Fundamentals*
-*Word count: ~4200 | Reading time: ~18 minutes*
+*Word count: ~5000 | Reading time: ~22 minutes*
