@@ -168,6 +168,20 @@ $$
 \end{aligned}
 $$
 
+> **What does Concat mean?**
+> 
+> Concat = Concatenate = join vectors end-to-end:
+> ```
+> Head 1 output: [a, b, c, d]       (64 dims)
+> Head 2 output: [e, f, g, h]       (64 dims)
+> ...
+> Head 8 output: [w, x, y, z]       (64 dims)
+> 
+> After Concat: [a,b,c,d, e,f,g,h, ..., w,x,y,z]  (512 dims)
+> ```
+> 
+> Multi-head flow: **split → parallel attention → concat back → project**
+
 ### 2.3 What Do Different Heads Learn?
 
 Research has analyzed what different attention heads learn:
