@@ -29,13 +29,13 @@
 
 ### Week 1: From Neural Networks to Transformer 🔥🔥
 
-| Day | Topic | Core Question | Trend Source |
-|-----|-------|---------------|--------------|
-| D1 | Neural Network Overview | Why does deep learning work? Universal approximation | Foundation |
-| D2 | Rise and Fall of RNN | First attempt at sequence modeling, vanishing gradient | History |
-| D3 | **Birth of Attention** | What does "Attention is All You Need" actually say? | 🔥 transformer paper +100% |
-| D4 | **Transformer Architecture Deep Dive** | Self-attention, Multi-head, Position encoding | 🔥 how transformer works |
-| D5 | Encoder-Decoder to Decoder-only | BERT vs GPT, why GPT won | Architecture evolution |
+| Day | Topic | Core Question | Article |
+|-----|-------|---------------|---------|
+| D1 | Neural Network Overview | Why does deep learning work? | [EN](articles/en/day01-neural-network-overview.md) / [中文](articles/zh/day01-neural-network-overview.md) |
+| D2 | Rise and Fall of RNN | First attempt at sequence modeling | [EN](articles/en/day02-rise-and-fall-of-rnn.md) / [中文](articles/zh/day02-rise-and-fall-of-rnn.md) |
+| D3 | **Birth of Attention** | What does "Attention is All You Need" say? | [EN](articles/en/day03-birth-of-attention.md) / [中文](articles/zh/day03-birth-of-attention.md) |
+| D4 | **Transformer Architecture** | Self-attention, Multi-head, Position encoding | [EN](articles/en/day04-transformer-architecture.md) / [中文](articles/zh/day04-transformer-architecture.md) |
+| D5 | Encoder-Decoder to Decoder-only | BERT vs GPT, why GPT won | [EN](articles/en/day05-encoder-decoder-to-decoder-only.md) / [中文](articles/zh/day05-encoder-decoder-to-decoder-only.md) |
 
 **D3 Supplementary Materials**:
 - Original paper: [Attention is All You Need](https://arxiv.org/abs/1706.03762)
