@@ -301,6 +301,20 @@ mask = [
 
 **设计权衡**：无法访问未来上下文。在"I sat by the river bank"中，"bank"必须在没有看到"river"的情况下完成编码。这看起来是劣势——但规模弥补了这一点。
 
+#### 前置层归一化（Pre-LN）vs 后置层归一化（Post-LN）
+
+**GPT-2 起使用前置层归一化**：LayerNorm 在注意力/FFN **之前**，而非之后。
+
+```python
+# Post-LN (BERT, GPT-1)
+x = x + Attention(LayerNorm(x))  # ❌ Unstable for deep models
+
+# Pre-LN (GPT-2+)
+x = x + Attention(LayerNorm(x))  # ✅ More stable gradients
+```
+
+**为何切换**：前置层归一化在极深模型（48 层以上）中产生更稳定的梯度。当模型扩展到千亿参数量级时，这一点至关重要。
+
 #### 位置编码：从可学习嵌入到旋转位置编码（RoPE）
 
 **GPT-1/2**：可学习的位置嵌入（与 BERT 相同），最多支持 1024 个位置。
@@ -321,20 +335,6 @@ mask = [
 **现代模型（LLaMA 等）**：旋转位置编码（RoPE，Rotary Position Embedding）——通过旋转矩阵编码相对位置，支持远超训练长度的序列外推。与可学习嵌入不同，RoPE 从设计之初就支持外推。
 
 **为何演进**：可学习嵌入无法泛化到训练长度之外。RoPE 基于旋转的方式天然地处理更长的序列。
-
-#### 前置层归一化（Pre-LN）vs 后置层归一化（Post-LN）
-
-**GPT-2 起使用前置层归一化**：LayerNorm 在注意力/FFN **之前**，而非之后。
-
-```python
-# Post-LN (BERT, GPT-1)
-x = x + Attention(LayerNorm(x))  # ❌ Unstable for deep models
-
-# Pre-LN (GPT-2+)
-x = x + Attention(LayerNorm(x))  # ✅ More stable gradients
-```
-
-**为何切换**：前置层归一化在极深模型（48 层以上）中产生更稳定的梯度。当模型扩展到千亿参数量级时，这一点至关重要。
 
 #### 训练：因果语言建模（CLM）
 

@@ -299,6 +299,20 @@ mask = [
 
 **Design trade-off**: No access to future context. The word "bank" in "I sat by the river bank" must be encoded without seeing "river" first. This seems like a disadvantage — but scale compensates.
 
+#### Pre-LN vs Post-LN
+
+**GPT-2 onwards uses Pre-LN**: LayerNorm BEFORE attention/FFN, not after.
+
+```python
+# Post-LN (BERT, GPT-1)
+x = x + Attention(LayerNorm(x))  # ❌ Unstable for deep models
+
+# Pre-LN (GPT-2+)
+x = x + Attention(LayerNorm(x))  # ✅ More stable gradients
+```
+
+**Why switch**: Pre-LN produces more stable gradients in very deep models (48+ layers). This became critical as models scaled to hundreds of billions of parameters.
+
 #### Position Encoding: From Learned to RoPE
 
 **GPT-1/2**: Learned position embeddings (like BERT), limited to 1024 positions.
@@ -319,20 +333,6 @@ mask = [
 **Modern (LLaMA, etc.)**: RoPE (Rotary Position Embedding) — encodes relative positions through rotation matrices. Enables length generalization far beyond training length. Unlike learned embeddings, RoPE is designed for extrapolation from the start.
 
 **Why the evolution**: Learned embeddings don't generalize beyond training length. RoPE's rotation-based approach naturally handles longer sequences.
-
-#### Pre-LN vs Post-LN
-
-**GPT-2 onwards uses Pre-LN**: LayerNorm BEFORE attention/FFN, not after.
-
-```python
-# Post-LN (BERT, GPT-1)
-x = x + Attention(LayerNorm(x))  # ❌ Unstable for deep models
-
-# Pre-LN (GPT-2+)
-x = x + Attention(LayerNorm(x))  # ✅ More stable gradients
-```
-
-**Why switch**: Pre-LN produces more stable gradients in very deep models (48+ layers). This became critical as models scaled to hundreds of billions of parameters.
 
 #### Training: Causal Language Modeling (CLM)
 
