@@ -228,7 +228,7 @@ predicted_token = tokenizer.decode([logits.argmax()])
 print(f"Predicted: {predicted_token}")  # → "sat"
 ```
 
-**BERT's Achilles heel**: Bidirectional attention makes generation inefficient. To generate token t+1, you'd need to mask it and re-encode the entire sequence — O(n) forward passes for n tokens.
+**BERT's Achilles heel**: Bidirectional attention makes generation inefficient. To generate token t+1, you'd need to mask it and re-encode the entire sequence. Generating n tokens requires n forward passes, each O(n²), for a total of **O(n³)** — compared to GPT's O(n²).
 
 ---
 

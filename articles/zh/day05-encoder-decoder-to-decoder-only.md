@@ -230,7 +230,7 @@ predicted_token = tokenizer.decode([logits.argmax()])
 print(f"Predicted: {predicted_token}")  # → "sat"
 ```
 
-**BERT 的致命弱点**：双向注意力使生成效率极低。要生成第 t+1 个词元，必须先将其遮盖，再对整个序列重新编码——生成 n 个词元需要 O(n) 次前向传播。
+**BERT 的致命弱点**：双向注意力使生成效率极低。要生成第 t+1 个词元，必须先将其遮盖，再对整个序列重新编码。生成 n 个词元需要 n 次前向传播，每次 O(n²)，总计 **O(n³)**——而 GPT 只需 O(n²)。
 
 ---
 
