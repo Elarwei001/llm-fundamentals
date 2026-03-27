@@ -166,6 +166,9 @@ FFN(x) = GELU(xW₁ + b₁)W₂ + b₂
 
 **为何用 GELU 激活**：GELU（高斯误差线性单元）在语言任务上优于 ReLU。它平滑（处处可微），且比 ReLU 更好地处理负值。
 
+![GELU vs ReLU](images/day05/gelu-vs-relu.png)
+*图：GELU 允许小的负值梯度流动，避免了 ReLU 的"死神经元"问题。*
+
 **设计权衡**：FFN 在每一层中拥有最多的参数（每层 2 × 768 × 3072 = 4.7M）。这里存储了大部分的"知识"。
 
 #### 组件四：残差连接（Residual Connection）+ 层归一化（LayerNorm）

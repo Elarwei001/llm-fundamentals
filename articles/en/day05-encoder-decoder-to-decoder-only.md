@@ -164,6 +164,9 @@ FFN(x) = GELU(xW₁ + b₁)W₂ + b₂
 
 **Why GELU activation**: GELU (Gaussian Error Linear Unit) outperforms ReLU for language tasks. It's smooth (differentiable everywhere) and handles negative values better than ReLU.
 
+![GELU vs ReLU](../zh/images/day05/gelu-vs-relu.png)
+*Figure: GELU allows small negative gradients to flow, preventing "dead neurons" that plague ReLU.*
+
 **Design trade-off**: FFN has the most parameters in each layer (2 × 768 × 3072 = 4.7M per layer). This is where most of the "knowledge" is stored.
 
 #### Component 4: Residual Connection + LayerNorm
