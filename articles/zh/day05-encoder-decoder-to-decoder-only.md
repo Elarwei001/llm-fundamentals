@@ -16,7 +16,7 @@
 
 为什么？答案藏在四个具体机制里——理解它们将彻底改变你对深度学习架构选择的思考方式。
 
-![架构对比](./images/day05/architecture-comparison.png)
+![架构对比](./images/day05/architecture-comparison-v2.png)
 *图 1：三种 Transformer 架构——仅编码器（BERT）、仅解码器（GPT）和编码器-解码器（T5）。每种架构在理解能力和生成能力之间做出了不同的权衡。*
 
 ---

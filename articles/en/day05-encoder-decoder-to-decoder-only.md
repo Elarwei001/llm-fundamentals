@@ -16,7 +16,7 @@ Both approaches seemed equally promising in 2018. Yet by 2022, GPT-style models 
 
 Why? The answer lies in four concrete mechanisms — and understanding them will transform how you think about architecture choices in deep learning.
 
-![Architecture Comparison](../zh/images/day05/architecture-comparison.png)
+![Architecture Comparison](../zh/images/day05/architecture-comparison-v2.png)
 *Figure 1: Three transformer architectures — Encoder-only (BERT), Decoder-only (GPT), and Encoder-Decoder (T5). Each makes different tradeoffs between understanding and generation.*
 
 ---
