@@ -1,6 +1,6 @@
-# 第 5 天：从编码器-解码器到仅解码器——BERT vs GPT，为什么 GPT 赢了
+# 第五天：从编码器-解码器到纯解码器——BERT vs GPT，GPT 为何胜出
 
-> **核心问题**：为什么仅解码器（Decoder-only）架构（GPT）最终主导了现代 AI，尽管 BERT 起初看起来是明显的赢家？
+> **核心问题**：为什么纯解码器架构（GPT）最终主导了现代 AI，尽管 BERT 最初看起来才是明显的赢家？
 
 ---
 
@@ -8,30 +8,130 @@
 
 想象两个学生参加填空题考试。
 
-**BERT** 先通读整份试卷——扫描每道题、每个上下文句子——然后再填写空格。它像一个编辑，先吸收整篇文档，再进行精准修改。这种双向（Bidirectional）方式让 BERT 在*理解*文本方面极为出色。
+**BERT** 先把整张试卷通读一遍——扫描每道题、每句话——再开始填空。它像一位编辑，把整篇文章吸收消化后，再做出精准的修改。这种双向扫描的方式让 BERT 极其擅长*理解*文本。
 
-**GPT** 则从头开始写一篇文章，一次一个词。它从不向前看——每个词都只根据已经写下的内容来选择。就像一个文思泉涌的作者，自然地生成内容，从不回头修改。
+**GPT** 则像从零开始写一篇作文，一个词接一个词地写下去。它绝不向前看——每个词只基于前面已写出的所有内容来选择。它像一位处于写作状态的作者，自然地生成文字，不回头修改。
 
-2018 年，这两种方法看起来同样有前途。然而到了 2022 年，GPT 风格的模型已经彻底重塑了 AI 格局，催生了 ChatGPT，引发了当前的 LLM 爆发。BERT 尽管最初占据主导地位，却沦为了专用工具，而非未来的基础。
+这两种方式在 2018 年看起来旗鼓相当。然而到 2022 年，GPT 风格的模型已经彻底重塑了 AI 格局，催生了 ChatGPT，引发了当前的大语言模型爆发。BERT 尽管最初占据主导地位，却沦为专用工具，而非未来的基础架构。
 
-为什么？答案藏在四个具体机制里——理解它们将彻底改变你对深度学习架构选择的思考方式。
+为什么？答案藏在四个具体的机制中——理解它们将彻底改变你对深度学习架构选择的思考方式。
 
-![架构对比](./images/day05/architecture-comparison-v2.png)
+![架构对比](./images/day05/architecture-comparison-v3.png)
 *图 1：三种 Transformer 架构——仅编码器（BERT）、仅解码器（GPT）和编码器-解码器（T5）。每种架构在理解能力和生成能力之间做出了不同的权衡。*
 
 ---
 
-## 1. 三种架构
+## 1. 三种架构：逐层深度解析
 
-2017 年的 Transformer 论文（[Vaswani et al.](https://arxiv.org/abs/1706.03762)）为机器翻译引入了编码器-解码器模型。但研究人员很快意识到，这个架构可以被拆分、专门化，并以不同方式扩展。到 2018–2020 年，三种截然不同的范式相继涌现。
+2017 年的 Transformer 论文（[Vaswani et al.](https://arxiv.org/abs/1706.03762)）引入了一种用于机器翻译的编码器-解码器模型。但研究人员很快意识到，这种架构可以被拆分、专门化，并以不同方式扩展。到 2018–2020 年，三种截然不同的范式已经成形。
+
+要理解每种架构为什么做出特定的设计选择，需要深入审视每一层的用途及其涉及的权衡。
 
 ### 1.1 仅编码器：BERT（2018）
 
-BERT（[Devlin et al., 2018](https://arxiv.org/abs/1810.04805)）将 Transformer 精简为仅剩编码器部分。每一层都应用**双向自注意力**——序列中每个 token 同时双向关注其他所有 token。
+BERT（[Devlin et al., 2018](https://arxiv.org/abs/1810.04805)）将 Transformer 精简为仅保留编码器部分。让我们逐一剖析每个组件：
 
-这就像在参与一场对话时，你已经读过了完整的对话记录。"I walked to the bank by the river" 中的 "bank" 一词在完整语境下被理解——BERT 在编码这个歧义词时，同时看到了"river"（右侧）和"walked to"（左侧）。
+#### 层结构（重复 L 次，通常 L=12 或 L=24）
 
-训练目标是**掩码语言模型（Masked Language Model，MLM）**：随机遮盖 15% 的输入 token，训练模型去预测它们。为什么是 15%？太低太容易（上下文太充足）；太高太难（信号不足）。原始论文通过实验确认 15% 是最优值。
+```
+Input Embeddings
+       ↓
+┌─────────────────────────────────────┐
+│  Multi-Head Bidirectional Attention │  ← Every token sees every other token
+│  + Residual Connection + LayerNorm  │
+├─────────────────────────────────────┤
+│  Feed-Forward Network (FFN)         │  ← Non-linear transformation
+│  + Residual Connection + LayerNorm  │
+└─────────────────────────────────────┘
+       ↓ (repeat L times)
+Final Hidden States → Task-specific head
+```
+
+#### 组件一：输入嵌入（Input Embeddings）
+
+**功能**：将词元转换为稠密向量，并添加位置信息。
+
+```
+Token Embedding + Segment Embedding + Position Embedding = Input
+     (30522 × 768)      (2 × 768)         (512 × 768)
+```
+
+其中三种嵌入分别对应**词元嵌入（Token Embedding）**、**段落嵌入（Segment Embedding）** 和**位置嵌入（Position Embedding）**。
+
+**为何这样设计**：
+- **词元嵌入**：每个词/子词映射到一个 768 维向量。为什么是 768？这是在表达能力与计算量之间平衡的经验值。更小（256）会损失表达能力；更大（1024+）收益递减。
+- **段落嵌入**：BERT 处理句子对（如自然语言推理任务）。A/B 段落 ID 用于区分每个词元属于哪个句子。
+- **位置嵌入**：Transformer 本身没有顺序概念（与 RNN 不同）。可学习的位置嵌入（而非原始 Transformer 中的正弦位置编码）让模型能学习位置相关的模式。为什么用可学习的？更简单，且在 512 个位置内效果同样出色。
+
+**设计权衡**：最大位置固定为 512。更长的序列需要滑动窗口或截断——这一限制后来被纯解码器模型通过旋转位置编码（RoPE）所克服。
+
+#### 组件二：多头双向自注意力（Multi-Head Bidirectional Self-Attention）
+
+**功能**：每个词元同时对所有其他词元计算注意力。
+
+$$
+\begin{aligned}
+\text{Attention}(Q, K, V) &= \text{softmax}\left(\frac{QK^T}{\sqrt{d_k}}\right)V \\[6pt]
+\text{MultiHead}(X) &= \text{Concat}(\text{head}_1, ..., \text{head}_h)W^O \\[6pt]
+\text{head}_i &= \text{Attention}(XW^Q_i, XW^K_i, XW^V_i)
+\end{aligned}
+$$
+
+**为何双向**：以"bank"这个词为例，出现在两句话中：
+- "I deposited money at the **bank**"（金融机构）
+- "I sat by the river **bank**"（河岸）
+
+要正确编码"bank"，你需要同时看到左侧语境（"deposited money"）和右侧语境（"river"）。双向注意力使这种歧义消解成为可能。
+
+**为何用多头（12 个注意力头）**：不同的头学习不同的注意力模式：
+- 部分头关注句法结构（主语-谓语）
+- 部分头关注共指关系（he → John）
+- 部分头关注相邻词元（局部上下文）
+
+12 个头 × 64 维 = 768 总维度。更多的头 = 更多样的模式；但超过 16 个头后收益递减。
+
+**设计权衡**：双向注意力意味着 O(n²) 的计算量，其中 n 为序列长度。更关键的是：**无法高效生成文本**，因为生成第 t+1 个词元需要在整个序列上重新运行注意力计算。
+
+#### 组件三：前馈网络（Feed-Forward Network，FFN）
+
+**功能**：在每个位置独立应用非线性变换。
+
+```python
+# FFN: expand to 4x, apply non-linearity, project back
+FFN(x) = GELU(xW₁ + b₁)W₂ + b₂
+# W₁: 768 → 3072 (4x expansion)
+# W₂: 3072 → 768 (project back)
+```
+
+**为何 4 倍扩展**：注意力层混合跨位置的信息，但它是线性的。FFN 增加了非线性，并扩大了模型容量。为什么是 4 倍？这是经验上的最优值——更大收益递减，更小则损失表达能力。
+
+**为何用 GELU 激活**：GELU（高斯误差线性单元）在语言任务上优于 ReLU。它平滑（处处可微），且比 ReLU 更好地处理负值。
+
+**设计权衡**：FFN 在每一层中拥有最多的参数（每层 2 × 768 × 3072 = 4.7M）。这里存储了大部分的"知识"。
+
+#### 组件四：残差连接（Residual Connection）+ 层归一化（LayerNorm）
+
+**功能**：
+- 残差连接：`output = x + Sublayer(x)`——使梯度能在深层网络中顺畅流动
+- 层归一化：对每个样本独立归一化，保证训练稳定
+
+**为何从后置层归一化（Post-LN，BERT）演变为前置层归一化（Pre-LN，GPT-2+）**：BERT 使用后置层归一化（在残差之后归一化）。后来的研究发现，前置层归一化（在子层之前归一化）对极深模型更稳定。这在 GPT-2 之后成为标准做法。
+
+#### 训练：掩码语言建模（MLM）
+
+**功能**：随机遮盖 15% 的词元，预测原始词元。
+
+**为何是 15%**：
+- 太低（5%）：模型看到太多上下文，任务太简单
+- 太高（30%）：可用上下文不够，预测质量差
+- 消融研究发现 15% 是最优值
+
+**为何用 80-10-10 的遮盖策略**：
+- 80%：替换为 [MASK] 词元
+- 10%：替换为随机词元
+- 10%：保持原词不变
+
+这样做可以防止模型只学会预测 [MASK] 词元——它必须同时处理被替换的和正常的输入。
 
 ```python
 # BERT in action: masked token prediction
@@ -41,29 +141,102 @@ import torch
 tokenizer = BertTokenizer.from_pretrained('bert-base-uncased')
 model = BertForMaskedLM.from_pretrained('bert-base-uncased')
 
-# Mask "sat" in "The cat sat on the mat"
 text = "The cat [MASK] on the mat."
 inputs = tokenizer(text, return_tensors='pt')
 
 with torch.no_grad():
     outputs = model(**inputs)
 
-# Get predicted token for the [MASK] position
 mask_idx = (inputs['input_ids'] == tokenizer.mask_token_id).nonzero()[0][1]
 logits = outputs.logits[0, mask_idx]
 predicted_token = tokenizer.decode([logits.argmax()])
 print(f"Predicted: {predicted_token}")  # → "sat"
 ```
 
-BERT 的双向注意力在**理解**方面极为强大——但它为**生成**制造了一个根本性的问题：要预测下一个 token，你需要先将其遮盖再重跑整个模型。这慢得无法接受。
+**BERT 的致命弱点**：双向注意力使生成效率极低。要生成第 t+1 个词元，必须先将其遮盖，再对整个序列重新编码——生成 n 个词元需要 O(n) 次前向传播。
+
+---
 
 ### 1.2 仅解码器：GPT（2018 至今）
 
-GPT（[Radford et al., 2018](https://openai.com/research/language-unsupervised)）只使用 Transformer 解码器的自注意力层，并做了一个关键改动：加入**因果掩码**（下三角掩码），阻止每个位置关注后续位置。
+GPT（[Radford et al., 2018](https://openai.com/research/language-unsupervised)）使用 Transformer 解码器，但做了一个关键改动：**因果掩码（Causal Mask）**。
 
-这是"移动墙"心智模型：在位置 *t* 处，你可以看到 token 1 到 *t*，但位置 *t+1* 之后的内容不可见。这个约束让 GPT 天然具备自回归（Autoregressive）性——它一次一个 token 地生成文本，每次预测仅依赖已有内容。
+#### 层结构（重复 L 次）
 
-训练目标是**因果语言模型（Causal Language Model，CLM）**：在每个位置同时预测下一个 token。这样做的妙处？训练信号来自序列中*每一个位置*，而非像 BERT 那样只来自被遮盖的 15%。
+```
+Input Embeddings
+       ↓
+┌─────────────────────────────────────┐
+│  Multi-Head CAUSAL Self-Attention   │  ← Only sees past tokens
+│  + Residual Connection + LayerNorm  │
+├─────────────────────────────────────┤
+│  Feed-Forward Network (FFN)         │
+│  + Residual Connection + LayerNorm  │
+└─────────────────────────────────────┘
+       ↓ (repeat L times)
+Final Hidden States → Next-token prediction head
+```
+
+#### 关键区别：因果注意力掩码
+
+**功能**：下三角掩码阻止位置 i 关注位置 j > i 的词元。
+
+```python
+# Causal mask for sequence length 5
+# 1 = can attend, 0 = blocked
+mask = [
+    [1, 0, 0, 0, 0],  # Position 0: sees only itself
+    [1, 1, 0, 0, 0],  # Position 1: sees 0-1
+    [1, 1, 1, 0, 0],  # Position 2: sees 0-2
+    [1, 1, 1, 1, 0],  # Position 3: sees 0-3
+    [1, 1, 1, 1, 1],  # Position 4: sees 0-4 (all past)
+]
+```
+
+**为何这样设计**："移动墙"思维模型——在每个位置，你只能看到之前出现的内容。这一约束：
+1. 使训练和推理使用相同的计算
+2. 在推理时支持高效的 KV 缓存（详见第 4 节）
+3. 天然地对语言的自回归分解进行建模
+
+**设计权衡**：无法访问未来上下文。在"I sat by the river bank"中，"bank"必须在没有看到"river"的情况下完成编码。这看起来是劣势——但规模弥补了这一点。
+
+#### 位置编码：从可学习嵌入到旋转位置编码（RoPE）
+
+**GPT-1/2**：可学习的位置嵌入（与 BERT 相同），最多支持 1024 个位置。
+
+**GPT-3+**：仍为可学习嵌入，但引入了外推技巧。
+
+**现代模型（LLaMA 等）**：旋转位置编码（RoPE，Rotary Position Embedding）——通过旋转矩阵编码相对位置，支持远超训练长度的序列外推。
+
+**为何演进**：可学习嵌入无法泛化到训练长度之外。RoPE 基于旋转的方式天然地处理更长的序列。
+
+#### 前置层归一化（Pre-LN）vs 后置层归一化（Post-LN）
+
+**GPT-2 起使用前置层归一化**：LayerNorm 在注意力/FFN **之前**，而非之后。
+
+```python
+# Post-LN (BERT, GPT-1)
+x = x + Attention(LayerNorm(x))  # ❌ Unstable for deep models
+
+# Pre-LN (GPT-2+)
+x = x + Attention(LayerNorm(x))  # ✅ More stable gradients
+```
+
+**为何切换**：前置层归一化在极深模型（48 层以上）中产生更稳定的梯度。当模型扩展到千亿参数量级时，这一点至关重要。
+
+#### 训练：因果语言建模（CLM）
+
+**功能**：在每个位置预测下一个词元。
+
+$$
+\mathcal{L}_{\text{CLM}} = -\sum_{t=1}^{T} \log P(x_t \mid x_1, ..., x_{t-1})
+$$
+
+**为何高效**：每个位置都能提供训练信号。对于一段 1000 个词元的序列：
+- BERT（15% 遮盖）：约 150 个预测任务
+- GPT（CLM）：1000 个预测任务
+
+**从同等数据中提取信号的效率高出 6–7 倍。**
 
 ```python
 # GPT in action: text generation
@@ -75,39 +248,135 @@ model = GPT2LMHeadModel.from_pretrained('gpt2')
 prompt = "The transformer architecture"
 inputs = tokenizer(prompt, return_tensors='pt')
 
-# Autoregressively generate 30 more tokens
-# Each token is predicted from all previous tokens
 outputs = model.generate(
     inputs['input_ids'],
     max_new_tokens=30,
-    do_sample=True,        # Sampling for diversity
-    temperature=0.8,       # Controls randomness
+    do_sample=True,
+    temperature=0.8,
     pad_token_id=tokenizer.eos_token_id
 )
 print(tokenizer.decode(outputs[0], skip_special_tokens=True))
 ```
 
+---
+
 ### 1.3 编码器-解码器：T5（2020）
 
-T5（[Raffel et al., 2020](https://arxiv.org/abs/1910.10683)）保留了完整的 Transformer——编码器以双向注意力读取输入，解码器以因果注意力生成输出，**交叉注意力（Cross-attention）**让解码器在每一步都能查询编码器的表示。
+T5（[Raffel et al., 2020](https://arxiv.org/abs/1910.10683)）保留了完整的原始 Transformer 架构——独立的编码器和解码器堆栈，通过交叉注意力（Cross-Attention）连接。
 
-T5 的洞见在于将一切都框架化为"文本到文本"：翻译、摘要、分类、问答——全都变成了"给定这段文本，生成那段文本"。这很优雅，也很强大，但同样复杂：两个独立的模块堆栈、需要管理的交叉注意力，以及在任何解码开始前就必须完成整个编码器前向传播的推理流程。
+#### 层结构
+
+```
+ENCODER (bidirectional, L layers):          DECODER (causal, L layers):
+┌─────────────────────────────┐             ┌─────────────────────────────┐
+│  Bidirectional Self-Attn    │             │  Causal Self-Attention      │
+│  + Residual + LayerNorm     │             │  + Residual + LayerNorm     │
+├─────────────────────────────┤             ├─────────────────────────────┤
+│  Feed-Forward Network       │             │  Cross-Attention            │ ← Queries encoder
+│  + Residual + LayerNorm     │             │  + Residual + LayerNorm     │
+└─────────────────────────────┘             ├─────────────────────────────┤
+        ↓ (L layers)                        │  Feed-Forward Network       │
+                                            │  + Residual + LayerNorm     │
+    Encoder Output ───────────────────────→ └─────────────────────────────┘
+    (K, V for cross-attention)                      ↓ (L layers)
+```
+
+#### 交叉注意力：连接桥梁
+
+**功能**：解码器的查询（Query）关注编码器的输出。
+
+```python
+# In cross-attention:
+Q = decoder_hidden @ W_Q  # Query from decoder
+K = encoder_output @ W_K  # Key from encoder
+V = encoder_output @ W_V  # Value from encoder
+
+attention = softmax(Q @ K.T / sqrt(d_k)) @ V
+```
+
+**为何这样设计**：编码器双向处理完整输入（有利于理解），然后解码器通过交叉注意力"查看"编码器的表示，同时自回归地生成输出。
+
+**适用场景**：非常适合序列到序列（seq2seq）任务——翻译、摘要——即需要在生成输出之前完全理解输入的任务。
+
+#### T5 为何没能胜出
+
+尽管架构优雅，T5 在规模扩展上存在劣势：
+
+1. **相同容量需要双倍参数**：编码器 + 解码器意味着两个独立的堆栈。12 层的 T5 参数量与 24 层的 GPT 相近，但 GPT 可以更深（层数越多越好）。
+
+2. **推理复杂性**：必须先完整运行编码器，才能开始解码。无法在输入处理完成前就开始生成。
+
+3. **交叉注意力开销**：每个解码器层除了自注意力，还有额外的交叉注意力操作。
+
+4. **难以支持上下文学习**：编码器/解码器分离不天然支持"提示 + 续写"的格式，而这种格式使 GPT-3 如此通用。
+
+#### T5 的文本到文本框架
+
+T5 的核心洞见是将所有任务统一为文本到文本的格式：
+
+```
+# Classification
+Input:  "mnli premise: ... hypothesis: ..."
+Output: "entailment"
+
+# Translation  
+Input:  "translate English to German: Hello world"
+Output: "Hallo Welt"
+
+# Summarization
+Input:  "summarize: [long article]"
+Output: "[short summary]"
+```
+
+这一思路影响深远——GPT-3 采用了类似的任务构建方式。但 GPT 证明了你并不需要独立的编码器/解码器来实现这一点。
+
+```python
+# T5 in action
+from transformers import T5Tokenizer, T5ForConditionalGeneration
+
+tokenizer = T5Tokenizer.from_pretrained('t5-small')
+model = T5ForConditionalGeneration.from_pretrained('t5-small')
+
+# Translation task
+input_text = "translate English to German: Hello, how are you?"
+inputs = tokenizer(input_text, return_tensors='pt')
+
+outputs = model.generate(**inputs, max_length=50)
+print(tokenizer.decode(outputs[0], skip_special_tokens=True))
+# → "Hallo, wie geht es Ihnen?"
+```
 
 ---
 
-## 2. 注意力掩码：核心差异
+### 小结：架构设计决策对比
 
-BERT 与 GPT 之间最重要的结构差异，就是注意力掩码。
+| 设计决策 | BERT | GPT | T5 |
+|----------|------|-----|-----|
+| **注意力方向** | 双向 | 因果（仅左向） | 编码器：双向，解码器：因果 |
+| **位置编码** | 可学习（最多 512） | 可学习 → 旋转位置编码 | 相对位置偏置 |
+| **LayerNorm 位置** | 后置层归一化 | 前置层归一化（GPT-2+） | 前置层归一化 |
+| **训练目标** | MLM（15% 遮盖） | CLM（100% 位置） | 跨度损坏 |
+| **交叉注意力** | 无 | 无 | 有 |
+| **生成效率** | ❌ | ✅（KV 缓存） | ✅ 但较慢 |
+| **上下文学习** | ❌ | ✅ | 有限 |
+
+核心洞见：**GPT 的简洁是优势，而非缺陷**。单一堆栈、单一注意力类型、单一训练目标——它比其他架构扩展得更好。
+
+---
+
+## 2. 注意力掩码：核心区别
+
+BERT 和 GPT 之间最重要的结构差异就是注意力掩码。
 
 ![注意力掩码](./images/day05/attention-masks.png)
-*图 2：左——BERT 的完整注意力矩阵：每个 token 关注所有其他 token（全部 ✓）。右——GPT 的因果掩码：下三角形，未来位置被屏蔽（✗）。这一个差异决定了一切。*
+*图 2：左——BERT 的完全注意力矩阵：每个词元关注其他所有词元（全部 ✓）。右——GPT 的因果掩码：下三角形，未来位置被屏蔽（✗）。就是这一个差异决定了一切。*
 
 对于长度为 *n* 的序列：
 
-- **BERT**：注意力矩阵完全稠密——O(n²) 次运算，所有位置互相关注
-- **GPT**：注意力矩阵为下三角——同样 O(n²) 次运算，但屏蔽了未来位置
+- **BERT**：注意力矩阵完全稠密——O(n²) 操作，所有位置都关注所有位置
+- **GPT**：注意力矩阵为下三角形——同样的 O(n²) 操作，但未来被遮盖
 
-数学推论：BERT 无法高效生成文本，因为生成 token *t+1* 需要该 token 已经出现在输入中（被遮盖），这与生成的目的相悖。GPT 可以高效生成，因为预测位置 *t+1* 只需要已经计算好的位置 1 到 *t* 的表示。
+数学上的结果：BERT 无法高效生成文本，因为生成第 *t+1* 个词元需要该词元先存在于输入中（被遮盖），这违背了生成的目的。GPT 可以高效生成，因为预测位置 *t+1* 只需要已计算好的位置 1 到 *t* 的表示。
 
 ---
 
@@ -119,44 +388,44 @@ BERT 与 GPT 之间最重要的结构差异，就是注意力掩码。
 
 $$
 \begin{aligned}
-\mathcal{L}_{\text{MLM}} &= -\sum_{i \in \mathcal{M}} \log P(x_i \mid x_{\backslash \mathcal{M}}) \quad &\text{（BERT：预测被遮盖的 token）} \\[8pt]
-\mathcal{L}_{\text{CLM}} &= -\sum_{t=1}^{T} \log P(x_t \mid x_1, x_2, \ldots, x_{t-1}) \quad &\text{（GPT：预测下一个 token）} \\[8pt]
+\mathcal{L}_{\text{MLM}} &= -\sum_{i \in \mathcal{M}} \log P(x_i \mid x_{\backslash \mathcal{M}}) \quad &\text{（BERT：预测被遮盖的词元）} \\[8pt]
+\mathcal{L}_{\text{CLM}} &= -\sum_{t=1}^{T} \log P(x_t \mid x_1, x_2, \ldots, x_{t-1}) \quad &\text{（GPT：预测下一个词元）} \\[8pt]
 P(x_1, \ldots, x_T) &= \prod_{t=1}^{T} P(x_t \mid x_{<t}) \quad &\text{（链式法则分解）}
 \end{aligned}
 $$
 
 其中：
-- $\mathcal{M}$ = 被遮盖 token 的索引集合（用于 MLM）
-- $x_{\backslash \mathcal{M}}$ = 所有未被遮盖的 token（BERT 的可见上下文）
-- $x_{<t}$ = 位置 *t* 之前的所有 token（GPT 的左侧上下文）
+- $\mathcal{M}$ = 被遮盖词元的下标集合（用于 MLM）
+- $x_{\backslash \mathcal{M}}$ = 所有未被遮盖的词元（BERT 的可见上下文）
+- $x_{<t}$ = 位置 *t* 之前的所有词元（GPT 的左侧上下文）
 
-**从数学中得出的关键洞见**：MLM 每个序列只训练约 15% 的 token（被遮盖的那些）。CLM 训练*每一个 token 位置*——训练信号效率达到 100%。这意味着 GPT 从同等数据中提取的训练信号是 BERT 的 6–7 倍。
+**从数学角度的关键洞见**：MLM 每个序列只训练约 15% 的词元（被遮盖的那些）。CLM 则训练*每一个词元位置*——100% 的训练信号效率。这意味着 GPT 从同等数量的数据中提取到 6–7 倍的训练信号。
 
 ![训练目标](./images/day05/training-objectives.png)
-*图 3：MLM vs CLM 训练目标对比。BERT 利用完整的双向上下文并行预测被遮盖的 token。GPT 仅利用左侧上下文顺序预测每个下一个 token——但在每个位置都进行训练。*
+*图 3：MLM vs CLM 训练目标。BERT 利用完整双向上下文并行预测被遮盖的词元；GPT 仅利用左侧上下文顺序预测每个下一词元——但训练覆盖每一个位置。*
 
-### 3.2 为什么 CLM 获得更多信号
+### 3.2 为何 CLM 获得更多信号
 
-考虑一个包含 1000 个 token 的序列：
-- BERT 遮盖约 150 个 token → 训练 150 个预测任务
-- GPT 训练 1000 个预测任务（每个位置预测下一个）
+考虑一段 1000 个词元的序列：
+- BERT 遮盖约 150 个词元 → 训练 150 个预测任务
+- GPT 训练 1000 个预测任务（每个位置都预测下一个）
 
-这不仅仅是效率问题——还关乎模型学到了什么。GPT 必须内化语言的完整分布结构才能最小化 CLM 损失。它无法通过简单复制可见上下文来"作弊"；它必须真正建模语言。
+这不仅仅是效率问题——更关乎模型学到了什么。GPT 必须内化语言的完整分布结构，才能最小化 CLM 损失。它不能通过"抄"可见的上下文来取巧；它必须真正对语言进行建模。
 
 ---
 
-## 4. 为什么 GPT 赢了：四个具体机制
+## 4. GPT 为何胜出：四个具体机制
 
-这是本文的核心。问题不只是"哪个更好"——而是*为什么*仅解码器架构的机制在规模扩大时被证明具有决定性意义。
+这是本文的核心。问题不只是"哪个更好"，而是*为何*纯解码器架构的机制在规模扩展时被证明具有决定性优势。
 
-![GPT 为何获胜](./images/day05/why-gpt-won.png)
-*图 4：仅解码器架构得以主导的四个具体原因。每个原因都会叠加其他原因的效果——合在一起，在规模上形成了决定性优势。*
+![GPT 为何胜出](./images/day05/why-gpt-won.png)
+*图 4：纯解码器架构主导地位的四个具体原因。每个原因都相互叠加——共同在规模上创造了决定性的优势。*
 
-### 4.1 KV 缓存：推理效率的杀手锏
+### 4.1 KV 缓存：推理效率的杀手级特性
 
-当 GPT 生成 token *t+1* 时，它需要对位置 1 到 *t* 进行注意力计算。在标准注意力机制中，每次生成新 token 都重新计算所有之前位置的 Key（K）和 Value（V）矩阵，代价是每个 token O(n²)——慢得令人窒息。
+当 GPT 生成第 *t+1* 个词元时，它需要对位置 1 到 *t* 计算注意力。在标准注意力中，每生成一个新词元都要为所有之前的位置重新计算键矩阵（K）和值矩阵（V），这将是每个词元 O(n²) 的代价——极其缓慢。
 
-解决方案：**KV 缓存（KV-cache）**。由于过去的位置永远不会改变（因果掩码——位置 *t* 只看 *t* 及之前），我们可以缓存所有之前位置的 K 和 V 矩阵。添加 token *t+1* 只需要为*那一个新位置*计算 K 和 V，而不是所有之前的位置。
+解决方案：**KV 缓存**。由于过去的位置永远不会改变（因果掩码——位置 *t* 只能看到 *t* 及之前的内容），我们可以缓存所有之前位置的 K 和 V 矩阵。添加第 *t+1* 个词元只需计算*这一个新位置*的 K 和 V，而不是所有之前位置的。
 
 ```python
 # Pseudocode: KV-cache in action
@@ -185,11 +454,11 @@ class GPTWithKVCache:
         return new_token_embedding
 ```
 
-**BERT 为什么没有这个？** BERT 的双向注意力意味着每个位置都可以看到其他所有位置。如果你修改一个 token（例如追加一个新 token），你可能改变所有地方的注意力分数——缓存就失效了。双向模型不存在简单的 KV 缓存。
+**BERT 为何缺少这一特性？** BERT 的双向注意力意味着每个位置都能看到其他所有位置。如果你改变一个词元（例如追加一个新词元），所有地方的注意力分数都可能改变——缓存失效。双向模型没有简单可用的 KV 缓存。
 
-这个单一优势让 GPT 风格的生成在推理时快得多。GPT 每个 token 的生成代价是 O(n)（关注缓存的 K、V），而非每步 O(n²)。
+这一单项优势使 GPT 风格的生成在推理时速度大幅领先。GPT 的每词元生成代价是 O(n)（关注缓存的 K、V），而非每步 O(n²)。
 
-### 4.2 训练并行性：充分利用完整序列
+### 4.2 训练并行化：完整序列利用
 
 训练时，GPT 通过因果掩码在一次前向传播中处理整个序列。所有位置（1 到 T）同时被训练：
 
@@ -198,19 +467,19 @@ class GPTWithKVCache:
 - ……
 - 位置 T-1 预测位置 T
 
-这是高度 GPU 并行的。每个训练文档中的每一个 token 都同时贡献梯度。对于一个包含万亿 token 的训练语料库，GPT 训练万亿个预测任务。BERT 大约训练 1500 亿个（15% × 1T）。
+这对 GPU 具有高度的并行友好性。每一个训练文档中的每一个词元都同时贡献梯度。对于一个规模达到 1 万亿词元的训练语料库，GPT 训练了 1 万亿个预测任务；BERT 大约只有 1500 亿个（15% × 1T）。
 
-对规模扩展的影响：GPT 可以在更大的数据集上以更高的计算效率训练。当你突破 1000 亿参数量级时，这个效率差距变得至关重要。
+规模扩展的含义：GPT 能够以更高的计算效率在更大的数据集上训练。当你把参数量推向千亿以上时，这种效率差距就变得至关重要。
 
-### 4.3 统一范式：一个架构，所有任务
+### 4.3 统一范式：一种架构，所有任务
 
-BERT 的双向性非常适合分类——但 BERT 需要为每个任务准备不同的头：
-- 文本分类：[CLS] token → 线性分类器
-- 命名实体识别：每个 token → 线性分类器
-- 问答：两个指针用于答案起止位置
-- 机器翻译：需要完全独立的解码器架构
+BERT 的双向性非常适合分类任务——但 BERT 需要为每个任务配备不同的任务头：
+- 文本分类：[CLS] 词元 → 线性分类器
+- 命名实体识别：每个词元 → 线性分类器
+- 问答：两个指针标记起始/结束位置
+- 机器翻译：需要一个完全独立的解码器架构
 
-GPT 说：*每个任务都是文本生成*。每个任务的接口完全相同：
+GPT 则说：*每个任务都是文本生成*。所有任务的接口完全相同：
 
 ```python
 # Everything is text generation with GPT
@@ -228,64 +497,64 @@ for task, prompt in tasks.items():
 ```
 
 这种统一范式意味着：
-1. 无需微调，一个模型即可处理无限种任务类型
-2. 新能力仅通过提示（prompting）就能涌现
-3. 新任务无需修改架构
-4. 跨任务迁移自然发生
+1. 一个模型无需微调即可处理无限类型的任务
+2. 新能力仅通过提示工程就能涌现
+3. 不需要为新任务修改架构
+4. 跨任务的迁移自然发生
 
-### 4.4 上下文学习：规模扩展带来的涌现奖励
+### 4.4 上下文学习：规模扩展的涌现奖励
 
-这也许是最令人惊讶的机制。在足够大的规模下（GPT-3 的 1750 亿参数），仅解码器模型发展出了**直接从输入中提供的示例进行学习**的能力，即上下文学习（In-context learning）：
+这或许是最令人惊讶的机制。在足够的规模下（GPT-3 的 1750 亿参数），纯解码器模型发展出了**从输入中直接提供的示例进行学习**的能力：
 
 ```
-# 零样本
+# Zero-shot
 Translate to French: The cat is sleeping.
 Translation:
 
-# 少样本（上下文学习）
+# Few-shot (in-context learning)
 Translate to French: The dog runs. → Le chien court.
 Translate to French: Birds fly. → Les oiseaux volent.
 Translate to French: The cat is sleeping.
 Translation:
 ```
 
-少样本的 GPT-3 在相同任务上往往能匹敌或超越经过微调的 BERT 大小的模型——*无需任何梯度更新*。模型似乎能在单次前向传播中完成任务识别和适应。
+少样本 GPT-3 在相同任务上往往与经过微调的 BERT 规模模型持平甚至超越——*无需任何梯度更新*。模型似乎能在单次前向传播中完成任务识别和适应。
 
-为什么这种能力在仅解码器模型中涌现，而非仅编码器模型？主流假说：自回归训练迫使模型解决一个隐式的元学习问题。为了预测每个下一个 token，它必须追踪上下文中描述的任务是什么，调整自己的"策略"，并将该策略应用到新输入上。这种元学习能力在规模扩展时被 CLM 训练烘焙进去了。
+为什么这在纯解码器模型中涌现，而非编码器模型中？主流假说：自回归训练迫使模型解决一个隐式的元学习问题。为了预测每个下一词元，它必须追踪上下文中正在描述的任务，调整自身的"策略"，并将该策略应用于新输入。这种元学习能力在规模上通过 CLM 训练被烙印进去。
 
-BERT 这样的双向模型无法发展出这种能力——在掩码 token 预测过程中，没有任何激励促使它学会读取任务规格并加以应用。
+像 BERT 这样的双向模型不会发展出这种能力——在掩码词元预测训练中，没有激励促使模型学会读取任务说明并加以应用。
 
 ---
 
 ## 5. 架构演进时间线
 
 ![时间线](./images/day05/timeline.png)
-*图 5：2017 年至 2023 年架构演进。BERT 最初主导 NLP 基准测试，但仅解码器模型（GPT-2、GPT-3、ChatGPT）在规模扩展时展现出越来越强大的能力，最终赢得主流。*
+*图 5：从 2017 年到 2023 年的架构演进。BERT 最初主导 NLP 基准测试，但纯解码器模型（GPT-2、GPT-3、ChatGPT）在规模扩展时展现出越来越强大的能力，最终赢得主流。*
 
-时间线清晰地讲述了这个故事：
+时间线清晰地讲述了这段历史：
 
 | 年份 | 模型 | 架构 | 意义 |
 |------|------|------|------|
 | 2017 | Transformer | 编码器-解码器 | 基础："Attention Is All You Need" |
 | 2018 | BERT | 仅编码器 | 11 项 NLP 基准 SOTA——BERT 热潮 |
-| 2018 | GPT-1 | 仅解码器 | 1.17 亿参数，有前途但尚未爆红 |
-| 2019 | GPT-2 | 仅解码器 | 15 亿参数——"危险到不敢发布" |
-| 2020 | T5 | 编码器-解码器 | 文本到文本统一范式，110 亿参数 |
+| 2018 | GPT-1 | 仅解码器 | 1.17 亿参数，有潜力但尚未爆发 |
+| 2019 | GPT-2 | 仅解码器 | 15 亿参数——"危险到不能发布" |
+| 2020 | T5 | 编码器-解码器 | 文本到文本的统一框架，110 亿参数 |
 | 2020 | GPT-3 | 仅解码器 | 1750 亿参数——上下文学习涌现 |
-| 2022 | ChatGPT | 仅解码器 + RLHF | 2 个月内 1 亿用户 |
-| 2023 | LLaMA/Gemini/Claude | 仅解码器 | 整个行业收敛于仅解码器 |
+| 2022 | ChatGPT | 仅解码器 + RLHF | 两个月内 1 亿用户 |
+| 2023 | LLaMA/Gemini/Claude | 仅解码器 | 整个行业收敛于纯解码器架构 |
 
-转折点是 GPT-3（2020）。其上下文学习能力，加上 KV 缓存带来的推理效率优势，使扩展仅解码器模型成为显而易见的前进方向。ChatGPT（2022）只是让这一切变得大众可见。
+转折点是 GPT-3（2020）。它的上下文学习能力，加上 KV 缓存带来的推理效率优势，使扩展纯解码器模型成为明显的前进方向。ChatGPT（2022）只是让这一趋势广为人知。
 
 ---
 
-## 6. BERT 没有死
+## 6. BERT 并未消亡
 
-一个常见误解："GPT 赢了，所以 BERT 过时了。"这是错的。
+一个常见的误解："GPT 胜出了，所以 BERT 已经过时。"这是错误的。
 
-BERT 的双向编码在若干关键应用中仍是最佳工具：
+BERT 的双向编码对于几个关键应用来说仍然是最佳工具：
 
-**语义搜索与检索**：BERT 风格的模型（及其后代，如 [Sentence-BERT](https://arxiv.org/abs/1908.10084)）能生成丰富的上下文嵌入，在固定大小的向量中捕捉语义。现代搜索系统正是以此为基础：
+**语义搜索与检索**：BERT 风格的模型（及其后代，如 [Sentence-BERT](https://arxiv.org/abs/1908.10084)）能生成丰富的上下文嵌入，以固定大小的向量捕获语义。这些嵌入驱动着现代搜索系统：
 
 ```python
 from sentence_transformers import SentenceTransformer
@@ -313,31 +582,31 @@ best_match = documents[np.argmax(similarities)]
 print(f"Most relevant: {best_match}")
 ```
 
-**大规模文本分类**：对于生产级分类系统（垃圾邮件检测、情感分析、意图分类），在标注数据上微调的 BERT 大小模型通常比提示大型 GPT 模型更快、更便宜、更准确。
+**规模化文本分类**：对于生产环境中的分类系统（垃圾邮件检测、情感分析、意图分类），在标注数据上微调的 BERT 规模模型通常比提示大型 GPT 模型更快、更便宜、更准确。
 
-**检索增强生成（RAG）**：在现代 RAG 系统中，*检索*步骤通常使用 BERT 风格的编码器来找到相关文档，而 GPT 风格的解码器则生成最终答案。BERT 和 GPT 协同工作。
+**检索增强生成（RAG）**：在现代 RAG 系统中，*检索*步骤通常使用 BERT 风格的编码器来找到相关文档，而 GPT 风格的解码器负责生成最终答案。BERT 和 GPT 协同工作。
 
-**BERT 为何存续**：它的双向编码为*理解*任务创造了更好的 token/句子嵌入。GPT 嵌入的语义紧密性较弱，因为模型是为生成而优化的，而非相似度匹配。
+**BERT 存活的原因**：其双向编码为*理解*型任务创造了更好的词元/句子嵌入。GPT 的嵌入在语义上不那么紧密，因为该模型针对生成而非相似度匹配进行了优化。
 
 ---
 
 ## 7. 常见误解
 
-### ❌ "BERT 也可以用于文本生成，只是慢一点"
+### ❌ "BERT 也可以用于文本生成，只是速度慢一些"
 
-并非如此。BERT 的填空（MLM）每次前向传播只能填入一个被遮盖的 token，但这无法扩展到连贯的多句子生成。模型从未被训练为在自回归生成的文本中保持叙事连贯性。真正的生成需要 GPT 的因果结构。
+并非如此。BERT 的填空（MLM）每次前向传播只能填充一个被遮盖的词元，但这无法扩展到连贯的多句生成。该模型从未被训练过在自回归生成的文本中保持叙事连贯性。真正的生成需要 GPT 的因果结构。
 
-### ❌ "T5 应该赢，因为它结合了两者的优点"
+### ❌ "T5 本应胜出，因为它结合了两者的优点"
 
-T5 很强大，至今仍被广泛使用（尤其是特定的序列到序列任务）。但编码器-解码器的分离带来了推理复杂性：你需要在开始解码之前运行完整的编码器，而且交叉注意力机制也没有简单的 KV 缓存。在推理时，这种开销会累积叠加。对于规模化的对话式 AI，GPT 更简单的架构在部署经济性上胜出。
+T5 很强大，至今仍被广泛使用（尤其用于特定的 seq2seq 任务）。但编码器-解码器的分离造成了推理复杂性：在开始解码之前必须完整运行编码器，而且交叉注意力机制没有简单可用的 KV 缓存。在推理时，这些开销会叠加。对于大规模对话式 AI，GPT 更简洁的架构在部署经济性上胜出。
 
-### ❌ "仅解码器模型不理解文本，它们只是在预测 token"
+### ❌ "纯解码器模型不理解文本，它们只是在预测词元"
 
-这混淆了机制与能力。GPT-3 及后续模型展现出了复杂的语言理解能力（阅读理解、逻辑推理、代码分析），尽管它们"只是"在预测下一个 token。CLM 目标在足够大的规模下应用，迫使模型构建深度的世界模型来最小化预测损失。理解能力从生成训练中涌现。
+这混淆了机制与能力。GPT-3 及后续模型展示出复杂的语言理解能力（阅读理解、逻辑推理、代码分析），尽管它们"只是"在预测下一个词元。CLM 目标在足够的规模下应用，迫使模型建立深层的世界模型来最小化预测损失。理解能力从生成训练中涌现而来。
 
-### ❌ "更大总是胜过架构选择"
+### ❌ "更大的模型总是胜过架构选择"
 
-架构至关重要。一个 70 亿参数的仅解码器模型（例如 LLaMA-2-7B）在基准测试中超越了许多早期的 130 亿参数模型。仅解码器架构的训练效率意味着每个参数都被更充分地利用。
+架构至关重要。一个 70 亿参数的纯解码器模型（如 LLaMA-2-7B）在各基准测试上胜过许多早期的 130 亿参数模型。纯解码器架构的训练效率意味着每个参数都被更好地利用。
 
 ---
 
@@ -386,13 +655,13 @@ print(f"GPT completion: {generated[0]['generated_text']}")
 
 ### 入门
 
-1. [The Illustrated BERT, ELMo, and co.](https://jalammar.github.io/illustrated-bert/)，Jay Alammar 著——BERT 设计的可视化讲解
+1. [The Illustrated BERT, ELMo, and co.](https://jalammar.github.io/illustrated-bert/)，Jay Alammar 著——BERT 设计的可视化详解
 2. [The Illustrated GPT-2](https://jalammar.github.io/illustrated-gpt2/)，Jay Alammar 著——GPT 如何逐步生成文本
 
 ### 进阶
 
 1. [Understanding Large Language Models](https://www.cs.princeton.edu/courses/archive/fall22/cos597G/lectures/lec01.pdf)——普林斯顿大学 COS 597G 课程讲义
-2. [Efficient Transformers: A Survey](https://arxiv.org/abs/2009.06732)——注意力效率改进综述，包括 KV 缓存
+2. [Efficient Transformers: A Survey](https://arxiv.org/abs/2009.06732)——注意力效率改进综述，包含 KV 缓存
 
 ### 论文
 
@@ -406,32 +675,32 @@ print(f"GPT completion: {generated[0]['generated_text']}")
 
 ## 思考题
 
-1. **KV 缓存优势**：为什么因果掩码能够支持 KV 缓存，而双向注意力却不行？双向注意力中，追加新 token 后究竟是什么使缓存的 Key-Value 矩阵失效？
+1. **KV 缓存的优势**：为什么因果掩码能支持 KV 缓存，而双向注意力不能？当追加一个新词元时，双向注意力具体是如何使已缓存的 Key-Value 矩阵失效的？
 
-2. **训练效率的权衡**：CLM 在 100% 的 token 位置上训练，而 MLM 只有约 15%。这是否意味着 CLM 总是收敛更快？是否存在某些任务，MLM 的双向训练信号每个 token 实际上更*优*？想想那些上下文具有对称性的任务。
+2. **训练效率的权衡**：CLM 训练 100% 的词元位置，而 MLM 只训练约 15%。这是否意味着 CLM 总是收敛更快？是否存在某些任务，MLM 双向的训练信号*实际上*每词元质量更高？想想那些上下文是对称的任务。
 
-3. **统一范式的假设**：GPT 声称"所有任务 = 文本生成"。但某些任务本质上并非文本生成——例如结构化预测（输出解析树、表格、蛋白质序列）。你会如何用仅解码器模型处理这些任务？文本生成范式的边界在哪里？
+3. **统一范式的假设**：GPT 声称"所有任务 = 文本生成"。但有些任务从本质上就不是文本生成——例如结构化预测（输出解析树、表格、蛋白质序列）。你会如何用纯解码器模型处理这些任务？文本生成范式的边界在哪里？
 
-4. **BERT 的未来**：在 RAG 系统中 BERT 负责检索、GPT 负责生成的世界里，是否存在一种单一架构能同时做好两件事？它会是什么样子？
+4. **BERT 的未来**：在 RAG 系统用 BERT 负责检索、GPT 负责生成的世界里，是否存在一种单一架构能将两者都做好？它会是什么样子？
 
 ---
 
-## 小结
+## 总结
 
 | 概念 | 一句话解释 |
 |------|-----------|
-| **BERT** | 仅编码器；双向注意力；擅长理解，不擅长生成 |
-| **GPT** | 仅解码器；因果掩码；擅长生成，可扩展至万亿 token 训练 |
-| **T5** | 编码器-解码器；强大的序列到序列模型，但推理复杂 |
-| **MLM** | 通过预测约 15% 被遮盖的 token 来训练——双向但数据效率低 |
-| **CLM** | 通过在每个位置预测下一个 token 来训练——100% 数据效率 |
-| **KV 缓存** | 缓存过去 token 的 K、V；由因果掩码实现；使 GPT 推理更快 |
-| **上下文学习** | 在仅解码器模型规模扩展时涌现；通过提示中的示例适应新任务 |
-| **BERT 为何存续** | 更好的搜索/检索/分类嵌入；用于 RAG 检索步骤 |
+| **BERT** | 仅编码器；双向注意力；极擅长理解，生成能力弱 |
+| **GPT** | 仅解码器；因果掩码；极擅长生成，可在万亿词元上扩展训练 |
+| **T5** | 编码器-解码器；强大的 seq2seq，但推理复杂 |
+| **MLM** | 通过预测约 15% 的遮盖词元训练——双向但数据利用率低 |
+| **CLM** | 在每个位置预测下一词元——100% 数据利用率 |
+| **KV 缓存** | 缓存过去词元的 K、V；由因果掩码支持；使 GPT 推理更快 |
+| **上下文学习** | 在纯解码器的规模扩展中涌现；从提示中的示例适应新任务 |
+| **BERT 为何存活** | 更好的搜索/检索/分类嵌入；用于 RAG 的检索步骤 |
 
-**核心结论**：GPT 战胜 BERT，不是因为某个架构"更聪明"——而是四个具体的机械优势在规模扩展时相互叠加：KV 缓存实现快速推理，CLM 提供更多训练信号，统一的文本生成范式消除了任务特定的工程工作，上下文学习从自回归训练中自然涌现。BERT 没有死，但其领地现在已经清晰划定：稠密检索、分类，以及双向理解真正重要的嵌入任务。其他一切都已经收敛到仅解码器架构。
+**核心结论**：GPT 战胜 BERT，不是因为某种架构"更聪明"——而是四个具体的机械优势在规模上叠加：KV 缓存实现了快速推理，CLM 提供了更多训练信号，统一的文本生成范式消除了任务专项工程，上下文学习从自回归训练中自然涌现。BERT 并未消亡，但其领域已被明确划定：稠密检索、分类，以及双向理解真正重要的嵌入任务。其他一切都已收敛于纯解码器架构。
 
 ---
 
-*第 5 天，共 60 天 | LLM 基础*
-*字数：约 3200 | 阅读时间：约 16 分钟*
+*第 5 天，共 60 天 | 大语言模型基础*
+*字数：约 4600 字 | 阅读时间：约 23 分钟*
