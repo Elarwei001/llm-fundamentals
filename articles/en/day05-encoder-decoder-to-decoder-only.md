@@ -691,6 +691,26 @@ Why does this emerge in decoder-only models and not encoder-only? The leading hy
 
 Bidirectional models like BERT don't develop this capability — there's no incentive during masked-token prediction to learn to read task specifications and apply them.
 
+> **💡 Why "Scales with model size" + "Unique to autoregressive LMs"?**
+> 
+> **Scales with model size**: In-context learning is an *emergent* capability — it appears suddenly at scale, not gradually:
+> ```
+> GPT-2 (1.5B)   → ❌ Almost no in-context learning
+> GPT-3 (13B)    → 🔶 Some ability
+> GPT-3 (175B)   → ✅ Strong in-context learning!
+> ```
+> Hypothesis: Small models lack the "working memory" to simultaneously (1) understand examples, (2) extract patterns, and (3) apply to new inputs.
+>
+> **Unique to autoregressive LMs**: Only "predict next token" training naturally supports this:
+> 
+> | Model Type | Training | In-Context Learning |
+> |------------|----------|---------------------|
+> | GPT (autoregressive) | Predict next token | ✅ Natural — just "continue the pattern" |
+> | BERT (bidirectional) | Fill in blanks | ❌ Not trained to learn from examples |
+> | T5 (enc-dec) | Input→Output mapping | 🔶 Possible but unnatural |
+> 
+> In-context learning is essentially "learning to continue a pattern" — only autoregressive models are trained this way.
+
 ---
 
 ## 5. The Architecture Evolution Timeline
