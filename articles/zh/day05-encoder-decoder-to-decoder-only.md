@@ -287,6 +287,18 @@ mask = [
 2. 在推理时支持高效的 KV 缓存（详见第 4 节）
 3. 天然地对语言的自回归分解进行建模
 
+> **💡 什么是"自回归分解"？**
+> 
+> 就是用链式法则把语言概率拆开：
+> $$P(\text{The, cat, sat}) = P(\text{The}) \times P(\text{cat}|\text{The}) \times P(\text{sat}|\text{The, cat})$$
+> 
+> 每个词的概率**只依赖之前的词**。GPT 的因果掩码完美匹配这个：
+> - 预测 "The"：看到 [START] → P(The)
+> - 预测 "cat"：看到 "The" → P(cat|The)  
+> - 预测 "sat"：看到 "The cat" → P(sat|The,cat)
+>
+> 这就是人类写作的方式——逐词生成，只知道前面写了什么。
+
 **设计权衡**：无法访问未来上下文。在"I sat by the river bank"中，"bank"必须在没有看到"river"的情况下完成编码。这看起来是劣势——但规模弥补了这一点。
 
 #### 位置编码：从可学习嵌入到旋转位置编码（RoPE）

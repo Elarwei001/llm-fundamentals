@@ -285,6 +285,18 @@ mask = [
 2. Enables efficient KV-cache at inference (more on this in Section 4)
 3. Naturally models the autoregressive factorization of language
 
+> **💡 What is "autoregressive factorization"?**
+> 
+> It's the chain rule decomposition of language probability:
+> $$P(\text{The, cat, sat}) = P(\text{The}) \times P(\text{cat}|\text{The}) \times P(\text{sat}|\text{The, cat})$$
+> 
+> Each word's probability depends **only on previous words**. GPT's causal mask perfectly matches this:
+> - Predict "The": see [START] → P(The)
+> - Predict "cat": see "The" → P(cat|The)  
+> - Predict "sat": see "The cat" → P(sat|The,cat)
+>
+> This is how humans write — word by word, only knowing what came before.
+
 **Design trade-off**: No access to future context. The word "bank" in "I sat by the river bank" must be encoded without seeing "river" first. This seems like a disadvantage — but scale compensates.
 
 #### Position Encoding: From Learned to RoPE
