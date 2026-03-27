@@ -106,7 +106,23 @@ Bidirectional attention lets BERT see both sides simultaneously, enabling this d
 
 12 heads × 64 dims = 768 total dims. More heads = more diverse patterns; but 16+ heads show diminishing returns.
 
-**Design trade-off**: Bidirectional attention means O(n²) compute where n = sequence length. And critically: **you cannot generate text efficiently** because generating token t+1 would require re-running attention over the entire sequence.
+**Design trade-off**: Bidirectional attention means O(n²) compute where n = sequence length. Why n²? Because each of the n tokens computes attention scores with ALL n tokens:
+
+```
+         t1    t2    t3    t4    t5
+    ┌─────────────────────────────────┐
+t1  │  ✓     ✓     ✓     ✓     ✓    │  ← t1 attends to 5 tokens
+t2  │  ✓     ✓     ✓     ✓     ✓    │  ← t2 attends to 5 tokens
+t3  │  ✓     ✓     ✓     ✓     ✓    │  ...
+t4  │  ✓     ✓     ✓     ✓     ✓    │
+t5  │  ✓     ✓     ✓     ✓     ✓    │
+    └─────────────────────────────────┘
+Total: n × n = n² attention scores
+```
+
+(Note: GPT's causal mask is still O(n²) — it just masks out the upper triangle, but the matrix is still n×n.)
+
+And critically: **you cannot generate text efficiently** because generating token t+1 would require re-running attention over the entire sequence.
 
 #### Component 3: Feed-Forward Network (FFN)
 
