@@ -957,6 +957,67 @@ Each approach embeds a different belief about neural networks:
 
 ---
 
+## Appendix B: LayerNorm Explained Visually
+
+**LayerNorm** normalizes each layer's output to mean=0, std=1, keeping values stable across deep networks.
+
+### The Formula
+
+$$
+\text{LayerNorm}(x) = \frac{x - \mu}{\sigma} \cdot \gamma + \beta
+$$
+
+Where:
+- μ = mean of x
+- σ = standard deviation of x
+- γ, β = learnable parameters (scale and shift)
+
+### Step-by-Step Example
+
+![LayerNorm Explained](../zh/images/day05/layernorm-explained.png)
+
+```python
+x = [2.0, 4.0, 6.0, 8.0]  # Raw input
+
+# Step 1: Calculate mean
+μ = (2 + 4 + 6 + 8) / 4 = 5.0
+
+# Step 2: Calculate std
+σ = √[((2-5)² + (4-5)² + (6-5)² + (8-5)²) / 4] = 2.24
+
+# Step 3: Normalize
+x_norm = [(2-5)/2.24, (4-5)/2.24, (6-5)/2.24, (8-5)/2.24]
+       = [-1.34, -0.45, +0.45, +1.34]
+
+# Result: mean ≈ 0, std ≈ 1 ✓
+```
+
+### Why Not Just Divide by Sum?
+
+| Method | Formula | Result | Problem |
+|--------|---------|--------|---------|
+| Divide by sum | x / Σx | [0.1, 0.2, 0.3, 0.4] | Only ensures sum=1, unstable |
+| **LayerNorm** | (x-μ)/σ | [-1.34, -0.45, 0.45, 1.34] | mean=0, std=1, stable! |
+
+### Why γ and β?
+
+After normalization, all layers output mean=0, std=1. But sometimes the model **needs** a different distribution:
+
+```python
+y = γ * x_norm + β  # Final output
+
+# γ=1, β=0: Keep normalized result
+# γ=2, β=3: Let model learn optimal scale/shift
+```
+
+**γ and β are learnable** — the model decides what distribution each layer needs.
+
+### One-liner
+
+**LayerNorm = (x - mean) / std** — "flattens" uneven values to a standard range, keeping training stable across 12, 24, or 96 layers.
+
+---
+
 *This appendix emerged from a discussion about why FFN seems to "waste" computation by expanding then compressing. The answer: it's not waste, it's the mathematical foundation of how neural networks separate complex patterns.*
 
 
