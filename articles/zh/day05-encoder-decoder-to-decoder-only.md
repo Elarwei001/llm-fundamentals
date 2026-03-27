@@ -376,23 +376,29 @@ $$
 > 同样的数据，GPT 提取了 **6-7 倍的学习信号**。要达到同样的学习量，BERT 需要约 7 倍的数据或训练时间。
 
 ```python
-# GPT in action: text generation
+# GPT 实战：文本生成
 from transformers import GPT2LMHeadModel, GPT2Tokenizer
 
+# 第一步：加载预训练模型和分词器
 tokenizer = GPT2Tokenizer.from_pretrained('gpt2')
 model = GPT2LMHeadModel.from_pretrained('gpt2')
 
+# 第二步：准备输入提示词
 prompt = "The transformer architecture"
-inputs = tokenizer(prompt, return_tensors='pt')
+inputs = tokenizer(prompt, return_tensors='pt')  # 文本 → token IDs
 
+# 第三步：生成续写
 outputs = model.generate(
-    inputs['input_ids'],
-    max_new_tokens=30,
-    do_sample=True,
-    temperature=0.8,
+    inputs['input_ids'],        # 输入的 token IDs
+    max_new_tokens=30,          # 最多生成 30 个新 token
+    do_sample=True,             # 随机采样（不是贪心选最高概率）
+    temperature=0.8,            # 越高越随机，越低越确定
     pad_token_id=tokenizer.eos_token_id
 )
+
+# 第四步：将输出 token 解码回文本
 print(tokenizer.decode(outputs[0], skip_special_tokens=True))
+# 示例输出: "The transformer architecture is a neural network model that..."
 ```
 
 ---

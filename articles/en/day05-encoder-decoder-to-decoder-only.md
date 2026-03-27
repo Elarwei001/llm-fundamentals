@@ -377,20 +377,26 @@ $$
 # GPT in action: text generation
 from transformers import GPT2LMHeadModel, GPT2Tokenizer
 
+# Step 1: Load pre-trained model and tokenizer
 tokenizer = GPT2Tokenizer.from_pretrained('gpt2')
 model = GPT2LMHeadModel.from_pretrained('gpt2')
 
+# Step 2: Prepare input prompt
 prompt = "The transformer architecture"
-inputs = tokenizer(prompt, return_tensors='pt')
+inputs = tokenizer(prompt, return_tensors='pt')  # Convert text → token IDs
 
+# Step 3: Generate continuation
 outputs = model.generate(
-    inputs['input_ids'],
-    max_new_tokens=30,
-    do_sample=True,
-    temperature=0.8,
+    inputs['input_ids'],        # Input token IDs
+    max_new_tokens=30,          # Generate at most 30 new tokens
+    do_sample=True,             # Use random sampling (not greedy)
+    temperature=0.8,            # Higher = more random, lower = more deterministic
     pad_token_id=tokenizer.eos_token_id
 )
+
+# Step 4: Decode output tokens back to text
 print(tokenizer.decode(outputs[0], skip_special_tokens=True))
+# Example output: "The transformer architecture is a neural network model that..."
 ```
 
 ---
