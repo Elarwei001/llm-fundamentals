@@ -999,6 +999,36 @@ x_norm = [(2-5)/2.24, (4-5)/2.24, (6-5)/2.24, (8-5)/2.24]
 | Divide by sum | x / Σx | [0.1, 0.2, 0.3, 0.4] | Only ensures sum=1, unstable |
 | **LayerNorm** | (x-μ)/σ | [-1.34, -0.45, 0.45, 1.34] | mean=0, std=1, stable! |
 
+**The problem with sum=1**: It only controls the *total*, not the *distribution shape*:
+
+```python
+# Case 1: Relatively uniform values
+x = [100, 100, 100, 100]
+x / sum(x) = [0.25, 0.25, 0.25, 0.25]  ✓ OK
+
+# Case 2: One extreme value
+x = [1000, 1, 1, 1]
+x / sum(x) = [0.997, 0.001, 0.001, 0.001]  ← One dominates!
+
+# Case 3: Very small values
+x = [0.001, 0.002, 0.001, 0.001]
+x / sum(x) = [0.2, 0.4, 0.2, 0.2]  ← Magnified 200×!
+```
+
+**LayerNorm always produces the same distribution shape**:
+
+```python
+# Case 2 with LayerNorm: extreme value gets "pulled back"
+x = [1000, 1, 1, 1]
+LayerNorm(x) = [1.73, -0.58, -0.58, -0.58]  ← Within ±2 range!
+
+# Case 3 with LayerNorm: small values get same treatment
+x = [0.001, 0.002, 0.001, 0.001]
+LayerNorm(x) = [-0.58, 1.73, -0.58, -0.58]  ← Same range!
+```
+
+**Sum=1 controls "total amount"; LayerNorm pins the distribution to N(0,1).**
+
 ### Why γ and β?
 
 After normalization, all layers output mean=0, std=1. But sometimes the model **needs** a different distribution:
