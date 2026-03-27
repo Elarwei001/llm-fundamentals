@@ -305,7 +305,18 @@ mask = [
 
 **GPT-3+**: Still learned, but with extrapolation tricks.
 
-**Modern (LLaMA, etc.)**: RoPE (Rotary Position Embedding) — encodes relative positions through rotation matrices. Enables length generalization far beyond training length.
+> **💡 What are "extrapolation tricks"?**
+> 
+> Problem: GPT-3 was trained with max 2048 tokens. What if inference needs 4000 tokens? Position 2048+ was never seen during training!
+> 
+> Common tricks:
+> - **Position Interpolation**: Compress positions (pos 4000 → treat as pos 2000)
+> - **ALiBi**: Skip position embeddings; add attention bias based on distance
+> - **NTK-aware Scaling**: Adjust the frequency base to "stretch" position encodings
+> 
+> These are patches, not native solutions — hence "tricks."
+
+**Modern (LLaMA, etc.)**: RoPE (Rotary Position Embedding) — encodes relative positions through rotation matrices. Enables length generalization far beyond training length. Unlike learned embeddings, RoPE is designed for extrapolation from the start.
 
 **Why the evolution**: Learned embeddings don't generalize beyond training length. RoPE's rotation-based approach naturally handles longer sequences.
 
