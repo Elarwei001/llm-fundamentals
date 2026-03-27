@@ -350,6 +350,31 @@ $$
 
 **从同等数据中提取信号的效率高出 6–7 倍。**
 
+> **💡 为什么刚好是 6-7 倍？**
+> 
+> ```
+> 效率比 = 1000 / 150 ≈ 6.67 倍
+> ```
+> 
+> 图示：
+> ```
+> 句子: "The cat sat on the mat"
+>        1   2   3   4   5   6
+> 
+> BERT（假设位置 3 被 mask）：
+>   预测任务：1 个（预测 "sat"）
+> 
+> GPT（CLM）：
+>   位置 1 → 预测 "cat"  ✓
+>   位置 2 → 预测 "sat"  ✓
+>   位置 3 → 预测 "on"   ✓
+>   位置 4 → 预测 "the"  ✓
+>   位置 5 → 预测 "mat"  ✓
+>   总共：5 个预测任务
+> ```
+> 
+> 同样的数据，GPT 提取了 **6-7 倍的学习信号**。要达到同样的学习量，BERT 需要约 7 倍的数据或训练时间。
+
 ```python
 # GPT in action: text generation
 from transformers import GPT2LMHeadModel, GPT2Tokenizer

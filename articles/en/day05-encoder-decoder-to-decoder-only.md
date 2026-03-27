@@ -348,6 +348,31 @@ $$
 
 **6–7× more efficient** in extracting signal from the same data.
 
+> **💡 Why exactly 6-7×?**
+> 
+> ```
+> Efficiency ratio = 1000 / 150 ≈ 6.67×
+> ```
+> 
+> Visualized:
+> ```
+> Sentence: "The cat sat on the mat"
+>            1   2   3   4   5   6
+> 
+> BERT (say position 3 is masked):
+>   Prediction tasks: 1 (predict "sat")
+> 
+> GPT (CLM):
+>   Position 1 → predict "cat"  ✓
+>   Position 2 → predict "sat"  ✓
+>   Position 3 → predict "on"   ✓
+>   Position 4 → predict "the"  ✓
+>   Position 5 → predict "mat"  ✓
+>   Total: 5 prediction tasks
+> ```
+> 
+> Same data, but GPT extracts **6-7× more learning signal**. To match GPT's learning, BERT needs ~7× more data or training time.
+
 ```python
 # GPT in action: text generation
 from transformers import GPT2LMHeadModel, GPT2Tokenizer
