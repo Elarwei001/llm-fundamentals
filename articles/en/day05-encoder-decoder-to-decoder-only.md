@@ -84,8 +84,8 @@ Token Embedding + Segment Embedding + Position Embedding = Input
 
 $$
 \begin{aligned}
-\text{Attention}(Q, K, V) &= \text{softmax}\left(\frac{QK^T}{\sqrt{d_k}}\right)V \\[6pt]
-\text{MultiHead}(X) &= \text{Concat}(\text{head}_1, ..., \text{head}_h)W^O \\[6pt]
+\text{Attention}(Q, K, V) &= \text{softmax}\left(\frac{QK^T}{\sqrt{d_k}}\right)V \\
+\text{MultiHead}(X) &= \text{Concat}(\text{head}_1, ..., \text{head}_h)W^O \\
 \text{head}_i &= \text{Attention}(XW^Q_i, XW^K_i, XW^V_i)
 \end{aligned}
 $$
@@ -402,8 +402,8 @@ Here are the formal objectives for both training paradigms:
 
 $$
 \begin{aligned}
-\mathcal{L}_{\text{MLM}} &= -\sum_{i \in \mathcal{M}} \log P(x_i \mid x_{\backslash \mathcal{M}}) \quad &\text{(BERT: predict masked tokens)} \\[8pt]
-\mathcal{L}_{\text{CLM}} &= -\sum_{t=1}^{T} \log P(x_t \mid x_1, x_2, \ldots, x_{t-1}) \quad &\text{(GPT: predict next token)} \\[8pt]
+\mathcal{L}_{\text{MLM}} &= -\sum_{i \in \mathcal{M}} \log P(x_i \mid x_{\backslash \mathcal{M}}) \quad &\text{(BERT: predict masked tokens)} \\
+\mathcal{L}_{\text{CLM}} &= -\sum_{t=1}^{T} \log P(x_t \mid x_1, x_2, \ldots, x_{t-1}) \quad &\text{(GPT: predict next token)} \\
 P(x_1, \ldots, x_T) &= \prod_{t=1}^{T} P(x_t \mid x_{<t}) \quad &\text{(chain rule factorization)}
 \end{aligned}
 $$
