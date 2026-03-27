@@ -585,7 +585,7 @@ This isn't just about efficiency — it's about what the model learns. GPT must 
 
 This is the crux of the article. The question isn't just "which is better" — it's *why* the mechanisms of decoder-only architectures proved decisive at scale.
 
-![Why GPT Won](../zh/images/day05/why-gpt-won.png)
+![Why GPT Won](../zh/images/day05/why-decoder-only-won-v2.png)
 *Figure 4: Four concrete reasons why decoder-only architectures came to dominate. Each reason compounds the others — together they create a decisive advantage at scale.*
 
 ### 4.1 KV-Cache: The Inference Efficiency Killer Feature
