@@ -451,6 +451,31 @@ Despite its elegance, T5's architecture has scaling disadvantages:
 
 4. **Can't easily do in-context learning**: The encoder/decoder split doesn't naturally support "prompt + completion" format that made GPT-3 so versatile.
 
+> **💡 Why can't T5 do in-context learning well?**
+> 
+> **GPT-3's killer feature**: Give examples in the prompt, model learns without any training:
+> ```
+> Prompt: "sea otter => loutre de mer
+>          cheese => fromage
+>          hello =>"
+> GPT-3:  "bonjour"  ← Learned from examples!
+> ```
+> 
+> **T5's problem**: Where do examples go?
+> ```
+> T5 structure:
+> ┌─────────────┐     ┌─────────────┐
+> │   Encoder   │ ──→ │   Decoder   │
+> │  (理解输入)  │     │  (生成输出)  │
+> └─────────────┘     └─────────────┘
+>    Examples here?       Can only generate
+> ```
+> 
+> - Put in Encoder? It treats examples as one long sentence to process, not "learn from"
+> - Put in Decoder? Decoder can only generate, not "read" examples
+> 
+> **GPT**: Everything in one unified sequence — examples + task naturally flow together as "prompt + completion."
+
 #### T5's Text-to-Text Framework
 
 T5's key insight was unifying all tasks as text-to-text:
