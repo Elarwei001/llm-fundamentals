@@ -175,6 +175,21 @@ FFN(x) = GELU(xW₁ + b₁)W₂ + b₂
 - Residual: `output = x + Sublayer(x)` — enables gradient flow through deep networks
 - LayerNorm: Normalizes each sample independently for stable training
 
+![Residual Connection](../zh/images/day05/residual-connection.png)
+*Figure: Residual connections provide a "gradient highway" — even if Layer(x) gradients vanish, the shortcut path (×1) preserves gradient flow.*
+
+**Why residual connections matter**: Without them, gradients must pass through every layer during backpropagation. If each layer shrinks the gradient by 0.9×, after 12 layers: 0.9¹² ≈ 0.28 — the gradient nearly vanishes! With residual connections, gradients have a shortcut that multiplies by 1, so: 1¹² = 1 — no vanishing.
+
+**The math**:
+```python
+# Without residual: gradient shrinks
+∂L/∂x = ∂L/∂y × ∂Layer/∂x        # ∂Layer/∂x might be small
+
+# With residual: gradient has +1 term
+y = x + Layer(x)
+∂y/∂x = 1 + ∂Layer/∂x            # The "1" saves us!
+```
+
 **Why Post-LN (BERT) vs Pre-LN (GPT-2+)**: BERT uses Post-LN (normalize after residual). Later work found Pre-LN (normalize before sublayer) is more stable for very deep models. This became standard in GPT-2 onwards.
 
 #### Training: Masked Language Modeling (MLM)
