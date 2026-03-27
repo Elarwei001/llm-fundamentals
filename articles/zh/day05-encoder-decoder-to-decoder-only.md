@@ -124,7 +124,32 @@ t5  │  ✓     ✓     ✓     ✓     ✓    │
 
 （注：GPT 的因果掩码仍然是 O(n²)——只是把上三角 mask 掉了，矩阵大小还是 n×n。）
 
-更关键的是：**无法高效生成文本**，因为生成第 t+1 个词元需要在整个序列上重新运行注意力计算。
+更关键的是：**无法高效生成文本**。原因如下：
+
+在 GPT（因果）中，添加新 token 不会改变之前 token 的表示——它们本来就"看不到"未来。所以 GPT 可以缓存 Key/Value 矩阵（KV-cache）并复用：
+
+```
+GPT 生成 "The cat sat on the" → "mat"
+Step 1: 处理 "The cat sat on the"，缓存 K,V ✓
+Step 2: 生成 "mat" — 只计算新 token 的 Q，复用缓存的 K,V
+        → 每个 token O(n)
+```
+
+在 BERT（双向）中，每个 token 的表示都依赖所有其他 token，包括后来添加的。添加新 token 会**改变所有之前的表示**：
+
+```
+BERT 生成 "The cat sat on the" → "?"
+Step 1: "The cat sat on the [MASK]" — 跑完整 BERT，预测 "mat"
+Step 2: "The cat sat on the mat [MASK]" — 必须重新跑整个 BERT！
+        因为添加 "mat" 后：
+        - "The" 的表示变了（它现在能看到 "mat"）
+        - "cat" 的表示变了
+        - 所有 token 都变了！
+Step 3: 每生成一个新 token 都要重复...
+        → 每个 token O(n²) = 生成 n 个 token 总计 O(n³)
+```
+
+**这就是为什么所有生成式 LLM（ChatGPT、Claude、Gemini）都用 GPT 架构，而不是 BERT。**
 
 #### 组件三：前馈网络（Feed-Forward Network，FFN）
 

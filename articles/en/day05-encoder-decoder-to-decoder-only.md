@@ -122,7 +122,32 @@ Total: n × n = n² attention scores
 
 (Note: GPT's causal mask is still O(n²) — it just masks out the upper triangle, but the matrix is still n×n.)
 
-And critically: **you cannot generate text efficiently** because generating token t+1 would require re-running attention over the entire sequence.
+And critically: **you cannot generate text efficiently**. Here's why:
+
+In GPT (causal), adding a new token doesn't change the representations of previous tokens — they can't "see" the future anyway. So GPT caches the Key/Value matrices (KV-cache) and reuses them:
+
+```
+GPT generating "The cat sat on the" → "mat"
+Step 1: Process "The cat sat on the", cache K,V ✓
+Step 2: Generate "mat" — only compute Q for new token, reuse cached K,V
+        → O(n) per token
+```
+
+In BERT (bidirectional), every token's representation depends on ALL other tokens, including ones added later. Adding a new token **changes all previous representations**:
+
+```
+BERT generating "The cat sat on the" → "?"
+Step 1: "The cat sat on the [MASK]" — run full BERT, predict "mat"
+Step 2: "The cat sat on the mat [MASK]" — must re-run ENTIRE BERT!
+        Because adding "mat" changes:
+        - "The"'s representation (it can now see "mat")
+        - "cat"'s representation
+        - ALL tokens change!
+Step 3: Repeat for every new token...
+        → O(n²) per token = O(n³) total for n tokens
+```
+
+**This is why all generative LLMs (ChatGPT, Claude, Gemini) use GPT-style architecture, not BERT.**
 
 #### Component 3: Feed-Forward Network (FFN)
 
