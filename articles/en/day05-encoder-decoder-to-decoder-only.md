@@ -21,17 +21,115 @@ Why? The answer lies in four concrete mechanisms — and understanding them will
 
 ---
 
-## 1. The Three Architectures
+## 1. The Three Architectures: Layer-by-Layer Deep Dive
 
 The 2017 Transformer paper ([Vaswani et al.](https://arxiv.org/abs/1706.03762)) introduced an encoder-decoder model for machine translation. But researchers quickly realized the architecture could be split, specialized, and scaled in different ways. By 2018–2020, three distinct paradigms had emerged.
 
+Understanding *why* each architecture made specific design choices requires examining each layer's purpose and the trade-offs involved.
+
 ### 1.1 Encoder-only: BERT (2018)
 
-BERT ([Devlin et al., 2018](https://arxiv.org/abs/1810.04805)) strips the Transformer down to its encoder half. Each layer applies **bidirectional self-attention** — every token attends to every other token in the sequence, in both directions simultaneously.
+BERT ([Devlin et al., 2018](https://arxiv.org/abs/1810.04805)) strips the Transformer down to its encoder half. Let's examine each component:
 
-Think of it like having a conversation where you've already read the entire transcript before responding. The word "bank" in "I walked to the bank by the river" is understood in full context — BERT sees both "river" (downstream) and "walked to" (upstream) when encoding that ambiguous word.
+#### Layer Structure (repeated L times, typically L=12 or L=24)
 
-The training objective is **Masked Language Modeling (MLM)**: randomly mask 15% of input tokens and train the model to predict them. Why 15%? Lower is too easy (too much context); higher is too hard (not enough signal). The 15% was found empirically optimal in the original paper.
+```
+Input Embeddings
+       ↓
+┌─────────────────────────────────────┐
+│  Multi-Head Bidirectional Attention │  ← Every token sees every other token
+│  + Residual Connection + LayerNorm  │
+├─────────────────────────────────────┤
+│  Feed-Forward Network (FFN)         │  ← Non-linear transformation
+│  + Residual Connection + LayerNorm  │
+└─────────────────────────────────────┘
+       ↓ (repeat L times)
+Final Hidden States → Task-specific head
+```
+
+#### Component 1: Input Embeddings
+
+**What it does**: Converts tokens to dense vectors and adds positional information.
+
+```
+Token Embedding + Segment Embedding + Position Embedding = Input
+     (30522 × 768)      (2 × 768)         (512 × 768)
+```
+
+**Why this design**:
+- **Token Embedding**: Each word/subword maps to a 768-dim vector. Why 768? Empirically found to balance expressiveness vs compute. Smaller (256) loses representation power; larger (1024+) has diminishing returns.
+- **Segment Embedding**: BERT handles sentence pairs (for tasks like NLI). A/B segment IDs distinguish which sentence each token belongs to.
+- **Position Embedding**: Transformers have no inherent notion of order (unlike RNNs). Learned position embeddings (not sinusoidal like original Transformer) let the model learn position-dependent patterns. Why learned? Simpler and works just as well up to 512 positions.
+
+**Design trade-off**: Fixed 512 max positions. Longer sequences require sliding window or truncation — a limitation that decoder-only models later addressed with RoPE.
+
+#### Component 2: Multi-Head Bidirectional Self-Attention
+
+**What it does**: Each token computes attention over ALL other tokens simultaneously.
+
+$$
+\begin{aligned}
+\text{Attention}(Q, K, V) &= \text{softmax}\left(\frac{QK^T}{\sqrt{d_k}}\right)V \\[6pt]
+\text{MultiHead}(X) &= \text{Concat}(\text{head}_1, ..., \text{head}_h)W^O \\[6pt]
+\text{head}_i &= \text{Attention}(XW^Q_i, XW^K_i, XW^V_i)
+\end{aligned}
+$$
+
+**Why bidirectional**: Consider the word "bank" in two sentences:
+- "I deposited money at the **bank**" (financial)
+- "I sat by the river **bank**" (geographical)
+
+To correctly encode "bank," you need BOTH left context ("deposited money") AND right context ("river"). Bidirectional attention enables this disambiguation.
+
+**Why multi-head (12 heads)**: Different heads learn different attention patterns:
+- Some heads attend to syntactic structure (subject-verb)
+- Some attend to coreference (he → John)
+- Some attend to adjacent tokens (local context)
+
+12 heads × 64 dims = 768 total dims. More heads = more diverse patterns; but 16+ heads show diminishing returns.
+
+**Design trade-off**: Bidirectional attention means O(n²) compute where n = sequence length. And critically: **you cannot generate text efficiently** because generating token t+1 would require re-running attention over the entire sequence.
+
+#### Component 3: Feed-Forward Network (FFN)
+
+**What it does**: Applies non-linear transformation independently at each position.
+
+```python
+# FFN: expand to 4x, apply non-linearity, project back
+FFN(x) = GELU(xW₁ + b₁)W₂ + b₂
+# W₁: 768 → 3072 (4x expansion)
+# W₂: 3072 → 768 (project back)
+```
+
+**Why 4× expansion**: The attention layer mixes information across positions, but it's linear. The FFN adds non-linearity and increases model capacity. Why 4×? Empirically optimal — larger gives diminishing returns, smaller loses expressiveness.
+
+**Why GELU activation**: GELU (Gaussian Error Linear Unit) outperforms ReLU for language tasks. It's smooth (differentiable everywhere) and handles negative values better than ReLU.
+
+**Design trade-off**: FFN has the most parameters in each layer (2 × 768 × 3072 = 4.7M per layer). This is where most of the "knowledge" is stored.
+
+#### Component 4: Residual Connection + LayerNorm
+
+**What it does**: 
+- Residual: `output = x + Sublayer(x)` — enables gradient flow through deep networks
+- LayerNorm: Normalizes each sample independently for stable training
+
+**Why Post-LN (BERT) vs Pre-LN (GPT-2+)**: BERT uses Post-LN (normalize after residual). Later work found Pre-LN (normalize before sublayer) is more stable for very deep models. This became standard in GPT-2 onwards.
+
+#### Training: Masked Language Modeling (MLM)
+
+**What it does**: Randomly mask 15% of tokens, predict the originals.
+
+**Why 15%**: 
+- Too low (5%): Model sees too much context, task is too easy
+- Too high (30%): Not enough context to make good predictions
+- 15% was found optimal in ablation studies
+
+**Why 80-10-10 masking strategy**:
+- 80%: Replace with [MASK] token
+- 10%: Replace with random token
+- 10%: Keep original
+
+This prevents the model from only learning to predict [MASK] tokens — it must handle corrupted and normal inputs.
 
 ```python
 # BERT in action: masked token prediction
@@ -41,29 +139,102 @@ import torch
 tokenizer = BertTokenizer.from_pretrained('bert-base-uncased')
 model = BertForMaskedLM.from_pretrained('bert-base-uncased')
 
-# Mask "sat" in "The cat sat on the mat"
 text = "The cat [MASK] on the mat."
 inputs = tokenizer(text, return_tensors='pt')
 
 with torch.no_grad():
     outputs = model(**inputs)
 
-# Get predicted token for the [MASK] position
 mask_idx = (inputs['input_ids'] == tokenizer.mask_token_id).nonzero()[0][1]
 logits = outputs.logits[0, mask_idx]
 predicted_token = tokenizer.decode([logits.argmax()])
 print(f"Predicted: {predicted_token}")  # → "sat"
 ```
 
-BERT's bidirectional attention is powerful for **understanding** — but it creates a fundamental problem for **generation**: to predict the next token, you'd need to mask it and re-run the full model. This is prohibitively slow.
+**BERT's Achilles heel**: Bidirectional attention makes generation inefficient. To generate token t+1, you'd need to mask it and re-encode the entire sequence — O(n) forward passes for n tokens.
+
+---
 
 ### 1.2 Decoder-only: GPT (2018–present)
 
-GPT ([Radford et al., 2018](https://openai.com/research/language-unsupervised)) uses only the Transformer decoder's self-attention layers, with one critical modification: a **causal mask** (lower-triangular mask) that prevents each position from attending to future positions.
+GPT ([Radford et al., 2018](https://openai.com/research/language-unsupervised)) uses the Transformer decoder with one critical modification: **causal masking**.
 
-This is the "moving wall" mental model: at position *t*, you can see tokens 1 through *t*, but positions *t+1* onward are invisible. This constraint makes GPT naturally autoregressive — it generates text one token at a time, each prediction conditioned only on what came before.
+#### Layer Structure (repeated L times)
 
-The training objective is **Causal Language Modeling (CLM)**: predict the next token at every position simultaneously. The beauty of this? Training signal comes from *every single position* in the sequence, not just the masked 15% like BERT.
+```
+Input Embeddings
+       ↓
+┌─────────────────────────────────────┐
+│  Multi-Head CAUSAL Self-Attention   │  ← Only sees past tokens
+│  + Residual Connection + LayerNorm  │
+├─────────────────────────────────────┤
+│  Feed-Forward Network (FFN)         │
+│  + Residual Connection + LayerNorm  │
+└─────────────────────────────────────┘
+       ↓ (repeat L times)
+Final Hidden States → Next-token prediction head
+```
+
+#### The Key Difference: Causal Attention Mask
+
+**What it does**: A lower-triangular mask prevents position i from attending to positions j > i.
+
+```python
+# Causal mask for sequence length 5
+# 1 = can attend, 0 = blocked
+mask = [
+    [1, 0, 0, 0, 0],  # Position 0: sees only itself
+    [1, 1, 0, 0, 0],  # Position 1: sees 0-1
+    [1, 1, 1, 0, 0],  # Position 2: sees 0-2
+    [1, 1, 1, 1, 0],  # Position 3: sees 0-3
+    [1, 1, 1, 1, 1],  # Position 4: sees 0-4 (all past)
+]
+```
+
+**Why this design**: The "moving wall" mental model — at each position, you can only see what came before. This constraint:
+1. Makes training and inference use the same computation
+2. Enables efficient KV-cache at inference (more on this in Section 4)
+3. Naturally models the autoregressive factorization of language
+
+**Design trade-off**: No access to future context. The word "bank" in "I sat by the river bank" must be encoded without seeing "river" first. This seems like a disadvantage — but scale compensates.
+
+#### Position Encoding: From Learned to RoPE
+
+**GPT-1/2**: Learned position embeddings (like BERT), limited to 1024 positions.
+
+**GPT-3+**: Still learned, but with extrapolation tricks.
+
+**Modern (LLaMA, etc.)**: RoPE (Rotary Position Embedding) — encodes relative positions through rotation matrices. Enables length generalization far beyond training length.
+
+**Why the evolution**: Learned embeddings don't generalize beyond training length. RoPE's rotation-based approach naturally handles longer sequences.
+
+#### Pre-LN vs Post-LN
+
+**GPT-2 onwards uses Pre-LN**: LayerNorm BEFORE attention/FFN, not after.
+
+```python
+# Post-LN (BERT, GPT-1)
+x = x + Attention(LayerNorm(x))  # ❌ Unstable for deep models
+
+# Pre-LN (GPT-2+)
+x = x + Attention(LayerNorm(x))  # ✅ More stable gradients
+```
+
+**Why switch**: Pre-LN produces more stable gradients in very deep models (48+ layers). This became critical as models scaled to hundreds of billions of parameters.
+
+#### Training: Causal Language Modeling (CLM)
+
+**What it does**: Predict the next token at every position.
+
+$$
+\mathcal{L}_{\text{CLM}} = -\sum_{t=1}^{T} \log P(x_t \mid x_1, ..., x_{t-1})
+$$
+
+**Why this is efficient**: Every position provides a training signal. For a 1000-token sequence:
+- BERT (15% masking): ~150 prediction tasks
+- GPT (CLM): 1000 prediction tasks
+
+**6–7× more efficient** in extracting signal from the same data.
 
 ```python
 # GPT in action: text generation
@@ -75,23 +246,120 @@ model = GPT2LMHeadModel.from_pretrained('gpt2')
 prompt = "The transformer architecture"
 inputs = tokenizer(prompt, return_tensors='pt')
 
-# Autoregressively generate 30 more tokens
-# Each token is predicted from all previous tokens
 outputs = model.generate(
     inputs['input_ids'],
     max_new_tokens=30,
-    do_sample=True,        # Sampling for diversity
-    temperature=0.8,       # Controls randomness
+    do_sample=True,
+    temperature=0.8,
     pad_token_id=tokenizer.eos_token_id
 )
 print(tokenizer.decode(outputs[0], skip_special_tokens=True))
 ```
 
+---
+
 ### 1.3 Encoder-Decoder: T5 (2020)
 
-T5 ([Raffel et al., 2020](https://arxiv.org/abs/1910.10683)) keeps the full Transformer — encoder reads the input with bidirectional attention, decoder generates the output with causal attention, and **cross-attention** lets the decoder query encoder representations at each step.
+T5 ([Raffel et al., 2020](https://arxiv.org/abs/1910.10683)) keeps the full original Transformer architecture — separate encoder and decoder stacks connected by cross-attention.
 
-T5's insight was framing everything as "text-to-text": translation, summarization, classification, QA — all become "given this text, generate that text." It's elegant and powerful, but also complex: two separate stacks, cross-attention to manage, and inference that requires the full encoder pass before any decoding begins.
+#### Layer Structure
+
+```
+ENCODER (bidirectional, L layers):          DECODER (causal, L layers):
+┌─────────────────────────────┐             ┌─────────────────────────────┐
+│  Bidirectional Self-Attn    │             │  Causal Self-Attention      │
+│  + Residual + LayerNorm     │             │  + Residual + LayerNorm     │
+├─────────────────────────────┤             ├─────────────────────────────┤
+│  Feed-Forward Network       │             │  Cross-Attention            │ ← Queries encoder
+│  + Residual + LayerNorm     │             │  + Residual + LayerNorm     │
+└─────────────────────────────┘             ├─────────────────────────────┤
+        ↓ (L layers)                        │  Feed-Forward Network       │
+                                            │  + Residual + LayerNorm     │
+    Encoder Output ───────────────────────→ └─────────────────────────────┘
+    (K, V for cross-attention)                      ↓ (L layers)
+```
+
+#### Cross-Attention: The Bridge
+
+**What it does**: Decoder queries attend to encoder outputs.
+
+```python
+# In cross-attention:
+Q = decoder_hidden @ W_Q  # Query from decoder
+K = encoder_output @ W_K  # Key from encoder
+V = encoder_output @ W_V  # Value from encoder
+
+attention = softmax(Q @ K.T / sqrt(d_k)) @ V
+```
+
+**Why this design**: The encoder processes the full input bidirectionally (good for understanding), then the decoder generates output autoregressively while "looking at" the encoder's representation through cross-attention.
+
+**Use case**: Ideal for seq2seq tasks — translation, summarization — where you need full input understanding before generating output.
+
+#### Why T5 Didn't Win
+
+Despite its elegance, T5's architecture has scaling disadvantages:
+
+1. **Double the parameters for same capacity**: Encoder + Decoder means two separate stacks. A 12-layer T5 has similar parameters to a 24-layer GPT, but the GPT can be deeper (more layers = better).
+
+2. **Inference complexity**: Must run full encoder pass BEFORE any decoding. Can't start generating until input is fully processed.
+
+3. **Cross-attention overhead**: Each decoder layer has an extra attention operation (cross-attention) on top of self-attention.
+
+4. **Can't easily do in-context learning**: The encoder/decoder split doesn't naturally support "prompt + completion" format that made GPT-3 so versatile.
+
+#### T5's Text-to-Text Framework
+
+T5's key insight was unifying all tasks as text-to-text:
+
+```
+# Classification
+Input:  "mnli premise: ... hypothesis: ..."
+Output: "entailment"
+
+# Translation  
+Input:  "translate English to German: Hello world"
+Output: "Hallo Welt"
+
+# Summarization
+Input:  "summarize: [long article]"
+Output: "[short summary]"
+```
+
+This was influential — GPT-3 adopted similar task framing. But GPT proved you don't need separate encoder/decoder to do this.
+
+```python
+# T5 in action
+from transformers import T5Tokenizer, T5ForConditionalGeneration
+
+tokenizer = T5Tokenizer.from_pretrained('t5-small')
+model = T5ForConditionalGeneration.from_pretrained('t5-small')
+
+# Translation task
+input_text = "translate English to German: Hello, how are you?"
+inputs = tokenizer(input_text, return_tensors='pt')
+
+outputs = model.generate(**inputs, max_length=50)
+print(tokenizer.decode(outputs[0], skip_special_tokens=True))
+# → "Hallo, wie geht es Ihnen?"
+```
+
+---
+
+### Summary: Architecture Design Decisions
+
+| Decision | BERT | GPT | T5 |
+|----------|------|-----|-----|
+| **Attention direction** | Bidirectional | Causal (left-only) | Encoder: bidir, Decoder: causal |
+| **Position encoding** | Learned (512 max) | Learned → RoPE | Relative position bias |
+| **LayerNorm placement** | Post-LN | Pre-LN (GPT-2+) | Pre-LN |
+| **Training objective** | MLM (15% masked) | CLM (100% positions) | Span corruption |
+| **Cross-attention** | No | No | Yes |
+| **Generation efficient** | ❌ | ✅ (KV-cache) | ✅ but slower |
+| **In-context learning** | ❌ | ✅ | Limited |
+
+The key insight: **GPT's simplicity is a feature, not a bug**. One stack, one attention type, one training objective — and it scales better than the alternatives.
+
 
 ---
 
@@ -434,4 +702,4 @@ print(f"GPT completion: {generated[0]['generated_text']}")
 ---
 
 *Day 5 of 60 | LLM Fundamentals*
-*Word count: ~3250 | Reading time: ~16 minutes*
+*Word count: ~4600 | Reading time: ~23 minutes*
