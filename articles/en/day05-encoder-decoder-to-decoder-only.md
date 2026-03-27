@@ -165,7 +165,7 @@ FFN(x) = GELU(xW₁ + b₁)W₂ + b₂
 **Why GELU activation**: GELU (Gaussian Error Linear Unit) outperforms ReLU for language tasks. It's smooth (differentiable everywhere) and handles negative values better than ReLU.
 
 ![GELU vs ReLU](../zh/images/day05/gelu-vs-relu.png)
-*Figure: GELU allows small negative gradients to flow, preventing "dead neurons" that plague ReLU.*
+*Figure 2: GELU allows small negative gradients to flow, preventing "dead neurons" that plague ReLU.*
 
 **Design trade-off**: FFN has the most parameters in each layer (2 × 768 × 3072 = 4.7M per layer). This is where most of the "knowledge" is stored.
 
@@ -176,7 +176,7 @@ FFN(x) = GELU(xW₁ + b₁)W₂ + b₂
 - LayerNorm: Normalizes each sample independently for stable training
 
 ![Residual Connection](../zh/images/day05/residual-connection.png)
-*Figure: Residual connections provide a "gradient highway" — even if Layer(x) gradients vanish, the shortcut path (×1) preserves gradient flow.*
+*Figure 3: Residual connections provide a "gradient highway" — even if Layer(x) gradients vanish, the shortcut path (×1) preserves gradient flow.*
 
 **Why residual connections matter**: Without them, gradients must pass through every layer during backpropagation. If each layer shrinks the gradient by 0.9×, after 12 layers: 0.9¹² ≈ 0.28 — the gradient nearly vanishes! With residual connections, gradients have a shortcut that multiplies by 1, so: 1¹² = 1 — no vanishing.
 
@@ -536,7 +536,7 @@ The key insight: **GPT's simplicity is a feature, not a bug**. One stack, one at
 The single most important structural difference between BERT and GPT is the attention mask.
 
 ![Attention Masks](../zh/images/day05/attention-masks.png)
-*Figure 2: Left — BERT's full attention matrix: every token attends to every other token (all ✓). Right — GPT's causal mask: lower-triangular, with future positions blocked (✗). This one difference determines everything.*
+*Figure 4: Left — BERT's full attention matrix: every token attends to every other token (all ✓). Right — GPT's causal mask: lower-triangular, with future positions blocked (✗). This one difference determines everything.*
 
 For a sequence of length *n*:
 
@@ -569,7 +569,7 @@ Where:
 **Key insight from the math**: MLM trains on only ~15% of tokens per sequence (the masked ones). CLM trains on *every single token position* — 100% training signal efficiency. This means GPT extracts 6–7× more training signal from the same amount of data.
 
 ![Training Objectives](../zh/images/day05/training-objectives.png)
-*Figure 3: MLM vs CLM training objectives. BERT predicts masked tokens in parallel using full bidirectional context. GPT predicts each next token sequentially using only left context — but trains on every position.*
+*Figure 5: MLM vs CLM training objectives. BERT predicts masked tokens in parallel using full bidirectional context. GPT predicts each next token sequentially using only left context — but trains on every position.*
 
 ### 3.2 Why CLM Gets More Signal
 
@@ -586,7 +586,7 @@ This isn't just about efficiency — it's about what the model learns. GPT must 
 This is the crux of the article. The question isn't just "which is better" — it's *why* the mechanisms of decoder-only architectures proved decisive at scale.
 
 ![Why GPT Won](../zh/images/day05/why-decoder-only-won-v2.png)
-*Figure 4: Four concrete reasons why decoder-only architectures came to dominate. Each reason compounds the others — together they create a decisive advantage at scale.*
+*Figure 6: Four concrete reasons why decoder-only architectures came to dominate. Each reason compounds the others — together they create a decisive advantage at scale.*
 
 ### 4.1 KV-Cache: The Inference Efficiency Killer Feature
 
@@ -696,7 +696,7 @@ Bidirectional models like BERT don't develop this capability — there's no ince
 ## 5. The Architecture Evolution Timeline
 
 ![Timeline](../zh/images/day05/timeline.png)
-*Figure 5: Architecture evolution from 2017 to 2023. BERT initially dominated NLP benchmarks, but decoder-only models (GPT-2, GPT-3, ChatGPT) showed increasingly powerful capabilities at scale, ultimately winning the mainstream.*
+*Figure 7: Architecture evolution from 2017 to 2023. BERT initially dominated NLP benchmarks, but decoder-only models (GPT-2, GPT-3, ChatGPT) showed increasingly powerful capabilities at scale, ultimately winning the mainstream.*
 
 The timeline tells the story clearly:
 
@@ -1068,6 +1068,7 @@ Where:
 ### Step-by-Step Example
 
 ![LayerNorm Explained](../zh/images/day05/layernorm-explained.png)
+*Figure 8: LayerNorm transforms raw values (left) to normalized values (right) with mean=0, std=1.*
 
 ```python
 x = [2.0, 4.0, 6.0, 8.0]  # Raw input
