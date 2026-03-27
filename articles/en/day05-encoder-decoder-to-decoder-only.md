@@ -1042,6 +1042,54 @@ y = γ * x_norm + β  # Final output
 
 **γ and β are learnable** — the model decides what distribution each layer needs.
 
+#### Example: Sentiment Intensity
+
+Suppose a layer learns "sentiment intensity":
+
+```python
+# Raw layer output (before LayerNorm)
+"I love this!"   → [+5.0]   # Strong positive
+"It's okay"      → [+0.5]   # Neutral
+"I hate this!"   → [-5.0]   # Strong negative
+```
+
+**Without γ, β**: forced to N(0,1), differences get compressed:
+```python
+# After LayerNorm only
+"I love this!"   → [+1.0]   # Was 10× different from hate,
+"I hate this!"   → [-1.0]   # now only 2× different!
+```
+
+**With γ=5, β=0**: model recovers the needed range:
+```python
+# After LayerNorm × γ + β
+"I love this!"   → [+5.0]   # Original intensity restored!
+"I hate this!"   → [-5.0]   
+```
+
+#### Example: After ReLU
+
+ReLU outputs are always ≥ 0. What if the next layer needs negative values?
+
+```python
+# ReLU output: [0, 1, 3] (all non-negative)
+# After LayerNorm: [-1, 0, 1]
+# With γ=1, β=-2: [-3, -2, -1]  ← Now we have negatives!
+```
+
+#### The Pattern: "Compress Then Expand"
+
+| Step | Purpose |
+|------|---------|
+| LayerNorm | "Compress" to N(0,1) for numerical stability |
+| γ (scale) | Let model decide how much "variance" this layer needs |
+| β (shift) | Let model decide where the "center" should be |
+
+**Why not skip LayerNorm entirely?**
+- No LayerNorm → values may explode → training crashes
+- LayerNorm without γ,β → stable but limited expressiveness
+- LayerNorm + γ,β → stable AND expressive ✓
+
 ### One-liner
 
 **LayerNorm = (x - mean) / std** — "flattens" uneven values to a standard range, keeping training stable across 12, 24, or 96 layers.
