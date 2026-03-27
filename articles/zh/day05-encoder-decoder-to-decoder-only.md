@@ -238,6 +238,18 @@ print(f"Predicted: {predicted_token}")  # → "sat"
 
 GPT（[Radford et al., 2018](https://openai.com/research/language-unsupervised)）使用 Transformer 解码器，但做了一个关键改动：**因果掩码（Causal Mask）**。
 
+> **💡 什么是因果掩码（Causal Masking）？**
+> 
+> Causal = "因在果前"。每个 token 只能关注自己和**之前**的 token（"过去"），永远看不到未来。实现方式是下三角注意力矩阵：
+> ```
+>            The   cat   sat   on
+>       The   ✓     ✗     ✗     ✗    ← "The" 只能看自己
+>       cat   ✓     ✓     ✗     ✗    ← "cat" 能看 "The" + 自己
+>       sat   ✓     ✓     ✓     ✗    ← "sat" 能看前三个
+>       on    ✓     ✓     ✓     ✓    ← "on" 能看之前所有
+> ```
+> 这模拟了真实的文本生成：写一个词时，你只知道前面写了什么。
+
 #### 层结构（重复 L 次）
 
 ```

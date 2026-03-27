@@ -236,6 +236,18 @@ print(f"Predicted: {predicted_token}")  # → "sat"
 
 GPT ([Radford et al., 2018](https://openai.com/research/language-unsupervised)) uses the Transformer decoder with one critical modification: **causal masking**.
 
+> **💡 What is Causal Masking?**
+> 
+> Causal = "cause comes before effect." Each token can only attend to itself and **previous** tokens (the "past"), never future tokens. This is implemented as a lower-triangular attention matrix:
+> ```
+>            The   cat   sat   on
+>       The   ✓     ✗     ✗     ✗    ← "The" only sees itself
+>       cat   ✓     ✓     ✗     ✗    ← "cat" sees "The" + itself
+>       sat   ✓     ✓     ✓     ✗    ← "sat" sees first three
+>       on    ✓     ✓     ✓     ✓    ← "on" sees everything before it
+> ```
+> This mirrors real text generation: when writing a word, you only know what you've written so far.
+
 #### Layer Structure (repeated L times)
 
 ```
