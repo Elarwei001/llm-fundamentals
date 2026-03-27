@@ -92,11 +92,14 @@ $$
 \end{aligned}
 $$
 
-**为何双向**：以"bank"这个词为例，出现在两句话中：
-- "I deposited money at the **bank**"（金融机构）
-- "I sat by the river **bank**"（河岸）
+**为何双向**：以这个句子中的 "bank" 为例：
+- "The river **bank** was steep and muddy"
 
-要正确编码"bank"，你需要同时看到左侧语境（"deposited money"）和右侧语境（"river"）。双向注意力使这种歧义消解成为可能。
+要正确将 "bank" 编码为*河岸*（而非*银行*），模型需要：
+- 左侧上下文："The river" → 暗示地理含义
+- 右侧上下文："was steep and muddy" → 确认是物理地形
+
+双向注意力让 BERT 能同时看到两边，从而实现消歧。而单向模型（如 GPT）必须在看到 "was steep" 之前就猜测 "bank" 的含义——这要难得多。
 
 **为何用多头（12 个注意力头）**：不同的头学习不同的注意力模式：
 - 部分头关注句法结构（主语-谓语）

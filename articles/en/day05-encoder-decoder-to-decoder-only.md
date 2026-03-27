@@ -90,11 +90,14 @@ $$
 \end{aligned}
 $$
 
-**Why bidirectional**: Consider the word "bank" in two sentences:
-- "I deposited money at the **bank**" (financial)
-- "I sat by the river **bank**" (geographical)
+**Why bidirectional**: Consider the word "bank" in this sentence:
+- "The river **bank** was steep and muddy"
 
-To correctly encode "bank," you need BOTH left context ("deposited money") AND right context ("river"). Bidirectional attention enables this disambiguation.
+To correctly encode "bank" as *riverbank* (not *financial institution*), the model needs:
+- Left context: "The river" → suggests geographical meaning
+- Right context: "was steep and muddy" → confirms physical terrain
+
+Bidirectional attention lets BERT see both sides simultaneously, enabling this disambiguation. A left-only model (like GPT) would have to guess "bank" before seeing "was steep" — much harder.
 
 **Why multi-head (12 heads)**: Different heads learn different attention patterns:
 - Some heads attend to syntactic structure (subject-verb)
