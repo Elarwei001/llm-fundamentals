@@ -63,6 +63,21 @@ Token Embedding + Segment Embedding + Position Embedding = Input
 
 **Design trade-off**: Fixed 512 max positions. Longer sequences require sliding window or truncation — a limitation that decoder-only models later addressed with RoPE.
 
+> **💡 FAQ: Why does position encoding need to be "learned"?**
+>
+> You might ask: isn't position information the same for all text? "Position 3" is just "position 3" — what's there to learn?
+>
+> Good intuition! Learned Position Embeddings don't learn "the position itself," but rather "the semantic tendency of that position" — e.g., position 1 often contains articles/subjects, positions 2-3 often contain adjectives, etc.
+>
+> But in practice, **both approaches perform similarly**. Even with Sinusoidal encoding, the Attention layers learn positional semantics anyway. BERT chose Learned mainly because **it's simpler to implement** (one line of `nn.Embedding` vs a math function), not because it's more effective.
+>
+> | | Sinusoidal | Learned |
+> |--|-----------|---------|
+> | Concept | Pure math formula | Learnable parameters |
+> | Code | Requires a function | One line |
+> | Length extrapolation | ✅ Yes | ❌ No |
+> | Performance | About the same | About the same |
+
 #### Component 2: Multi-Head Bidirectional Self-Attention
 
 **What it does**: Each token computes attention over ALL other tokens simultaneously.
