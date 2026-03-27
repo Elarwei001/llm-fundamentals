@@ -1234,4 +1234,4 @@ ReLU outputs are always ≥ 0. What if the next layer needs negative values?
 ---
 
 *Day 5 of 60 | LLM Fundamentals*
-*Word count: ~5500 | Reading time: ~28 minutes*
+*Word count: ~6000 | Reading time: ~30 minutes*
