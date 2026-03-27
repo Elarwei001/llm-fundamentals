@@ -306,11 +306,11 @@ mask = [
 **GPT-2 起使用前置层归一化**：LayerNorm 在注意力/FFN **之前**，而非之后。
 
 ```python
-# Post-LN (BERT, GPT-1)
-x = x + Attention(LayerNorm(x))  # ❌ Unstable for deep models
+# Post-LN (BERT, GPT-1): LayerNorm 在子层之后
+x = LayerNorm(x + Attention(x))  # ❌ 深层模型不稳定
 
-# Pre-LN (GPT-2+)
-x = x + Attention(LayerNorm(x))  # ✅ More stable gradients
+# Pre-LN (GPT-2+): LayerNorm 在子层之前
+x = x + Attention(LayerNorm(x))  # ✅ 梯度更稳定
 ```
 
 **为何切换**：前置层归一化在极深模型（48 层以上）中产生更稳定的梯度。当模型扩展到千亿参数量级时，这一点至关重要。

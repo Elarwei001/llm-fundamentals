@@ -304,10 +304,10 @@ mask = [
 **GPT-2 onwards uses Pre-LN**: LayerNorm BEFORE attention/FFN, not after.
 
 ```python
-# Post-LN (BERT, GPT-1)
-x = x + Attention(LayerNorm(x))  # ❌ Unstable for deep models
+# Post-LN (BERT, GPT-1): LayerNorm AFTER the sublayer
+x = LayerNorm(x + Attention(x))  # ❌ Unstable for deep models
 
-# Pre-LN (GPT-2+)
+# Pre-LN (GPT-2+): LayerNorm BEFORE the sublayer
 x = x + Attention(LayerNorm(x))  # ✅ More stable gradients
 ```
 
