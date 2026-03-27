@@ -29,13 +29,13 @@
 
 ### Week 1: 从神经网络到 Transformer 🔥🔥
 
-| Day | 主题 | 核心问题 | 热度来源 |
+| Day | 主题 | 核心问题 | 文章链接 |
 |-----|------|----------|----------|
-| D1 | 神经网络速览 | 为什么深度学习能 work？Universal approximation | 基础铺垫 |
-| D2 | RNN 的兴衰 | 序列建模的第一次尝试，vanishing gradient | 历史背景 |
-| D3 | **Attention 的诞生** | "Attention is All You Need" 论文精读 | 🔥 transformer paper +100% |
-| D4 | **Transformer 架构详解** | Self-attention、Multi-head、Position encoding | 🔥 how transformer works |
-| D5 | Encoder-Decoder 到 Decoder-only | BERT vs GPT，为什么 GPT 路线胜出 | 架构演进 |
+| D1 | 神经网络速览 | 为什么深度学习能 work？ | [EN](articles/en/day01-neural-network-overview.md) / [中文](articles/zh/day01-neural-network-overview.md) |
+| D2 | RNN 的兴衰 | 序列建模的第一次尝试 | [EN](articles/en/day02-rise-and-fall-of-rnn.md) / [中文](articles/zh/day02-rise-and-fall-of-rnn.md) |
+| D3 | **Attention 的诞生** | "Attention is All You Need" 精读 | [EN](articles/en/day03-birth-of-attention.md) / [中文](articles/zh/day03-birth-of-attention.md) |
+| D4 | **Transformer 架构详解** | Self-attention、Multi-head、Position encoding | [EN](articles/en/day04-transformer-architecture.md) / [中文](articles/zh/day04-transformer-architecture.md) |
+| D5 | Encoder-Decoder 到 Decoder-only | BERT vs GPT，为什么 GPT 胜出 | [EN](articles/en/day05-encoder-decoder-to-decoder-only.md) / [中文](articles/zh/day05-encoder-decoder-to-decoder-only.md) |
 
 **D3 附加材料**：
 - 论文原文：[Attention is All You Need](https://arxiv.org/abs/1706.03762)
