@@ -761,11 +761,11 @@ print(f"GPT completion: {generated[0]['generated_text']}")
 
 ---
 
-## Appendix B: Why FFN Expands Then Compresses (768 → 3072 → 768)
+## Appendix A: Why FFN Expands Then Compresses (768 → 3072 → 768)
 
 > This appendix explores the mathematical foundations behind FFN's "expand-then-compress" design and connects it to modern model compression techniques.
 
-### B.1 The Puzzle
+### A.1 The Puzzle
 
 At first glance, FFN's design seems contradictory:
 
@@ -777,7 +777,7 @@ At first glance, FFN's design seems contradictory:
 
 **Why expand to a higher dimension just to compress back?**
 
-### B.2 The Mathematical Foundation
+### A.2 The Mathematical Foundation
 
 #### Cover's Theorem (1965)
 
@@ -823,7 +823,7 @@ FFN is literally a single-hidden-layer network:
 - Hidden: 3072 (the "sufficient width")
 - Output: 768
 
-### B.3 What Gets Lost in Compression?
+### A.3 What Gets Lost in Compression?
 
 **Yes, information is lost when projecting 3072 → 768.** But:
 
@@ -831,7 +831,7 @@ FFN is literally a single-hidden-layer network:
 2. **Redundant dimensions are discarded** — the 3072-dim representation has redundancy
 3. **Like JPEG compression** — discard what doesn't matter, keep what does
 
-### B.4 Connection to Model Compression Paradigms
+### A.4 Connection to Model Compression Paradigms
 
 The "expand-compress" insight connects to three major model compression approaches:
 
@@ -897,7 +897,7 @@ Accuracy loss: Near zero
 
 Uses **QJL (Quantized Johnson-Lindenstrauss)** — a 1-bit error checker based on the same JL Lemma that explains why dimension reduction preserves information.
 
-### B.5 Can These Be Combined?
+### A.5 Can These Be Combined?
 
 Theoretically yes:
 
@@ -913,7 +913,7 @@ Ultimate (10% params, 3-bit, KAN)
 
 This could yield 60×+ compression. Research ongoing.
 
-### B.6 The Philosophical Divide
+### A.6 The Philosophical Divide
 
 Each approach embeds a different belief about neural networks:
 
@@ -924,7 +924,7 @@ Each approach embeds a different belief about neural networks:
 | **Quantization** | "We don't need that much numerical precision" |
 | **FFN design** | "Complex patterns need high-dim space to untangle" |
 
-### B.7 Key Takeaways
+### A.7 Key Takeaways
 
 1. **FFN's expand-compress is mathematically grounded** — Cover's theorem explains why high dimensions help; JL lemma explains why compression works
 
