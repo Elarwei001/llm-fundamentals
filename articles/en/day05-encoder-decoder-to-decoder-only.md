@@ -955,6 +955,8 @@ Each approach embeds a different belief about neural networks:
 
 4. **The future likely combines all three** — achieving extreme compression while maintaining capability
 
+*This appendix emerged from a discussion about why FFN seems to "waste" computation by expanding then compressing. The answer: it's not waste, it's the mathematical foundation of how neural networks separate complex patterns.*
+
 ---
 
 ## Appendix B: LayerNorm Explained Visually
@@ -1093,11 +1095,6 @@ ReLU outputs are always ≥ 0. What if the next layer needs negative values?
 ### One-liner
 
 **LayerNorm = (x - mean) / std** — "flattens" uneven values to a standard range, keeping training stable across 12, 24, or 96 layers.
-
----
-
-*This appendix emerged from a discussion about why FFN seems to "waste" computation by expanding then compressing. The answer: it's not waste, it's the mathematical foundation of how neural networks separate complex patterns.*
-
 
 ---
 
