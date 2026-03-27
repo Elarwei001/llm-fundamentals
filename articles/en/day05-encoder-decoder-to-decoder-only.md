@@ -868,6 +868,29 @@ print(f"GPT completion: {generated[0]['generated_text']}")
 
 3. **The unified paradigm assumption**: GPT claims "all tasks = text generation." But some tasks are genuinely not text generation — for example, structured prediction (output a parse tree, a table, a protein sequence). How would you use a decoder-only model for these? What are the limits of the text-generation paradigm?
 
+> **💡 Discussion: When can GPT generate structured output?**
+> 
+> **The key insight**: If a structure has a **standard serialization format**, GPT can generate it well.
+> 
+> | Structure | Serialization | GPT Ability |
+> |-----------|---------------|-------------|
+> | JSON | `{"key": "value"}` | ✅ Strong |
+> | SQL | `SELECT * FROM...` | ✅ Strong |
+> | Code | Python/JS syntax | ✅ Strong |
+> | LaTeX | `\frac{a}{b}` | ✅ Strong |
+> | Parse tree | S-expression `(S (NP) (VP))` | ✅ Can do |
+> | Molecules | SMILES `CC(=O)OC1=...` | ✅ Can do |
+> | **3D coordinates** | Thousands of floats? | ❌ Hard |
+> | **Graphs** | How to linearize? | ❌ Hard |
+> | **Images/Audio** | Pixel/waveform arrays | ❌ Not suitable |
+> 
+> **Why?** GPT has seen JSON, SQL, code millions of times in training data — it learned the format rules. For structures without standard text serialization (3D, graphs, images), specialized architectures work better:
+> - Images → Diffusion models
+> - Proteins → AlphaFold
+> - Audio → Specialized audio models
+> 
+> **Rule of thumb**: Standardized serialization = GPT can learn it. No serialization = need specialized architecture.
+
 4. **BERT's future**: In a world where RAG systems use BERT for retrieval and GPT for generation, is there a single architecture that could do both well? What would it look like?
 
 ---
