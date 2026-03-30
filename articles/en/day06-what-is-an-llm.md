@@ -246,7 +246,83 @@ A model with 10 million parameters struggles at in-context learning. A model wit
 
 ---
 
-## 10. Further Reading
+## 10. Capability Boundaries and Academic Debates
+
+Now that you understand *what* an LLM is, it's equally important to understand what it *isn't*. LLMs are powerful, but they're not a universal solution — and the AI research community is actively debating their fundamental limitations.
+
+### 10.1 What LLMs Excel At
+
+| Capability | Why It Works |
+|------------|--------------|
+| **Text generation** | Direct training objective |
+| **Translation** | Massive multilingual data |
+| **Summarization** | Compression is implicit in next-token prediction |
+| **Code generation** | Code follows learnable patterns |
+| **Style transfer** | Stylistic patterns in training data |
+| **Few-shot learning** | Emergent in-context learning ability |
+
+These tasks share a common thread: they can be framed as *plausible continuation* of an input sequence. LLMs are essentially masters of *what sounds right* based on the patterns they've absorbed.
+
+### 10.2 What LLMs Struggle With
+
+| Limitation | Root Cause |
+|------------|------------|
+| **Precise calculation** | Training objective is pattern-matching, not computation |
+| **Reliable factual recall** | Knowledge is compressed and probabilistic, not indexed |
+| **Causal reasoning** | Correlation patterns ≠ causal understanding |
+| **Real-time learning** | Weights are frozen at inference time |
+| **Self-knowledge** | No reliable mechanism to know what they don't know |
+| **Long-horizon planning** | Each token is generated myopically |
+
+**A concrete example**: Ask an LLM "What is 3,847 × 2,918?" and it might generate a plausible-looking but wrong answer. It's not computing — it's *guessing what a correct answer looks like*. This is why tool use (calculators, code interpreters) is essential for reliable computation.
+
+### 10.3 The "Stochastic Parrot" Critique
+
+In 2021, a famous paper by Bender et al. introduced the term **"stochastic parrot"** to describe LLMs:
+
+> "A stochastic parrot is a system that haphazardly stitches together sequences of linguistic forms ... without any reference to meaning."
+
+**The critique**: LLMs manipulate symbols without grounding in the real world. They learn correlations between words, but not the *concepts* those words refer to. A child learns "hot" by touching a stove; an LLM learns "hot" by observing which words appear near it.
+
+**The counter-argument**: At sufficient scale, do rich enough correlations *become* a form of understanding? The debate continues.
+
+### 10.4 Yann LeCun and the World Model Argument
+
+Meta's Chief AI Scientist **Yann LeCun** has been one of the most vocal critics of the LLM paradigm. His key arguments:
+
+1. **LLMs lack world models**: They don't build internal representations of how the world works — they only model text distributions.
+
+2. **Next-token prediction is insufficient**: Human cognition involves predicting the future state of the world, not just the next word.
+
+3. **LLMs can't reason**: They can mimic reasoning patterns they've seen, but don't perform genuine causal inference.
+
+LeCun advocates for a different approach: **Joint Embedding Predictive Architectures (JEPA)** — models that learn to predict in *representation space* rather than token space, and build hierarchical world models.
+
+### 10.5 Alternative Architectures Being Explored
+
+| Architecture | Key Idea | Status |
+|--------------|----------|--------|
+| **JEPA** (LeCun) | Predict representations, not tokens; build world models | Research stage |
+| **V-JEPA** | Video-based JEPA for learning physics | Published 2024 |
+| **Mamba / State Space Models** | Efficient alternatives to attention for long sequences | Growing adoption |
+| **Neuro-symbolic AI** | Combine neural networks with symbolic reasoning | Active research |
+| **Retrieval-Augmented Generation** | Ground LLMs with external knowledge | Production use |
+
+**The honest answer**: As of 2026, no alternative has matched LLMs' general capability, but the fundamental limitations LeCun and others highlight remain unsolved.
+
+### 10.6 A Balanced View
+
+LLMs are best understood as:
+- ✅ **Extremely powerful** for language-centric tasks
+- ✅ **Useful components** in larger systems (with tools, retrieval, verification)
+- ❌ **Not AGI** — they lack genuine reasoning, world models, and self-awareness
+- ❌ **Not reliable** for tasks requiring factual precision without verification
+
+**The practical takeaway**: Use LLMs for what they're good at, build guardrails for what they're bad at, and stay informed as the field evolves.
+
+---
+
+## 11. Further Reading
 
 ### Foundational Papers
 1. [Language Models are Unsupervised Multitask Learners (GPT-2)](https://cdn.openai.com/better-language-models/language_models_are_unsupervised_multitask_learners.pdf) — The paper that showed scale unlocks unexpected capabilities
@@ -260,7 +336,7 @@ A model with 10 million parameters struggles at in-context learning. A model wit
 
 ---
 
-## Reflection Questions
+## 12. Reflection Questions
 
 1. If an LLM's entire training signal is "predict the next token," what are the fundamental *limits* of what it can learn? What kinds of knowledge or skills are in principle impossible to acquire this way?
 
@@ -270,7 +346,7 @@ A model with 10 million parameters struggles at in-context learning. A model wit
 
 ---
 
-## Summary
+## 13. Summary
 
 | Concept | One-line Explanation |
 |---------|---------------------|
