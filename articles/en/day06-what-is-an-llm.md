@@ -21,7 +21,7 @@ This is one of the most surprising findings in modern AI: **you don't need to ex
 An LLM is a function that computes:
 
 $$
-P(\text{next\_token} \mid \text{context})
+P(\text{next token} \mid \text{context})
 $$
 
 That's it. Given a sequence of tokens (words, subwords, punctuation), it outputs a probability distribution over what token is likely to come next.
@@ -274,7 +274,7 @@ A model with 10 million parameters struggles at in-context learning. A model wit
 
 | Concept | One-line Explanation |
 |---------|---------------------|
-| LLM core operation | $P(\text{next\_token} \mid \text{context})$ — predict the next token |
+| LLM core operation | $P(\text{next token} \mid \text{context})$ — predict the next token |
 | Chain rule | $P(\text{sentence}) = \prod_t P(x_t \mid x_{<t})$ |
 | Training objective | Minimize cross-entropy loss on next-token prediction |
 | "Large" | Refers to parameters (100B+), training data (1T+ tokens), and compute |
@@ -283,7 +283,7 @@ A model with 10 million parameters struggles at in-context learning. A model wit
 | Emergence | Capabilities that appear at scale thresholds, not visible in smaller models |
 | Hallucination root cause | No mechanism to distinguish "I know this" from "I'll predict something plausible" |
 
-**Key Takeaway**: A Large Language Model is a function that computes $P(\text{next\_token} \mid \text{context})$, trained at massive scale to minimize prediction error on human text. The intelligence we observe is not programmed explicitly — it *emerges* from the pressure of accurately predicting an enormous diversity of human-generated text. Everything you've seen LLMs do (code, reasoning, translation, creativity) is downstream of this deceptively simple objective applied at previously impossible scale.
+**Key Takeaway**: A Large Language Model is a function that computes $P(\text{next token} \mid \text{context})$, trained at massive scale to minimize prediction error on human text. The intelligence we observe is not programmed explicitly — it *emerges* from the pressure of accurately predicting an enormous diversity of human-generated text. Everything you've seen LLMs do (code, reasoning, translation, creativity) is downstream of this deceptively simple objective applied at previously impossible scale.
 
 ---
 
