@@ -290,7 +290,7 @@ In 2021, a famous paper by Bender et al. introduced the term **"stochastic parro
 
 ### 10.4 Yann LeCun and the World Model Argument
 
-Meta's Chief AI Scientist **Yann LeCun** has been one of the most vocal critics of the LLM paradigm. His key arguments:
+**Yann LeCun**, formerly Meta's Chief AI Scientist (now founder of his own AI research company), has been one of the most vocal critics of the LLM paradigm. His key arguments:
 
 1. **LLMs lack world models**: They don't build internal representations of how the world works — they only model text distributions.
 
