@@ -306,7 +306,7 @@ LeCun advocates for a different approach: **Joint Embedding Predictive Architect
 |--------------|----------|--------|
 | **JEPA** (LeCun) | Predict representations, not tokens; build world models | Research stage |
 | **V-JEPA** | Video-based JEPA for learning physics | Published 2024 |
-| **Mamba / State Space Models** | Efficient alternatives to attention for long sequences | Growing adoption |
+| **Mamba / State Space Models** | O(n) complexity for long sequences (100K+ tokens); Transformer still wins on short sequences | Growing adoption for long-context use cases |
 | **Neuro-symbolic AI** | Combine neural networks with symbolic reasoning | Active research |
 | **Retrieval-Augmented Generation** | Ground LLMs with external knowledge | Production use |
 
