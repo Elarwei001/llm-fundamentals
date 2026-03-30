@@ -263,18 +263,20 @@ Now that you understand *what* an LLM is, it's equally important to understand w
 
 These tasks share a common thread: they can be framed as *plausible continuation* of an input sequence. LLMs are essentially masters of *what sounds right* based on the patterns they've absorbed.
 
-### 10.2 What LLMs Struggle With
+### 10.2 What LLMs Struggle With (And What's Improving)
 
-| Limitation | Root Cause |
-|------------|------------|
-| **Precise calculation** | Training objective is pattern-matching, not computation |
-| **Reliable factual recall** | Knowledge is compressed and probabilistic, not indexed |
-| **Causal reasoning** | Correlation patterns ≠ causal understanding |
-| **Real-time learning** | Weights are frozen at inference time |
-| **Self-knowledge** | No reliable mechanism to know what they don't know |
-| **Long-horizon planning** | Each token is generated myopically |
+| Limitation | Root Cause | 2026 Status |
+|------------|------------|-------------|
+| **Precise calculation** | Pattern-matching, not computation | ✅ **Largely solved** via CoT + verification |
+| **Reliable factual recall** | Knowledge is compressed, not indexed | 🟡 Improving with RAG |
+| **Causal reasoning** | Correlation ≠ causation | ✅ **Much better** with CoT/ToT |
+| **Real-time learning** | Weights frozen at inference | ❌ Still unsolved |
+| **Self-knowledge** | No reliable uncertainty mechanism | 🟡 Improving with calibration |
+| **Long-horizon planning** | Myopic token generation | 🟡 Improving with agents |
 
-**A concrete example**: Ask an LLM "What is 3,847 × 2,918?" and it might generate a plausible-looking but wrong answer. It's not computing — it's *guessing what a correct answer looks like*. This is why tool use (calculators, code interpreters) is essential for reliable computation.
+**The 2026 reality**: Chain-of-Thought (CoT) and reasoning models like o1/o3 have dramatically improved math and reasoning capabilities. Models now solve IMO-level problems and pass bar exams. However, this is achieved through *learning to reason step-by-step* rather than fundamental architectural changes — the debate continues on whether this is "true" reasoning or sophisticated pattern-matching of reasoning patterns.
+
+**What remains hard**: Real-time learning (updating knowledge without retraining), reliable self-knowledge (knowing when to say "I don't know"), and tasks requiring genuine world interaction rather than text manipulation.
 
 ### 10.3 The "Stochastic Parrot" Critique
 
