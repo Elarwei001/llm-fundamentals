@@ -43,9 +43,9 @@
 
 ### Week 2: The Essence of Language Models 🔥🔥🔥
 
-| Day | Topic | Core Question | Trend Source |
-|-----|-------|---------------|--------------|
-| D6 | **What is an LLM** | P(next_token\|context) — One sentence definition | 🔥🔥 what is LLM +100 |
+| Day | Topic | Core Question | Trend Source | Article |
+|-----|-------|---------------|--------------|---------|
+| D6 | **What is an LLM** | P(next_token\|context) — One sentence definition | 🔥🔥 what is LLM +100 | [EN](articles/en/day06-what-is-an-llm.md) / [中文](articles/zh/day06-what-is-an-llm.md) |
 | D7 | Tokenization | BPE, WordPiece, why tokenizers matter | Token-related searches |
 | D8 | The Magic of Embeddings | Word vectors, positional encoding, semantic space | Technical details |
 | D9 | **Scaling Laws** | Chinchilla, Kaplan, why "bigger is better" | Model scale questions |
