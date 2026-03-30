@@ -1,0 +1,63 @@
+{
+  "current_day": 6,
+  "last_generated": "2026-03-30",
+  "total_days": 60,
+  "status": "active",
+  "history": [
+    {
+      "day": 1,
+      "date": "2026-03-23",
+      "topic": "Neural Network Overview",
+      "en_path": "en/day01-neural-network-overview.md",
+      "zh_path": "zh/day01-neural-network-overview.md",
+      "qa_score": 92,
+      "images": ["zh/images/day01/alexnet-learned-filters.png", "zh/images/day01/mlp-architecture.png", "zh/images/day01/feature-hierarchy.png", "zh/images/day01/activation-functions.png", "zh/images/day01/gradient-descent.png"]
+    },
+    {
+      "day": 2,
+      "date": "2026-03-24",
+      "topic": "Rise and Fall of RNN",
+      "en_path": "en/day02-rise-and-fall-of-rnn.md",
+      "zh_path": "zh/day02-rise-and-fall-of-rnn.md",
+      "qa_score": 94,
+      "images": ["zh/images/day02/rnn-architecture.png", "zh/images/day02/vanishing-gradient.png", "zh/images/day02/lstm-architecture.png", "zh/images/day02/sequence-modeling-evolution.png", "zh/images/day02/bptt-visualization.png", "zh/images/day02/tanh-saturation.png"]
+    },
+    {
+      "day": 3,
+      "date": "2026-03-25",
+      "topic": "Birth of Attention",
+      "en_path": "en/day03-birth-of-attention.md",
+      "zh_path": "zh/day03-birth-of-attention.md",
+      "qa_score": 94,
+      "images": ["zh/images/day03/seq2seq-attention-comparison.png", "zh/images/day03/attention-computation-steps.png", "zh/images/day03/attention-heatmap.png", "zh/images/day03/scaled-dot-product-attention.png", "zh/images/day03/scaling-importance.png", "zh/images/day03/attention-evolution-timeline.png"]
+    },
+    {
+      "day": 4,
+      "date": "2026-03-26",
+      "topic": "Transformer Architecture Deep Dive",
+      "en_path": "en/day04-transformer-architecture-deep-dive.md",
+      "zh_path": "zh/day04-transformer-architecture-deep-dive.md",
+      "qa_score": 93,
+      "images": ["zh/images/day04/transformer-architecture-v2.png", "zh/images/day04/multi-head-attention.png", "zh/images/day04/positional-encoding.png", "zh/images/day04/feed-forward-network.png", "zh/images/day04/attention-masks.png", "zh/images/day04/self-vs-cross-attention.png"]
+    },
+    {
+      "day": 5,
+      "date": "2026-03-27",
+      "topic": "Encoder-Decoder to Decoder-only: BERT vs GPT",
+      "en_path": "en/day05-encoder-decoder-to-decoder-only.md",
+      "zh_path": "zh/day05-encoder-decoder-to-decoder-only.md",
+      "qa_score": 91,
+      "qa_rounds": 2,
+      "images": ["zh/images/day05/architecture-comparison.png", "zh/images/day05/attention-masks.png", "zh/images/day05/training-objectives.png", "zh/images/day05/why-gpt-won.png", "zh/images/day05/timeline.png"]
+    },
+    {
+      "day": 6,
+      "date": "2026-03-30",
+      "topic": "What is an LLM",
+      "en_path": "en/day06-what-is-an-llm.md",
+      "zh_path": "zh/day06-what-is-an-llm.md",
+      "qa_score": 95.4,
+      "images": ["zh/images/day06/next-token-prediction.png", "zh/images/day06/what-makes-llm-large.png", "zh/images/day06/llm-inference-pipeline.png"]
+    }
+  ]
+}

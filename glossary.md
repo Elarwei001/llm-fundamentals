@@ -22,6 +22,7 @@
 
 | English | 中文 | 简要说明 |
 |---------|------|----------|
+| Chain Rule of Probability | 概率链式法则 | 将句子概率分解为逐词条件概率乘积的规则 |
 | Chain-of-Thought (CoT) | 思维链 | 让模型逐步推理的提示技术 |
 | Context Window | 上下文窗口 | 模型能处理的最大 token 数 |
 | Cross-Entropy Loss | 交叉熵损失 | 分类任务常用的损失函数 |
