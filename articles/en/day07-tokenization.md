@@ -164,6 +164,26 @@ SentencePiece can implement either BPE or a variant called Unigram (which starts
 
 **Key innovation**: By treating whitespace as a regular character (often marked as `▁`), SentencePiece handles languages without spaces naturally.
 
+#### Clarification: Algorithm vs. Tool
+
+It's easy to confuse these terms. Here's the key distinction:
+
+| | BPE / WordPiece | SentencePiece |
+|--|-----------------|---------------|
+| **What it is** | Tokenization **algorithm** | Tokenization **tool/library** |
+| **Level** | Merge strategy (how to pick pairs) | Implementation framework (how to process input) |
+| **Analogy** | Recipe (the method) | Kitchen (the equipment) |
+
+**SentencePiece is a tool that can use different algorithms internally:**
+
+```
+SentencePiece (tool) + BPE (algorithm)     → LLaMA, T5
+SentencePiece (tool) + Unigram (algorithm) → Also supported
+WordPiece (algorithm) + custom impl        → BERT
+```
+
+When you see "LLaMA uses BPE (SentencePiece)", it means: **SentencePiece library implementing the BPE algorithm**.
+
 ---
 
 ## 3. Vocabulary Size: The Goldilocks Problem
