@@ -433,6 +433,8 @@ for text in texts[:3]:  # BERT 处理 emoji 困难
 ```
 
 **示例输出**（简化）：
+
+OpenAI cl100k_base 输出：
 ```
 'Hello, world!'
   Tokens: [9906, 11, 1917, 0]
@@ -448,6 +450,19 @@ for text in texts[:3]:  # BERT 处理 emoji 困难
   Tokens: [9468, 248, 10058, 596, 733, 0]
   Count: 6
   Decoded pieces: ['🚀', '', " Let's", ' go', '!']
+```
+
+BERT WordPiece 输出：
+```
+'Hello, world!'
+  Tokens: ['hello', ',', 'world', '!']
+  IDs: [7592, 1010, 2088, 999]
+  Count: 4
+
+'tokenization'
+  Tokens: ['token', '##ization']
+  IDs: [19204, 3989]
+  Count: 2
 ```
 
 **关键观察**：
