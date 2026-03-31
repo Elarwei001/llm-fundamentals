@@ -482,15 +482,14 @@ BERT WordPiece 输出：
 **最小描述长度（MDL）原则**：
 
 $$
-\begin{aligned}
-L_{\text{total}} &= L_{\text{vocab}} + L_{\text{corpus}} \\
-&= |\mathcal{V}| \cdot \text{avg\_token\_len} + \sum_{t \in \text{corpus}} \log_2 \frac{1}{P(t)}
-\end{aligned}
+L_{\text{total}} = L_{\text{vocab}} + L_{\text{corpus}} = |V| \cdot \bar{l} + \sum_{t} \log_2 \frac{1}{P(t)}
 $$
 
 其中：
 - $L_{\text{vocab}}$：存储词表的代价
 - $L_{\text{corpus}}$：用词表编码语料的代价
+- $|V|$：词表大小
+- $\bar{l}$：平均 token 长度
 - $P(t)$：语料中 token $t$ 的概率
 
 **BPE 近似这个目标**：通过合并频繁对，BPE 创建经常出现的 token，减少 $L_{\text{corpus}}$。固定词表大小限制了 $L_{\text{vocab}}$。
@@ -498,7 +497,7 @@ $$
 **Unigram（BPE 替代方案）** 显式优化：
 
 $$
-\mathcal{L}(\mathbf{x}) = \sum_{i=1}^{N} \log P(x_i | \theta)
+\mathcal{L}(\mathbf{x}) = \sum_{i=1}^{N} \log P(x_i \mid \theta)
 $$
 
 其中 $\mathbf{x}$ 是语料，$\theta$ 表示词表参数。Unigram 从大词表开始，迭代裁剪对似然影响最小的 token。

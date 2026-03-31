@@ -482,15 +482,14 @@ Tokenization can be viewed through the lens of information theory. The goal is t
 **Minimum Description Length (MDL) principle**:
 
 $$
-\begin{aligned}
-L_{\text{total}} &= L_{\text{vocab}} + L_{\text{corpus}} \\
-&= |\mathcal{V}| \cdot \text{avg\_token\_len} + \sum_{t \in \text{corpus}} \log_2 \frac{1}{P(t)}
-\end{aligned}
+L_{\text{total}} = L_{\text{vocab}} + L_{\text{corpus}} = |V| \cdot \bar{l} + \sum_{t} \log_2 \frac{1}{P(t)}
 $$
 
 Where:
 - $L_{\text{vocab}}$: Cost of storing the vocabulary
 - $L_{\text{corpus}}$: Cost of encoding the corpus using the vocabulary
+- $|V|$: Vocabulary size
+- $\bar{l}$: Average token length
 - $P(t)$: Probability of token $t$ in the corpus
 
 **BPE approximates this**: By merging frequent pairs, BPE creates tokens that appear often, reducing $L_{\text{corpus}}$. The fixed vocabulary size limits $L_{\text{vocab}}$.
@@ -498,7 +497,7 @@ Where:
 **Unigram (alternative to BPE)** explicitly optimizes:
 
 $$
-\mathcal{L}(\mathbf{x}) = \sum_{i=1}^{N} \log P(x_i | \theta)
+\mathcal{L}(\mathbf{x}) = \sum_{i=1}^{N} \log P(x_i \mid \theta)
 $$
 
 Where $\mathbf{x}$ is the corpus and $\theta$ represents vocabulary parameters. Unigram starts with a large vocabulary and iteratively prunes tokens that least impact the likelihood.
