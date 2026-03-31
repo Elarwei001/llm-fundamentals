@@ -34,6 +34,16 @@ See full curriculum: [English](CURRICULUM-EN.md) | [中文](CURRICULUM.md)
 | 4 | Transformer Architecture | Coming soon | 即将发布 |
 | 5 | Encoder-Decoder to Decoder-only | Coming soon | 即将发布 |
 
+### Week 2: Training & Tokenization
+
+| Day | Topic | EN | 中文 |
+|-----|-------|-----|------|
+| 6 | Pretraining vs Fine-tuning | Coming soon | 即将发布 |
+| 7 | Tokenization | [Read](articles/en/day07-tokenization.md) | [阅读](articles/zh/day07-tokenization.md) |
+| 8 | RLHF & DPO | Coming soon | 即将发布 |
+| 9 | Scaling Laws | Coming soon | 即将发布 |
+| 10 | Training Infrastructure | Coming soon | 即将发布 |
+
 *More articles added daily (weekdays).*
 
 ## ⏱️ Time Commitment
