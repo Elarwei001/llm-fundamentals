@@ -111,7 +111,48 @@ $$
 \text{score}(x, y) = \frac{\text{freq}(xy)}{\text{freq}(x) \times \text{freq}(y)}
 $$
 
-WordPiece 不只看频率，而是最大化训练数据的**似然**。它合并比偶然预期更经常一起出现的对。
+WordPiece 不只看频率，而是最大化训练数据的**似然（Likelihood）**。它合并比偶然预期更经常一起出现的对。
+
+#### WordPiece 背后的数学原理
+
+**"最大化似然"是什么意思？**
+
+给定词表 $V$，对语料库分词的似然是：
+
+$$
+P(\text{corpus} | V) = \prod_{\text{word } w} P(w | V)
+$$
+
+对于每个词，我们计算其分词的概率。如果 "tokenization" 被拆成 `["token", "ization"]`：
+
+$$
+P(\text{"tokenization"}) = P(\text{token}) \times P(\text{ization})
+$$
+
+其中每个子词的概率从语料频率估计：
+
+$$
+P(\text{subword}) = \frac{\text{count}(\text{subword})}{\text{total tokens}}
+$$
+
+**为什么这个 score 公式有效？**
+
+WordPiece 的分数 $\frac{\text{freq}(xy)}{\text{freq}(x) \times \text{freq}(y)}$ 实际上是**点互信息（PMI, Pointwise Mutual Information）**——衡量 $x$ 和 $y$ 一起出现的概率比偶然情况高多少。
+
+- **PMI > 1**：$x$ 和 $y$ 一起出现比预期多 → 好的合并候选
+- **PMI = 1**：独立出现，纯粹偶然
+- **PMI < 1**：$x$ 和 $y$ 互相"回避"
+
+**例子**：假设语料库有 10,000 词，"to" 出现 1000 次，"ken" 出现 500 次，"token" 出现 400 次：
+- 偶然共现的期望值：$\frac{1000 \times 500}{10000} = 50$
+- 实际共现：400
+- PMI 类似的分数：$\frac{400}{50} = 8$ → 强信号，应该合并！
+
+**BPE vs WordPiece：**
+- **BPE**：合并最高频的对 → 贪婪、简单
+- **WordPiece**：合并 PMI 最高的对 → 统计学上更有原则
+
+实践中两者产生类似结果，但 WordPiece 倾向于创建更有语言学意义的子词。
 
 **视觉标记**：WordPiece 用 `##` 表示续接。"tokenization" 变成 `["token", "##ization"]`。`##` 信号表示"这个片段续接前一个 token"。
 

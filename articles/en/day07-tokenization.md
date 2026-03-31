@@ -113,6 +113,47 @@ $$
 
 Instead of just frequency, WordPiece maximizes the **likelihood** of the training data. It merges pairs that appear together more often than expected by chance.
 
+#### The Math Behind WordPiece
+
+**What does "maximize likelihood" mean?**
+
+Given a vocabulary $V$, the likelihood of tokenizing a corpus is:
+
+$$
+P(\text{corpus} | V) = \prod_{\text{word } w} P(w | V)
+$$
+
+For each word, we compute the probability of its tokenization. If "tokenization" is split into `["token", "ization"]`:
+
+$$
+P(\text{"tokenization"}) = P(\text{token}) \times P(\text{ization})
+$$
+
+where each subword probability is estimated from corpus frequency:
+
+$$
+P(\text{subword}) = \frac{\text{count}(\text{subword})}{\text{total tokens}}
+$$
+
+**Why the score formula works:**
+
+The WordPiece score $\frac{\text{freq}(xy)}{\text{freq}(x) \times \text{freq}(y)}$ is actually the **Pointwise Mutual Information (PMI)**—it measures how much more likely $x$ and $y$ appear together versus by chance.
+
+- **PMI > 1**: $x$ and $y$ appear together more than expected → good merge candidate
+- **PMI = 1**: Independent, appearing together by chance
+- **PMI < 1**: $x$ and $y$ avoid each other
+
+**Example**: If "to" appears 1000 times, "ken" appears 500 times, and "token" appears 400 times in a corpus of 10,000 words:
+- Expected co-occurrence by chance: $\frac{1000 \times 500}{10000} = 50$
+- Actual co-occurrence: 400
+- PMI-like score: $\frac{400}{50} = 8$ → Strong signal to merge!
+
+**BPE vs WordPiece:**
+- **BPE**: Merge most frequent pair → greedy, simple
+- **WordPiece**: Merge pair with highest PMI → statistically principled
+
+In practice, both produce similar results, but WordPiece tends to create more linguistically meaningful subwords.
+
 **Visual marker**: WordPiece uses `##` to indicate continuation. "tokenization" becomes `["token", "##ization"]`. The `##` signals "this piece continues the previous token."
 
 ### 2.3 SentencePiece
