@@ -51,7 +51,7 @@ On the flip side, character-level tokenization (where each character is a token)
 **The fundamental tension**: We need a vocabulary small enough to be practical, yet expressive enough to handle any text efficiently.
 
 ![Tokenization Strategies](../zh/images/day07/tokenization-strategies.png)
-*Figure 2: Character-level tokenization creates very long sequences, word-level requires enormous vocabularies, but subword tokenization hits the sweet spot.*
+*Figure 2: Character-level tokenization creates very long sequences, word-level requires enormous vocabularies, but subword tokenization (like BPE—Byte Pair Encoding) hits the sweet spot.*
 
 ---
 
