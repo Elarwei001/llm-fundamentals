@@ -1,6 +1,6 @@
 {
-  "current_day": 6,
-  "last_generated": "2026-03-30",
+  "current_day": 7,
+  "last_generated": "2026-03-31",
   "total_days": 60,
   "status": "active",
   "history": [
@@ -58,6 +58,15 @@
       "zh_path": "zh/day06-what-is-an-llm.md",
       "qa_score": 95.4,
       "images": ["zh/images/day06/next-token-prediction.png", "zh/images/day06/what-makes-llm-large.png", "zh/images/day06/llm-inference-pipeline.png"]
+    },
+    {
+      "day": 7,
+      "date": "2026-03-31",
+      "topic": "Tokenization",
+      "en_path": "en/day07-tokenization.md",
+      "zh_path": "zh/day07-tokenization.md",
+      "qa_score": 92.7,
+      "images": ["zh/images/day07/tokenization-pipeline.png", "zh/images/day07/tokenization-strategies.png", "zh/images/day07/bpe-algorithm.png", "zh/images/day07/vocab-size-tradeoff.png", "zh/images/day07/special-tokens.png", "zh/images/day07/tokenizer-comparison.png", "zh/images/day07/tokenization-edge-cases.png"]
     }
   ]
 }

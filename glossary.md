@@ -17,6 +17,7 @@
 | Backpropagation | 反向传播 | 计算梯度的高效算法 |
 | Batch Size | 批大小 | 每次训练使用的样本数 |
 | BERT | BERT | Bidirectional Encoder Representations from Transformers |
+| BPE | 字节对编码 | Byte Pair Encoding，子词分词算法 |
 
 ## C
 
@@ -138,7 +139,9 @@
 |---------|------|----------|
 | Scaling Laws | 缩放定律 | 模型性能与规模的关系 |
 | Self-Attention | 自注意力 | Token 之间相互计算注意力 |
+| SentencePiece | SentencePiece | Google 的语言无关子词分词器 |
 | Softmax | Softmax | 将 logits 转换为概率分布 |
+| Subword Tokenization | 子词分词 | 介于字符和词之间的分词策略 |
 
 ## T
 
@@ -161,11 +164,18 @@
 |---------|------|----------|
 | Vanishing Gradient | 梯度消失 | 深层网络中梯度趋近于零的问题 |
 
+## V
+
+| English | 中文 | 简要说明 |
+|---------|------|----------|
+| Vocabulary | 词表 | 分词器可识别的所有 token 集合 |
+
 ## W
 
 | English | 中文 | 简要说明 |
 |---------|------|----------|
 | Weight | 权重 | 神经网络中的可学习参数 |
+| WordPiece | WordPiece | Google BERT 使用的子词分词算法 |
 
 ---
 
