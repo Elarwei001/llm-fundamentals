@@ -187,6 +187,43 @@ Choosing vocabulary size is a critical design decision:
 
 The trend is toward larger vocabularies as models scale—the fixed cost of more embeddings is offset by shorter sequences and better coverage.
 
+#### Why Larger Vocabularies Pay Off at Scale
+
+Think of it as **fixed cost vs. variable cost**:
+
+**Embedding cost (fixed, one-time):**
+```
+Memory increase = (100K - 32K) × embedding_dim × 4 bytes
+                = 68K × 4096 × 4 ≈ 1.1 GB
+```
+This is paid once, regardless of how much text you process.
+
+**Sequence length cost (variable, every inference):**
+
+Transformer attention is $O(n^2)$ where $n$ is sequence length.
+
+| Vocabulary | "tokenization" becomes | Tokens |
+|------------|----------------------|--------|
+| Small (char-level) | `["t","o","k","e","n","i","z","a","t","i","o","n"]` | 12 |
+| Large | `["token", "ization"]` | 2 |
+
+Every inference pays this cost. Process a trillion tokens, and the savings compound massively.
+
+**The trade-off:**
+
+| Factor | Small Vocab (8K) | Large Vocab (100K) |
+|--------|------------------|-------------------|
+| Embedding memory | Small (one-time) | Large (one-time) |
+| Sequence length | Long | **Short** |
+| Per-inference compute | High ($n^2$) | **Low** |
+| Rare word coverage | Poor | **Good** |
+
+**Analogy**: It's like buying vs. renting a house:
+- **Large vocab = Buying**: High down payment (big embedding table), but low monthly cost (short sequences)
+- **Small vocab = Renting**: Low upfront cost, but you pay more every month (long sequences)
+
+When the model is already tens of GB, an extra 1-2 GB for embeddings is negligible. But the per-inference savings accumulate forever.
+
 ---
 
 ## 4. Special Tokens: The Control Panel
