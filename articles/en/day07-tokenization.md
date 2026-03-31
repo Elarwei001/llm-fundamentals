@@ -76,7 +76,7 @@ Originally a data compression algorithm from 1994, BPE was adapted for NLP in 20
 3. **Merge**: Combine that pair into a new token
 4. **Repeat**: Continue until reaching desired vocabulary size
 
-![BPE Algorithm](../zh/images/day07/bpe-algorithm.png)
+![BPE Algorithm](../zh/images/day07/bpe-algorithm-v2.png)
 *Figure 3: BPE iteratively merges the most frequent character pairs. After many iterations, common words become single tokens while rare words remain split.*
 
 Let's trace through a concrete example with corpus: `["low", "lower", "newest", "widest"]`
