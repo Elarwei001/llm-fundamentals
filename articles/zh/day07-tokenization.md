@@ -317,6 +317,19 @@ print(tokens)  # [9906, 11, 1917, 0]
 print(enc.decode(tokens))  # "Hello, world!"
 ```
 
+**为什么 "Fast Rust impl" 重要**：Tiktoken 用 Rust 写（不是纯 Python），分词速度快 3-6 倍。当处理数百万 API 请求时，分词节省的每一毫秒都会累积。
+
+### 为什么 Claude 用 ~100K Token（比很多模型大）
+
+你可能注意到 Claude 的词表（~100K）比 BERT（30K）或 LLaMA 2（32K）大。原因如下：
+
+1. **更好的多语言支持**：中文、日文、阿拉伯文等需要更多 token
+2. **更短的序列**：如前所述，大词表 = 短序列 = 快推理。对 Claude 的 200K 上下文窗口很关键
+3. **更好的代码覆盖**：编程关键词（`function`, `const`, `async`）作为单个 token
+4. **行业趋势**：GPT-4 也用 ~100K；LLaMA 3 从 32K 跳到了 128K
+
+对于大模型，额外的 embedding 内存可以忽略不计，但推理加速会在数十亿请求中不断累积。
+
 ---
 
 ## 6. 分词边缘情况和陷阱

@@ -317,6 +317,19 @@ print(tokens)  # [9906, 11, 1917, 0]
 print(enc.decode(tokens))  # "Hello, world!"
 ```
 
+**Why "Fast Rust impl" matters**: Tiktoken is written in Rust (not pure Python), making tokenization 3-6x faster. This is critical when processing millions of API requests—every millisecond saved in tokenization adds up.
+
+### Why Claude Uses ~100K Tokens (Larger Than Many)
+
+You might notice Claude's vocabulary (~100K) is larger than BERT (30K) or LLaMA 2 (32K). Several reasons:
+
+1. **Better multilingual support**: More tokens for Chinese, Japanese, Arabic, etc.
+2. **Shorter sequences**: As discussed earlier, larger vocab = shorter sequences = faster inference. Critical for Claude's 200K context window.
+3. **Better code coverage**: Programming keywords (`function`, `const`, `async`) as single tokens
+4. **Industry trend**: GPT-4 also uses ~100K; LLaMA 3 jumped from 32K to 128K
+
+The extra embedding memory is negligible for large models, but the inference speedup compounds over billions of requests.
+
 ---
 
 ## 6. Tokenization Edge Cases and Gotchas
