@@ -120,13 +120,13 @@ Instead of just frequency, WordPiece maximizes the **likelihood** of the trainin
 Given a vocabulary $V$, the likelihood of tokenizing a corpus is:
 
 $$
-P(\text{corpus} | V) = \prod_{\text{word } w} P(w | V)
+P(\text{corpus} \mid V) = \prod_{w \in \text{words}} P(w \mid V)
 $$
 
 For each word, we compute the probability of its tokenization. If "tokenization" is split into `["token", "ization"]`:
 
 $$
-P(\text{"tokenization"}) = P(\text{token}) \times P(\text{ization})
+P(\text{tokenization}) = P(\text{token}) \times P(\text{ization})
 $$
 
 where each subword probability is estimated from corpus frequency:
