@@ -96,6 +96,26 @@ $$
 P(\text{context} | \text{center}) = \frac{\exp(w_{\text{context}}^T \cdot w_{\text{center}})}{\sum_{w \in V} \exp(w^T \cdot w_{\text{center}})}
 $$
 
+**Breaking down this formula:**
+
+| Symbol | Meaning | Example |
+|--------|---------|---------|
+| $w_{\text{center}}$ | Vector of the center word (from $W_{\text{in}}$) | "fox" → [0.7, 0.8, 0.9] |
+| $w_{\text{context}}$ | Vector of the context word (from $W_{\text{out}}$) | "quick" → [0.3, 0.4, 0.5] |
+| $w_{\text{context}}^T \cdot w_{\text{center}}$ | Dot product = similarity score | 0.98 (higher = more similar) |
+| $\exp(\cdot)$ | Exponential function, makes all values positive | $e^{0.98} = 2.66$ |
+| $\sum_{w \in V}$ | Sum over ALL words in vocabulary | Sum for the, quick, fox, jumps, over... |
+
+**In plain English:**
+
+- **Numerator** $\exp(w_{\text{context}}^T \cdot w_{\text{center}})$: "How similar are 'fox' and 'quick'?" — Higher dot product = more similar = larger numerator.
+
+- **Denominator** $\sum_{w \in V} \exp(w^T \cdot w_{\text{center}})$: "How similar is 'fox' to EVERY word in the vocabulary?" — This normalizes the score so all probabilities sum to 1.
+
+- **The whole formula**: "What fraction of the total similarity does 'quick' get?" — If fox-quick similarity is high relative to fox-everything-else, P(quick|fox) is high.
+
+> **Intuition**: This is just softmax! We're asking: "Given that I see 'fox', which word is most likely to appear nearby?" The model learns to give high scores to words that actually co-occur.
+
 Training maximizes this probability across all observed (center, context) pairs in the corpus. The resulting $W_{\text{in}}$ matrix becomes the word embeddings.
 
 #### Concrete Example: Computing P(quick | fox)

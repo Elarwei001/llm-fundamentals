@@ -96,6 +96,26 @@ $$
 P(\text{context} | \text{center}) = \frac{\exp(w_{\text{context}}^T \cdot w_{\text{center}})}{\sum_{w \in V} \exp(w^T \cdot w_{\text{center}})}
 $$
 
+**公式拆解：**
+
+| 符号 | 含义 | 例子 |
+|------|------|------|
+| $w_{\text{center}}$ | 中心词的向量（来自 $W_{\text{in}}$） | "fox" → [0.7, 0.8, 0.9] |
+| $w_{\text{context}}$ | 上下文词的向量（来自 $W_{\text{out}}$） | "quick" → [0.3, 0.4, 0.5] |
+| $w_{\text{context}}^T \cdot w_{\text{center}}$ | 点积 = 相似度分数 | 0.98（越高越相似） |
+| $\exp(\cdot)$ | 指数函数，把值变成正数 | $e^{0.98} = 2.66$ |
+| $\sum_{w \in V}$ | 对词表中所有词求和 | 对 the, quick, fox, jumps, over... 求和 |
+
+**通俗解释：**
+
+- **分子** $\exp(w_{\text{context}}^T \cdot w_{\text{center}})$："fox 和 quick 有多相似？" — 点积越大 = 越相似 = 分子越大。
+
+- **分母** $\sum_{w \in V} \exp(w^T \cdot w_{\text{center}})$："fox 和词表里每个词的相似度总和是多少？" — 这是归一化项，让所有概率加起来等于 1。
+
+- **整个公式**："quick 占了总相似度的多少比例？" — 如果 fox-quick 的相似度相对于 fox-其他所有词 更高，那 P(quick|fox) 就更高。
+
+> **直觉**：这就是 softmax！我们在问："看到 'fox' 后，哪个词最可能出现在它旁边？" 模型会学着给真正共现的词打高分。
+
 训练最大化语料库中所有观察到的（中心词，上下文词）对的这个概率。得到的 $W_{\text{in}}$ 矩阵就是词嵌入。
 
 #### 具体例子：计算 P(quick | fox)
