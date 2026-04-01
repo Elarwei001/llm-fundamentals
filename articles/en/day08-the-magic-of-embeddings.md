@@ -164,6 +164,54 @@ $$
 
 where $\sigma$ is the sigmoid function. This transforms an expensive softmax into $k+1$ binary classifications.
 
+#### Concrete Example: Why Negative Sampling is Faster
+
+Let's continue with our "fox" example to see why this matters.
+
+**The Problem with Softmax:**
+
+In Step 4 above, we computed dot products for ALL 5 words. But real vocabularies have 50,000+ words—that's 50,000 dot products per training sample!
+
+**Negative Sampling Solution:**
+
+Instead of asking "which word is the context?" (50,000-way classification), we ask "is this pair real or fake?" (binary classification).
+
+**Setup:**
+- Positive sample: (fox, quick) ✅ — actually appeared together
+- Negative samples (k=2): (fox, the) ❌, (fox, over) ❌ — randomly paired
+
+**What the model learns:**
+- Give (fox, quick) a HIGH score → they really co-occur
+- Give (fox, the) a LOW score → fake pair
+- Give (fox, over) a LOW score → fake pair
+
+**Computing the Loss:**
+
+Using our vectors from before:
+- fox = [0.7, 0.8, 0.9]
+- quick = [0.3, 0.4, 0.5] (positive)
+- the = [0.1, 0.2, 0.3] (negative)
+
+Dot products:
+- fox · quick = 0.98 (want this HIGH)
+- fox · the = 0.50 (want this LOW)
+
+Loss calculation:
+$$\mathcal{L} = \log \sigma(0.98) + \log \sigma(-0.50) = \log(0.73) + \log(0.38) = -0.31 + (-0.97) = -1.28$$
+
+Training pushes:
+- fox · quick **higher** → first term improves
+- fox · the **lower** → second term improves
+
+**Speed Comparison:**
+
+| Method | Dot products per sample |
+|--------|------------------------|
+| Softmax | 50,000 |
+| Negative Sampling (k=5) | **6** (1 positive + 5 negative) |
+
+That's **8,000x faster**!
+
 ---
 
 ## 3. The Magic: Semantic Arithmetic
