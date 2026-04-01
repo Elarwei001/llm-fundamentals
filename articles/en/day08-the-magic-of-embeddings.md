@@ -484,15 +484,52 @@ where $\mathbf{x} \in \mathbb{R}^V$ is a one-hot vector and $E \in \mathbb{R}^{V
 
 Since $\mathbf{x}$ has exactly one non-zero element (at position $i$), this multiplication simply selects row $i$ of $E$. But the matrix formulation shows that embeddings are a learnable linear projection from the one-hot space to the embedding space.
 
+![One-Hot to Dense Embedding](../zh/images/day08/onehot-to-dense.png)
+*Figure 7: The complete flow from one-hot to dense embedding. Left: sparse one-hot vector (only 1 non-zero). Middle: the learned embedding matrix (each row is a word's "meaning"). Right: dense embedding (every value carries semantic information). The operation is just matrix multiplication, but equivalently, it's looking up row i of E.*
+
+**What this projection really means:**
+
+| Space | Dimensionality | Properties |
+|-------|----------------|------------|
+| One-hot space | V = 50,000 | Sparse, no semantics, just an index |
+| Embedding space | d = 768 | Dense, every dimension carries meaning |
+
+The embedding matrix $E$ learns to compress the vast, meaningless one-hot space into a compact, semantically rich space where similar words are nearby.
+
 ### 8.3 Why Addition Works for Position + Token
 
-When we add token and position embeddings, the model can later separate them through linear operations. Consider the attention query:
+When we add token and position embeddings, it might seem like information would get mixed up and lost. But the model can later separate them through linear operations!
+
+Consider the attention query:
 
 $$
 Q = W_Q (E_{\text{token}} + E_{\text{pos}}) = W_Q E_{\text{token}} + W_Q E_{\text{pos}}
 $$
 
-The model can learn to use different parts of $W_Q$ to extract token vs positional information. This works because addition preserves the information from both sources (assuming they don't destructively interfere).
+This uses the **distributive property** of linear algebra. But why doesn't the information interfere?
+
+**Concrete Example:**
+
+```
+E_token("fox") = [0.5, 0.3, 0.8, 0.2]   ← semantic meaning of "fox"
+E_pos(3)       = [0.1, 0.0, 0.1, 0.0]   ← encoding for position 3
+──────────────────────────────────────
+Sum            = [0.6, 0.3, 0.9, 0.2]   ← combined vector
+```
+
+The information looks "mixed," but $W_Q$ can learn to **separate them**:
+- Some rows of $W_Q$ focus on dimensions where token info is strong
+- Other rows focus on dimensions where position info is strong
+
+**Why this works: Approximate Orthogonality**
+
+Token embeddings and position embeddings tend to live in different "directions" in the vector space:
+
+$$\langle E_{\text{token}}, E_{\text{pos}} \rangle \approx 0$$
+
+When two signals are roughly orthogonal (perpendicular), they don't destructively interfere, and a linear transformation can learn to extract each one separately.
+
+**Analogy:** It's like audio mixing—if vocals are mostly in low frequencies and music is mostly in high frequencies, you can design a filter to separate them. Similarly, if token and position information occupy different "frequency bands" in the embedding space, the model can learn to tease them apart.
 
 ---
 
