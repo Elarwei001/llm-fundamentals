@@ -76,8 +76,8 @@ $$
 
 Word2Vec 有两种变体：
 
-**CBOW（Continuous Bag of Words）**：从周围上下文预测中心词
-**Skip-gram**：从中心词预测周围上下文词
+- **CBOW（Continuous Bag of Words）**：从周围上下文预测中心词
+- **Skip-gram**：从中心词预测周围上下文词
 
 ![Word2Vec CBOW and Skip-gram](./images/day08/word2vec-cbow-skipgram.png)
 *图 3：CBOW 从上下文预测中心词；Skip-gram 从中心词预测上下文。Skip-gram 通常对罕见词效果更好。*

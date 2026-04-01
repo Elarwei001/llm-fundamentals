@@ -76,8 +76,8 @@ In 2013, Tomas Mikolov and colleagues at Google released **Word2Vec**, demonstra
 
 Word2Vec comes in two flavors:
 
-**CBOW (Continuous Bag of Words)**: Predict the center word from surrounding context
-**Skip-gram**: Predict surrounding context words from the center word
+- **CBOW (Continuous Bag of Words)**: Predict the center word from surrounding context
+- **Skip-gram**: Predict surrounding context words from the center word
 
 ![Word2Vec CBOW and Skip-gram](../zh/images/day08/word2vec-cbow-skipgram.png)
 *Figure 3: CBOW predicts the center word from context; Skip-gram predicts context from the center word. Skip-gram generally works better for rare words.*
