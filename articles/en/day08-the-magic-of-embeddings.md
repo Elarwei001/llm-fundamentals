@@ -128,6 +128,23 @@ Vector elements can be **negative** (they're learned from random initialization)
 
 Since probabilities must be positive, exp() maps any real number to **(0, +∞)**. This is why softmax uses exp()—it converts arbitrary similarity scores into valid probabilities.
 
+**Why do probabilities sum to 1?**
+
+Notice that the denominator sums over ALL words, while the numerator is just ONE word. When we add up probabilities for all words:
+
+$$\sum_{\text{all words}} P(\text{word}|\text{fox}) = \sum_{\text{all words}} \frac{\exp(\text{score}_{\text{word}})}{\underbrace{\sum_{w} \exp(\text{score}_w)}_{\text{same for all}}} = \frac{\text{denominator}}{\text{denominator}} = 1$$
+
+**Verification with our numbers:**
+```
+P(the|fox)   = 1.65 / 11.45 = 0.144
+P(quick|fox) = 2.66 / 11.45 = 0.232
+P(fox|fox)   = 2.10 / 11.45 = 0.183
+P(jumps|fox) = 3.39 / 11.45 = 0.296
+P(over|fox)  = 1.65 / 11.45 = 0.144
+────────────────────────────────────
+Total                       = 0.999 ≈ 1 ✓
+```
+
 Training maximizes this probability across all observed (center, context) pairs in the corpus. The resulting $W_{\text{in}}$ matrix becomes the word embeddings.
 
 #### Concrete Example: Computing P(quick | fox)
