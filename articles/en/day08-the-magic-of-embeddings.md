@@ -580,6 +580,19 @@ When two signals are roughly orthogonal (perpendicular), they don't destructivel
 
 2. **If embeddings capture meaning through context patterns, what meanings might they fail to capture?** Think about concepts that rarely appear in text or require world knowledge.
 
+   *Hint:* Embeddings can only learn from text co-occurrence. Information that never appears in context cannot be captured:
+   
+   | Type | Example | Why it's missing |
+   |------|---------|------------------|
+   | Visual | "Apples are red" | Model never *saw* an apple, only saw "apple" and "red" co-occur |
+   | Physical intuition | "Water flows downhill" | Text mentions it, but model doesn't *understand* gravity |
+   | Rare entities | Your street name | Probably not in the training corpus |
+   | Private knowledge | Your birthday | Not in public text |
+   | Recent events | Yesterday's news | After training data cutoff |
+   | Commonsense | "Elephant in a fridge" | Absurd scenarios rarely discussed in text |
+   
+   This is the **Symbol Grounding Problem**: embeddings capture relationships between words in text, not real-world experiences. This limitation is why multimodal models (text + image + audio) are an active research direction.
+
 3. **Modern LLMs often share input and output embeddings (tied embeddings). What does this imply about the relationship between understanding and generating language?**
 
 ---
