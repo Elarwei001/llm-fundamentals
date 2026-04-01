@@ -484,7 +484,7 @@ where $\mathbf{x} \in \mathbb{R}^V$ is a one-hot vector and $E \in \mathbb{R}^{V
 
 Since $\mathbf{x}$ has exactly one non-zero element (at position $i$), this multiplication simply selects row $i$ of $E$. But the matrix formulation shows that embeddings are a learnable linear projection from the one-hot space to the embedding space.
 
-![One-Hot to Dense Embedding](../zh/images/day08/onehot-to-dense.png)
+![One-Hot to Dense Embedding](../zh/images/day08/onehot-to-dense-v2.png)
 *Figure 7: The complete flow from one-hot to dense embedding. Left: sparse one-hot vector (only 1 non-zero). Middle: the learned embedding matrix (each row is a word's "meaning"). Right: dense embedding (every value carries semantic information). The operation is just matrix multiplication, but equivalently, it's looking up row i of E.*
 
 **What this projection really means:**

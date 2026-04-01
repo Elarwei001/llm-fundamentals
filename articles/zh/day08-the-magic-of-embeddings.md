@@ -484,7 +484,7 @@ $$
 
 由于 $\mathbf{x}$ 只有一个非零元素（在位置 $i$），这个乘法只是选择 $E$ 的第 $i$ 行。但矩阵表述表明嵌入是从 one-hot 空间到嵌入空间的可学习线性投影。
 
-![One-Hot to Dense Embedding](./images/day08/onehot-to-dense.png)
+![One-Hot to Dense Embedding](./images/day08/onehot-to-dense-v2.png)
 *图 7：从 one-hot 到 dense embedding 的完整流程。左：稀疏的 one-hot 向量（只有 1 个非零）。中：学到的嵌入矩阵（每行是一个词的"含义"）。右：稠密嵌入（每个值都携带语义信息）。操作就是矩阵乘法，但等价于查找 E 的第 i 行。*
 
 **这个投影的真正含义：**
