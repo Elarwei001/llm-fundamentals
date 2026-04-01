@@ -322,6 +322,8 @@ Embeddings naturally organize into semantic clusters. Similar words cluster toge
 
 This clustering emerges automatically from the distributional patterns in training data. No one tells the model that "dog" and "cat" are animals—it discovers this structure by observing that they appear in similar contexts.
 
+**Why does this self-organization happen?** Think about it: "cat" and "dog" both frequently co-occur with words like "feed", "vet", "pet", "cute". Training pushes "cat" closer to these context words, and separately pushes "dog" closer to the same context words. As a side effect, "cat" and "dog" end up near each other — not because we labeled them as similar, but because they share similar contexts. The semantic geometry emerges naturally from co-occurrence statistics.
+
 The practical implication: tasks like finding synonyms, detecting related concepts, or clustering documents become simple geometric operations (nearest neighbors, clustering algorithms, etc.).
 
 ---
