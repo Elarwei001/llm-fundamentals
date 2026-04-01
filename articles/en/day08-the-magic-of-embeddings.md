@@ -98,6 +98,56 @@ $$
 
 Training maximizes this probability across all observed (center, context) pairs in the corpus. The resulting $W_{\text{in}}$ matrix becomes the word embeddings.
 
+#### Concrete Example: Computing P(quick | fox)
+
+Let's walk through Step by step with actual numbers.
+
+**Setup:**
+- Sentence: "The quick fox jumps over"
+- Center word: "fox"
+- Context word we want to predict: "quick" (window size = 1)
+- Tiny vocabulary: {the, quick, fox, jumps, over} (V = 5)
+- Embedding dimension: d = 3
+
+**The two matrices (randomly initialized):**
+
+$W_{\text{in}}$ (5×3) - for center words:
+| Word | dim0 | dim1 | dim2 |
+|------|------|------|------|
+| the | 0.1 | 0.2 | 0.3 |
+| quick | 0.4 | 0.5 | 0.6 |
+| **fox** | **0.7** | **0.8** | **0.9** |
+| jumps | 0.2 | 0.3 | 0.4 |
+| over | 0.5 | 0.6 | 0.7 |
+
+$W_{\text{out}}$ (3×5) - for context words:
+| | the | quick | fox | jumps | over |
+|------|------|------|------|------|------|
+| dim0 | 0.1 | 0.3 | 0.2 | 0.4 | 0.1 |
+| dim1 | 0.2 | 0.4 | 0.3 | 0.5 | 0.2 |
+| dim2 | 0.3 | 0.5 | 0.4 | 0.6 | 0.3 |
+
+**Step 1:** Get "fox" input vector: $w_{\text{center}} = [0.7, 0.8, 0.9]$
+
+**Step 2:** Get "quick" output vector: $w_{\text{context}} = [0.3, 0.4, 0.5]$
+
+**Step 3:** Compute dot product (similarity):
+$$w_{\text{context}}^T \cdot w_{\text{center}} = 0.3 \times 0.7 + 0.4 \times 0.8 + 0.5 \times 0.9 = 0.98$$
+
+**Step 4:** Compute dot products for ALL words (the denominator):
+- the: $0.1 \times 0.7 + 0.2 \times 0.8 + 0.3 \times 0.9 = 0.50$
+- quick: $0.98$ ← our target
+- fox: $0.2 \times 0.7 + 0.3 \times 0.8 + 0.4 \times 0.9 = 0.74$
+- jumps: $0.4 \times 0.7 + 0.5 \times 0.8 + 0.6 \times 0.9 = 1.22$
+- over: $0.50$
+
+**Step 5:** Apply softmax:
+$$P(\text{quick} | \text{fox}) = \frac{e^{0.98}}{e^{0.50} + e^{0.98} + e^{0.74} + e^{1.22} + e^{0.50}} = \frac{2.66}{11.45} = 0.23$$
+
+**Result:** Only 23% probability—too low! Training will adjust the matrices so that "fox" and "quick" have higher dot product (more similar vectors), making P(quick|fox) higher.
+
+> **Key Insight:** Words that frequently appear together get pushed to have similar vectors through this training process.
+
 ### 2.3 Negative Sampling: Making Training Practical
 
 The softmax denominator requires summing over all vocabulary words—prohibitively expensive. **Negative sampling** solves this by reformulating the problem:
