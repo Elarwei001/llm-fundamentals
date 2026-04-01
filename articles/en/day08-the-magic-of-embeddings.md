@@ -261,6 +261,17 @@ Training pushes:
 
 That's **8,000x faster**!
 
+> 📚 **Historical Note: Where Did Negative Sampling Come From?**
+> 
+> Negative sampling was introduced by Tomas Mikolov et al. at Google in 2013, in the paper *"Distributed Representations of Words and Phrases and their Compositionality."*
+> 
+> The idea evolved in stages:
+> 1. **Original Word2Vec (early 2013)**: Used *Hierarchical Softmax* — a binary tree structure that reduced V computations to log(V). Faster, but still complex.
+> 2. **Inspiration from NCE**: A statistical technique called *Noise Contrastive Estimation* (Gutmann & Hyvärinen, 2010) proposed: instead of learning "what's the right answer," learn "how to distinguish real from fake."
+> 3. **Simplification**: Mikolov simplified NCE by dropping the normalization constant estimation. Mathematically less rigorous, but practically just as effective—and much simpler to implement.
+> 
+> The key insight: reframe a 50,000-class problem as "is this pair real or fake?" Like changing an exam from "pick the right answer from 50,000 choices" to "is this answer correct? yes/no."
+
 ---
 
 ## 3. The Magic: Semantic Arithmetic

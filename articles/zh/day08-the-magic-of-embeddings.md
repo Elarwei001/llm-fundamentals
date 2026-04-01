@@ -261,6 +261,17 @@ $$\mathcal{L} = \log \sigma(0.98) + \log \sigma(-0.50) = \log(0.73) + \log(0.38)
 
 快了 **8,000 倍**！
 
+> 📚 **历史小记：负采样是怎么被发明的？**
+> 
+> 负采样由 Tomas Mikolov 等人于 2013 年在 Google 提出，发表在论文 *"Distributed Representations of Words and Phrases and their Compositionality"* 中。
+> 
+> 这个想法经历了几个阶段的演变：
+> 1. **早期 Word2Vec (2013 年初)**：使用*层次 Softmax*——一种二叉树结构，把 V 次计算减少到 log(V) 次。更快了，但实现复杂。
+> 2. **来自 NCE 的灵感**：一种叫做*噪声对比估计* (Noise Contrastive Estimation) 的统计技术（Gutmann & Hyvärinen, 2010）提出：与其学习"正确答案是什么"，不如学习"怎么区分真的和假的"。
+> 3. **简化**：Mikolov 通过去掉归一化常数的估计，简化了 NCE。数学上不那么严格，但实践中效果一样好——而且实现起来简单得多。
+> 
+> 核心洞察：把一个 50,000 类分类问题重新表述为"这个配对是真是假？" 就像把考试从"从 50,000 个选项中选出正确答案"改成"这个答案对不对？是/否"。
+
 ---
 
 ## 3. 魔法：语义算术
