@@ -62,9 +62,22 @@ Why should neural network performance follow such clean mathematical relationshi
 
 2. **Data distribution**: Natural language follows Zipf's law (itself a power law). Models that learn to predict language may inherit this structure.
 
+   > **What is Zipf's Law?** It describes how word frequency relates to rank: the n-th most common word appears with frequency ∝ 1/n. For example, "the" (~7% of English text) is roughly twice as frequent as "of" (~3.5%), which is roughly twice as frequent as "and" (~2.3%).
+   >
+   > Since models learn to predict $P(\text{next word} | \text{context})$, they inherit this distribution. Learning follows a power law pattern: the first 100 hours of training might cover 50% of text (common words like "the", "is"), the next 100 hours cover another 10% (words like "however", "therefore"), and so on. **Diminishing returns at every scale = power law.**
+
 3. **Feature learning hierarchy**: Larger models learn progressively more abstract features. Each layer of abstraction provides diminishing returns, characteristic of power law behavior.
 
 4. **Optimization dynamics**: The loss landscape of neural networks has fractal-like properties that lead to power law scaling.
+
+   > **What does "fractal-like" mean?** A fractal has similar structure at every scale—like a coastline that looks jagged whether viewed from a satellite, airplane, or ground level.
+   >
+   > The loss landscape exhibits this property: large-scale valleys contain smaller valleys, which contain even smaller dips, and so on. During optimization:
+   > - **Early training**: Find the big valley → Loss drops quickly
+   > - **Mid training**: Find smaller valleys within → Loss drops slower  
+   > - **Late training**: Find tiny dips → Loss barely moves
+   >
+   > Because each scale has similar "roughness," improvements follow a fixed ratio of diminishing returns—the mathematical signature of a power law.
 
 The honest answer: we don't fully understand *why* power laws emerge, but empirically, they're remarkably consistent across different architectures, datasets, and training procedures.
 
