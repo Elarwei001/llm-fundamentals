@@ -179,11 +179,63 @@ If optimal training requires ~20 tokens per parameter, then:
 - A 1 trillion parameter model needs **20 trillion tokens**
 - That's roughly **15 trillion words** or **20 million books**
 
-We may be approaching the limits of high-quality text data on the internet. This "data wall" is driving research into:
-- Synthetic data generation
-- Multimodal training (images, video, audio)
-- Better data curation and filtering
-- Learning from fewer tokens (data efficiency)
+We may be approaching the limits of high-quality text data on the internet. This "data wall" is driving research into four major directions:
+
+#### 1. Synthetic Data Generation
+
+**Use AI to generate training data for AI.**
+
+| Method | Description |
+|--------|-------------|
+| Self-Instruct | GPT-4 generates Q&A pairs to train smaller models |
+| Evol-Instruct | LLMs transform simple questions into complex ones |
+| Code Generation | Generate code + unit tests for verification |
+| Math Problems | Generate problems with step-by-step solutions |
+
+**Risk**: Model Collapse—training AI on AI-generated data may cause progressive quality degradation. Each generation potentially amplifies errors and loses diversity.
+
+#### 2. Multimodal Training
+
+**Text isn't enough? Use images, video, and audio!**
+
+| Modality | Data Volume | Examples |
+|----------|-------------|----------|
+| Text | ~15T tokens | Running out |
+| **Images** | Nearly unlimited | CLIP, GPT-4V, Gemini |
+| **Video** | Massive | YouTube uploads 500 hours every minute |
+| **Audio** | Large | Podcasts, audiobooks, conversations |
+
+**Key insight**: The world's knowledge isn't just in text! A video of someone cooking contains information about physics, chemistry, and spatial reasoning that's hard to capture in words.
+
+#### 3. Better Data Curation
+
+**Quality > Quantity**
+
+| Technique | What It Does |
+|-----------|--------------|
+| Deduplication | Remove repeated content (copy-paste is everywhere) |
+| Quality Scoring | Use a small model to score data, keep only high scores |
+| Domain Balancing | Intentionally oversample code, math, science |
+| Toxicity Filtering | Remove harmful, incorrect, or low-quality content |
+
+**Case study**: Microsoft's Phi-2 (2.7B parameters) used carefully curated "textbook-quality" data and outperformed LLaMA-2 (7B)—achieving more with 3x fewer parameters through data quality alone!
+
+#### 4. Learning from Fewer Tokens
+
+**Make models learn faster from the same data.**
+
+| Method | Principle |
+|--------|-----------|
+| Curriculum Learning | Start simple, increase difficulty—like human education |
+| Repeated Training | See good data multiple times (works up to a point) |
+| Better Architectures | Mamba, RWKV, and other alternatives to Transformers |
+| Better Tokenizers | More efficient encoding (e.g., BPE with optimal vocab size) |
+
+**Goal**: Break the Chinchilla ratio of 20 tokens/parameter—achieve the same performance with less data.
+
+---
+
+These four directions represent some of the hottest areas in current LLM research. The data wall isn't just a constraint—it's driving fundamental innovations in how we train AI systems.
 
 ---
 
