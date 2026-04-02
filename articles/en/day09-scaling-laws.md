@@ -613,6 +613,20 @@ Mistral-7B                    7B         140B     20.0 🟢 Optimal
 
 3. **Architecture Independence**: Scaling laws seem consistent across different Transformer variants. But will they hold for radically different architectures (Mamba, RWKV)? What would that tell us?
 
+   **Current thinking**: Scaling laws may reflect the intrinsic difficulty of language itself, not Transformer-specific properties. Natural language has fixed statistical structure regardless of which model tries to learn it — like a mountain that doesn't change based on how you climb it.
+   
+   This means different architectures might have *different efficiency coefficients* (better or worse loss at the same compute budget) but likely follow the same power law shape. Three possibilities:
+   
+   | Scenario | What it means |
+   |----------|---------------|
+   | Same exponent, different intercept | Mamba is more efficient, but still follows power law — "can't escape, but can run faster" |
+   | Better exponent (steeper curve) | True breakthrough — no evidence of this yet |
+   | Collapses at larger scale | Works at small scale, but fails beyond a threshold — Mamba's biggest open risk |
+   
+   Early experiments suggest Mamba matches or slightly beats Transformers below ~1B parameters, but data beyond 10B+ is still scarce. The deeper implication: if all architectures converge to the same scaling exponents, it suggests scaling laws are model-agnostic and reflect an *information-theoretic limit* of language modeling itself.
+   
+   This is precisely why LeCun's JEPA approach is intellectually interesting — rather than optimizing along the same power law curve, it proposes a fundamentally different learning paradigm altogether.
+
 4. **The Chinese Room Revisited**: If performance scales predictably with compute, what does that imply about whether these models "understand" anything? Is smooth scaling evidence for or against genuine comprehension?
 
 ---
