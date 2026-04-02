@@ -627,6 +627,25 @@ Mistral-7B                    7B         140B     20.0 🟢 Optimal
    
    This is precisely why LeCun's JEPA approach is intellectually interesting — rather than optimizing along the same power law curve, it proposes a fundamentally different learning paradigm altogether.
 
+   **But wait — doesn't JEPA also compress information into a latent space?**
+   
+   Sharp observation. JEPA does discard information when encoding to latent space — but the nature of that compression is fundamentally different:
+
+   - **SSM compression is forced**: the hidden state has a fixed dimension while sequence length grows unboundedly. More and more history competes for less and less space. The information loss *worsens with scale*.
+   
+   - **JEPA compression is intentional**: the encoder is designed to discard unpredictable details and retain causal structure. LeCun's argument is that autoregressive models waste capacity predicting irrelevant surface details (exact word choice, punctuation) instead of learning underlying abstractions.
+
+   However, JEPA has its own failure mode: **representation collapse**. If the encoder maps all inputs to the same point, prediction loss stays low but the model learns nothing. JEPA architectures use stop-gradient and specific design choices to prevent this — but there's no theoretical guarantee equivalent to Transformer's universal approximation theorem.
+
+   | | SSM bottleneck | JEPA collapse |
+   |--|----------------|---------------|
+   | Nature | Temporal memory overflow | Representation degeneracy |
+   | Trigger | Sequence too long | Training instability |
+   | Theoretical guarantee | None at scale | None at scale |
+   | Current evidence | Works below ~1B | Works below ~1B |
+
+   **The honest answer**: JEPA's scaling behavior at GPT-4+ scale is an open research question. The largest JEPA models (V-JEPA, I-JEPA) are around ViT-H scale (~600M parameters) — far from frontier LLM scale. Whether JEPA-style architectures obey the same scaling laws as Transformers, better ones, or eventually collapse — nobody knows yet. This makes it one of the most interesting open problems in the field.
+
 4. **The Chinese Room Revisited**: If performance scales predictably with compute, what does that imply about whether these models "understand" anything? Is smooth scaling evidence for or against genuine comprehension?
 
 ---
