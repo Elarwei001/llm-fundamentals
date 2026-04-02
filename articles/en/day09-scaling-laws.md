@@ -350,7 +350,39 @@ $$
 C \approx 6 \cdot N \cdot D
 $$
 
-The factor of 6 comes from: 2 (forward + backward) × 3 (optimizer state operations, roughly). This is an approximation—actual compute depends on architecture details.
+**Where does the factor of 6 come from?**
+
+It breaks down into two parts: **2 × 3**.
+
+**The "2" — forward + backward pass:**
+
+Training requires two passes through the model per batch:
+- **Forward pass**: Input flows through all N parameters to compute the output and loss (1× N operations)
+- **Backward pass**: Gradients flow backward through all N parameters (1× N operations)
+
+Total: 2N operations per training token.
+
+**The "3" — optimizer state operations:**
+
+The standard Adam optimizer maintains three quantities per parameter:
+1. **The gradient itself** $g$
+2. **First moment** $m$ (exponential moving average of gradients)
+3. **Second moment** $v$ (exponential moving average of squared gradients)
+
+Updating each parameter requires reading and writing all three quantities, adding roughly 3× overhead.
+
+**Can these numbers be different?**
+
+Yes — they depend on your optimizer choice:
+
+| Optimizer | Approximate factor | Notes |
+|-----------|-------------------|-------|
+| SGD (no momentum) | ~2 | Just forward + backward, no extra state |
+| SGD + momentum | ~4 | One extra momentum term |
+| **Adam** | **~6** | Two extra moment terms (standard assumption) |
+| AdaFactor | ~4–5 | Memory-efficient variant of Adam |
+
+So **C ≈ 6ND assumes Adam optimizer**. The formula is an approximation—actual compute also depends on architecture details like attention mechanisms, layer normalization, and positional encodings, but 6ND captures the dominant cost.
 
 ### 6.3 Optimal Allocation
 
