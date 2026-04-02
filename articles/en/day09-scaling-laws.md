@@ -29,9 +29,9 @@ The core finding: **Test loss L follows power laws with respect to three key var
 
 $$
 \begin{aligned}
-L(N) &= \left(\frac{N_c}{N}\right)^{\alpha_N} \quad &\text{where } \alpha_N \approx 0.076 \\[0.5em]
-L(D) &= \left(\frac{D_c}{D}\right)^{\alpha_D} \quad &\text{where } \alpha_D \approx 0.095 \\[0.5em]
-L(C) &= \left(\frac{C_c}{C}\right)^{\alpha_C} \quad &\text{where } \alpha_C \approx 0.050
+L(N) &= \left(\frac{N_c}{N}\right)^{\alpha_N} & \text{where } \alpha_N \approx 0.076 \\
+L(D) &= \left(\frac{D_c}{D}\right)^{\alpha_D} & \text{where } \alpha_D \approx 0.095 \\
+L(C) &= \left(\frac{C_c}{C}\right)^{\alpha_C} & \text{where } \alpha_C \approx 0.050
 \end{aligned}
 $$
 
