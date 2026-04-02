@@ -400,7 +400,7 @@ $$
 N^* \propto C^{0.5}, \quad D^* \propto C^{0.5}
 $$
 
-Or equivalently: $\frac{D^*}{N^*} \approx 20$
+Or equivalently: **D\* / N\* ≈ 20** (train on ~20 tokens per parameter)
 
 ---
 
