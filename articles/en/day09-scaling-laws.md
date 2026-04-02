@@ -253,7 +253,32 @@ $$
 L(\text{test-time compute}) \propto C_{\text{inference}}^{-\alpha_I}
 $$
 
-This suggests a new paradigm: **train a smaller model and spend compute at inference instead**.
+**Breaking down this formula:**
+
+| Symbol | Meaning |
+|--------|---------|
+| $L$ | Loss (lower is better) |
+| $C_{\text{inference}}$ | Compute used at inference time |
+| $-\alpha_I$ | Negative exponent (so more compute → lower loss) |
+| $\propto$ | Proportional to |
+
+**Intuitive understanding**: The more the model "thinks," the better its output.
+
+| Inference Compute | Loss | Example |
+|-------------------|------|---------|
+| Low | High | Directly answer "42" |
+| Medium | Medium | "Let me think... 42" |
+| **High** | **Low** | "First, let's analyze the problem... then... so the answer is 42" |
+
+**Comparing all three scaling laws:**
+
+| Type | Formula | Meaning |
+|------|---------|---------|
+| Training (params) | $L \propto N^{-\alpha_N}$ | More parameters → lower loss |
+| Training (data) | $L \propto D^{-\alpha_D}$ | More data → lower loss |
+| **Inference** | $L \propto C_{inf}^{-\alpha_I}$ | **More "thinking" → lower loss** |
+
+This suggests a new paradigm: **train a smaller model and spend compute at inference instead**. Rather than building ever-larger models, we might achieve better results by teaching models to use variable amounts of reasoning at test time.
 
 ### 4.2 The Scaling Triad
 
