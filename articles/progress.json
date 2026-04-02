@@ -1,6 +1,6 @@
 {
-  "current_day": 7,
-  "last_generated": "2026-03-31",
+  "current_day": 9,
+  "last_generated": "2026-04-02",
   "total_days": 60,
   "status": "active",
   "history": [
@@ -67,6 +67,24 @@
       "zh_path": "zh/day07-tokenization.md",
       "qa_score": 92.7,
       "images": ["zh/images/day07/tokenization-pipeline.png", "zh/images/day07/tokenization-strategies.png", "zh/images/day07/bpe-algorithm.png", "zh/images/day07/vocab-size-tradeoff.png", "zh/images/day07/special-tokens.png", "zh/images/day07/tokenizer-comparison.png", "zh/images/day07/tokenization-edge-cases.png"]
+    },
+    {
+      "day": 8,
+      "date": "2026-04-01",
+      "topic": "The Magic of Embeddings",
+      "en_path": "en/day08-the-magic-of-embeddings.md",
+      "zh_path": "zh/day08-the-magic-of-embeddings.md",
+      "qa_score": 91.6,
+      "images": ["zh/images/day08/one-hot-vs-dense.png", "zh/images/day08/word2vec-cbow-skipgram.png", "zh/images/day08/word-analogies.png", "zh/images/day08/positional-encoding.png", "zh/images/day08/embedding-lookup.png", "zh/images/day08/semantic-clustering.png", "zh/images/day08/token-position-embedding.png"]
+    },
+    {
+      "day": 9,
+      "date": "2026-04-02",
+      "topic": "Scaling Laws",
+      "en_path": "en/day09-scaling-laws.md",
+      "zh_path": "zh/day09-scaling-laws.md",
+      "qa_score": 91.75,
+      "images": ["zh/images/day09/power-law-compute.png", "zh/images/day09/three-variables.png", "zh/images/day09/kaplan-vs-chinchilla.png", "zh/images/day09/compute-allocation.png", "zh/images/day09/model-comparison.png", "zh/images/day09/emergent-abilities.png", "zh/images/day09/scaling-timeline.png"]
     }
   ]
 }

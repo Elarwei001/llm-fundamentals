@@ -23,9 +23,13 @@
 
 | English | 中文 | 简要说明 |
 |---------|------|----------|
+| CBOW | 连续词袋模型 | Continuous Bag of Words，Word2Vec 的一种变体，从上下文预测中心词 |
+| Chinchilla Scaling | Chinchilla 缩放 | DeepMind 2022 年提出的最优训练配方：每参数约 20 token |
+| Compute-Optimal | 计算最优 | 在固定计算预算下达到最低损失的模型规模和数据量配置 |
 | Chain Rule of Probability | 概率链式法则 | 将句子概率分解为逐词条件概率乘积的规则 |
 | Chain-of-Thought (CoT) | 思维链 | 让模型逐步推理的提示技术 |
 | Context Window | 上下文窗口 | 模型能处理的最大 token 数 |
+| Cosine Similarity | 余弦相似度 | 通过向量夹角的余弦值衡量相似度，常用于比较嵌入 |
 | Cross-Entropy Loss | 交叉熵损失 | 分类任务常用的损失函数 |
 
 ## D
@@ -33,6 +37,8 @@
 | English | 中文 | 简要说明 |
 |---------|------|----------|
 | Decoder | 解码器 | Transformer 的生成部分 |
+| Dense Embedding | 稠密嵌入 | 低维连续向量表示，每个维度都有值，与稀疏的 one-hot 相对 |
+| Distributional Hypothesis | 分布式假设 | 语言学假说：出现在相似上下文中的词具有相似含义 |
 | Distillation | 知识蒸馏 | 用大模型训练小模型 |
 | Dropout | Dropout | 随机丢弃神经元的正则化技术 |
 
@@ -72,6 +78,7 @@
 |---------|------|----------|
 | In-context Learning | 上下文学习 | 通过 prompt 中的示例学习，无需更新参数 |
 | Inference | 推理 | 使用训练好的模型进行预测 |
+| Inference-Time Scaling | 推理时缩放 | 通过增加推理计算（如更长的思维链）提升性能 |
 
 ## K
 
@@ -100,6 +107,7 @@
 
 | English | 中文 | 简要说明 |
 |---------|------|----------|
+| Negative Sampling | 负采样 | Word2Vec 训练技巧，通过区分真假词对避免全词表 softmax |
 | Neural Network | 神经网络 | 由神经元组成的计算图 |
 | Next Token Prediction | 下一个词预测 | 语言模型的核心训练目标 |
 
@@ -107,6 +115,7 @@
 
 | English | 中文 | 简要说明 |
 |---------|------|----------|
+| One-Hot Encoding | 独热编码 | 稀疏向量表示，只有一个维度为 1，其余为 0 |
 | Overfitting | 过拟合 | 模型在训练集上表现好，测试集上差 |
 
 ## P
@@ -115,6 +124,7 @@
 |---------|------|----------|
 | Parameter | 参数 | 模型中可学习的权重 |
 | Position Encoding | 位置编码 | 让模型感知 token 顺序 |
+| Power Law | 幂律 | 变量间的乘幂关系，如 $y \propto x^{\alpha}$，缩放定律的数学基础 |
 | Pre-training | 预训练 | 在大规模数据上的初始训练 |
 | Prompt | 提示词 | 给模型的输入指令 |
 
@@ -132,6 +142,7 @@
 | ReLU | ReLU | Rectified Linear Unit，常用激活函数 |
 | RLHF | 人类反馈强化学习 | Reinforcement Learning from Human Feedback |
 | RNN | 循环神经网络 | Recurrent Neural Network |
+| RoPE | 旋转位置嵌入 | Rotary Position Embedding，通过复数旋转编码相对位置 |
 
 ## S
 
@@ -139,7 +150,9 @@
 |---------|------|----------|
 | Scaling Laws | 缩放定律 | 模型性能与规模的关系 |
 | Self-Attention | 自注意力 | Token 之间相互计算注意力 |
+| Semantic Space | 语义空间 | 嵌入向量所在的高维空间，相似含义的词距离更近 |
 | SentencePiece | SentencePiece | Google 的语言无关子词分词器 |
+| Skip-gram | Skip-gram | Word2Vec 的一种变体，从中心词预测上下文 |
 | Softmax | Softmax | 将 logits 转换为概率分布 |
 | Subword Tokenization | 子词分词 | 介于字符和词之间的分词策略 |
 
@@ -175,6 +188,8 @@
 | English | 中文 | 简要说明 |
 |---------|------|----------|
 | Weight | 权重 | 神经网络中的可学习参数 |
+| Word Analogy | 词类比 | 嵌入空间中的向量算术，如 king - man + woman ≈ queen |
+| Word2Vec | Word2Vec | Google 2013 年提出的词嵌入学习算法 |
 | WordPiece | WordPiece | Google BERT 使用的子词分词算法 |
 
 ---
