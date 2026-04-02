@@ -352,6 +352,8 @@ $$
 
 **Where does the factor of 6 come from?**
 
+First, why multiply by **D** at all? Each training token requires a forward pass and backward pass through all N parameters. Since we train on D tokens total, we repeat this process D times — giving us D × (operations per token). The formula captures the total compute across the entire training run.
+
 It breaks down into two parts: **2 × 3**.
 
 **The "2" — forward + backward pass:**
