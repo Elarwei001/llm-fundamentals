@@ -17,7 +17,9 @@
 | Backpropagation | 反向传播 | 计算梯度的高效算法 |
 | Batch Size | 批大小 | 每次训练使用的样本数 |
 | BERT | BERT | Bidirectional Encoder Representations from Transformers |
+| BIG-bench | BIG-bench | Beyond the Imitation Game，包含 200+ 任务的大型语言模型评测基准 |
 | BPE | 字节对编码 | Byte Pair Encoding，子词分词算法 |
+| Brier Score | Brier 分数 | 概率预测的准确性度量，值越低越好 |
 
 ## C
 
@@ -47,6 +49,7 @@
 | English | 中文 | 简要说明 |
 |---------|------|----------|
 | Embedding | 嵌入/向量表示 | 将离散 token 映射到连续向量空间 |
+| Emergent Abilities | 涌现能力 | 在特定模型规模突然出现的能力，小模型完全不具备 |
 | Emergence | 涌现 | 大模型展现出小模型没有的能力 |
 | Encoder | 编码器 | Transformer 的理解部分 |
 
@@ -99,6 +102,7 @@
 
 | English | 中文 | 简要说明 |
 |---------|------|----------|
+| Measurement Artifact | 测量假象 | 由离散指标（如准确率）导致的表面涌现现象 |
 | MLP | 多层感知机 | Multi-Layer Perceptron，基础神经网络 |
 | MoE | 混合专家 | Mixture of Experts，稀疏激活架构 |
 | Multi-head Attention | 多头注意力 | 并行计算多组注意力 |
@@ -123,6 +127,7 @@
 | English | 中文 | 简要说明 |
 |---------|------|----------|
 | Parameter | 参数 | 模型中可学习的权重 |
+| Phase Transition | 相变 | 在临界阈值发生的质的变化（物理学概念，用于类比涌现） |
 | Position Encoding | 位置编码 | 让模型感知 token 顺序 |
 | Power Law | 幂律 | 变量间的乘幂关系，如 $y \propto x^{\alpha}$，缩放定律的数学基础 |
 | Pre-training | 预训练 | 在大规模数据上的初始训练 |

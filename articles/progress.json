@@ -1,6 +1,6 @@
 {
-  "current_day": 9,
-  "last_generated": "2026-04-02",
+  "current_day": 10,
+  "last_generated": "2026-04-03",
   "total_days": 60,
   "status": "active",
   "history": [
@@ -85,6 +85,15 @@
       "zh_path": "zh/day09-scaling-laws.md",
       "qa_score": 91.75,
       "images": ["zh/images/day09/power-law-compute.png", "zh/images/day09/three-variables.png", "zh/images/day09/kaplan-vs-chinchilla.png", "zh/images/day09/compute-allocation.png", "zh/images/day09/model-comparison.png", "zh/images/day09/emergent-abilities.png", "zh/images/day09/scaling-timeline.png"]
+    },
+    {
+      "day": 10,
+      "date": "2026-04-03",
+      "topic": "Emergent Abilities",
+      "en_path": "en/day10-emergent-abilities.md",
+      "zh_path": "zh/day10-emergent-abilities.md",
+      "qa_score": 91.1,
+      "images": ["zh/images/day10/emergent-abilities-sharp-jump.png", "zh/images/day10/phase-transition-analogy.png", "zh/images/day10/measurement-artifact.png", "zh/images/day10/emergence-debate-evidence.png", "zh/images/day10/big-bench-emergence.png", "zh/images/day10/emergence-timeline.png", "zh/images/day10/emergence-implications.png"]
     }
   ]
 }

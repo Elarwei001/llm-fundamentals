@@ -49,7 +49,7 @@
 | D7 | Tokenization | BPE, WordPiece, why tokenizers matter | [EN](articles/en/day07-tokenization.md) / [中文](articles/zh/day07-tokenization.md) |
 | D8 | The Magic of Embeddings | Word vectors, positional encoding, semantic space | [EN](articles/en/day08-the-magic-of-embeddings.md) / [中文](articles/zh/day08-the-magic-of-embeddings.md) |
 | D9 | **Scaling Laws** | Chinchilla, Kaplan, why "bigger is better" | [EN](articles/en/day09-scaling-laws.md) / [中文](articles/zh/day09-scaling-laws.md) |
-| D10 | Emergent Abilities | Emergence — Phase transition or measurement bias? | Controversial topic |
+| D10 | Emergent Abilities | Emergence — Phase transition or measurement bias? | [EN](articles/en/day10-emergent-abilities.md) / [中文](articles/zh/day10-emergent-abilities.md) |
 
 ### Week 3: Training Paradigms 🔥
 
