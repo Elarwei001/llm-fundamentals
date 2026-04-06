@@ -49,7 +49,7 @@ Key observations:
 The paper identified several emergent abilities:
 - **Three-digit addition** (emerges ~10²² FLOPs)
 - **Word unscrambling** (emerges ~10²³ FLOPs)
-- **Chain-of-thought reasoning** (emerges ~100B parameters)
+- **Chain-of-thought reasoning** (shows significant improvement ~100B parameters in few-shot evaluation; smaller models can benefit from CoT with fine-tuning)
 - **Multi-task NLU** (emerges at varying scales)
 
 ---
@@ -162,7 +162,7 @@ So which view is correct? The debate continues, and the evidence is genuinely mi
 
 **Chain-of-Thought Reasoning**
 
-Some researchers argue that chain-of-thought (CoT) prompting genuinely enables new capabilities, not just better expression of existing ones. Models below a certain scale can't produce coherent multi-step reasoning even when prompted to do so.
+Some researchers argue that chain-of-thought (CoT) prompting genuinely enables new capabilities, not just better expression of existing ones. In the original few-shot evaluation framework, models below ~100B parameters couldn't produce coherent multi-step reasoning even when prompted to do so. However, this doesn't mean smaller models lack CoT ability entirely—when specifically fine-tuned for step-by-step reasoning, smaller models can also perform well. The "emergence" of CoT is thus closely tied to the evaluation methodology, not just model scale.
 
 **Qualitative Capability Differences**
 
