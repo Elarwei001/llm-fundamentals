@@ -60,7 +60,9 @@
 
 如果涌现是真实的，为什么会发生？几种假说试图解释：
 
-**假说 1：临界表示容量**
+**假说 1：临界表示容量（Critical Representation Capacity）**
+
+> 相关论文：*"Emergent Abilities of Large Language Models"* — Wei, Tay 等人 (2022, [arXiv:2206.07682](https://arxiv.org/abs/2206.07682))
 
 某些任务需要同时存储和操作多个概念。模型可能需要足够的参数来：
 1. 编码算术规则
@@ -70,7 +72,9 @@
 
 在阈值以下，模型字面上没有足够的"心智工作空间"。超过阈值后，一切都就位了。
 
-**假说 2：组合能力**
+**假说 2：组合能力（Compositional Capabilities）**
+
+> 相关论文：*"Are Emergent Abilities of Large Language Models a Mirage?"* — Schaeffer, Miranda, Koyejo (2023, [arXiv:2304.15004](https://arxiv.org/abs/2304.15004)); *"Grokking"* — Power 等人 (2022)
 
 复杂能力可能需要组合更简单的技能。例如，解决 "7 × 8 + 3" 需要：
 - 理解乘法
@@ -80,7 +84,9 @@
 
 每个子技能在较小规模可能部分存在，但完整能力只有在所有组件同时达到足够质量时才"涌现"。
 
-**假说 3：上下文学习阈值**
+**假说 3：上下文学习阈值（In-Context Learning Threshold）**
+
+> 相关论文：*"An Explanation of In-context Learning"* — Xie 等人 (2022, [arXiv:2212.00759](https://arxiv.org/abs/2212.00759)); *"Rethinking the Role of Demonstrations"* — Min 等人 (2022)
 
 许多涌现能力涉及**上下文学习（In-context Learning）**——使用提示中的示例来引导行为。这种元能力可能有自己的阈值：
 

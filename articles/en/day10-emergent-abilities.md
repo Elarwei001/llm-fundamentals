@@ -62,6 +62,8 @@ If emergence is real, why would it occur? Several hypotheses attempt to explain:
 
 **Hypothesis 1: Critical Representation Capacity**
 
+> Related: *"Emergent Abilities of Large Language Models"* — Wei, Tay et al. (2022, [arXiv:2206.07682](https://arxiv.org/abs/2206.07682))
+
 Some tasks require storing and manipulating multiple concepts simultaneously. A model might need enough parameters to:
 1. Encode the rules of arithmetic
 2. Store intermediate results
@@ -72,6 +74,8 @@ Below a threshold, the model literally doesn't have enough "mental workspace." A
 
 **Hypothesis 2: Compositional Capabilities**
 
+> Related: *"Are Emergent Abilities of Large Language Models a Mirage?"* — Schaeffer, Miranda, Koyejo (2023, [arXiv:2304.15004](https://arxiv.org/abs/2304.15004)); *"Grokking: Generalization Beyond Overfitting on Small Algorithmic Datasets"* — Power et al. (2022)
+
 Complex abilities might require combining simpler skills. For example, solving "7 × 8 + 3" requires:
 - Understanding multiplication
 - Understanding addition  
@@ -81,6 +85,8 @@ Complex abilities might require combining simpler skills. For example, solving "
 Each sub-skill might exist partially at smaller scales, but the full capability only "emerges" when all components reach sufficient quality simultaneously.
 
 **Hypothesis 3: In-Context Learning Threshold**
+
+> Related: *"An Explanation of In-context Learning"* — Xie et al. (2022, [arXiv:2212.00759](https://arxiv.org/abs/2212.00759)); *"Rethinking the Role of Demonstrations: What Makes In-Context Learning Work?"* — Min et al. (2022)
 
 Many emergent abilities involve **in-context learning**—using examples in the prompt to guide behavior. This meta-ability might have its own threshold:
 
