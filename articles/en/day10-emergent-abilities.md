@@ -185,7 +185,7 @@ This seems like more than measurement artifact—it's a qualitative difference i
 For some tasks, the jump appears regardless of metric choice. This is harder to explain away as measurement artifact.
 
 ![Emergence Debate Evidence](../zh/images/day10/emergence-debate-evidence.png)
-*Figure 5: The evidence varies by task—some show jumps even with smooth metrics.*
+*Figure 5: Evidence strength varies by task. Green bars show performance with smooth metrics (e.g., log-probability), red bars with discrete metrics (e.g., accuracy). When green bars are also tall (like Multi-step Arithmetic), the jump persists regardless of metric—suggesting genuine emergence. When only red bars are tall (like Logical Reasoning), the jump may be a measurement artifact.*
 
 ### 4.2 Evidence AGAINST Genuine Emergence
 
