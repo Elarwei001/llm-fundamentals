@@ -336,12 +336,52 @@ Currently, no task has passed all three tests convincingly.
 3. [Beyond the Imitation Game: Quantifying and extrapolating the capabilities of language models](https://arxiv.org/abs/2206.04615) - BIG-bench Collaboration (2022)
    The massive benchmark that sparked the emergence debate.
 
-### Additional Resources
+### Theoretical Perspectives: Why Does Emergence Happen (or Not)?
 
-4. [Chain-of-Thought Prompting Elicits Reasoning in Large Language Models](https://arxiv.org/abs/2201.11903) - Wei et al. (2022)
+The debate over emergent abilities connects to deeper theoretical questions across multiple disciplines. Researchers have approached this from different angles, but no unified theory exists yet. Here are the main threads:
+
+**Statistical Physics**
+
+Statistical mechanics studies how macroscopic behavior emerges from microscopic interactions — a natural analogy for neural networks.
+
+4. [Statistical Mechanics of Deep Learning](https://arxiv.org/abs/2006.06039) — Bahri et al. (2020)
+   Maps neural network training to statistical mechanics, including phase transitions.
+
+5. [Phase Transitions in Deep Learning](https://arxiv.org/abs/2202.05763) — Roberts et al. (2022)
+   Directly analyzes phase transition behavior in neural networks using statistical physics frameworks.
+
+6. Work by Zdeborová & Krzakala — Systematic application of spin glass theory and statistical physics to overparameterized networks, currently the most rigorous theoretical route.
+
+**Information Theory**
+
+7. [Information Bottleneck method] — Tishby & Zaslavsky (2015)
+   Proposes that networks undergo two training phases (fitting then compression), with the compression phase potentially corresponding to a phase transition.
+
+8. Random matrix theory (Pennington & Bahri, 2017) — Shows that eigenvalue distributions of large parameter matrices transition from ordered to chaotic regimes as scale increases.
+
+**Complex Systems**
+
+9. Research at Santa Fe Institute (Melanie Mitchell et al.) — Studies emergence as a general phenomenon in complex systems. Their position: LLM emergence may be fundamentally different from classical emergence in complex systems (e.g., bird flocking, economic systems), but the theoretical tools may still apply.
+
+10. [Renormalization group analysis of deep networks] — Bhattacharya et al. (2024)
+    Finds scaling behavior across network layers analogous to physical systems.
+
+**Related Empirical Phenomena**
+
+11. [Grokking: Generalization Beyond Overfitting](https://arxiv.org/abs/2201.06091) — Power et al. (2022)
+    Models suddenly generalize after prolonged overfitting — an experimentally observed phase transition.
+
+12. [Reconciling modern machine-learning practice and the classical bias–variance trade-off](https://www.pnas.org/doi/10.1073/pnas.1903070116) — Belkin et al. (2019)
+    Documents double descent: test error decreases → increases → decreases again as model scale grows, challenging classical theory.
+
+**The bottom line**: Emergence is an active research frontier. Information theory, statistical physics, and complex systems theory all offer partial explanations, but none has produced a definitive theorem like "when network scale reaches X, capability Y must appear." Whether emergence is real or a mirage, understanding *why* it appears (or appears to appear) is one of the most important open questions in AI theory.
+
+### Other Key Resources
+
+13. [Chain-of-Thought Prompting Elicits Reasoning in Large Language Models](https://arxiv.org/abs/2201.11903) - Wei et al. (2022)
    Demonstrates emergent reasoning capabilities through prompting.
 
-5. [Scaling Laws for Neural Language Models](https://arxiv.org/abs/2001.08361) - Kaplan et al. (2020)
+14. [Scaling Laws for Neural Language Models](https://arxiv.org/abs/2001.08361) - Kaplan et al. (2020)
    Foundation for understanding how capabilities scale (see Day 9).
 
 ---

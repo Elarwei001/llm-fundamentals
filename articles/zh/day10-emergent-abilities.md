@@ -336,12 +336,52 @@ $$
 3. [Beyond the Imitation Game: Quantifying and extrapolating the capabilities of language models](https://arxiv.org/abs/2206.04615) - BIG-bench 合作项目 (2022)
    引发涌现争论的大型基准测试。
 
-### 更多资源
+### 理论视角：涌现为什么会发生（或不发生）？
 
-4. [Chain-of-Thought Prompting Elicits Reasoning in Large Language Models](https://arxiv.org/abs/2201.11903) - Wei 等人 (2022)
+关于涌现能力的争论涉及多个学科的深层理论问题。研究人员从不同角度进行了探索，但至今没有统一的理论框架。以下是主要的研究线索：
+
+**统计物理学**
+
+统计力学研究微观粒子交互如何涌现出宏观行为——这与神经网络有天然的类比。
+
+4. [Statistical Mechanics of Deep Learning](https://arxiv.org/abs/2006.06039) — Bahri 等人 (2020)
+   将神经网络训练映射到统计力学框架，包括相变现象。
+
+5. [Phase Transitions in Deep Learning](https://arxiv.org/abs/2202.05763) — Roberts 等人 (2022)
+   直接用统计物理框架分析神经网络中的相变行为。
+
+6. Zdeborová & Krzakala 的工作——系统性地将自旋玻璃理论和统计物理应用于过参数化网络，目前是最严谨的理论路线。
+
+**信息论**
+
+7. [Information Bottleneck method] — Tishby & Zaslavsky (2015)
+   提出网络训练经历两个阶段（先拟合再压缩），压缩阶段可能对应相变。
+
+8. 随机矩阵理论（Pennington & Bahri, 2017）——表明大规模参数矩阵的特征值分布在规模增大时会从有序态过渡到混沌态。
+
+**复杂系统**
+
+9. 圣塔菲研究所（Melanie Mitchell 等人）的研究——将涌现作为复杂系统的普遍现象来研究。他们的观点：LLM 的涌现可能与经典复杂系统（如鸟群、经济系统）中的涌现有本质区别，但理论工具可能仍然适用。
+
+10. [深度网络的重整化群分析] — Bhattacharya 等人 (2024)
+    发现网络各层之间存在类似于物理系统的标度行为。
+
+**相关的实验现象**
+
+11. [Grokking: Generalization Beyond Overfitting](https://arxiv.org/abs/2201.06091) — Power 等人 (2022)
+    模型在长期过拟合后突然泛化——这是实验中观测到的相变现象。
+
+12. [Reconciling modern machine-learning practice and the classical bias–variance trade-off](https://www.pnas.org/doi/10.1073/pnas.1903070116) — Belkin 等人 (2019)
+    发现双重下降现象：测试误差随模型规模先降→升→再降，挑战了经典理论。
+
+**结论**：涌现是一个活跃的研究前沿。信息论、统计物理和复杂系统理论都提供了部分解释，但还没有一个确定性的定理能说明"当网络规模达到 X，必然出现能力 Y"。无论涌现是真实的还是假象，理解它为什么会出现（或看起来出现），是 AI 理论中最重要的开放问题之一。
+
+### 其他关键资源
+
+13. [Chain-of-Thought Prompting Elicits Reasoning in Large Language Models](https://arxiv.org/abs/2201.11903) - Wei 等人 (2022)
    通过提示展示涌现推理能力。
 
-5. [Scaling Laws for Neural Language Models](https://arxiv.org/abs/2001.08361) - Kaplan 等人 (2020)
+14. [Scaling Laws for Neural Language Models](https://arxiv.org/abs/2001.08361) - Kaplan 等人 (2020)
    理解能力如何缩放的基础（见第九天）。
 
 ---
