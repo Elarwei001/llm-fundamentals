@@ -382,7 +382,7 @@ $$
 
 关于涌现真实性的最有力的理论证据来自 EPFL 的 Zdeborová 研究组：
 
-15. [A phase transition between positional and semantic learning in a solvable model of dot-product attention](https://iopscience.iop.org/article/10.1088/1742-5468/ade137) — Cui 等人 (2025, JSTAT)
+13. [A phase transition between positional and semantic learning in a solvable model of dot-product attention](https://iopscience.iop.org/article/10.1088/1742-5468/ade137) — Cui 等人 (2025, JSTAT)
 
 他们用统计物理方法严格证明了 Transformer 在训练过程中会经历真正的相变：当训练数据有限时，模型仅依赖词的**位置**来理解句子；但当数据量超过临界阈值后，策略**突然切换**为依赖词的**语义**。这个转变不是渐进的，而是不连续的，就像物理学中的相变。
 
@@ -392,10 +392,10 @@ $$
 
 ### 其他关键资源
 
-13. [Chain-of-Thought Prompting Elicits Reasoning in Large Language Models](https://arxiv.org/abs/2201.11903) - Wei 等人 (2022)
+14. [Chain-of-Thought Prompting Elicits Reasoning in Large Language Models](https://arxiv.org/abs/2201.11903) - Wei 等人 (2022)
    通过提示展示涌现推理能力。
 
-14. [Scaling Laws for Neural Language Models](https://arxiv.org/abs/2001.08361) - Kaplan 等人 (2020)
+15. [Scaling Laws for Neural Language Models](https://arxiv.org/abs/2001.08361) - Kaplan 等人 (2020)
    理解能力如何缩放的基础（见第九天）。
 
 ---
