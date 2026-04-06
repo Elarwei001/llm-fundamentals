@@ -106,7 +106,9 @@ Neural networks have millions or billions of interacting parameters. Could they 
 
 - **Loss landscape transitions**: The geometry of the loss function may change qualitatively at certain scales
 - **Grokking**: Models sometimes suddenly generalize after extended training—another discontinuous transition
-- **Lottery ticket hypothesis**: The "winning subnetwork" might require minimum scale to exist. > **Note:** The Lottery Ticket Hypothesis (Frankle & Carbin, 2019) has been empirically validated for explaining why overparameterized networks train well, but its application to emergent abilities is an analogy, not a directly verified claim. There is indirect evidence that larger networks contain better subnetworks (Ramanujan et al., 2020), but no paper has proven that a specific emergent capability requires a minimum-scale subnetwork.
+- **Lottery ticket hypothesis**: The "winning subnetwork" might require minimum scale to exist.
+
+> **Note:** The Lottery Ticket Hypothesis (Frankle & Carbin, 2019) has been empirically validated for explaining why overparameterized networks train well, but its application to emergent abilities is an analogy, not a directly verified claim. There is indirect evidence that larger networks contain better subnetworks (Ramanujan et al., 2020), but no paper has proven that a specific emergent capability requires a minimum-scale subnetwork.
 
 ---
 
