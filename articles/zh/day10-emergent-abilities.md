@@ -378,6 +378,18 @@ $$
 
 **结论**：涌现是一个活跃的研究前沿。信息论、统计物理和复杂系统理论都提供了部分解释，但还没有一个确定性的定理能说明"当网络规模达到 X，必然出现能力 Y"。无论涌现是真实的还是假象，理解它为什么会出现（或看起来出现），是 AI 理论中最重要的开放问题之一。
 
+**最新突破（2025）**
+
+关于涌现真实性的最有力的理论证据来自 EPFL 的 Zdeborová 研究组：
+
+15. [A phase transition between positional and semantic learning in a solvable model of dot-product attention](https://iopscience.iop.org/article/10.1088/1742-5468/ade137) — Cui 等人 (2025, JSTAT)
+
+他们用统计物理方法严格证明了 Transformer 在训练过程中会经历真正的相变：当训练数据有限时，模型仅依赖词的**位置**来理解句子；但当数据量超过临界阈值后，策略**突然切换**为依赖词的**语义**。这个转变不是渐进的，而是不连续的，就像物理学中的相变。
+
+这可能是迄今为止最强的理论证据，证明神经网络学习中确实存在真正的相变——不是测量假象，而是模型处理信息方式的真实质变。
+
+> 另见：[Single-Head Attention in High Dimensions](https://arxiv.org/abs/2509.24914) — Boncoraglio, Troiani, Zdeborová, Krzakala (2025)——关于注意力机制中泛化、权重谱和标度律的理论框架。
+
 ### 其他关键资源
 
 13. [Chain-of-Thought Prompting Elicits Reasoning in Large Language Models](https://arxiv.org/abs/2201.11903) - Wei 等人 (2022)

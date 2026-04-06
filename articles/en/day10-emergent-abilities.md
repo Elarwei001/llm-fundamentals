@@ -378,6 +378,22 @@ Statistical mechanics studies how macroscopic behavior emerges from microscopic 
 
 **The bottom line**: Emergence is an active research frontier. Information theory, statistical physics, and complex systems theory all offer partial explanations, but none has produced a definitive theorem like "when network scale reaches X, capability Y must appear." Whether emergence is real or a mirage, understanding *why* it appears (or appears to appear) is one of the most important open questions in AI theory.
 
+**Latest Breakthrough (2025)**
+
+One of the most compelling pieces of evidence for genuine emergence comes from Zdeborová's group at EPFL:
+
+15. [A phase transition between positional and semantic learning in a solvable model of dot-product attention](https://iopscience.iop.org/article/10.1088/1742-5468/ade137) — Cui et al. (2025, JSTAT)
+
+They proved, using statistical physics methods, that Transformers undergo a genuine phase transition during training: with limited data, the model relies solely on word *positions* to understand sentences; but once training data crosses a critical threshold, the strategy **abruptly shifts** to relying on word *semantics*. This transition is not gradual — it's discontinuous, like a phase transition in physics.
+
+This is perhaps the strongest theoretical evidence to date that genuine phase transitions exist in neural network learning — not just measurement artifacts, but real qualitative shifts in how the model processes information.
+
+> Also see: [Single-Head Attention in High Dimensions](https://arxiv.org/abs/2509.24914) — Boncoraglio, Troiani, Zdeborová, Krzakala (2025) — a theoretical framework for generalization, weight spectra, and scaling laws in attention mechanisms.
+
+**Notable recent development (2025):** A team led by Zdeborová published a rigorous result in JSTAT — *"A phase transition between positional and semantic learning in a solvable model of dot-product attention"* (Cui et al., 2025). Using statistical physics methods, they proved that during Transformer self-attention training, models initially rely on word positions, but once training data crosses a critical threshold, they **abruptly** transition to using word semantics. This is not gradual — it's a genuine phase transition, mathematically proven in a simplified setting. This may be the strongest theoretical support yet for the existence of real emergence in neural networks.
+
+15. [A phase transition between positional and semantic learning in a solvable model of dot-product attention](https://doi.org/10.1088/1742-5468/ade137) — Cui et al. (2025)
+
 ### Other Key Resources
 
 13. [Chain-of-Thought Prompting Elicits Reasoning in Large Language Models](https://arxiv.org/abs/2201.11903) - Wei et al. (2022)
