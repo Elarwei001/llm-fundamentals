@@ -50,7 +50,7 @@ The paper identified several emergent abilities:
 - **Three-digit addition** (emerges ~10²² FLOPs)
 - **Word unscrambling** (emerges ~10²³ FLOPs)
 - **Chain-of-thought reasoning** (shows significant improvement ~100B parameters in few-shot evaluation; smaller models can benefit from CoT with fine-tuning)
-- **Multi-task NLU** (emerges at varying scales)
+- **Multi-task NLU** (multi-task Natural Language Understanding — using a single model to handle diverse NLU tasks like sentiment analysis, QA, textual entailment, and semantic similarity; emerges at varying scales depending on task difficulty)
 
 ---
 
