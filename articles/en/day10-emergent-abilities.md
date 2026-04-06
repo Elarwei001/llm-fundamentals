@@ -214,7 +214,7 @@ The field hasn't reached consensus, but a nuanced view is emerging:
 
 ## 5. Timeline of the Debate
 
-![Emergence Timeline](../zh/images/day10/emergence-timeline.png)
+![Emergence Timeline](../zh/images/day10/emergence-timeline-v2.png)
 *Figure 6: The emergence debate has evolved rapidly over just a few years.*
 
 **2020**: GPT-3 demonstrates surprising few-shot learning capabilities. The term "emergence" begins circulating informally.

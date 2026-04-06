@@ -214,7 +214,7 @@ Schaeffer 等人提供了有力证据：
 
 ## 5. 争论的时间线
 
-![涌现时间线](./images/day10/emergence-timeline.png)
+![涌现时间线](./images/day10/emergence-timeline-v2.png)
 *图 6：涌现争论在短短几年内迅速演变。*
 
 **2020 年**：GPT-3 展示了令人惊讶的少样本学习能力。"涌现"一词开始非正式流传。
