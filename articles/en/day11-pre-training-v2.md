@@ -227,6 +227,9 @@ Hence: $C \approx 2 \times 3 \times N \times D = 6ND$
 
 ### 3.7 Optimizers Visualized: A Downhill Story
 
+![Four optimizers compared on the same loss landscape](images/day11/optimizers-comparison.jpg)
+*Figure: How different optimizers navigate the same loss landscape — from SGD's zigzagging to Adam's smooth convergence.*
+
 Imagine you're blindfolded on a mountain, trying to find the lowest valley. Your only tool is feeling the slope under your feet (the gradient).
 
 #### SGD (No Momentum) — Walk Looking Only at Your Feet
