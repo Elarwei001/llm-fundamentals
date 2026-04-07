@@ -694,6 +694,9 @@ Entropy shows up everywhere — data compression (you can't compress below H bit
 
 ### Cross-Entropy: Your Model's Surprise at Reality
 
+![Cross-entropy intuition: bad guess vs good guess](images/day11/cross-entropy-intuition.jpg)
+*Figure: When your prediction Q closely matches reality P, cross-entropy is low. When they diverge, cross-entropy is high — you're constantly surprised.*
+
 Here's where it gets interesting for ML.
 
 Imagine a guessing game: I'm picking words from the English language (following the true distribution *P*), and you're trying to predict what I'll say next using your own internal model *Q*. Every time I reveal a word, you experience surprise based on *your* model — how likely did *you* think that word was?
