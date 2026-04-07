@@ -579,6 +579,138 @@ parallelism: FSDP or 3D parallel
 
 ---
 
+## 11.5 Deep Dive: Understanding Cross-Entropy Loss
+
+If you've been reading about pre-training, you've seen "cross-entropy loss" everywhere. But *why* cross-entropy? What's it actually measuring? Let's build up the intuition from scratch — no prerequisites beyond basic probability.
+
+---
+
+### Information Content: How Surprising Is That?
+
+Imagine I tell you: "The sun rose this morning." You'd shrug — that's the least surprising thing ever. But if I said "It rained diamonds over Paris today," your jaw would drop.
+
+This intuition — that rare events carry more "information" — is exactly what **information content** formalizes:
+
+> **I(x) = -log₂ P(x)**
+
+The less likely something is, the more bits of information it carries. Makes sense, right? If I need to tell you about something unpredictable, I need more bits to encode it.
+
+| Event | Probability | Information (bits) |
+|-------|-------------|--------------------|
+| Fair coin heads | 0.5 | 1.0 |
+| Rolling a 6 on a die | 1/6 ≈ 0.167 | 2.58 |
+| Drawing the ace of spades | 1/52 ≈ 0.019 | 5.70 |
+| Sunrise tomorrow | ~1.0 | ~0.0 |
+| Diamond rain in Paris | ≈ 0.0000001 | ~23.3 |
+
+Notice: the sunrise carries essentially zero bits (not surprising at all), while diamond rain carries a ton (very surprising). The logarithm ensures that information is additive — if two independent events happen, their information adds up.
+
+---
+
+### Shannon Entropy: Average Surprise
+
+Now, imagine I sample events from a distribution over and over. How much information do I get *on average*? That's **Shannon entropy**:
+
+> **H(P) = -Σ P(x) log₂ P(x)**
+
+Think of it as the expected surprise. If every outcome is equally likely (uniform distribution), you're maximally surprised on average — you can never guess what's coming. If one outcome dominates (like sunrise), entropy is low — you're rarely surprised.
+
+**Key insight:** Maximum entropy for a distribution over *N* outcomes is log₂(N), achieved when all outcomes are equally likely.
+
+```
+Fair coin:    H = 1.0 bit        (2 outcomes, equally likely)
+Loaded coin:  H ≈ 0.47 bits      (90% heads, 10% tails — boring!)
+Fair die:     H = log₂(6) ≈ 2.58 bits
+```
+
+Entropy shows up everywhere — data compression (you can't compress below H bits per symbol on average), communication channels, and yes, machine learning.
+
+---
+
+### Cross-Entropy: Your Model's Surprise at Reality
+
+Here's where it gets interesting for ML.
+
+Imagine a guessing game: I'm picking words from the English language (following the true distribution *P*), and you're trying to predict what I'll say next using your own internal model *Q*. Every time I reveal a word, you experience surprise based on *your* model — how likely did *you* think that word was?
+
+Your average surprise is the **cross-entropy**:
+
+> **H(P, Q) = -Σ P(x) log Q(x)**
+
+Notice: reality is *P* (what actually happens), but the surprise is computed using *Q* (your model's probabilities). If your model *Q* is a perfect match for reality *P*, then H(P,Q) = H(P) — you're only surprised by the inherent uncertainty, nothing more.
+
+But if your model is bad — say you assign low probability to words that actually appear often — you'll be constantly shocked. H(P,Q) shoots up.
+
+```
+Good model:  Q ≈ P → H(P,Q) ≈ H(P)   "I expected most of that"
+Bad model:   Q far from P → H(P,Q) ≫ H(P)  "Everything surprises me!"
+```
+
+---
+
+### KL Divergence: The Price of Being Wrong
+
+We can decompose cross-entropy into two parts:
+
+> **H(P, Q) = H(P) + D_KL(P ‖ Q)**
+
+- **H(P)** — the irreducible surprise (even a perfect model can't predict everything)
+- **D_KL(P ‖ Q)** — the *extra* surprise caused by your model being wrong
+
+**D_KL** (Kullback-Leibler divergence) measures how much *worse* your model is compared to the truth. Think of it as the penalty for your ignorance.
+
+**Analogy — good student vs. bad student:**
+
+- Both take the same exam (same P, the true distribution of questions)
+- The good student's mental model (Q) closely matches reality → low D_KL → barely any extra confusion
+- The bad student has a wildly wrong mental model → high D_KL → constantly confused by questions they didn't expect
+- Both face the same inherent difficulty H(P) of the exam
+
+**Key properties of KL divergence:**
+- **Always ≥ 0** (you can never do *better* than the true distribution)
+- **= 0 if and only if P = Q** (only a perfect model pays no penalty)
+- **Asymmetric:** D_KL(P ‖ Q) ≠ D_KL(Q ‖ P) — being wrong in one direction costs differently than the other
+
+---
+
+### Why This Matters for LLM Training
+
+In language model pre-training, here's the concrete setup:
+
+- **P is one-hot**: The "true distribution" is just the actual next token. P(x_true) = 1, and P(everything else) = 0.
+- **Q is the model's prediction**: A probability distribution over the vocabulary, output by the softmax layer.
+
+Because P is one-hot, almost all terms in the cross-entropy sum vanish:
+
+> **H(P, Q) = -Σ P(x) log Q(x) = -log Q(x_true)**
+
+The loss is simply the negative log-probability the model assigned to the correct next token. That's it!
+
+| Model's probability for correct token | Cross-entropy loss |
+|---------------------------------------|-------------------|
+| 0.99 | 0.01 |
+| 0.90 | 0.105 |
+| 0.50 | 0.693 |
+| 0.10 | 2.303 |
+| 0.01 | 4.605 |
+| 0.001 | 6.908 |
+
+Notice how the loss **explodes** as the model's confidence in the correct answer drops. Assign 0.001 probability to the right token? That's a loss of ~6.9. The model is being heavily penalized for being confidently wrong.
+
+Also, since H(P) = 0 for a one-hot distribution (there's no uncertainty — we *know* the answer during training):
+
+> **H(P, Q) = 0 + D_KL(P ‖ Q) = D_KL(P ‖ Q)**
+
+**Minimizing cross-entropy loss is exactly equivalent to minimizing KL divergence.** You're pushing your model's distribution Q closer and closer to matching the true next-token distribution P, one training step at a time.
+
+And when people talk about "perplexity" — that's just 2^H(P,Q). A perplexity of 20 means the model is, on average, as confused as if it were guessing uniformly among 20 equally likely tokens. Lower perplexity = better model.
+
+---
+
+**The big picture:** Information theory gives us a principled, elegant way to measure how wrong our model is. Cross-entropy loss isn't arbitrary — it's the *natural* way to train a model that predicts probability distributions. Every time you see a training loss curve going down, you're watching a model get less and less surprised by the data. Pretty beautiful, honestly.
+
+---
+
 ## 12. Further Reading
 
 ### Beginner
