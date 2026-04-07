@@ -674,6 +674,9 @@ Notice: the sunrise carries essentially zero bits (not surprising at all), while
 
 ### Shannon Entropy: Average Surprise
 
+![Shannon Entropy visualized](images/day11/shannon-entropy.png)
+*Figure: Shannon entropy measures how unpredictable a distribution is. Skewed distributions have low entropy (predictable), uniform distributions have maximum entropy (maximum uncertainty).*
+
 Now, imagine I sample events from a distribution over and over. How much information do I get *on average*? That's **Shannon entropy**:
 
 > **H(P) = -Σ P(x) log₂ P(x)**
