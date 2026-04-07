@@ -28,6 +28,9 @@
 | CBOW | 连续词袋模型 | Continuous Bag of Words，Word2Vec 的一种变体，从上下文预测中心词 |
 | Chinchilla Scaling | Chinchilla 缩放 | DeepMind 2022 年提出的最优训练配方：每参数约 20 token |
 | Compute-Optimal | 计算最优 | 在固定计算预算下达到最低损失的模型规模和数据量配置 |
+| Cosine Decay | 余弦衰减 | 学习率调度策略，按余弦曲线从峰值降到接近零 |
+| Cross-Entropy Loss | 交叉熵损失 | 衡量预测分布与真实分布差异的损失函数，等价于负对数似然 |
+| Curriculum Learning | 课程学习 | 按照从易到难的顺序安排训练样本 |
 | Chain Rule of Probability | 概率链式法则 | 将句子概率分解为逐词条件概率乘积的规则 |
 | Chain-of-Thought (CoT) | 思维链 | 让模型逐步推理的提示技术 |
 | Context Window | 上下文窗口 | 模型能处理的最大 token 数 |
@@ -128,6 +131,7 @@
 |---------|------|----------|
 | Parameter | 参数 | 模型中可学习的权重 |
 | Phase Transition | 相变 | 在临界阈值发生的质的变化（物理学概念，用于类比涌现） |
+| Pipeline Parallelism | 流水线并行 | 不同 Transformer 层分布在不同 GPU 上，数据像流水线一样流过 |
 | Position Encoding | 位置编码 | 让模型感知 token 顺序 |
 | Power Law | 幂律 | 变量间的乘幂关系，如 $y \propto x^{\alpha}$，缩放定律的数学基础 |
 | Pre-training | 预训练 | 在大规模数据上的初始训练 |
@@ -155,11 +159,13 @@
 |---------|------|----------|
 | Scaling Laws | 缩放定律 | 模型性能与规模的关系 |
 | Self-Attention | 自注意力 | Token 之间相互计算注意力 |
+| Self-supervised Learning | 自监督学习 | 标签来自数据本身的机器学习方法，无需人类标注 |
 | Semantic Space | 语义空间 | 嵌入向量所在的高维空间，相似含义的词距离更近 |
 | SentencePiece | SentencePiece | Google 的语言无关子词分词器 |
 | Skip-gram | Skip-gram | Word2Vec 的一种变体，从中心词预测上下文 |
 | Softmax | Softmax | 将 logits 转换为概率分布 |
 | Subword Tokenization | 子词分词 | 介于字符和词之间的分词策略 |
+| Synthetic Data | 合成数据 | 由模型生成的用于训练其他模型的数据 |
 
 ## T
 

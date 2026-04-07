@@ -55,7 +55,7 @@
 
 | Day | Topic | Core Question | Trend Source |
 |-----|-------|---------------|--------------|
-| D11 | Pre-training | Self-supervised learning, training world models on the internet | Training basics |
+| D11 | Pre-training | Self-supervised learning, training world models on the internet | [EN](articles/en/day11-pre-training.md) / [中文](articles/zh/day11-pre-training.md) |
 | D12 | Fine-tuning | Parameter-efficient fine-tuning (LoRA, QLoRA) | Practical technique |
 | D13 | **RLHF Explained** | Reinforcement Learning from Human Feedback, ChatGPT's secret | 🔥 rlhf training +140% |
 | D14 | **RLHF Data & Practice** | Dataset construction, annotation workflow, costs | 🔥 data +200% |
