@@ -221,6 +221,57 @@ Hence: $C \approx 2 \times 3 \times N \times D = 6ND$
 | **Lion** | Sign-based updates | Emerging alternative |
 | **Muon** | Orthogonalized updates | Cutting-edge, used in NanoGPT speedruns |
 
+### Optimizers Visualized: A Downhill Story
+
+Imagine you're blindfolded on a mountain, trying to find the lowest valley. Your only tool is feeling the slope under your feet (the gradient).
+
+#### SGD (No Momentum) — Walk Looking Only at Your Feet
+
+Formula: θ_{t+1} = θ_t - η · ∇L
+
+Every step follows the current slope exactly. Problem: in narrow valleys, the slope is steep on the sides but shallow along the valley floor. You bounce back and forth between walls:
+
+```
+    \  ↑↓↑↓↑↓  /     ← bouncing between valley walls
+     \  →  →  /      ← slow progress along the valley
+      \______/        ← minimum is here
+```
+
+#### SGD + Momentum — A Bowling Ball
+
+v_t = β·v_{t-1} + ∇L(θ_t), then θ_{t+1} = θ_t - η·v_t
+
+β ≈ 0.9 means new velocity = 90% old velocity + 10% current gradient. Like a bowling ball rolling downhill:
+- Left-right bouncing forces cancel out (alternating directions)
+- Along-valley forces accumulate in the same direction → speeds up
+
+```
+Before: ← → ← → ← →  (bouncing)
+Now:    → → → → → →  (momentum pushes through!)
+```
+
+#### RMSProp — Self-Adaptive Shoes
+
+Divides the learning rate by the running average of squared gradients. Large gradients → smaller steps. Small gradients → larger steps.
+
+```
+Steep direction:  large grad → divide by big number → small steps → no bouncing
+Flat direction:   small grad → divide by small number → big steps → fast progress
+```
+
+#### Adam = Momentum + RMSProp — A Bowling Ball with Self-Adaptive Shoes
+
+Combines both: momentum for direction, adaptive step sizes. Nearly all LLM training uses Adam or AdamW.
+
+#### Comparison Table
+
+| Optimizer | Analogy | Strength | Weakness |
+|---|---|---|---|
+| SGD | Walk looking at feet | Simple, good generalization | Oscillates, slow |
+| SGD+Momentum | Bowling ball | Powers through small bumps | Fixed step size |
+| RMSProp | Self-adaptive shoes | Adaptive step sizes | No momentum |
+| Adam | Bowling ball + adaptive shoes | Fast and stable | 2x memory usage |
+
 ---
 
 ## 4. Learning Rate Scheduling
