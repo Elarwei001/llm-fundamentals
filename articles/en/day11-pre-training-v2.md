@@ -225,7 +225,7 @@ Hence: $C \approx 2 \times 3 \times N \times D = 6ND$
 | **Lion** | Sign-based updates | Emerging alternative |
 | **Muon** | Orthogonalized updates | Cutting-edge, used in NanoGPT speedruns |
 
-### Optimizers Visualized: A Downhill Story
+### 3.7 Optimizers Visualized: A Downhill Story
 
 Imagine you're blindfolded on a mountain, trying to find the lowest valley. Your only tool is feeling the slope under your feet (the gradient).
 
