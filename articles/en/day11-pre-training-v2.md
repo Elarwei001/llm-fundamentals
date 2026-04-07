@@ -223,7 +223,7 @@ Hence: $C \approx 2 \times 3 \times N \times D = 6ND$
 | **AdaFactor** | Memory-efficient Adam | When memory is tight |
 | **LAMB** | Layer-wise adaptive rates | Very large batch training |
 | **Lion** | Sign-based updates | Emerging alternative |
-| **Muon** | Orthogonalized updates | Cutting-edge, used in NanoGPT speedruns |
+| **Muon** | Orthogonalized momentum via Newton-Schulz | 2024; 2x data efficiency vs AdamW, 33% less optimizer memory |
 
 ### 3.7 Optimizers Visualized: A Downhill Story
 
