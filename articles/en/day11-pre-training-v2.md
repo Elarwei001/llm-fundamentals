@@ -73,7 +73,9 @@ $$
 = -\frac{1}{T}\sum_{t=1}^{T} \log \,\text{softmax}(z_t)[x_t]
 $$
 
-Where $\theta$ are the model parameters, $z_t$ is the logit vector at position $t$, and $x_t$ is the actual next token. Lower loss means better prediction — the model is more "surprised" less often.
+Where $\theta$ are the model parameters, $z_t$ is the **logit vector** at position $t$, and $x_t$ is the actual next token. Lower loss means better prediction — the model is more "surprised" less often.
+
+> **What are logits?** The logit vector is the raw, unnormalized output of the model's final layer — one score per token in the vocabulary. These scores can be any real number (positive or negative). Passing them through **softmax** converts them into a probability distribution (all values between 0 and 1, summing to 1). In PyTorch, `F.cross_entropy(logits, targets)` handles the softmax + negative log-likelihood internally, so you feed in raw logits directly.
 
 ### 2.2 Why This Works So Well
 
