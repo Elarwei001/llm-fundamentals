@@ -466,73 +466,32 @@ The irreducible loss — the floor the curve approaches — represents the inher
 
 Training large models is like flying a plane — many things can go wrong, and you need to recognize the warning signs fast.
 
-#### Loss Explodes (NaN / Inf)
-
-![Loss explodes diagram](images/day11/loss-explodes.jpg)
-*Figure: When the learning rate is too high, a feedback loop causes gradients to spiral out of control.*
-
-**What happens:** The loss suddenly shoots to infinity or becomes `NaN` (Not a Number). Training is dead.
-
-**Why:** The learning rate is too high. Each parameter update is so large that the model overshoots the minimum, producing larger gradients next step, which produce even larger updates — a feedback loop that spirals out of control.
-
-**How to fix:**
-- Reduce learning rate (try 10x smaller)
-- Add gradient clipping (see 7.4)
-- Check for bad data (extremely long sequences, corrupted tokens)
-- Use BF16 instead of FP16 (BF16 has a much larger representable range, less prone to overflow)
-
-#### Loss Plateaus Early
-
-![Loss plateaus diagram](images/day11/loss-plateaus.jpg)
-*Figure: The loss gets stuck well above the optimal value, leaving untapped potential on the table.*
-
-**What happens:** The loss decreases for a while, then gets stuck and won't go lower, even with more training.
-
-**Why:** Either the learning rate is too small to escape a local minimum, or some neurons have "died" (their activations are always zero, so gradients never flow through them).
-
-**How to fix:**
-- Increase learning rate slightly
-- Check activation statistics — if many neurons output zero consistently, you may have a "dead neuron" problem
-- Try a different initialization strategy
-- Use a learning rate warmup if you don't already
-
-#### Loss Spikes
-
-![Loss spikes diagram](images/day11/loss-spikes.jpg)
-*Figure: Occasional sharp spikes in loss, usually caused by bad data batches. Most recover on their own.*
-
-**What happens:** The loss is mostly decreasing smoothly, but occasionally jumps up dramatically.
-
-**Why:** Usually caused by a "bad batch" of data — a sequence with unusual token patterns that the model can't handle. Can also be caused by numerical instability in mixed-precision training.
-
-**How to fix:**
-- Filter training data more aggressively (remove duplicates, low-quality text)
-- If using FP16, try BF16 instead
-- These occasional spikes are normal and usually recoverable — don't panic unless they become frequent
-
-#### Slow Convergence
-
-![Slow convergence diagram](images/day11/slow-convergence.jpg)
-*Figure: Poor initialization leads to much slower convergence compared to a well-initialized model.*
-
-**What happens:** The loss is decreasing, but painfully slowly. Training takes much longer than expected.
-
-**Why:** Poor weight initialization can start the model in a bad region of parameter space. Also, learning rate might be too conservative.
-
-**How to fix:**
-- Use proper initialization (small init for residual branches, scaled init for embeddings)
-- Verify your learning rate schedule is correct (warmup + cosine decay)
-- Check that data is being shuffled properly
-- Ensure batch size is large enough
-
-**Summary table:**
-
-| Symptom | Likely Cause | Fix |
-|---------|--------------|-----|
-| Loss explodes (NaN/Inf) | Learning rate too high | Reduce LR, add gradient clipping |
-| Loss plateaus early | LR too low or dead neurons | Increase LR, check activations |
-| Loss spikes | Bad data or numerical issues | Filter data, use mixed precision carefully |
-| Slow convergence | Poor initialization | Use proper init (e.g., small init for residual branches) |
+<table>
+<tr>
+<td align="center" width="25%"><b>💥 Loss Explodes</b><br><i>(NaN / Inf)</i></td>
+<td align="center" width="25%"><b>😐 Loss Plateaus</b><br><i>(Stuck early)</i></td>
+<td align="center" width="25%"><b>⚡ Loss Spikes</b><br><i>(Sudden jumps)</i></td>
+<td align="center" width="25%"><b>🐌 Slow Convergence</b><br><i>(Painfully slow)</i></td>
+</tr>
+<tr>
+<td align="center"><img src="images/day11/loss-explodes.jpg" width="250"></td>
+<td align="center"><img src="images/day11/loss-plateaus.jpg" width="250"></td>
+<td align="center"><img src="images/day11/loss-spikes.jpg" width="250"></td>
+<td align="center"><img src="images/day11/slow-convergence.jpg" width="250"></td>
+</tr>
+<tr>
+<td><b>Cause:</b> LR too high → feedback loop: overshoot → larger gradients → even larger updates → 💥</td>
+<td><b>Cause:</b> LR too small, or "dead neurons" (activations always zero, gradients never flow)</td>
+<td><b>Cause:</b> Bad data batch (unusual token patterns) or numerical instability in FP16</td>
+<td><b>Cause:</b> Poor weight initialization, wrong LR schedule, or data not shuffled</td>
+</tr>
+<tr>
+<td><b>Fix:</b> Reduce LR (10x), add gradient clipping, use BF16, check for corrupted data</td>
+<td><b>Fix:</b> Increase LR slightly, check activation stats, try different init, add warmup</td>
+<td><b>Fix:</b> Filter data aggressively, switch FP16→BF16. Occasional spikes are normal — don't panic</td>
+<td><b>Fix:</b> Proper init, verify LR schedule, shuffle data, increase batch size</td>
+</tr>
+</table>
 
 ### 7.3 Essential Monitoring
 

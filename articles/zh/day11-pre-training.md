@@ -278,59 +278,32 @@ $$
 
 训练大模型就像熬一锅汤——火候不对就容易糊锅或者煮不熟。以下是几种最典型的失败模式：
 
-**Loss 爆炸（NaN / Inf）**
-
-![Loss 爆炸示意图](../en/images/day11/loss-explodes.jpg)
-*图：学习率过高时，反馈循环导致梯度失控。*
-
-这是最让人心脏骤停的情况：loss 突然变成 NaN 或 Inf，训练彻底崩溃。常见原因：
-- 学习率太高，参数更新幅度过大
-- 出现正反馈循环——数值溢出导致梯度更大，梯度更大导致更严重的溢出
-
-**怎么救：** 降低学习率、开启梯度裁剪（下面会讲）、换用 BF16 精度（比 FP16 数值范围更大）、检查数据里有没有异常值。
-
-**Loss 过早停滞**
-
-![Loss 停滞示意图](../en/images/day11/loss-plateaus.jpg)
-*图：Loss 卡在远高于最优值的位置，潜力未被释放。*
-
-训练刚开始 loss 下降得挺快，然后突然就「躺平」了，怎么都不再下降。可能原因：
-- 学习率太小，模型学不动
-- 某些神经元「死亡」（梯度为零，永远不更新）
-
-**怎么救：** 适当提高学习率、检查各层激活值分布（是不是全变成零了？）、试试不同的参数初始化方式。
-
-**Loss 突然飙升**
-
-![Loss 尖峰示意图](../en/images/day11/loss-spikes.jpg)
-*图：偶发的剧烈尖峰，通常由脏数据批次引起。多数会自行恢复。*
-
-Loss 本来很稳定，突然跳了一下——但不是完全爆炸，之后可能又回来。可能原因：
-- 遇到了一批「脏数据」（乱码、超长重复 token 等）
-- 数值不稳定性（在 FP16 下更常见）
-
-**怎么救：** 加强数据过滤、换用 BF16。偶尔一次的小 spike 其实是正常的，不用太紧张；但如果频繁出现，就该调查了。
-
-**收敛太慢**
-
-![收敛缓慢示意图](../en/images/day11/slow-convergence.jpg)
-*图：糟糕的初始化导致收敛速度远慢于正常情况。*
-
-Loss 在降，但降得像蜗牛。可能原因：
-- 初始化没做好
-- 学习率调度策略不对
-- 数据没有充分打乱
-
-**怎么救：** 确保使用正确的初始化（比如 GPT 默认的 `N(0, 0.02)` 方式）、验证学习率 schedule 是否按预期执行、把数据充分 shuffle、适当增大 batch size。
-
-**快速参考表：**
-
-| 症状 | 可能原因 | 急救措施 |
-|------|----------|----------|
-| Loss 爆炸（NaN） | 学习率过高 / 数值溢出 | 降 LR + 梯度裁剪 + BF16 |
-| Loss 过早停滞 | 学习率过低 / 神经元死亡 | 提 LR + 检查激活值 + 换初始化 |
-| Loss 突然飙升 | 脏数据 / 数值不稳定 | 过滤数据 + BF16 |
-| 收敛缓慢 | 初始化差 / schedule 错误 | 调初始化 + 验证 schedule + shuffle |
+<table>
+<tr>
+<td align="center" width="25%"><b>💥 Loss 爆炸</b><br><i>(NaN / Inf)</i></td>
+<td align="center" width="25%"><b>😐 Loss 停滞</b><br><i>(过早躺平)</i></td>
+<td align="center" width="25%"><b>⚡ Loss 尖峰</b><br><i>(突然飙升)</i></td>
+<td align="center" width="25%"><b>🐌 收敛缓慢</b><br><i>(降得像蜗牛)</i></td>
+</tr>
+<tr>
+<td align="center"><img src="../en/images/day11/loss-explodes.jpg" width="250"></td>
+<td align="center"><img src="../en/images/day11/loss-plateaus.jpg" width="250"></td>
+<td align="center"><img src="../en/images/day11/loss-spikes.jpg" width="250"></td>
+<td align="center"><img src="../en/images/day11/slow-convergence.jpg" width="250"></td>
+</tr>
+<tr>
+<td><b>原因：</b>学习率过高 → 正反馈循环：过冲 → 更大梯度 → 更大更新 → 💥</td>
+<td><b>原因：</b>学习率太小，或「死亡神经元」（激活值始终为零，梯度无法回传）</td>
+<td><b>原因：</b>遇到了「脏数据」批次（异常 token 模式），或 FP16 数值不稳定</td>
+<td><b>原因：</b>初始化不当、LR schedule 有误、数据未充分 shuffle</td>
+</tr>
+<tr>
+<td><b>急救：</b>降低 LR（10倍）、开启梯度裁剪、换 BF16、检查异常数据</td>
+<td><b>急救：</b>适当提高 LR、检查激活值分布、换初始化策略、加 warmup</td>
+<td><b>急救：</b>加强数据过滤、换 BF16。偶尔的尖峰是正常的，不必惊慌</td>
+<td><b>急救：</b>正确初始化、验证 LR schedule、shuffle 数据、增大 batch size</td>
+</tr>
+</table>
 
 ### 关键监控指标
 
