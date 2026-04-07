@@ -118,10 +118,7 @@ for batch in dataloader:  # 每个 batch：token ID 序列
 预训练目标是**交叉熵损失（Cross-Entropy Loss）**（等价于负对数似然）：
 
 $$
-\begin{aligned}
-\mathcal{L} &= -\frac{1}{T} \sum_{t=1}^{T} \log P(x_t \mid x_{<t}; \theta) \\
-&= -\frac{1}{T} \sum_{t=1}^{T} \log \text{softmax}(z_t)[x_t]
-\end{aligned}
+\mathcal{L} = -\frac{1}{T} \sum_{t=1}^{T} \log P(x_t \mid x_{<t}; \theta) = -\frac{1}{T} \sum_{t=1}^{T} \log \text{softmax}(z_t)[x_t]
 $$
 
 其中 $\theta$ 是模型参数，$z_t$ 是位置 $t$ 的 **logit 向量**，$x_t$ 是实际的下一个 token。损失越低意味着预测越好——模型被「惊吓」的次数越少。
@@ -247,9 +244,7 @@ v_t = β·v_{t-1} + ∇L(θ_t)，然后 θ_{t+1} = θ_t - η·v_t
 3. **余弦衰减 / 退火（Annealing）**：按照余弦曲线将学习率逐渐降低到接近零。这使模型能够收敛到尖锐的最小值。
 
 $$
-\begin{aligned}
 \eta_t = \eta_{\min} + \frac{1}{2}(\eta_{\max} - \eta_{\min})\left(1 + \cos\left(\frac{\pi \cdot t}{T}\right)\right)
-\end{aligned}
 $$
 
 其中 $\eta_t$ 是第 $t$ 步的学习率，$T$ 是总步数，$\eta_{\max}$ / $\eta_{\min}$ 分别是峰值和最小学习率。弄错这个调度可能浪费数百万美元的计算。
