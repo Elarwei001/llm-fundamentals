@@ -194,7 +194,11 @@ Where $\hat{m}_t$ and $\hat{v}_t$ are bias-corrected versions.
 
 ### 3.5 Why C ≈ 6ND?
 
-In the [Scaling Laws](day09-scaling-laws.md) article, we mentioned compute $C \approx 6ND$. Now we can understand why:
+The [Scaling Laws](day09-scaling-laws.md) research (Kaplan et al., 2020) established that the compute budget $C$ needed to train a model scales as:
+
+$$C \approx 6ND$$
+
+where $N$ is the number of model parameters and $D$ is the dataset size in tokens. This deceptively simple formula tells you exactly how many FLOPs you need. But where does the magic number **6** come from? Now that we understand both the forward/backward passes and the Adam optimizer, we can break it down:
 
 **Factor of 2**: Forward pass + backward pass (each touches all $N$ parameters)
 
