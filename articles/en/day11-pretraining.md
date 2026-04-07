@@ -28,15 +28,8 @@ This is why pre-training can use the entire internet — because we don't need a
 
 ### 1.2 The Three Pre-training Objectives
 
-| | **Causal LM (GPT)** | **Masked LM (BERT)** | **Prefix LM (T5)** |
-|---|---|---|---|
-| **What to predict** | Next token | Masked tokens `[MASK]` | Target tokens after prefix |
-| **Visible context** | All tokens to the **left** | Tokens on **both sides** | Full prefix + generated left side |
-| **Direction** | Left → Right (autoregressive) | Bidirectional | Encoder bidirectional + Decoder autoregressive |
-| **Example input** | The cat sat on **\_\_\_** | The [M] sat on the [M] | Q: What is X? \| A: ___ |
-| **Example output** | mat | cat, mat | Y |
-| **Strength** | Great for generation | Great for understanding | Both understanding & generation |
-| **Limitation** | Can't see future context | Not designed for generation | More complex architecture |
+![Figure 1: Three pre-training objectives — Causal LM, Masked LM, and Prefix LM](../zh/images/day11/pretraining-objectives.png)
+*Figure 1: The three main pre-training objectives. Orange tokens are prediction targets; green/blue tokens are visible context.*
 
 **Causal Language Modeling (CLM)** — used by GPT family:
 - Predict the next token given all previous tokens
