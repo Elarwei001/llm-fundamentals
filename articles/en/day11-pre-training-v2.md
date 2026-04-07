@@ -282,6 +282,11 @@ Combines both: momentum for direction, adaptive step sizes. Nearly all LLM train
 
 The learning rate is perhaps the most important hyperparameter. Too high: training diverges. Too low: training is slow and may get stuck.
 
+### The Big Picture: Warmup + Cosine Decay
+
+![Learning rate schedule: warmup + cosine decay](images/day11/cosine-decay-lr.png)
+*Figure: A typical cosine annealing schedule. The learning rate linearly ramps up during warmup, then smoothly decays following a cosine curve.*
+
 ### 4.1 The Standard Recipe: Warmup + Cosine Decay
 
 ```
