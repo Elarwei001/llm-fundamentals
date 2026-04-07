@@ -464,6 +464,69 @@ The irreducible loss — the floor the curve approaches — represents the inher
 
 ### 7.2 Common Failure Modes
 
+Training large models is like flying a plane — many things can go wrong, and you need to recognize the warning signs fast.
+
+#### Loss Explodes (NaN / Inf)
+
+![Loss explodes diagram](images/day11/loss-explodes.jpg)
+*Figure: When the learning rate is too high, a feedback loop causes gradients to spiral out of control.*
+
+**What happens:** The loss suddenly shoots to infinity or becomes `NaN` (Not a Number). Training is dead.
+
+**Why:** The learning rate is too high. Each parameter update is so large that the model overshoots the minimum, producing larger gradients next step, which produce even larger updates — a feedback loop that spirals out of control.
+
+**How to fix:**
+- Reduce learning rate (try 10x smaller)
+- Add gradient clipping (see 7.4)
+- Check for bad data (extremely long sequences, corrupted tokens)
+- Use BF16 instead of FP16 (BF16 has a much larger representable range, less prone to overflow)
+
+#### Loss Plateaus Early
+
+![Loss plateaus diagram](images/day11/loss-plateaus.jpg)
+*Figure: The loss gets stuck well above the optimal value, leaving untapped potential on the table.*
+
+**What happens:** The loss decreases for a while, then gets stuck and won't go lower, even with more training.
+
+**Why:** Either the learning rate is too small to escape a local minimum, or some neurons have "died" (their activations are always zero, so gradients never flow through them).
+
+**How to fix:**
+- Increase learning rate slightly
+- Check activation statistics — if many neurons output zero consistently, you may have a "dead neuron" problem
+- Try a different initialization strategy
+- Use a learning rate warmup if you don't already
+
+#### Loss Spikes
+
+![Loss spikes diagram](images/day11/loss-spikes.jpg)
+*Figure: Occasional sharp spikes in loss, usually caused by bad data batches. Most recover on their own.*
+
+**What happens:** The loss is mostly decreasing smoothly, but occasionally jumps up dramatically.
+
+**Why:** Usually caused by a "bad batch" of data — a sequence with unusual token patterns that the model can't handle. Can also be caused by numerical instability in mixed-precision training.
+
+**How to fix:**
+- Filter training data more aggressively (remove duplicates, low-quality text)
+- If using FP16, try BF16 instead
+- These occasional spikes are normal and usually recoverable — don't panic unless they become frequent
+
+#### Slow Convergence
+
+![Slow convergence diagram](images/day11/slow-convergence.jpg)
+*Figure: Poor initialization leads to much slower convergence compared to a well-initialized model.*
+
+**What happens:** The loss is decreasing, but painfully slowly. Training takes much longer than expected.
+
+**Why:** Poor weight initialization can start the model in a bad region of parameter space. Also, learning rate might be too conservative.
+
+**How to fix:**
+- Use proper initialization (small init for residual branches, scaled init for embeddings)
+- Verify your learning rate schedule is correct (warmup + cosine decay)
+- Check that data is being shuffled properly
+- Ensure batch size is large enough
+
+**Summary table:**
+
 | Symptom | Likely Cause | Fix |
 |---------|--------------|-----|
 | Loss explodes (NaN/Inf) | Learning rate too high | Reduce LR, add gradient clipping |
@@ -473,13 +536,56 @@ The irreducible loss — the floor the curve approaches — represents the inher
 
 ### 7.3 Essential Monitoring
 
+When training costs $10M+, you can't afford to "train and hope." You need dashboards.
+
+![Essential monitoring points on model architecture](images/day11/monitoring-architecture.jpg)
+*Figure: Where each monitoring metric maps onto the training pipeline — from input throughput to backward pass gradient norms.*
+
+Here are the critical metrics to watch:
+
+#### `train_loss` — The Main Health Indicator
+- **What it should look like:** Smooth, steady decrease. In log scale, roughly linear decrease early on, then gradual flattening.
+- **Red flags:** Sudden spikes, flat regions, or increasing trend
+- **How often to check:** Every 100 steps during early training, every 1000 steps later
+
+#### `grad_norm` — The Stability Meter
+- **What it is:** The L2 norm of all gradients combined. Measures the "size" of the update.
+- **What it should look like:** Relatively stable, slowly decreasing as training progresses
+- **Red flags:** Sudden spikes (10x normal) indicate instability. If it reaches NaN, training is dead.
+- **Pro tip:** Plot `log(grad_norm)` — it's more informative than raw values
+
+#### `learning_rate` — Verify the Schedule
+- **Why track this:** You'd be surprised how often the schedule is wrong (wrong warmup length, wrong decay)
+- **What to check:** Does it match your intended schedule exactly?
+
+#### `throughput` — Are You Getting Your Money's Worth?
+- **What to track:** Tokens processed per second
+- **Why it matters:** A 30% throughput drop might mean a GPU is throttling, a network bottleneck appeared, or a data loader is stalled
+- **Benchmark:** Know your expected throughput and compare regularly
+
+#### `memory_usage` — Prevent OOM
+- **Track:** Peak GPU memory usage per device
+- **Why:** OOM crashes are expensive — you lose all progress since last checkpoint
+- **Tip:** Set memory usage alerts at 90% capacity
+
 ```python
-# Track these metrics during training
-- train_loss      # Should decrease smoothly
-- grad_norm       # Spikes indicate instability
-- learning_rate   # Verify schedule is correct
-- throughput      # Tokens/second, detect slowdowns
-- memory_usage    # Prevent OOM
+# Example monitoring setup (conceptual)
+for step, batch in enumerate(dataloader):
+    loss = train_step(batch)
+    
+    if step % 100 == 0:
+        log({
+            "train_loss": loss.item(),
+            "grad_norm": get_grad_norm(model),
+            "learning_rate": scheduler.get_last_lr()[0],
+            "throughput": tokens_processed / elapsed_time,
+            "memory_gb": torch.cuda.max_memory_allocated() / 1e9,
+        })
+    
+    if torch.isnan(loss):
+        print("NaN detected! Rolling back to last checkpoint.")
+        restore_checkpoint()
+        reduce_learning_rate()
 ```
 
 ### 7.4 Gradient Clipping
@@ -487,7 +593,7 @@ The irreducible loss — the floor the curve approaches — represents the inher
 Prevents exploding gradients by capping the gradient norm:
 
 $$
-\hat{g} = \begin{cases} g & \text{if } \|g\| \leq c \\[4pt] c \cdot \dfrac{g}{\|g\|} & \text{otherwise} \end{cases}
+\hat{g} = \begin{cases} g & \text{if } \|g\| \leq c \\ c \cdot \dfrac{g}{\|g\|} & \text{otherwise} \end{cases}
 $$
 
 Typical value: $c = 1.0$

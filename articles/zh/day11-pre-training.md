@@ -270,6 +270,146 @@ $$
 
 ---
 
+## 4.5 训练稳定性与调试
+
+预训练不是按个按钮就等着出结果那么简单。说实话，大部分时间你都在盯着训练曲线，猜测「这个 loss 是正常的还是在炸？」。这一节我们聊聊训练中常见的翻车现场、该监控什么指标、以及怎么救场。
+
+### 常见的翻车模式
+
+训练大模型就像熬一锅汤——火候不对就容易糊锅或者煮不熟。以下是几种最典型的失败模式：
+
+**Loss 爆炸（NaN / Inf）**
+
+![Loss 爆炸示意图](../en/images/day11/loss-explodes.jpg)
+*图：学习率过高时，反馈循环导致梯度失控。*
+
+这是最让人心脏骤停的情况：loss 突然变成 NaN 或 Inf，训练彻底崩溃。常见原因：
+- 学习率太高，参数更新幅度过大
+- 出现正反馈循环——数值溢出导致梯度更大，梯度更大导致更严重的溢出
+
+**怎么救：** 降低学习率、开启梯度裁剪（下面会讲）、换用 BF16 精度（比 FP16 数值范围更大）、检查数据里有没有异常值。
+
+**Loss 过早停滞**
+
+![Loss 停滞示意图](../en/images/day11/loss-plateaus.jpg)
+*图：Loss 卡在远高于最优值的位置，潜力未被释放。*
+
+训练刚开始 loss 下降得挺快，然后突然就「躺平」了，怎么都不再下降。可能原因：
+- 学习率太小，模型学不动
+- 某些神经元「死亡」（梯度为零，永远不更新）
+
+**怎么救：** 适当提高学习率、检查各层激活值分布（是不是全变成零了？）、试试不同的参数初始化方式。
+
+**Loss 突然飙升**
+
+![Loss 尖峰示意图](../en/images/day11/loss-spikes.jpg)
+*图：偶发的剧烈尖峰，通常由脏数据批次引起。多数会自行恢复。*
+
+Loss 本来很稳定，突然跳了一下——但不是完全爆炸，之后可能又回来。可能原因：
+- 遇到了一批「脏数据」（乱码、超长重复 token 等）
+- 数值不稳定性（在 FP16 下更常见）
+
+**怎么救：** 加强数据过滤、换用 BF16。偶尔一次的小 spike 其实是正常的，不用太紧张；但如果频繁出现，就该调查了。
+
+**收敛太慢**
+
+![收敛缓慢示意图](../en/images/day11/slow-convergence.jpg)
+*图：糟糕的初始化导致收敛速度远慢于正常情况。*
+
+Loss 在降，但降得像蜗牛。可能原因：
+- 初始化没做好
+- 学习率调度策略不对
+- 数据没有充分打乱
+
+**怎么救：** 确保使用正确的初始化（比如 GPT 默认的 `N(0, 0.02)` 方式）、验证学习率 schedule 是否按预期执行、把数据充分 shuffle、适当增大 batch size。
+
+**快速参考表：**
+
+| 症状 | 可能原因 | 急救措施 |
+|------|----------|----------|
+| Loss 爆炸（NaN） | 学习率过高 / 数值溢出 | 降 LR + 梯度裁剪 + BF16 |
+| Loss 过早停滞 | 学习率过低 / 神经元死亡 | 提 LR + 检查激活值 + 换初始化 |
+| Loss 突然飙升 | 脏数据 / 数值不稳定 | 过滤数据 + BF16 |
+| 收敛缓慢 | 初始化差 / schedule 错误 | 调初始化 + 验证 schedule + shuffle |
+
+### 关键监控指标
+
+训练大模型时，你不能只看 loss——你需要一套「仪表盘」。
+
+![关键监控指标在模型架构上的标注](../en/images/day11/monitoring-architecture.jpg)
+*图：每个监控指标在训练流水线中的对应位置——从输入吞吐量到反向传播的梯度范数。*
+
+以下是必须监控的五个指标：
+
+**train_loss（训练损失）**
+这是最重要的健康指标。正常情况下应该平滑下降。如果出现剧烈波动，说明训练不稳定。
+
+**grad_norm（梯度范数）**
+梯度范数是训练稳定性的「晴雨表」。建议用对数坐标画图——因为梯度范数可能跨越好几个数量级。如果 grad_norm 突然飙升然后不回来，大概率要出事。
+
+**learning_rate（学习率）**
+听起来有点傻，但你真的需要确认学习率 schedule 是否按预期执行。很多 bug 都是因为 warmup 没生效、或者 decay 起步太早导致的。
+
+**throughput（吞吐量）**
+监控 tokens/second 可以帮你发现硬件问题。如果吞吐量突然下降，可能是 GPU 过热降频、网络通信瓶颈、或者某个数据加载环节卡住了。
+
+**memory_usage（显存使用）**
+防止 OOM（Out of Memory）——这大概是训练中最令人沮丧的崩溃方式。监控显存峰值，确保有足够余量。
+
+一个简单的监控代码示例：
+
+```python
+import wandb
+
+# 在训练循环中记录关键指标
+for step, batch in enumerate(dataloader):
+    loss = model(batch)
+    loss.backward()
+
+    # 计算梯度范数
+    total_norm = 0
+    for p in model.parameters():
+        if p.grad is not None:
+            total_norm += p.grad.data.norm(2).item() ** 2
+    grad_norm = total_norm ** 0.5
+
+    # 记录到 wandb
+    wandb.log({
+        "train_loss": loss.item(),
+        "grad_norm": grad_norm,
+        "learning_rate": optimizer.param_groups[0]["lr"],
+        "throughput_tokens_per_sec": tokens_processed / elapsed_time,
+        "gpu_memory_gb": torch.cuda.max_memory_allocated() / 1e9,
+    }, step=step)
+```
+
+> 💡 **实战建议：** 用 [Weights & Biases](https://wandb.ai) 或 [TensorBoard](https://www.tensorflow.org/tensorboard) 来可视化这些指标。不要试图在终端里看数字——你需要的是曲线图，不是日志行。
+
+### 梯度裁剪
+
+梯度裁剪（Gradient Clipping）是防止训练崩溃的第一道防线。原理很简单：如果梯度的范数超过一个阈值，就把它缩回去。
+
+**公式：**
+
+$$\hat{g} = \begin{cases} g & \text{if } \|g\| \leq c \\ c \cdot \frac{g}{\|g\|} & \text{otherwise} \end{cases}$$
+
+其中：
+- $g$ 是原始梯度
+- $\hat{g}$ 是裁剪后的梯度
+- $c$ 是裁剪阈值（典型值：**1.0**）
+- $\|g\|$ 是梯度的 L2 范数
+
+**为什么有效？** 因为大模型训练中偶尔会出现极端梯度——可能是因为遇到了一批异常数据，或者是某个数学角落的数值不稳定。梯度裁剪就像电路里的「保险丝」：正常情况下不影响工作，但出现异常时能防止整个系统崩溃。
+
+几乎所有现代 LLM 训练都会使用梯度裁剪。不用它，就像开一辆没有刹车的高速列车——大部分时间没事，但一旦出事就是灾难性的。
+
+```python
+# PyTorch 中的梯度裁剪，一行搞定
+torch.nn.utils.clip_grad_norm_(model.parameters(), max_norm=1.0)
+```
+
+---
+
 ## 5. 预训练到底教了什么？
 
 这是最有趣的问题。模型*从未被明确告知*要学习语法、事实或推理。它只是预测下一个 token。但它学会了：
