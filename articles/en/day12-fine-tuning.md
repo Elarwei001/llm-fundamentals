@@ -99,6 +99,33 @@ The original paper found that a model with millions of parameters may have an in
 
 > **Key insight**: Intrinsic dimension tells us that *changing* the model requires very little space, but *running* the model still needs the full parameter space. LoRA compresses the **updates** ($\Delta W$), not the original weights ($W$). This is why LoRA saves training memory but doesn't reduce inference cost (until you merge the adapters).
 
+#### Wait — If the Model Lives in a Low-Dimensional Subspace, Why Not Compress It for Inference?
+
+A natural follow-up question! If fine-tuning only moves in a low-dimensional subspace, couldn't we use manifold dimensionality reduction to shrink the model and save inference resources?
+
+Unfortunately, **low-dimensional movement ≠ low-dimensional weights**.
+
+Think of standing inside a massive maze. You only need to walk in **one direction** to find the exit (movement = 1D). But the maze itself is 1000-dimensional — you can't compress it to 1D without destroying the paths.
+
+Three reasons why direct compression doesn't work:
+
+1. **Different tasks need different subspaces.** Fine-tuning for translation moves in subspace A; for coding, subspace B. A and B may barely overlap. A pre-trained model's power comes from covering many subspaces — compressing to one destroys adaptability.
+
+2. **What's low-rank is $\Delta W$, not $W$.** $W_{pretrained}$ is full-rank (4096×4096) and contains all knowledge. $\Delta W$ is low-rank (rank 8) and is just a tiny adjustment. You can only compress the update (which LoRA already does), not the original weights.
+
+3. **Full rank is needed for model capability.** The Q/K/V projection matrices in attention layers need full rank to correctly encode complex relationships between tokens. Forcibly reducing dimensionality would lose the ability to distinguish similar tokens.
+
+**So how do we actually save inference resources?** Not through manifold reduction, but through orthogonal techniques:
+
+| Method | How it saves | Effect |
+|--------|-------------|--------|
+| **Quantization** | FP16 → INT8/INT4 | Same parameters, fewer bits each |
+| **Pruning** | Remove unimportant weights | Delete parameters entirely |
+| **Distillation** | Small model learns large model's behavior | Replace with smaller model |
+| **LoRA** | Only train low-rank updates | Saves training memory, not inference |
+
+> **Analogy**: Intrinsic dimension tells us that *renovating* a building only needs a few walls changed, but *living in* it still requires the whole building.
+
 ### 2.3 Which Layers to Adapt?
 
 A critical practical question: should you apply LoRA to all layers, or only specific ones?
