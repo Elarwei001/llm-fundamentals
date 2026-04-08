@@ -130,12 +130,30 @@ Three reasons why direct compression doesn't work:
 
 A critical practical question: should you apply LoRA to all layers, or only specific ones?
 
-![Which Transformer layers to apply LoRA](images/day12/lora-layers-guide.jpg)
-*Figure: LoRA should be applied to attention and MLP projection matrices (green ✓), while embedding and LM head layers should be skipped (red ✗).*
+<table><tr>
+<td width="45%" valign="top">
 
-Research shows that applying LoRA to **both attention and MLP (feed-forward) layers** consistently outperforms attention-only adaptation. The MLP layers store much of the model's factual knowledge, so adapting them is crucial for domain specialization.
+<img src="images/day12/lora-layers-guide.jpg" width="100%">
 
-However, you typically skip the embedding layer and the final language model head (lm_head). These layers have different learning dynamics — the embedding layer maps tokens to the model's internal space, and the lm_head maps back to vocabulary. LoRA works best on the intermediate transformation layers.
+</td>
+<td width="55%" valign="top">
+
+Research shows that applying LoRA to **both attention and MLP (feed-forward) layers** consistently outperforms attention-only adaptation.
+
+**Why both?** The MLP layers store much of the model's factual knowledge, so adapting them is crucial for domain specialization.
+
+**What to skip:**
+- **Embedding layer** — maps tokens to model's internal space; different learning dynamics
+- **LM head** — maps back to vocabulary; LoRA doesn't help here
+
+**What to target (green ✓):**
+- Q, K, V, O projection matrices in attention
+- Up/down projection matrices in MLP
+
+LoRA works best on the **intermediate transformation layers**.
+
+</td>
+</tr></table>
 
 ### 2.4 The Rank Trade-off
 

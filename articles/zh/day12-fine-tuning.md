@@ -130,12 +130,30 @@ $$
 
 一个关键的实践问题：应该把 LoRA 应用到所有层，还是只选择特定层？
 
-![Transformer 中哪些层应该应用 LoRA](./images/day12/lora-layers-guide.jpg)
-*图：LoRA 应该应用于注意力和 MLP 投影矩阵（绿色 ✓），而嵌入层和 LM Head 层应跳过（红色 ✗）。*
+<table><tr>
+<td width="45%" valign="top">
 
-研究表明，将 LoRA 同时应用于**注意力层和 MLP（前馈）层**的效果始终优于只适配注意力层。MLP 层存储了模型的大量事实知识，因此适配它们对领域专业化至关重要。
+<img src="./images/day12/lora-layers-guide.jpg" width="100%">
 
-不过，通常会跳过嵌入层（Embedding Layer）和最终的语言模型头（lm_head）。这些层有不同的学习动态——嵌入层将 token 映射到模型内部空间，lm_head 映射回词汇表。LoRA 在中间变换层上效果最好。
+</td>
+<td width="55%" valign="top">
+
+研究表明，将 LoRA 同时应用于**注意力层和 MLP（前馈）层**的效果始终优于只适配注意力层。
+
+**为什么两者都要？** MLP 层存储了模型的大量事实知识，适配它们对领域专业化至关重要。
+
+**应该跳过：**
+- **嵌入层** — 将 token 映射到模型内部空间，学习动态不同
+- **LM Head** — 映射回词汇表，LoRA 在这里帮助不大
+
+**应该应用 LoRA（绿色 ✓）：**
+- 注意力层的 Q、K、V、O 投影矩阵
+- MLP 层的上下投影矩阵
+
+LoRA 在**中间变换层**上效果最好。
+
+</td>
+</tr></table>
 
 ### 2.4 秩的权衡
 
