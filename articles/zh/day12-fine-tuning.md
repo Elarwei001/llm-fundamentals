@@ -255,50 +255,27 @@ $$
 
 LoRA 和 QLoRA 是最受欢迎的 PEFT 方法，但不是唯一的。以下是它们的对比：
 
-![PEFT 方法：每种方法如何修改 Transformer](./images/day12/peft-methods-diagram.png)
-*图：六种微调方法及其在 Transformer 架构中的作用位置。红色=更新，灰色=冻结，彩色=方法特有的新增部分。*
-
 <table>
-<tr>
-<th align="center" width="16%">全量微调</th>
-<th align="center" width="16%">Adapters</th>
-<th align="center" width="16%">Prefix Tuning</th>
-<th align="center" width="16%">Prompt Tuning</th>
-<th align="center" width="16%">LoRA</th>
-<th align="center" width="16%">QLoRA</th>
+<tr><th align="left" width="18%">属性</th><th width="14%">全量微调</th><th width="14%">Adapters</th><th width="14%">Prefix Tuning</th><th width="14%">Prompt Tuning</th><th width="14%">LoRA</th><th width="14%">QLoRA</th></tr>
+<tr><td align="left"><b>描述</b></td>
+<td>更新所有权重</td>
+<td>在块之间插入小型 MLP 层</td>
+<td>在注意力 K/V 前添加虚拟 token</td>
+<td>在嵌入空间学习软提示</td>
+<td>权重更新的低秩分解</td>
+<td>LoRA + 4 位量化基础模型</td>
 </tr>
-<tr>
-<td align="center"><b>更新所有权重</b></td>
-<td align="center"><b>插入小型 MLP 层</b>到 Transformer 块之间</td>
-<td align="center"><b>在注意力 K/V 前添加</b>可训练的虚拟 token</td>
-<td align="center"><b>在嵌入空间</b>学习软提示</td>
-<td align="center"><b>权重更新的</b>低秩分解</td>
-<td align="center"><b>LoRA + 4 位量化</b>基础模型</td>
+<tr><td align="left"><b>架构图</b></td>
+<td align="center"><img src="./images/day12/lora-layers-guide.jpg" width="120"><br><i>全部层变红</i></td>
+<td align="center"><img src="./images/day12/peft-adapters.jpg" width="120"></td>
+<td align="center"><img src="./images/day12/peft-prefix-tuning.jpg" width="120"></td>
+<td align="center"><img src="./images/day12/peft-prompt-tuning.jpg" width="120"></td>
+<td align="center"><img src="./images/day12/peft-lora.jpg" width="120"></td>
+<td align="center"><img src="./images/day12/peft-qlora.jpg" width="120"></td>
 </tr>
-<tr>
-<td align="center"><b>可训练：</b>100%</td>
-<td align="center"><b>可训练：</b>~3.6%</td>
-<td align="center"><b>可训练：</b>~0.1%</td>
-<td align="center"><b>可训练：</b>~0.01%</td>
-<td align="center"><b>可训练：</b>~0.1%</td>
-<td align="center"><b>可训练：</b>~0.1%</td>
-</tr>
-<tr>
-<td align="center"><b>性能：</b>100%（基准）</td>
-<td align="center"><b>性能：</b>~97.2%</td>
-<td align="center"><b>性能：</b>~96.8%</td>
-<td align="center"><b>性能：</b>~94.5%</td>
-<td align="center"><b>性能：</b>~98.5%</td>
-<td align="center"><b>性能：</b>~98.3%</td>
-</tr>
-<tr>
-<td align="center">最昂贵<br>无推理开销</td>
-<td align="center">额外延迟<br>（新增层）</td>
-<td align="center">占用上下文窗口</td>
-<td align="center">最轻量<br>实现最简单</td>
-<td align="center">零推理开销<br>默认选择</td>
-<td align="center">最适合有限 GPU<br>内存高效</td>
-</tr>
+<tr><td align="left"><b>可训练参数</b></td><td>100%</td><td>~3.6%</td><td>~0.1%</td><td>~0.01%</td><td>~0.1%</td><td>~0.1%</td></tr>
+<tr><td align="left"><b>性能</b></td><td>100%（基准）</td><td>~97.2%</td><td>~96.8%</td><td>~94.5%</td><td>~98.5%</td><td>~98.3%</td></tr>
+<tr><td align="left"><b>权衡</b></td><td>最昂贵<br>无推理开销</td><td>额外延迟<br>（新增层）</td><td>占用上下文窗口</td><td>最轻量<br>实现最简单</td><td>零推理开销<br>默认选择</td><td>最适合有限 GPU<br>内存高效</td></tr>
 </table>
 
 ---

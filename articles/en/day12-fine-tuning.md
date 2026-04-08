@@ -255,50 +255,27 @@ The key insight: during the forward pass, weights are **dequantized back to FP16
 
 LoRA and QLoRA are the most popular PEFT methods, but they're not the only ones. Here's how they all compare:
 
-![PEFT methods: how each modifies the Transformer](images/day12/peft-methods-diagram.png)
-*Figure: Six fine-tuning methods and where they act on the Transformer architecture. Red = updated, gray = frozen, colored = method-specific additions.*
-
 <table>
-<tr>
-<th align="center" width="16%">Full Fine-tune</th>
-<th align="center" width="16%">Adapters</th>
-<th align="center" width="16%">Prefix Tuning</th>
-<th align="center" width="16%">Prompt Tuning</th>
-<th align="center" width="16%">LoRA</th>
-<th align="center" width="16%">QLoRA</th>
+<tr><th align="left" width="18%">Method</th><th width="14%">Full Fine-tune</th><th width="14%">Adapters</th><th width="14%">Prefix Tuning</th><th width="14%">Prompt Tuning</th><th width="14%">LoRA</th><th width="14%">QLoRA</th></tr>
+<tr><td align="left"><b>Description</b></td>
+<td>Update ALL weights</td>
+<td>Insert small MLP layers between blocks</td>
+<td>Prepend virtual tokens to attention K/V</td>
+<td>Learn soft prompts in embedding space</td>
+<td>Low-rank decomposition of weight updates</td>
+<td>LoRA + 4-bit quantized base</td>
 </tr>
-<tr>
-<td align="center"><b>Update ALL weights</b></td>
-<td align="center"><b>Insert small MLP layers</b> between transformer blocks</td>
-<td align="center"><b>Prepend virtual tokens</b> to attention keys/values</td>
-<td align="center"><b>Learn soft prompts</b> in embedding space only</td>
-<td align="center"><b>Low-rank decomposition</b> of weight updates</td>
-<td align="center"><b>LoRA + 4-bit</b> quantized base model</td>
+<tr><td align="left"><b>Architecture</b></td>
+<td align="center"><img src="images/day12/lora-layers-guide.jpg" width="120"><br><i>All layers red</i></td>
+<td align="center"><img src="images/day12/peft-adapters.jpg" width="120"></td>
+<td align="center"><img src="images/day12/peft-prefix-tuning.jpg" width="120"></td>
+<td align="center"><img src="images/day12/peft-prompt-tuning.jpg" width="120"></td>
+<td align="center"><img src="images/day12/peft-lora.jpg" width="120"></td>
+<td align="center"><img src="images/day12/peft-qlora.jpg" width="120"></td>
 </tr>
-<tr>
-<td align="center"><b>Trainable:</b> 100%</td>
-<td align="center"><b>Trainable:</b> ~3.6%</td>
-<td align="center"><b>Trainable:</b> ~0.1%</td>
-<td align="center"><b>Trainable:</b> ~0.01%</td>
-<td align="center"><b>Trainable:</b> ~0.1%</td>
-<td align="center"><b>Trainable:</b> ~0.1%</td>
-</tr>
-<tr>
-<td align="center"><b>Performance:</b> 100% (baseline)</td>
-<td align="center"><b>Performance:</b> ~97.2%</td>
-<td align="center"><b>Performance:</b> ~96.8%</td>
-<td align="center"><b>Performance:</b> ~94.5%</td>
-<td align="center"><b>Performance:</b> ~98.5%</td>
-<td align="center"><b>Performance:</b> ~98.3%</td>
-</tr>
-<tr>
-<td align="center">Most expensive<br>No inference overhead</td>
-<td align="center">Extra latency<br>(added layers)</td>
-<td align="center">Uses context window</td>
-<td align="center">Lightest weight<br>Simplest to implement</td>
-<td align="center">Zero inference overhead<br>Default choice</td>
-<td align="center">Best for limited GPU<br>Memory-efficient</td>
-</tr>
+<tr><td align="left"><b>Trainable</b></td><td>100%</td><td>~3.6%</td><td>~0.1%</td><td>~0.01%</td><td>~0.1%</td><td>~0.1%</td></tr>
+<tr><td align="left"><b>Performance</b></td><td>100% (baseline)</td><td>~97.2%</td><td>~96.8%</td><td>~94.5%</td><td>~98.5%</td><td>~98.3%</td></tr>
+<tr><td align="left"><b>Trade-offs</b></td><td>Most expensive<br>No inference overhead</td><td>Extra latency<br>(added layers)</td><td>Uses context window</td><td>Lightest weight<br>Simplest</td><td>Zero inference overhead<br>Default choice</td><td>Best for limited GPU<br>Memory-efficient</td></tr>
 </table>
 
 ---
