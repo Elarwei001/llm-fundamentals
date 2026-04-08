@@ -86,6 +86,19 @@ You might wonder: how can a rank-8 matrix capture meaningful adaptation when the
 
 The answer lies in the **intrinsic dimension** hypothesis (Aghajanyan et al., 2020): pre-trained models already live near a good solution in parameter space. Fine-tuning only needs to move a small distance, and that movement can be expressed in a low-dimensional subspace. It's like standing on a hilltop — you only need a small push in the right direction to roll toward a different valley, not a complete relocation.
 
+#### Understanding Intrinsic Dimension
+
+Think of a balloon in 3D space. The balloon exists in 3 dimensions, but its surface is only **2-dimensional** — you only need longitude and latitude to locate any point. That "2" is the balloon's intrinsic dimension: embedded in high-dimensional space, but truly free to move in only a few directions.
+
+For models:
+- A 7B model has 7 billion parameters, seemingly living in a 7-billion-dimensional space
+- But after pre-training, good parameter configurations cluster in a **low-dimensional subspace**
+- Fine-tuning only needs to move within this subspace
+
+The original paper found that a model with millions of parameters may have an intrinsic dimension of only **a few hundred to a few thousand** for fine-tuning. LoRA's rank $r$ directly corresponds to this — using $r=8$ means you're only adjusting within an 8-dimensional subspace.
+
+> **Key insight**: Intrinsic dimension tells us that *changing* the model requires very little space, but *running* the model still needs the full parameter space. LoRA compresses the **updates** ($\Delta W$), not the original weights ($W$). This is why LoRA saves training memory but doesn't reduce inference cost (until you merge the adapters).
+
 ### 2.3 Which Layers to Adapt?
 
 A critical practical question: should you apply LoRA to all layers, or only specific ones?
