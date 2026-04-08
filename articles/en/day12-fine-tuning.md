@@ -88,7 +88,12 @@ The answer lies in the **intrinsic dimension** hypothesis (Aghajanyan et al., 20
 
 ### 2.3 Which Layers to Adapt?
 
-A critical practical question: should you apply LoRA to all layers, or only specific ones? Research shows that applying LoRA to **both attention and MLP (feed-forward) layers** consistently outperforms attention-only adaptation. The MLP layers store much of the model's factual knowledge, so adapting them is crucial for domain specialization.
+A critical practical question: should you apply LoRA to all layers, or only specific ones?
+
+![Which Transformer layers to apply LoRA](images/day12/lora-layers-guide.jpg)
+*Figure: LoRA should be applied to attention and MLP projection matrices (green ✓), while embedding and LM head layers should be skipped (red ✗).*
+
+Research shows that applying LoRA to **both attention and MLP (feed-forward) layers** consistently outperforms attention-only adaptation. The MLP layers store much of the model's factual knowledge, so adapting them is crucial for domain specialization.
 
 However, you typically skip the embedding layer and the final language model head (lm_head). These layers have different learning dynamics — the embedding layer maps tokens to the model's internal space, and the lm_head maps back to vocabulary. LoRA works best on the intermediate transformation layers.
 
