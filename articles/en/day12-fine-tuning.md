@@ -216,6 +216,9 @@ Even with LoRA reducing trainable parameters by 1000×, we still need to *load* 
 
 ### 4.2 How NF4 Works
 
+![NF4 vs INT4 quantization comparison](images/day12/nf4-explained.png)
+*Figure: NF4 places more quantization levels near zero (where most weights are), while uniform INT4 wastes precision on rare extreme values. The bottom flow shows the QLoRA compute pipeline.*
+
 Standard quantization (like INT4) assumes a uniform distribution of values. But neural network weights follow a **normal distribution** — most values cluster near zero. NF4 takes advantage of this by placing more quantization levels near zero:
 
 $$
