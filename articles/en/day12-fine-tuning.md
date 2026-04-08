@@ -99,6 +99,33 @@ The rank $r$ is the key hyperparameter. Too small, and you underfit. Too large, 
 ![Figure 2: LoRA Rank vs Performance and Parameter Cost](../zh/images/day12/lora-rank-tradeoff.png)
 *Figure 2: Task performance saturates around rank 16-32, while parameter count grows linearly. The sweet spot balances quality and efficiency.*
 
+#### Understanding d and r
+
+**$d$ (original dimension)** — This is NOT a hyperparameter you choose. It's determined by the model architecture:
+- Llama 7B: hidden size = 4096 → $d$ = 4096
+- Llama 70B: hidden size = 8192 → $d$ = 8192
+
+**$r$ (LoRA rank)** — This IS the hyperparameter you choose. It controls how many degrees of freedom the adaptation has:
+
+| $r$ | Trainable params | Use case |
+|-----|-----------------|----------|
+| 4 | Very few (<0.1%) | Simple tasks, style transfer |
+| 8 | Few (~0.1%) | General-purpose fine-tuning |
+| 16 | Moderate (~0.5%) | Complex tasks |
+| 32 | More (~1%) | Tasks requiring larger adaptation |
+| 64+ | Many (~2%) | Dramatically changing model behavior |
+
+#### How to determine $r$?
+
+There's no theoretical formula — it's determined empirically:
+
+1. **Start small**: Try $r = 8$ first
+2. **Watch training loss**: If it won't decrease → $r$ is too small → increase it
+3. **Watch validation loss**: If train loss drops but val loss rises → $r$ is too large (overfitting) → decrease it
+4. **Resource budget**: Limited VRAM/time → use smaller $r$
+
+**Intuition**: $r$ controls "how much change you allow." The pre-trained model is already strong — most tasks only need small adjustments, so a small $r$ suffices.
+
 In practice, $r = 8$ to $16$ works well for most tasks. Complex reasoning tasks may benefit from $r = 32$ or $64$, but the gains are usually marginal.
 
 ---
