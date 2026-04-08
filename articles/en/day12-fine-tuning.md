@@ -235,28 +235,53 @@ The key insight: during the forward pass, weights are **dequantized back to FP16
 
 ## 5. The PEFT Landscape
 
-LoRA and QLoRA are the most popular PEFT methods, but they're not the only ones. Here's how they compare:
+LoRA and QLoRA are the most popular PEFT methods, but they're not the only ones. Here's how they all compare:
 
-![Figure 5: PEFT Methods Comparison](../zh/images/day12/peft-methods-comparison.png)
-*Figure 5: Trainable parameter percentage for different PEFT methods, with relative performance labels. LoRA achieves ~98.5% of full fine-tuning performance with only 0.1% trainable parameters.*
+![PEFT methods: how each modifies the Transformer](images/day12/peft-methods-diagram.png)
+*Figure: Six fine-tuning methods and where they act on the Transformer architecture. Red = updated, gray = frozen, colored = method-specific additions.*
 
-### 5.1 Method Overview
-
-| Method | Mechanism | Trainable % | Performance |
-|--------|-----------|-------------|-------------|
-| **Full Fine-tune** | Update all weights | 100% | 100% (baseline) |
-| **Adapters** | Insert small MLP layers between transformer blocks | ~3.6% | ~97.2% |
-| **Prefix Tuning** | Prepend trainable "virtual tokens" to attention keys/values | ~0.1% | ~96.8% |
-| **Prompt Tuning** | Learn soft prompts in embedding space only | ~0.01% | ~94.5% |
-| **LoRA** | Low-rank decomposition of weight updates | ~0.1% | ~98.5% |
-| **QLoRA** | LoRA with 4-bit quantized base | ~0.1% | ~98.3% |
-
-### 5.2 When to Use What
-
-- **LoRA**: Default choice for most fine-tuning. Great balance of performance and efficiency.
-- **QLoRA**: When GPU memory is the bottleneck. Fine-tune larger models on smaller GPUs.
-- **Prompt Tuning**: For very lightweight adaptation where you want to train per-task soft prompts.
-- **Adapters**: When you need modular, composable task-specific modules (e.g., multilingual systems).
+<table>
+<tr>
+<th align="center" width="16%">Full Fine-tune</th>
+<th align="center" width="16%">Adapters</th>
+<th align="center" width="16%">Prefix Tuning</th>
+<th align="center" width="16%">Prompt Tuning</th>
+<th align="center" width="16%">LoRA</th>
+<th align="center" width="16%">QLoRA</th>
+</tr>
+<tr>
+<td align="center"><b>Update ALL weights</b></td>
+<td align="center"><b>Insert small MLP layers</b> between transformer blocks</td>
+<td align="center"><b>Prepend virtual tokens</b> to attention keys/values</td>
+<td align="center"><b>Learn soft prompts</b> in embedding space only</td>
+<td align="center"><b>Low-rank decomposition</b> of weight updates</td>
+<td align="center"><b>LoRA + 4-bit</b> quantized base model</td>
+</tr>
+<tr>
+<td align="center"><b>Trainable:</b> 100%</td>
+<td align="center"><b>Trainable:</b> ~3.6%</td>
+<td align="center"><b>Trainable:</b> ~0.1%</td>
+<td align="center"><b>Trainable:</b> ~0.01%</td>
+<td align="center"><b>Trainable:</b> ~0.1%</td>
+<td align="center"><b>Trainable:</b> ~0.1%</td>
+</tr>
+<tr>
+<td align="center"><b>Performance:</b> 100% (baseline)</td>
+<td align="center"><b>Performance:</b> ~97.2%</td>
+<td align="center"><b>Performance:</b> ~96.8%</td>
+<td align="center"><b>Performance:</b> ~94.5%</td>
+<td align="center"><b>Performance:</b> ~98.5%</td>
+<td align="center"><b>Performance:</b> ~98.3%</td>
+</tr>
+<tr>
+<td align="center">Most expensive<br>No inference overhead</td>
+<td align="center">Extra latency<br>(added layers)</td>
+<td align="center">Uses context window</td>
+<td align="center">Lightest weight<br>Simplest to implement</td>
+<td align="center">Zero inference overhead<br>Default choice</td>
+<td align="center">Best for limited GPU<br>Memory-efficient</td>
+</tr>
+</table>
 
 ---
 

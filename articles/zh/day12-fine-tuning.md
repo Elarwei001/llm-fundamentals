@@ -237,26 +237,51 @@ $$
 
 LoRA 和 QLoRA 是最受欢迎的 PEFT 方法，但不是唯一的。以下是它们的对比：
 
-![PEFT 方法对比](./images/day12/peft-methods-comparison.png)
-*图 5：不同 PEFT 方法的可训练参数百分比，标注了相对性能。LoRA 用 0.1% 的可训练参数达到了约 98.5% 的全量微调性能。*
+![PEFT 方法：每种方法如何修改 Transformer](./images/day12/peft-methods-diagram.png)
+*图：六种微调方法及其在 Transformer 架构中的作用位置。红色=更新，灰色=冻结，彩色=方法特有的新增部分。*
 
-### 5.1 方法概览
-
-| 方法 | 机制 | 可训练参数占比 | 性能 |
-|------|------|-------------|------|
-| **全量微调** | 更新所有权重 | 100% | 100%（基准） |
-| **Adapters** | 在 Transformer 块之间插入小型 MLP 层 | ~3.6% | ~97.2% |
-| **Prefix Tuning** | 在注意力键/值前添加可训练的"虚拟 token" | ~0.1% | ~96.8% |
-| **Prompt Tuning** | 仅在嵌入空间学习软提示 | ~0.01% | ~94.5% |
-| **LoRA** | 权重更新的低秩分解 | ~0.1% | ~98.5% |
-| **QLoRA** | LoRA + 4 位量化的基础模型 | ~0.1% | ~98.3% |
-
-### 5.2 如何选择
-
-- **LoRA**：大多数微调任务的默认选择。性能和效率的极佳平衡。
-- **QLoRA**：当 GPU 内存是瓶颈时。在更小的 GPU 上微调更大的模型。
-- **Prompt Tuning**：非常轻量的适配场景，比如为每个任务训练软提示。
-- **Adapters**：需要模块化、可组合的任务特定模块时（如多语言系统）。
+<table>
+<tr>
+<th align="center" width="16%">全量微调</th>
+<th align="center" width="16%">Adapters</th>
+<th align="center" width="16%">Prefix Tuning</th>
+<th align="center" width="16%">Prompt Tuning</th>
+<th align="center" width="16%">LoRA</th>
+<th align="center" width="16%">QLoRA</th>
+</tr>
+<tr>
+<td align="center"><b>更新所有权重</b></td>
+<td align="center"><b>插入小型 MLP 层</b>到 Transformer 块之间</td>
+<td align="center"><b>在注意力 K/V 前添加</b>可训练的虚拟 token</td>
+<td align="center"><b>在嵌入空间</b>学习软提示</td>
+<td align="center"><b>权重更新的</b>低秩分解</td>
+<td align="center"><b>LoRA + 4 位量化</b>基础模型</td>
+</tr>
+<tr>
+<td align="center"><b>可训练：</b>100%</td>
+<td align="center"><b>可训练：</b>~3.6%</td>
+<td align="center"><b>可训练：</b>~0.1%</td>
+<td align="center"><b>可训练：</b>~0.01%</td>
+<td align="center"><b>可训练：</b>~0.1%</td>
+<td align="center"><b>可训练：</b>~0.1%</td>
+</tr>
+<tr>
+<td align="center"><b>性能：</b>100%（基准）</td>
+<td align="center"><b>性能：</b>~97.2%</td>
+<td align="center"><b>性能：</b>~96.8%</td>
+<td align="center"><b>性能：</b>~94.5%</td>
+<td align="center"><b>性能：</b>~98.5%</td>
+<td align="center"><b>性能：</b>~98.3%</td>
+</tr>
+<tr>
+<td align="center">最昂贵<br>无推理开销</td>
+<td align="center">额外延迟<br>（新增层）</td>
+<td align="center">占用上下文窗口</td>
+<td align="center">最轻量<br>实现最简单</td>
+<td align="center">零推理开销<br>默认选择</td>
+<td align="center">最适合有限 GPU<br>内存高效</td>
+</tr>
+</table>
 
 ---
 
