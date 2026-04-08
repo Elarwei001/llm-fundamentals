@@ -266,7 +266,7 @@ LoRA and QLoRA are the most popular PEFT methods, but they're not the only ones.
 <td>LoRA + 4-bit quantized base</td>
 </tr>
 <tr><td align="left"><b>Architecture</b></td>
-<td align="center"><img src="images/day12/lora-layers-guide.jpg" width="120"><br><i>All layers red</i></td>
+<td align="center"><img src="images/day12/peft-full-finetune.jpg" width="120"><br><i>All params updated</i></td>
 <td align="center"><img src="images/day12/peft-adapters.jpg" width="120"></td>
 <td align="center"><img src="images/day12/peft-prefix-tuning.jpg" width="120"></td>
 <td align="center"><img src="images/day12/peft-prompt-tuning.jpg" width="120"></td>
