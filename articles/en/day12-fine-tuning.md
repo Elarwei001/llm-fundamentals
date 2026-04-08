@@ -278,6 +278,77 @@ LoRA and QLoRA are the most popular PEFT methods, but they're not the only ones.
 <tr><td align="left"><b>Trade-offs</b></td><td>Most expensive<br>No inference overhead</td><td>Extra latency<br>(added layers)</td><td>Uses context window</td><td>Lightest weight<br>Simplest</td><td>Zero inference overhead<br>Default choice</td><td>Best for limited GPU<br>Memory-efficient</td></tr>
 </table>
 
+### Details: Three Alternative PEFT Methods
+
+#### Adapters
+
+Adapters insert small two-layer MLP (bottleneck) blocks between Transformer layers.
+
+```
+Original:  Attention → MLP → Output
+Adapters:  Attention → [Down-project → ReLU → Up-project] → MLP → Output
+                         ↑ This small MLP is newly added and trainable ↑
+```
+
+- Down-project from d to a small bottleneck dimension (e.g., 4096 → 64)
+- ReLU activation
+- Up-project back to d (64 → 4096)
+
+**Strengths:** Modular — train one adapter per task, hot-swap at deployment.
+**Weaknesses:** Extra latency during inference (added layers). This is why LoRA largely replaced it — LoRA merges into weights with zero overhead.
+
+#### Prefix Tuning
+
+Prefix Tuning prepends trainable "virtual tokens" to the Key and Value in every attention layer.
+
+```
+Normal attention:
+  K = [k1, k2, k3, ...]  ← real token keys
+  V = [v1, v2, v3, ...]  ← real token values
+
+Prefix Tuning:
+  K = [p1, p2, p3, k1, k2, k3, ...]  ← trainable prefix added
+  V = [q1, q2, q3, v1, v2, v3, ...]  ← corresponding value prefix
+```
+
+These aren't real words — they're learned continuous vectors.
+
+**Intuition:** Like giving the model a "task hint," but the hint is learned, exists at every layer, and is embedded directly into the attention mechanism.
+
+**Strengths:** Very few parameters (only the prefix vectors), no weight modification.
+**Weaknesses:** Prefix tokens occupy context window positions, impacting long-text tasks.
+
+#### Prompt Tuning
+
+Prompt Tuning adds trainable soft prompt vectors only at the input embedding layer.
+
+```
+Normal input:
+  [token1, token2, token3, ...] → Embedding → Transformer
+
+Prompt Tuning:
+  [soft1, soft2, soft3, token1, token2, token3, ...] → Embedding → Transformer
+   ↑ trainable continuous vectors, only added at the very beginning ↑
+```
+
+**Key difference from Prefix Tuning:**
+- **Prompt Tuning:** soft prompts added once at the input layer
+- **Prefix Tuning:** virtual tokens added at every attention layer
+
+**Intuition:** Like prepending "magic words" to your prompt — not human language words, but learned optimal guidance signals.
+
+**Strengths:** Lightest weight (~0.01% params), simplest to implement.
+**Weaknesses:** Lower performance (~94.5%), unreliable for small models, only works well on large models (>10B).
+
+#### Quick Comparison
+
+| Method | What it changes | Where | Inference overhead |
+|--------|----------------|-------|-------------------|
+| **Adapters** | Adds new MLP layers | Between Transformer blocks | Yes (extra layers) |
+| **Prefix Tuning** | Adds virtual tokens | K/V of every attention layer | Yes (uses context) |
+| **Prompt Tuning** | Adds soft prompts | Before input embedding only | Yes (uses context) |
+| **LoRA** | Low-rank matrices | Beside original weights | **No** (can merge) |
+
 ---
 
 ## 6. Practical Code: LoRA with Hugging Face
