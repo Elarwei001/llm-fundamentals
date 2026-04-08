@@ -1,6 +1,6 @@
 {
-  "current_day": 10,
-  "last_generated": "2026-04-03",
+  "current_day": 12,
+  "last_generated": "2026-04-08",
   "total_days": 60,
   "status": "active",
   "history": [
@@ -11,7 +11,13 @@
       "en_path": "en/day01-neural-network-overview.md",
       "zh_path": "zh/day01-neural-network-overview.md",
       "qa_score": 92,
-      "images": ["zh/images/day01/alexnet-learned-filters.png", "zh/images/day01/mlp-architecture.png", "zh/images/day01/feature-hierarchy.png", "zh/images/day01/activation-functions.png", "zh/images/day01/gradient-descent.png"]
+      "images": [
+        "zh/images/day01/alexnet-learned-filters.png",
+        "zh/images/day01/mlp-architecture.png",
+        "zh/images/day01/feature-hierarchy.png",
+        "zh/images/day01/activation-functions.png",
+        "zh/images/day01/gradient-descent.png"
+      ]
     },
     {
       "day": 2,
@@ -20,7 +26,14 @@
       "en_path": "en/day02-rise-and-fall-of-rnn.md",
       "zh_path": "zh/day02-rise-and-fall-of-rnn.md",
       "qa_score": 94,
-      "images": ["zh/images/day02/rnn-architecture.png", "zh/images/day02/vanishing-gradient.png", "zh/images/day02/lstm-architecture.png", "zh/images/day02/sequence-modeling-evolution.png", "zh/images/day02/bptt-visualization.png", "zh/images/day02/tanh-saturation.png"]
+      "images": [
+        "zh/images/day02/rnn-architecture.png",
+        "zh/images/day02/vanishing-gradient.png",
+        "zh/images/day02/lstm-architecture.png",
+        "zh/images/day02/sequence-modeling-evolution.png",
+        "zh/images/day02/bptt-visualization.png",
+        "zh/images/day02/tanh-saturation.png"
+      ]
     },
     {
       "day": 3,
@@ -29,7 +42,14 @@
       "en_path": "en/day03-birth-of-attention.md",
       "zh_path": "zh/day03-birth-of-attention.md",
       "qa_score": 94,
-      "images": ["zh/images/day03/seq2seq-attention-comparison.png", "zh/images/day03/attention-computation-steps.png", "zh/images/day03/attention-heatmap.png", "zh/images/day03/scaled-dot-product-attention.png", "zh/images/day03/scaling-importance.png", "zh/images/day03/attention-evolution-timeline.png"]
+      "images": [
+        "zh/images/day03/seq2seq-attention-comparison.png",
+        "zh/images/day03/attention-computation-steps.png",
+        "zh/images/day03/attention-heatmap.png",
+        "zh/images/day03/scaled-dot-product-attention.png",
+        "zh/images/day03/scaling-importance.png",
+        "zh/images/day03/attention-evolution-timeline.png"
+      ]
     },
     {
       "day": 4,
@@ -38,7 +58,14 @@
       "en_path": "en/day04-transformer-architecture-deep-dive.md",
       "zh_path": "zh/day04-transformer-architecture-deep-dive.md",
       "qa_score": 93,
-      "images": ["zh/images/day04/transformer-architecture-v2.png", "zh/images/day04/multi-head-attention.png", "zh/images/day04/positional-encoding.png", "zh/images/day04/feed-forward-network.png", "zh/images/day04/attention-masks.png", "zh/images/day04/self-vs-cross-attention.png"]
+      "images": [
+        "zh/images/day04/transformer-architecture-v2.png",
+        "zh/images/day04/multi-head-attention.png",
+        "zh/images/day04/positional-encoding.png",
+        "zh/images/day04/feed-forward-network.png",
+        "zh/images/day04/attention-masks.png",
+        "zh/images/day04/self-vs-cross-attention.png"
+      ]
     },
     {
       "day": 5,
@@ -48,7 +75,13 @@
       "zh_path": "zh/day05-encoder-decoder-to-decoder-only.md",
       "qa_score": 91,
       "qa_rounds": 2,
-      "images": ["zh/images/day05/architecture-comparison.png", "zh/images/day05/attention-masks.png", "zh/images/day05/training-objectives.png", "zh/images/day05/why-gpt-won.png", "zh/images/day05/timeline.png"]
+      "images": [
+        "zh/images/day05/architecture-comparison.png",
+        "zh/images/day05/attention-masks.png",
+        "zh/images/day05/training-objectives.png",
+        "zh/images/day05/why-gpt-won.png",
+        "zh/images/day05/timeline.png"
+      ]
     },
     {
       "day": 6,
@@ -57,7 +90,11 @@
       "en_path": "en/day06-what-is-an-llm.md",
       "zh_path": "zh/day06-what-is-an-llm.md",
       "qa_score": 95.4,
-      "images": ["zh/images/day06/next-token-prediction.png", "zh/images/day06/what-makes-llm-large.png", "zh/images/day06/llm-inference-pipeline.png"]
+      "images": [
+        "zh/images/day06/next-token-prediction.png",
+        "zh/images/day06/what-makes-llm-large.png",
+        "zh/images/day06/llm-inference-pipeline.png"
+      ]
     },
     {
       "day": 7,
@@ -66,7 +103,15 @@
       "en_path": "en/day07-tokenization.md",
       "zh_path": "zh/day07-tokenization.md",
       "qa_score": 92.7,
-      "images": ["zh/images/day07/tokenization-pipeline.png", "zh/images/day07/tokenization-strategies.png", "zh/images/day07/bpe-algorithm.png", "zh/images/day07/vocab-size-tradeoff.png", "zh/images/day07/special-tokens.png", "zh/images/day07/tokenizer-comparison.png", "zh/images/day07/tokenization-edge-cases.png"]
+      "images": [
+        "zh/images/day07/tokenization-pipeline.png",
+        "zh/images/day07/tokenization-strategies.png",
+        "zh/images/day07/bpe-algorithm.png",
+        "zh/images/day07/vocab-size-tradeoff.png",
+        "zh/images/day07/special-tokens.png",
+        "zh/images/day07/tokenizer-comparison.png",
+        "zh/images/day07/tokenization-edge-cases.png"
+      ]
     },
     {
       "day": 8,
@@ -75,7 +120,15 @@
       "en_path": "en/day08-the-magic-of-embeddings.md",
       "zh_path": "zh/day08-the-magic-of-embeddings.md",
       "qa_score": 91.6,
-      "images": ["zh/images/day08/one-hot-vs-dense.png", "zh/images/day08/word2vec-cbow-skipgram.png", "zh/images/day08/word-analogies.png", "zh/images/day08/positional-encoding.png", "zh/images/day08/embedding-lookup.png", "zh/images/day08/semantic-clustering.png", "zh/images/day08/token-position-embedding.png"]
+      "images": [
+        "zh/images/day08/one-hot-vs-dense.png",
+        "zh/images/day08/word2vec-cbow-skipgram.png",
+        "zh/images/day08/word-analogies.png",
+        "zh/images/day08/positional-encoding.png",
+        "zh/images/day08/embedding-lookup.png",
+        "zh/images/day08/semantic-clustering.png",
+        "zh/images/day08/token-position-embedding.png"
+      ]
     },
     {
       "day": 9,
@@ -84,7 +137,15 @@
       "en_path": "en/day09-scaling-laws.md",
       "zh_path": "zh/day09-scaling-laws.md",
       "qa_score": 91.75,
-      "images": ["zh/images/day09/power-law-compute.png", "zh/images/day09/three-variables.png", "zh/images/day09/kaplan-vs-chinchilla.png", "zh/images/day09/compute-allocation.png", "zh/images/day09/model-comparison.png", "zh/images/day09/emergent-abilities.png", "zh/images/day09/scaling-timeline.png"]
+      "images": [
+        "zh/images/day09/power-law-compute.png",
+        "zh/images/day09/three-variables.png",
+        "zh/images/day09/kaplan-vs-chinchilla.png",
+        "zh/images/day09/compute-allocation.png",
+        "zh/images/day09/model-comparison.png",
+        "zh/images/day09/emergent-abilities.png",
+        "zh/images/day09/scaling-timeline.png"
+      ]
     },
     {
       "day": 10,
@@ -93,7 +154,46 @@
       "en_path": "en/day10-emergent-abilities.md",
       "zh_path": "zh/day10-emergent-abilities.md",
       "qa_score": 91.1,
-      "images": ["zh/images/day10/emergent-abilities-sharp-jump.png", "zh/images/day10/phase-transition-analogy.png", "zh/images/day10/measurement-artifact.png", "zh/images/day10/emergence-debate-evidence.png", "zh/images/day10/big-bench-emergence.png", "zh/images/day10/emergence-timeline.png", "zh/images/day10/emergence-implications.png"]
+      "images": [
+        "zh/images/day10/emergent-abilities-sharp-jump.png",
+        "zh/images/day10/phase-transition-analogy.png",
+        "zh/images/day10/measurement-artifact.png",
+        "zh/images/day10/emergence-debate-evidence.png",
+        "zh/images/day10/big-bench-emergence.png",
+        "zh/images/day10/emergence-timeline.png",
+        "zh/images/day10/emergence-implications.png"
+      ]
+    },
+    {
+      "day": 11,
+      "date": "2026-04-07",
+      "topic": "Pre-training",
+      "en_path": "en/day11-pre-training.md",
+      "zh_path": "zh/day11-pre-training.md",
+      "qa_score": 90.5,
+      "qa_rounds": 1,
+      "images": [
+        "zh/images/day11/pretraining-objectives.png",
+        "zh/images/day11/loss-curve-and-data-mix.png",
+        "zh/images/day11/compute-allocation.png",
+        "zh/images/day11/training-pipeline.png"
+      ]
+    },
+    {
+      "day": 12,
+      "date": "2026-04-08",
+      "topic": "Fine-tuning",
+      "en_path": "en/day12-fine-tuning.md",
+      "zh_path": "zh/day12-fine-tuning.md",
+      "qa_score": 91.2,
+      "qa_rounds": 0,
+      "images": [
+        "zh/images/day12/full-finetuning-vs-lora.png",
+        "zh/images/day12/lora-rank-tradeoff.png",
+        "zh/images/day12/lora-merge-process.png",
+        "zh/images/day12/qlora-pipeline.png",
+        "zh/images/day12/peft-methods-comparison.png"
+      ]
     }
   ]
 }
