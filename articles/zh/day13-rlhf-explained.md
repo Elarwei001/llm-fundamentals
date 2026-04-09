@@ -36,6 +36,33 @@
 
 RLHF 正好补上了这一点：一个学习到的奖励函数，可以对*任何*回复打分，而不仅仅是你训练集中的那些。
 
+#### 常见困惑：LoRA vs SFT vs RLHF
+
+一个常见问题：「LoRA 也需要训练集——为什么它没有 reward？」
+
+答案是：**LoRA 是一种方法（怎么训），不是一种训练范式（训什么）。**
+
+```
+预训练（Day 11）
+    ↓
+监督微调 / SFT（Day 12）  ← LoRA 用在这里
+    ↓                          LoRA 只是「怎么训」，不是「训什么」
+RLHF / 对齐（Day 13-15）  ← Reward 用在这里
+```
+
+| | SFT（用 LoRA） | RLHF |
+|---|---|---|
+| **目标** | 学会模仿训练数据中的输入-输出对 | 学会生成「好」的回答 |
+| **信号来源** | 固定的训练集（问题+参考答案） | Reward model 给每个回答打分 |
+| **有 reward 吗？** | 没有——只有 loss（和参考答案的差距） | 有——reward model 给出奖励信号 |
+| **学到了什么** | 格式、风格、任务模式 | 价值观、偏好、安全性 |
+
+**LoRA 只是用更少的参数来做 SFT**——它替代的是「全量微调」这个方法，但不改变训练范式。SFT 不需要 reward，因为它就像做「有标准答案的考试题」——对答案就行。
+
+RLHF 需要 reward 是因为它的目标是**开放式优化**——没有标准答案，需要 reward model 来判断哪个回答更好。
+
+> **一句话总结：** LoRA 是工具（省显存），SFT 是任务（学模仿），RLHF 是另一种任务（学偏好）。LoRA + SFT 不需要 reward，RLHF 才需要。
+
 ![图 1：RLHF 三阶段流程](./images/day13/rlhf-three-stage-pipeline.png)
 *图 1：完整的 RLHF 流程有三个阶段——预训练（已完成）、奖励模型训练和 PPO 优化。每个阶段都建立在前一个阶段之上。*
 
@@ -73,26 +100,42 @@ SFT 模型在 RLHF 中扮演两个角色：
 
 ### 3.2 Bradley-Terry 模型
 
+#### 这个模型的故事
+
+Bradley-Terry 模型最初跟 AI 完全无关！它是 **1952 年** 由统计学家 **Ralph A. Bradley** 和 **Milton E. Terry** 提出的，发表在论文 *"Rank Analysis of Incomplete Block Designs: I. The Method of Paired Comparisons"* 中。
+
+**最初用途**：预测体育比赛胜负。给定两个选手 A 和 B，根据历史战绩预测 A 赢 B 的概率是多少？
+
+核心思想极其简单：**每个选手有一个「实力分」，赢的概率由两人的实力差决定。**
+
+$$P(A \text{ wins over } B) = \sigma(s_A - s_B)$$
+
+2020 年，OpenAI 的 **Stiennon et al.** 发现这个模型完美适用于 RLHF：
+- 把「选手实力分」换成「回答的质量分」
+- 把「A 赢 B」换成「人类更喜欢回答 $y_w$ 而非 $y_l$」
+
+Ralph Bradley 和 Milton Terry 大概做梦也没想到，他们 1952 年为预测网球比赛发明的统计模型，70 年后成了 ChatGPT 的核心组件之一。
+
+#### 模型公式
+
 奖励模型使用 Bradley-Terry 偏好模型训练，将成对比较转化为概率：
 
 $$
-\begin{aligned}
 P(y_w \succ y_l | x) = \sigma(r_\theta(x, y_w) - r_\theta(x, y_l))
-\end{aligned}
 $$
 
 其中：
-- $y_w$ 是获胜（被偏好）的回复
-- $y_l$ 是落败（被拒绝）的回复
+- $y_w$ 是**胜出**（被偏好）的回复（**w**inning）
+- $y_l$ 是**落败**（被拒绝）的回复（**l**osing）
 - $r_\theta$ 是参数为 $\theta$ 的奖励模型
 - $\sigma$ 是 sigmoid 函数
+
+> **$>$ 符号是什么意思？** 这里的 $y_w > y_l$ 不是数学上的大于，而是**偏好关系**：「$y_w$ 优于 $y_l$」，即人类标注者更喜欢 $y_w$。这个记法直接继承自 Bradley-Terry 模型的原版——$P(A > B)$ 表示「选手 A 胜过选手 B 的概率」，RLHF 中只是把「选手」换成了「回答」。
 
 训练损失是负对数似然：
 
 $$
-\begin{aligned}
 \mathcal{L}_{RM} = -\mathbb{E}_{(x, y_w, y_l)} \left[ \log \sigma \left( r_\theta(x, y_w) - r_\theta(x, y_l) \right) \right]
-\end{aligned}
 $$
 
 直观理解：这推动奖励模型给人类偏好的回复更高的分数，给被拒绝的回复更低的分数。分数差距越大，模型越确信。
@@ -127,9 +170,7 @@ $$
 目标是最大化奖励，同时保持接近参考模型：
 
 $$
-\begin{aligned}
 \max_{\pi_\theta} \; \mathbb{E}_{x \sim \mathcal{D}, y \sim \pi_\theta(\cdot|x)} \left[ r_\phi(x, y) - \beta \cdot \text{KL}(\pi_\theta \| \pi^{ref}) \right]
-\end{aligned}
 $$
 
 其中：
@@ -144,9 +185,7 @@ $$
 PPO 使用裁剪的替代目标来限制更新幅度：
 
 $$
-\begin{aligned}
 L^{CLIP}(\theta) = \hat{\mathbb{E}}_t \left[ \min \left( r_t(\theta) \hat{A}_t, \; \text{clip}(r_t(\theta), 1-\epsilon, 1+\epsilon) \hat{A}_t \right) \right]
-\end{aligned}
 $$
 
 其中：

@@ -100,6 +100,24 @@ This is **comparative** rather than **absolute** scoring — humans are much bet
 
 ### 3.2 The Bradley-Terry Model
 
+#### The Story Behind It
+
+The Bradley-Terry model wasn't invented for AI at all! It was proposed in **1952** by statisticians **Ralph A. Bradley** and **Milton E. Terry** in their paper *"Rank Analysis of Incomplete Block Designs: I. The Method of Paired Comparisons"*.
+
+**Original use case:** Predicting sports match outcomes. Given two players A and B, what's the probability that A beats B based on their historical performance?
+
+The core idea is beautifully simple: **each player has a "skill score," and the probability of winning is determined by the difference in skill scores.**
+
+$$P(A \text{ beats } B) = \sigma(s_A - s_B)$$
+
+In 2020, OpenAI's **Stiennon et al.** realized this model maps perfectly to RLHF:
+- Replace "player skill scores" with **"response quality scores"**
+- Replace "A beats B" with **"human prefers $y_w$ over $y_l$"**
+
+Ralph Bradley and Milton Terry probably never imagined their 1952 model for predicting tennis matches would become a core component of ChatGPT 70 years later.
+
+#### The Model
+
 The reward model is trained using the Bradley-Terry preference model, which converts pairwise comparisons into a probability:
 
 $$
@@ -109,10 +127,12 @@ P(y_w \succ y_l | x) = \sigma(r_\theta(x, y_w) - r_\theta(x, y_l))
 $$
 
 Where:
-- $y_w$ is the winning (preferred) response
-- $y_l$ is the losing (rejected) response
+- $y_w$ is the **w**inning (preferred) response
+- $y_l$ is the **l**osing (rejected) response
 - $r_\theta$ is the reward model parameterized by $\theta$
 - $\sigma$ is the sigmoid function
+
+> **What does the $>$ symbol mean?** Here $y_w > y_l$ is not a numerical comparison — it represents a **preference relation**: "$y_w$ is preferred over $y_l$" by a human judge. This notation is inherited directly from the original Bradley-Terry model, where $P(A > B)$ meant "the probability that player A beats player B." In RLHF, the "players" are simply replaced with "responses."
 
 The training loss is the negative log-likelihood:
 
