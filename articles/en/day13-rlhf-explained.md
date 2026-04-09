@@ -330,6 +330,8 @@ This last point is remarkable: a model 100× smaller, when properly aligned, was
 - **Distribution shift** — The reward model is trained on SFT outputs but scores RL outputs, which drift over time
 - **Cost** — Human annotation is expensive; OpenAI employed ~40 annotators for InstructGPT
 
+> **Source**: These limitations are discussed in detail in [Ouyang et al., 2022 — *Training Language Models to Follow Instructions with Human Feedback*](https://arxiv.org/abs/2203.02155) (the InstructGPT paper), which remains the most comprehensive empirical study of RLHF's failure modes.
+
 ### 7.2 The Debate: Is RLHF Actually RL?
 
 Some researchers argue that RLHF isn't "real" reinforcement learning because:
@@ -342,9 +344,9 @@ This debate is partly semantic, but it highlights an important point: RLHF is be
 ### 7.3 The Route to Alternatives
 
 RLHF's limitations have motivated alternatives like:
-- **DPO (Direct Preference Optimization)** — Skips the reward model entirely (covered in Day 15)
-- **RLAIF (RL from AI Feedback)** — Uses AI instead of humans for preference labeling
-- **Constitutional AI** — Self-critique and revision loops
+- **DPO (Direct Preference Optimization)** — Skips the reward model entirely (covered in Day 15). [Rafailov et al., 2023 — *Direct Preference Optimization: Your Language Model is Secretly a Reward Model*](https://arxiv.org/abs/2305.18290)
+- **RLAIF (RL from AI Feedback)** — Uses AI instead of humans for preference labeling. [Lee et al., 2023 — *RLAIF: Scaling Reinforcement Learning from Human Feedback with AI Feedback*](https://arxiv.org/abs/2309.00267)
+- **Constitutional AI** — Self-critique and revision loops. [Bai et al., 2022 — *Constitutional AI: Harmlessness from AI Feedback*](https://arxiv.org/abs/2212.08073)
 
 ---
 
