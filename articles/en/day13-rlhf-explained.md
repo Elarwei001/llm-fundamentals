@@ -307,8 +307,6 @@ Beyond the KL penalty, practitioners use:
 | Helpfulness | Low | Moderate | High |
 | Honesty / Grounding | Variable | Moderate | Improved |
 
-![Figure 5: Base Model vs SFT vs SFT+RLHF](../zh/images/day13/base-vs-sft-vs-rlhf.png)
-*Figure 5: RLHF provides the largest gains in safety (harmlessness) and instruction-following. SFT alone is necessary but not sufficient for a production assistant.*
 
 ### 6.2 What the Original Paper Found
 
