@@ -36,6 +36,33 @@ Think of it this way — SFT is like showing a student 10,000 correct essays and
 
 RLHF adds exactly this: a learned reward function that can score *any* response, not just the ones in your training set.
 
+#### Common Confusion: LoRA vs SFT vs RLHF
+
+A frequent question: "LoRA also needs a training set — why does it have no rewards?"
+
+The answer: **LoRA is a method (how to train), not a training paradigm (what to train for).**
+
+```
+Pre-training (Day 11)
+    ↓
+Supervised Fine-Tuning / SFT (Day 12)  ← LoRA is used here
+    ↓                                       LoRA is just "how to train",
+RLHF / Alignment (Day 13-15)           ← Rewards are used here
+```
+
+| | SFT (with LoRA) | RLHF |
+|---|---|---|
+| **Goal** | Learn to mimic input-output pairs from training data | Learn to generate "good" responses |
+| **Signal source** | Fixed training set (questions + reference answers) | Reward model scores each response |
+| **Has rewards?** | No — only loss (distance from reference answer) | Yes — reward model gives reward signal |
+| **What it learns** | Format, style, task patterns | Values, preferences, safety |
+
+**LoRA only does SFT with fewer parameters** — it replaces "full fine-tuning" as a method, but doesn't change the training paradigm. SFT doesn't need rewards because it's like doing an exam with answer keys — you just compare against the reference.
+
+RLHF needs rewards because it optimizes for **open-ended quality** — there's no single correct answer, so a reward model is needed to judge which response is better.
+
+> **One sentence:** LoRA is a tool (saves memory), SFT is a task (learn to imitate), RLHF is another task (learn preferences). LoRA + SFT doesn't need rewards; RLHF does.
+
 ![Figure 1: The RLHF Three-Stage Pipeline](../zh/images/day13/rlhf-three-stage-pipeline.png)
 *Figure 1: The complete RLHF pipeline has three stages — pre-training (already done), reward model training, and PPO optimization. Each stage builds on the previous one.*
 
