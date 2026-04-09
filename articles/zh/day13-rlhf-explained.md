@@ -200,6 +200,17 @@ $$
 
 ### 4.3 PPO 裁剪目标
 
+在进入数学公式之前，先澄清一个关键点：**策略模型就是一个 Transformer**。就是你学过的那套 embedding → 多头注意力 → MLP 的架构。在强化学习术语中：
+
+- **动作（Action）**= 生成下一个 token
+- **策略 π_θ**= 语言模型对 token 的概率分布
+- **π_θ(y|x)**= 你熟悉的条件概率——给定 prompt x 生成回复 y 的概率
+
+架构完全没有变——变的是**训练目标**。预训练最小化 next-token prediction loss，SFT 最小化与参考答案的交叉熵，RLHF 通过 PPO 最大化奖励模型的分数。
+
+![RLHF 策略-奖励架构](./images/day13/rlhf-policy-reward-architecture.jpg)
+*策略模型（虚线框）就是正在训练的 Transformer。奖励模型给输出打分。PPO 用这些分数更新策略的权重——奖励模型只在训练时使用，推理时不需要。*
+
 PPO 使用裁剪的替代目标来限制更新幅度：
 
 $$

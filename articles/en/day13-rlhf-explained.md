@@ -206,6 +206,17 @@ The **KL divergence** term is critical — without it, the model would learn to 
 
 ### 4.3 The PPO Clip Objective
 
+Before diving into the math, let's clarify a key point: **the Policy Model is just a Transformer**. The same embedding → multi-head attention → MLP architecture you've been learning about. In RL terminology:
+
+- **Action** = generating the next token
+- **Policy π_θ** = the language model's probability distribution over tokens
+- **π_θ(y|x)** = the familiar conditional probability of generating response y given prompt x
+
+The architecture doesn't change — what changes is the **training objective**. Pre-training minimizes next-token prediction loss, SFT minimizes cross-entropy with reference answers, and RLHF maximizes the reward model's score via PPO.
+
+![RLHF Policy-Reward Architecture](images/day13/rlhf-policy-reward-architecture.jpg)
+*The Policy Model (dashed box) is the Transformer being trained. The Reward Model scores its outputs. PPO uses those scores to update the Policy's weights — the Reward Model is only used during training, not inference.*
+
 PPO uses a clipped surrogate objective to constrain updates:
 
 $$
