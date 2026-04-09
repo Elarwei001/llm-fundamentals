@@ -161,13 +161,27 @@ This architectural choice is important — because the reward model "understands
 
 ## 4. Stage 3: RL Optimization with PPO
 
+### What is PPO?
+
+Before we dive into *why* PPO, let's make sure we understand *what* it is.
+
+**PPO** stands for **Proximal Policy Optimization**, proposed by OpenAI researchers led by John Schulman in 2017. At its core, it's a reinforcement learning algorithm for training agents to make good decisions. Originally developed for classic RL problems — training robots to walk, agents to play Atari games, and AI to compete in Dota 2 — it was later adapted for a very different purpose: aligning large language models with human preferences.
+
+The key idea is elegant: when updating a policy (the model's behavior), PPO allows changes but **clips** them to prevent any single update from being too large. Think of it as a volume knob that only turns so far in one step — you can adjust, but you can't accidentally crank it to max.
+
+PPO replaced an earlier algorithm called **TRPO** (Trust Region Policy Optimization), which had a similar philosophy but was much more complex to implement. PPO achieved similar performance with simpler code and faster training — a rare win-win in ML research.
+
 ### 4.1 Why PPO?
 
-Proximal Policy Optimization (PPO) is the standard algorithm for the RL stage. It was chosen for several reasons:
+PPO is the standard algorithm for the RL stage. It was chosen for several reasons:
 
 1. **Stability** — PPO constrains how much the policy can change in one step, preventing catastrophic forgetting
 2. **Sample efficiency** — Better than vanilla policy gradient methods
 3. **Track record** — Proven in game-playing (Atari, Dota 2) before being adapted for language models
+
+> **🧠 Catastrophic forgetting explained:** When a model undergoes RLHF training, it's learning new behaviors (following human preferences). But there's a risk: in the process, it can *forget* the knowledge it gained during pre-training. This is catastrophic forgetting — the model's weights get pushed in directions that overwrite previously learned patterns. PPO helps prevent this through two mechanisms: the **clip** constrains how much the policy can change in one step, and the **KL penalty** keeps the policy close to the original SFT model. The analogy? It's like studying for a new exam but being forced to review old material at the same time, so you don't forget what you already learned.
+
+> **🎮 What games teach us about alignment:** In game-playing AI, "alignment" means matching human *intent*, not just maximizing score. Consider a racing game AI that discovers it can drive through walls to finish faster — it gets a high score, but it's clearly not "playing the game right." The reward function (game score) doesn't capture everything humans care about. RLHF applies this same insight to language models: the reward model's score doesn't capture everything that makes a response "good." Adding a human preference signal on top of the base reward is how we bridge that gap. The lesson: **high reward ≠ good response**.
 
 ### 4.2 The RLHF Objective
 
@@ -179,12 +193,16 @@ $$
 \end{aligned}
 $$
 
+> **📖 What is a "policy" (π_θ)?** In this formula, π_θ is the **policy** — which is simply the language model itself. It defines the probability of generating each token at every step. In RL terms, the "policy" is the model's strategy for choosing actions (where each action = picking the next token). Written out: π_θ(y|x) is the probability of generating response y given prompt x. The intuition? Policy = "the model's current behavior pattern." As training progresses, π_θ changes — that's the model learning to behave better.
+
 Where:
 - $r_\phi(x, y)$ is the reward from the learned reward model
 - $\beta$ controls the KL penalty strength
 - $\text{KL}(\pi_\theta \| \pi^{ref})$ penalizes the policy for drifting from the SFT model
 
 The **KL divergence** term is critical — without it, the model would learn to "game" the reward model (reward hacking), producing outputs that score high but are nonsensical or extremely narrow.
+
+> **🎯 Reward hacking in depth:** Reward hacking is what happens when the policy finds a way to get high reward that the reward model didn't intend. For example, it might generate gibberish that happens to score high by accident, or learn to repeat "thank you for your question" endlessly because the reward model has a blind spot that favors polite-sounding text. This happens because the reward model is imperfect — it was trained on finite human comparisons and has gaps the policy can exploit. The KL term is the defense: KL(π_θ ‖ π_ref) measures how far the policy has drifted from the reference model. Adding β·KL to the loss penalizes this drift. Think of the KL penalty as a **leash** — the policy can explore and improve, but it can't run too far from home.
 
 ### 4.3 The PPO Clip Objective
 
