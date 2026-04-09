@@ -82,6 +82,18 @@ The SFT model becomes two things in RLHF:
 1. **The initial policy** $\pi^{SFT}$ — the model we'll optimize
 2. **The reference model** $\pi^{ref}$ — a frozen copy used to compute KL divergence penalties
 
+> **🔍 What exactly is the Reference Model (π_ref)?** The reference model is quite literally a **frozen copy** of the SFT model — its weights are locked and never updated during RL training. It doesn't participate in training at all. Instead, it serves as an **"anchor point"** — if the Policy (the model being trained) drifts too far from this anchor during RL optimization, it gets penalized via KL divergence. This is where the $\beta \cdot \text{KL}(\pi_\theta \| \pi^{ref})$ term in the objective function comes from. The larger the divergence between the current policy and the reference model, the heavier the penalty.
+>
+> **Simple analogy:** The Reference Model is like "where you started from." No matter how much you optimize and explore, you can't stray too far from your starting point. It's a safety tether that keeps the model grounded.
+
+> **🔗 The three stages as sequential weight refinement:** It's important to understand that each stage in this pipeline uses the **previous stage's weights** as its starting point — nothing is trained from scratch.
+>
+> - **Pre-training:** Massive next-token prediction on internet text → the model "knows a bit of everything"
+> - **SFT:** Fine-tune on high-quality instruction-response pairs → the model "learns to follow instructions and format responses" (this stage is optional but strongly recommended)
+> - **RLHF/PPO:** The model already has usable weights — PPO just nudges them slightly toward "what humans prefer"
+>
+> The change in RLHF is deliberately small. The KL penalty ensures it's really just a **nudge**, not a rewrite. Think of it like a university education: pre-training = growing up and learning language, SFT = attending classes and learning your major, RLHF = on-the-job feedback from senior colleagues that polishes your professional behavior.
+
 ---
 
 ## 3. Stage 2: Training the Reward Model
@@ -201,6 +213,8 @@ Where:
 - $\text{KL}(\pi_\theta \| \pi^{ref})$ penalizes the policy for drifting from the SFT model
 
 The **KL divergence** term is critical — without it, the model would learn to "game" the reward model (reward hacking), producing outputs that score high but are nonsensical or extremely narrow.
+
+> **⚠️ PPO loss vs SFT loss — an important distinction:** During the RLHF stage, PPO's clipped objective is the **ONLY** loss function being optimized. There is **no fusion** with SFT's cross-entropy loss. The total reward $= r_\phi(x,y) - \beta \cdot \text{KL}(\pi_\theta \| \pi^{ref})$, and PPO uses this directly to compute gradients and update the Policy's weights. This is why catastrophic forgetting is a real concern: RL only optimizes for reward, not for "preserving existing knowledge." The KL penalty is what *indirectly* protects existing knowledge — by constraining how far the weights can drift from the SFT checkpoint, it ensures the model doesn't forget what it already learned.
 
 > **🎯 Reward hacking in depth:** Reward hacking is what happens when the policy finds a way to get high reward that the reward model didn't intend. For example, it might generate gibberish that happens to score high by accident, or learn to repeat "thank you for your question" endlessly because the reward model has a blind spot that favors polite-sounding text. This happens because the reward model is imperfect — it was trained on finite human comparisons and has gaps the policy can exploit. The KL term is the defense: KL(π_θ ‖ π_ref) measures how far the policy has drifted from the reference model. Adding β·KL to the loss penalizes this drift. Think of the KL penalty as a **leash** — the policy can explore and improve, but it can't run too far from home.
 
