@@ -108,6 +108,16 @@ Why does this matter? If you generate all 4 responses at T=0.1, they'll be nearl
 
 > **Key insight**: The InstructGPT paper used 4 responses per prompt, which has become something of an industry standard. But even 2 responses per prompt can work well if you have enough prompts. The total number of *comparisons* matters more than the number of responses per prompt.
 
+### 2.0 Building the Prompt Pool
+
+Before collecting any preferences, you need a pool of diverse prompts. This isn't just random sampling — it's strategic curation.
+
+**Task-specific prompts** are designed to cover your target use cases. If you're building a coding assistant, include coding challenges of varying difficulty. If it's a general chatbot, include everyday questions, creative writing tasks, and factual queries. The goal is breadth of coverage.
+
+**Difficulty levels** matter too. If every prompt is "easy," the model will learn to handle simple cases but struggle with complexity. If every prompt is "hard," it might overengineer and miss basic interactions. A balanced mix — easy, medium, hard — ensures robustness.
+
+**Edge cases** are crucial for production models. These include adversarial prompts designed to trick the model, ambiguous queries that test interpretation, multi-turn conversations to test context retention, and prompts in different languages or dialects to test multilingual capabilities.
+
 ### 2.1 Why Ranking, Not Scoring?
 
 A natural question: why not just ask annotators to score each response on a scale of 1–5?
@@ -126,11 +136,21 @@ In practice, most RLHF datasets use one of these formats:
 | Ranked list | "Rank A, B, C, D" | Rich comparisons | More cognitive load |
 | Likert + pairwise | Score each, then compare | Calibration data | More expensive |
 
+> **What is the "tie" option?** This refers to a strategy used in pairwise comparisons. Typically annotators choose "A better than B" or "B better than A." But when two responses are very similar in quality, annotators hesitate — forcing a choice may be inaccurate. A third "tie" (equal) option allows annotators to honestly say "both are equally good." This avoids noisy data from forced choices and helps the model learn boundary cases where there's no clear preference.
+
 The InstructGPT paper primarily used binary choices with a third "tie" option.
 
 > **What is the "tie" option?** This refers to a strategy used in pairwise comparisons. Typically annotators choose "A better than B" or "B better than A." But when two responses are very similar in quality, annotators hesitate — forcing a choice may be inaccurate. A third "tie" (equal) option allows annotators to honestly say "both are equally good." This avoids noisy data from forced choices and helps the model learn boundary cases where there's no clear preference.
 
-### 2.2 Annotation Guidelines: The Hidden Art
+### 2.0b Response Generation Strategy
+
+Once you have your prompt pool, the next step is generating diverse responses for annotators to compare. This isn't as simple as "sample once."
+
+**Temperature sampling** is the key tool for diversity. Temperature controls randomness in token generation. Low temperature (T ≈ 0.3) produces deterministic outputs — the same prompt nearly always gives the same response. High temperature (T ≈ 0.8-1.2) produces more creative, varied responses. For RLHF, moderate temperatures (0.7-1.0) are typically used to get varied but still reasonable outputs.
+
+**Why 2-4 responses specifically?** Fewer than 2 means no comparison possible. More than 4-5 creates annotator fatigue and diminishing returns on the marginal gains. The InstructGPT paper used 4 responses per prompt as the sweet spot.
+
+**Different checkpoints** provide stylistic variety. By generating responses from the SFT model at different training stages (e.g., epoch 5 vs. epoch 10), you capture different "flavors" of responses. Early epochs might be more formal, later epochs more creative. This increases the diversity of the comparison pool without needing more prompts.
 
 Writing annotation guidelines is one of the most underestimated tasks in RLHF. These guidelines tell annotators what "better" means. Bad guidelines = inconsistent data = broken reward model.
 
@@ -143,7 +163,7 @@ Good guidelines include:
 
 The OpenAI InstructGPT guidelines reportedly ran to dozens of pages. Anthropic published a simplified version of their guidelines in the Constitutional AI paper. The key insight: **guidelines are a living document** that evolves as you discover ambiguity.
 
-### 2.3 Who Are the Annotators?
+### 2.2 Annotation Guidelines: The Hidden Art
 
 This is a crucial practical decision:
 
@@ -167,6 +187,25 @@ Now we get to the heart of preference annotation: **how annotators actually comp
 
 > **Fun fact**: Position bias is well-documented in survey research. In election ballots, candidates listed first get a measurable boost in votes. The same effect applies to response comparisons — all else being equal, "Response A" gets picked slightly more often than "Response B" just by being shown first. Shuffling neutralizes this.
 
+**Multiple annotators per pair** (typically 2–3) are essential for reliability. A single annotator might be having a bad day, misunderstanding of guidelines, or simply making an error. By having overlapping annotators judge the same pairs, you can:
+- Measure agreement (via Cohen's Kappa, which we'll cover below)
+- Identify consistently poor annotators
+- Catch genuinely ambiguous pairs where reasonable people disagree
+
+**Disagreement resolution** is what happens when annotators don't agree. There are several strategies:
+- **Majority vote**: The most common approach. With 3 annotators, majority wins. Simple and effective.
+- **Escalation**: Disputed pairs are sent to a senior annotator or expert for a tie-breaking decision.
+- **Discard**: Remove pairs where annotators disagree significantly. This reduces dataset size but increases average quality.
+- **Keep as disagreement signal**: Controversial pairs — where competent annotators genuinely disagree — are actually *informative*. They tell you that responses are close in quality, which is useful signal for the reward model. Some teams explicitly mark these as "tie" or "near-tie" rather than discarding them.
+
+> **Key insight**: Perfect annotator agreement is neither realistic nor desirable. If every annotator always agrees, your task is probably too easy and you're not collecting nuanced signal. Some level of disagreement (κ ≈ 0.5–0.7) is the sweet spot — consistent enough to be reliable, but with enough variation to capture genuine subjectivity.
+
+Now we get to the heart of preference annotation: **how annotators actually compare responses**. The design of this process directly impacts data quality.
+
+**Blind comparison** means annotators don't know which model generated which response. This is crucial because knowing the source introduces bias — an annotator might favor responses from a "known good" model or discount responses they think came from a weaker one. Some teams go further and **shuffle the presentation order** of responses (randomly assigning which appears as "Response A" vs "Response B") to prevent **position bias**, where annotators unconsciously prefer whichever they see first.
+
+> **Fun fact**: Position bias is well-documented in survey research. In election ballots, candidates listed first get a measurable boost in votes. The same effect applies to response comparisons — all else being equal, "Response A" gets picked slightly more often than "Response B" just by being shown first. Shuffling neutralizes this.
+
 **Multiple annotators per pair** (typically 2–3) are essential for reliability. A single annotator might be having a bad day, misunderstanding the guidelines, or simply making an error. By having overlapping annotators judge the same pairs, you can:
 - Measure agreement (via Cohen's Kappa, which we'll cover below)
 - Identify consistently poor annotators
@@ -179,6 +218,16 @@ Now we get to the heart of preference annotation: **how annotators actually comp
 - **Keep the disagreement signal**: Controversial pairs — where competent annotators genuinely disagree — are actually *informative*. They tell you the responses are close in quality, which is useful signal for the reward model. Some teams explicitly mark these as "tie" or "near-tie" rather than discarding them.
 
 > **Key insight**: Perfect annotator agreement is neither realistic nor desirable. If every annotator always agrees, your task is probably too easy and you're not collecting nuanced signal. Some level of disagreement (κ ≈ 0.5–0.7) is the sweet spot — consistent enough to be reliable, but with enough variation to capture genuine subjectivity.
+
+### 2.5 Data Cleaning and Balancing
+
+Before the preference dataset goes into reward model training, it needs quality checks and balancing.
+
+**Toxicity filtering & safety checks** are non-negotiable. Scan responses for harmful content before including them in the dataset. Why? If your dataset contains toxic "chosen" responses — responses that are rude, biased, or harmful — your reward model will learn to prefer toxicity. Automated toxicity classifiers help catch obvious cases, but manual review is also needed for subtle issues.
+
+**Balanced dataset for RLHF** means equal representation across topics, difficulty levels, and response types. This is about coverage, not just random sampling. If 80% of your preference data is about coding questions and 20% about creative writing, your reward model will be heavily biased toward coding quality and may degrade creative performance. Stratified sampling ensures proportional coverage across all dimensions.
+
+Think of it like training a student — if you only give them math problems, they'll struggle with literature. A balanced curriculum produces a well-rounded student.
 
 ---
 
