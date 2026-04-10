@@ -63,7 +63,7 @@ Let's zoom into the hardest part: collecting preference comparisons.
 ![Figure 2: Preference Annotation Workflow](../zh/images/day14/preference-annotation-workflow.png)
 *Caption: The end-to-end workflow for collecting preference data, from prompt pool to quality-checked dataset*
 
-### 2.1 Building the Prompt Pool
+### 2.0 Building the Prompt Pool
 
 Before any model generates a single response, you need a **prompt pool** — the set of inputs that will drive your entire annotation pipeline. This isn't just "grab a bunch of questions"; the composition of your prompt pool determines what your reward model learns to optimize.
 
@@ -87,7 +87,7 @@ Why do these matter? Because real users will throw *all kinds of things* at your
 
 > **Analogy**: Think of the prompt pool as a university exam. If you only test with multiple-choice questions, students can pass without understanding anything deeply. A good exam mixes formats — multiple choice, short answer, essay, and trick questions — to truly measure competence. Your prompt pool should do the same.
 
-### 2.2 Response Generation Strategy
+### 2.0b Response Generation Strategy
 
 Once you have your prompt pool, the next question is: **how do you generate the 2–4 responses that annotators will compare?** This step is more nuanced than it sounds.
 
@@ -108,8 +108,17 @@ Why does this matter? If you generate all 4 responses at T=0.1, they'll be nearl
 
 > **Key insight**: The InstructGPT paper used 4 responses per prompt, which has become something of an industry standard. But even 2 responses per prompt can work well if you have enough prompts. The total number of *comparisons* matters more than the number of responses per prompt.
 
+### 2.0 Building the Prompt Pool
 
-### 2.3 Why Ranking, Not Scoring?
+Before collecting any preferences, you need a pool of diverse prompts. This isn't just random sampling — it's strategic curation.
+
+**Task-specific prompts** are designed to cover your target use cases. If you're building a coding assistant, include coding challenges of varying difficulty. If it's a general chatbot, include everyday questions, creative writing tasks, and factual queries. The goal is breadth of coverage.
+
+**Difficulty levels** matter too. If every prompt is "easy," the model will learn to handle simple cases but struggle with complexity. If every prompt is "hard," it might overengineer and miss basic interactions. A balanced mix — easy, medium, hard — ensures robustness.
+
+**Edge cases** are crucial for production models. These include adversarial prompts designed to trick the model, ambiguous queries that test interpretation, multi-turn conversations to test context retention, and prompts in different languages or dialects to test multilingual capabilities.
+
+### 2.1 Why Ranking, Not Scoring?
 
 A natural question: why not just ask annotators to score each response on a scale of 1–5?
 
@@ -131,8 +140,17 @@ In practice, most RLHF datasets use one of these formats:
 
 The InstructGPT paper primarily used binary choices with a third "tie" option.
 
+> **What is the "tie" option?** This refers to a strategy used in pairwise comparisons. Typically annotators choose "A better than B" or "B better than A." But when two responses are very similar in quality, annotators hesitate — forcing a choice may be inaccurate. A third "tie" (equal) option allows annotators to honestly say "both are equally good." This avoids noisy data from forced choices and helps the model learn boundary cases where there's no clear preference.
 
-### 2.4 Annotation Guidelines: The Hidden Art
+### 2.0b Response Generation Strategy
+
+Once you have your prompt pool, the next step is generating diverse responses for annotators to compare. This isn't as simple as "sample once."
+
+**Temperature sampling** is the key tool for diversity. Temperature controls randomness in token generation. Low temperature (T ≈ 0.3) produces deterministic outputs — the same prompt nearly always gives the same response. High temperature (T ≈ 0.8-1.2) produces more creative, varied responses. For RLHF, moderate temperatures (0.7-1.0) are typically used to get varied but still reasonable outputs.
+
+**Why 2-4 responses specifically?** Fewer than 2 means no comparison possible. More than 4-5 creates annotator fatigue and diminishing returns on the marginal gains. The InstructGPT paper used 4 responses per prompt as the sweet spot.
+
+**Different checkpoints** provide stylistic variety. By generating responses from the SFT model at different training stages (e.g., epoch 5 vs. epoch 10), you capture different "flavors" of responses. Early epochs might be more formal, later epochs more creative. This increases the diversity of the comparison pool without needing more prompts.
 
 Writing annotation guidelines is one of the most underestimated tasks in RLHF. These guidelines tell annotators what "better" means. Bad guidelines = inconsistent data = broken reward model.
 
@@ -145,7 +163,7 @@ Good guidelines include:
 
 The OpenAI InstructGPT guidelines reportedly ran to dozens of pages. Anthropic published a simplified version of their guidelines in the Constitutional AI paper. The key insight: **guidelines are a living document** that evolves as you discover ambiguity.
 
-### 2.5 Who Are the Annotators?
+### 2.2 Annotation Guidelines: The Hidden Art
 
 This is a crucial practical decision:
 
@@ -161,7 +179,7 @@ This is a crucial practical decision:
 
 Most production RLHF pipelines use a **tiered approach**: expert researchers create the guidelines and validate quality, trained contractors do the bulk of the annotation, and crowd workers handle simple, well-defined tasks.
 
-### 2.6 The Comparison Process
+### 2.4 The Comparison Process
 
 Now we get to the heart of preference annotation: **how annotators actually compare responses**. The design of this process directly impacts data quality.
 
@@ -201,7 +219,7 @@ Now we get to the heart of preference annotation: **how annotators actually comp
 
 > **Key insight**: Perfect annotator agreement is neither realistic nor desirable. If every annotator always agrees, your task is probably too easy and you're not collecting nuanced signal. Some level of disagreement (κ ≈ 0.5–0.7) is the sweet spot — consistent enough to be reliable, but with enough variation to capture genuine subjectivity.
 
-### 2.7 Data Cleaning and Balancing
+### 2.5 Data Cleaning and Balancing
 
 Before the preference dataset goes into reward model training, it needs quality checks and balancing.
 
@@ -299,7 +317,7 @@ $$
 
 Where $N$ is the number of preference comparisons and $\alpha \approx 0.3$–$0.5$ in practice. This means **doubling your data gives you diminishing returns** — the first 100K comparisons are worth more than the next 100K.
 
-### 4.3 How Preference Data Becomes a Reward Model
+### 4.2 How Preference Data Becomes a Reward Model
 
 You might wonder: we have pairwise comparisons ("A is better than B"), but the reward model needs to output a **scalar score** for any response. How do we bridge this gap?
 
@@ -321,7 +339,7 @@ $$
 
 Where $y_w$ is the winning (chosen) response and $y_l$ is the losing (rejected) response. This is why the **quality of pairwise comparisons matters so much** — the reward model directly learns from these judgments. Noisy labels → noisy reward signal → reward hacking during PPO.
 
-### 4.4 Open Source RLHF Datasets
+### 4.3 Open Source RLHF Datasets
 
 You don't have to collect everything from scratch. Several high-quality open datasets exist:
 
