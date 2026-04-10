@@ -182,25 +182,6 @@ Now we get to the heart of preference annotation: **how annotators actually comp
 
 > **Key insight**: Perfect annotator agreement is neither realistic nor desirable. If every annotator always agrees, your task is probably too easy and you're not collecting nuanced signal. Some level of disagreement (κ ≈ 0.5–0.7) is the sweet spot — consistent enough to be reliable, but with enough variation to capture genuine subjectivity.
 
-Now we get to the heart of preference annotation: **how annotators actually compare responses**. The design of this process directly impacts data quality.
-
-**Blind comparison** means annotators don't know which model generated which response. This is crucial because knowing the source introduces bias — an annotator might favor responses from a "known good" model or discount responses they think came from a weaker one. Some teams go further and **shuffle the presentation order** of responses (randomly assigning which appears as "Response A" vs "Response B") to prevent **position bias**, where annotators unconsciously prefer whichever they see first.
-
-> **Fun fact**: Position bias is well-documented in survey research. In election ballots, candidates listed first get a measurable boost in votes. The same effect applies to response comparisons — all else being equal, "Response A" gets picked slightly more often than "Response B" just by being shown first. Shuffling neutralizes this.
-
-**Multiple annotators per pair** (typically 2–3) are essential for reliability. A single annotator might be having a bad day, misunderstanding the guidelines, or simply making an error. By having overlapping annotators judge the same pairs, you can:
-- Measure agreement (via Cohen's Kappa, which we'll cover below)
-- Identify consistently poor annotators
-- Catch genuinely ambiguous pairs where reasonable people disagree
-
-**Disagreement resolution** is what happens when annotators don't agree. There are several strategies:
-- **Majority vote**: The most common approach. With 3 annotators, the majority wins. Simple and effective.
-- **Escalation**: Disputed pairs are sent to a senior annotator or expert for a tie-breaking decision.
-- **Discard**: Remove pairs where annotators disagree significantly. This reduces dataset size but increases average quality.
-- **Keep the disagreement signal**: Controversial pairs — where competent annotators genuinely disagree — are actually *informative*. They tell you the responses are close in quality, which is useful signal for the reward model. Some teams explicitly mark these as "tie" or "near-tie" rather than discarding them.
-
-> **Key insight**: Perfect annotator agreement is neither realistic nor desirable. If every annotator always agrees, your task is probably too easy and you're not collecting nuanced signal. Some level of disagreement (κ ≈ 0.5–0.7) is the sweet spot — consistent enough to be reliable, but with enough variation to capture genuine subjectivity.
-
 ### 2.7 Data Cleaning and Balancing
 
 Before the preference dataset goes into reward model training, it needs quality checks and balancing.
