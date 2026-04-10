@@ -319,7 +319,7 @@ These datasets are great starting points, but they have limitations: they may no
 
 The most exciting recent development is using AI models as annotators instead of (or in addition to) humans. This approach is called **RLAIF (Reinforcement Learning from AI Feedback)**.
 
-![Figure 5: Traditional RLHF vs RLAIF / Constitutional AI](../zh/images/day14/rlhf-vs-rlaif-v3.png)
+![Figure 5: Traditional RLHF vs RLAIF / Constitutional AI](../zh/images/day14/rlhf-vs-rlaif-v4.png)
 *Caption: Traditional RLHF relies on human annotators; RLAIF replaces step 3 with AI evaluation, reducing cost by 10-100x*
 
 ### 5.1 Constitutional AI
