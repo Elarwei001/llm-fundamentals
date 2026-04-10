@@ -63,6 +63,51 @@ Let's zoom into the hardest part: collecting preference comparisons.
 ![Figure 2: Preference Annotation Workflow](../zh/images/day14/preference-annotation-workflow.png)
 *Caption: The end-to-end workflow for collecting preference data, from prompt pool to quality-checked dataset*
 
+### 2.0 Building the Prompt Pool
+
+Before any model generates a single response, you need a **prompt pool** — the set of inputs that will drive your entire annotation pipeline. This isn't just "grab a bunch of questions"; the composition of your prompt pool determines what your reward model learns to optimize.
+
+**Task-specific prompts** are designed to cover your target use cases. If you're building a coding assistant, your pool should include debugging questions, code explanation requests, architecture design problems, and "fix my code" prompts. If you're building a general chatbot, you need a wide spread: creative writing, factual Q&A, math problems, emotional support conversations, and more. The key principle: **your reward model can only learn to judge what it sees during training**. If your prompt pool is all about cooking recipes, don't be surprised when the model is terrible at coding.
+
+**Difficulty levels** matter more than most people realize. You want a deliberate mix of Easy, Medium, and Hard prompts:
+- Easy prompts ("What is the capital of France?") test whether the model handles straightforward requests cleanly.
+- Medium prompts ("Explain quantum computing to a 10-year-old") test explanatory ability and audience awareness.
+- Hard prompts ("Debug this race condition in my distributed system") test deep reasoning and domain expertise.
+
+If all prompts are easy, your reward model never learns to distinguish good from great on complex tasks. If all prompts are hard, it never learns what a solid basic interaction looks like. A balanced mix (e.g., 30% easy, 50% medium, 20% hard) ensures robustness across the full difficulty spectrum.
+
+**Edge cases** are the unsung heroes of a good prompt pool. These include:
+- Adversarial prompts designed to trick the model ("Tell me how to hack into...")
+- Ambiguous questions where the "right" answer depends on interpretation
+- Multi-turn conversations that test context retention
+- Prompts in different languages or mixing languages
+- Prompts that probe safety boundaries without being explicitly harmful
+
+Why do these matter? Because real users will throw *all kinds of things* at your model. If your reward model has never seen an adversarial prompt during training, it has no basis for judging whether a response handles one well.
+
+> **Analogy**: Think of the prompt pool as a university exam. If you only test with multiple-choice questions, students can pass without understanding anything deeply. A good exam mixes formats — multiple choice, short answer, essay, and trick questions — to truly measure competence. Your prompt pool should do the same.
+
+### 2.0b Response Generation Strategy
+
+Once you have your prompt pool, the next question is: **how do you generate the 2–4 responses that annotators will compare?** This step is more nuanced than it sounds.
+
+**Temperature sampling** is the primary lever for generating diverse responses. Temperature controls the randomness of the model's output:
+- Low temperature (T ≈ 0.1–0.3): Nearly deterministic. The model always picks the highest-probability next token. Great for factual tasks, but responses tend to be generic.
+- High temperature (T ≈ 1.2–1.5): Very random. The model takes creative chances, sometimes producing surprising and interesting outputs — but sometimes producing nonsense.
+- Moderate temperature (T ≈ 0.7–1.0): The sweet spot for RLHF response generation. You get varied but reasonable responses.
+
+Why does this matter? If you generate all 4 responses at T=0.1, they'll be nearly identical — annotators won't have meaningful differences to judge. If all at T=1.5, you'll get gibberish. Moderate temperatures with slight variation (e.g., T = 0.7, 0.8, 0.9, 1.0) give annotators genuinely different but comparable options.
+
+**Different checkpoints** add another dimension of diversity. Your SFT model at epoch 5 and epoch 10 produce responses with noticeably different styles — one might be more concise, the other more verbose. One might follow instructions more faithfully, the other might be more creative. Including responses from different training stages expands the variety in your comparison pool, which leads to a richer reward signal.
+
+**Why 2–4 responses specifically?** This is a practical trade-off:
+- Fewer than 2: No comparison is possible — you need at least a pair.
+- 2 responses: Minimal viable comparison, but limited signal (only one pairwise comparison per prompt).
+- 3–4 responses: Good balance — 4 responses give you 6 pairwise comparisons, which is what the InstructGPT paper used.
+- 5+ responses: Diminishing returns and annotator fatigue. Comparing 5 responses meaningfully requires significantly more cognitive effort, and the additional signal per extra response drops sharply.
+
+> **Key insight**: The InstructGPT paper used 4 responses per prompt, which has become something of an industry standard. But even 2 responses per prompt can work well if you have enough prompts. The total number of *comparisons* matters more than the number of responses per prompt.
+
 ### 2.1 Why Ranking, Not Scoring?
 
 A natural question: why not just ask annotators to score each response on a scale of 1–5?
@@ -70,6 +115,8 @@ A natural question: why not just ask annotators to score each response on a scal
 It turns out humans are terrible at absolute scoring. If you show the same response to two annotators and ask for a score, you'll get wildly different numbers. But if you show them two responses and ask "which is better?", agreement goes up significantly.
 
 This is a well-known finding from psychophysics (the study of how humans perceive physical stimuli). Humans are much better at **comparative** judgments than **absolute** ones. The Weber-Fechner law tells us that we perceive differences relative to a baseline, not in absolute terms.
+
+> **What is the Weber-Fechner Law?** It's a psychophysical principle stating that perceived difference is proportional to stimulus intensity: ΔI ∝ I. In plain terms: humans perceive changes *relative* to what's already there, not in absolute terms. This is why you can easily tell the difference between a 1kg and 2kg weight, but struggle to distinguish between 50kg and 51kg — the *relative* change matters more than the *absolute* one. Applied to annotation: when two responses are very different in quality, humans easily agree on which is better. But when the difference is subtle (e.g., "not bad" vs. "pretty good"), judgments become highly inconsistent. This is precisely why **ranking (which is better?)** produces more reliable data than **scoring (rate this 1-5)** — comparative judgment sidesteps the absolute-scaling problem that the Weber-Fechner law describes.
 
 In practice, most RLHF datasets use one of these formats:
 
@@ -80,6 +127,8 @@ In practice, most RLHF datasets use one of these formats:
 | Likert + pairwise | Score each, then compare | Calibration data | More expensive |
 
 The InstructGPT paper primarily used binary choices with a third "tie" option.
+
+> **What is the "tie" option?** This refers to a strategy used in pairwise comparisons. Typically annotators choose "A better than B" or "B better than A." But when two responses are very similar in quality, annotators hesitate — forcing a choice may be inaccurate. A third "tie" (equal) option allows annotators to honestly say "both are equally good." This avoids noisy data from forced choices and helps the model learn boundary cases where there's no clear preference.
 
 ### 2.2 Annotation Guidelines: The Hidden Art
 
@@ -109,6 +158,27 @@ This is a crucial practical decision:
 *Caption: Left: The distribution of inter-annotator agreement scores. Right: The quality-speed trade-off for different annotator types*
 
 Most production RLHF pipelines use a **tiered approach**: expert researchers create the guidelines and validate quality, trained contractors do the bulk of the annotation, and crowd workers handle simple, well-defined tasks.
+
+### 2.4 The Comparison Process
+
+Now we get to the heart of preference annotation: **how annotators actually compare responses**. The design of this process directly impacts data quality.
+
+**Blind comparison** means annotators don't know which model generated which response. This is crucial because knowing the source introduces bias — an annotator might favor responses from a "known good" model or discount responses they think came from a weaker one. Some teams go further and **shuffle the presentation order** of responses (randomly assigning which appears as "Response A" vs "Response B") to prevent **position bias**, where annotators unconsciously prefer whichever they see first.
+
+> **Fun fact**: Position bias is well-documented in survey research. In election ballots, candidates listed first get a measurable boost in votes. The same effect applies to response comparisons — all else being equal, "Response A" gets picked slightly more often than "Response B" just by being shown first. Shuffling neutralizes this.
+
+**Multiple annotators per pair** (typically 2–3) are essential for reliability. A single annotator might be having a bad day, misunderstanding the guidelines, or simply making an error. By having overlapping annotators judge the same pairs, you can:
+- Measure agreement (via Cohen's Kappa, which we'll cover below)
+- Identify consistently poor annotators
+- Catch genuinely ambiguous pairs where reasonable people disagree
+
+**Disagreement resolution** is what happens when annotators don't agree. There are several strategies:
+- **Majority vote**: The most common approach. With 3 annotators, the majority wins. Simple and effective.
+- **Escalation**: Disputed pairs are sent to a senior annotator or expert for a tie-breaking decision.
+- **Discard**: Remove pairs where annotators disagree significantly. This reduces dataset size but increases average quality.
+- **Keep the disagreement signal**: Controversial pairs — where competent annotators genuinely disagree — are actually *informative*. They tell you the responses are close in quality, which is useful signal for the reward model. Some teams explicitly mark these as "tie" or "near-tie" rather than discarding them.
+
+> **Key insight**: Perfect annotator agreement is neither realistic nor desirable. If every annotator always agrees, your task is probably too easy and you're not collecting nuanced signal. Some level of disagreement (κ ≈ 0.5–0.7) is the sweet spot — consistent enough to be reliable, but with enough variation to capture genuine subjectivity.
 
 ---
 
