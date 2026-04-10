@@ -180,9 +180,7 @@ OpenAI InstructGPT 的指南据说有几十页。Anthropic 在 Constitutional AI
 标准度量是 **Cohen's Kappa (κ)**（科恩卡帕系数）：
 
 $$
-\begin{aligned}
 \kappa &= \frac{p_o - p_e}{1 - p_e}
-\end{aligned}
 $$
 
 其中 $p_o$ 是观察到的一致率，$p_e$ 是随机情况下预期的一致率。
@@ -244,17 +242,13 @@ $$
 标准方法使用 **Bradley-Terry 模型**，最初是为国际象棋选手排名开发的。核心思想：每条回复有一个潜在的"奖励分数" $r(x, y)$，给定提示 $x$ 时偏好回复 $y_1$ 而非 $y_2$ 的概率为：
 
 $$
-\begin{aligned}
 P(y_1 \succ y_2 \mid x) &= \frac{\exp(r(x, y_1))}{\exp(r(x, y_1)) + \exp(r(x, y_2))} = \sigma(r(x, y_1) - r(x, y_2))
-\end{aligned}
 $$
 
 其中 $\sigma$ 是 sigmoid 函数。这很优雅：**奖励模型只需要学习相对差异，不需要绝对分数**。训练奖励模型的损失函数就是观察到的偏好的负对数似然：
 
 $$
-\begin{aligned}
 \mathcal{L} &= -\mathbb{E}_{(x, y_w, y_l)} \left[ \log \sigma(r(x, y_w) - r(x, y_l)) \right]
-\end{aligned}
 $$
 
 其中 $y_w$ 是获胜（被选中的）回复，$y_l$ 是失败（被拒绝的）回复。这就是为什么**成对比较的质量如此重要**——奖励模型直接从这些判断中学习。噪声标签 → 噪声奖励信号 → PPO 期间的奖励黑客行为。
@@ -270,9 +264,7 @@ $$
 数据量与奖励模型质量的关系大致遵循**幂律**：
 
 $$
-\begin{aligned}
 \text{奖励模型准确度} &\propto N^{\alpha}
-\end{aligned}
 $$
 
 其中 $N$ 是偏好比较的数量，实践中 $\alpha \approx 0.3$–$0.5$。这意味着**数据量翻倍的收益递减**——前 100K 条比较比后 100K 条更有价值。
