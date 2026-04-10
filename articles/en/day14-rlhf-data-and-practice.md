@@ -156,7 +156,7 @@ This is a crucial practical decision:
 | Domain specialists | High (in domain) | Medium | $1–$5 | Specialized models |
 | Crowd workers | Variable | Fast (~30/min) | $0.02–$0.10 | Large-scale, simple tasks |
 
-![Figure 3: Annotation Quality Metrics](../zh/images/day14/annotation-quality-metrics.png)
+![Figure 3: Annotation Quality Metrics](../zh/images/day14/annotation-quality-metrics-v2.png)
 *Caption: Left: The distribution of inter-annotator agreement scores. Right: The quality-speed trade-off for different annotator types*
 
 Most production RLHF pipelines use a **tiered approach**: expert researchers create the guidelines and validate quality, trained contractors do the bulk of the annotation, and crowd workers handle simple, well-defined tasks.

@@ -162,7 +162,7 @@ OpenAI InstructGPT 的指南据说有几十页。Anthropic 在 Constitutional AI
 | 领域专家 | 高（特定领域） | 中 | $1–$5 | 专业模型 |
 | 众包工人 | 不稳定 | 快（~30条/分钟） | $0.02–$0.10 | 大规模简单任务 |
 
-![图 3: 标注质量指标](./images/day14/annotation-quality-metrics.png)
+![图 3: 标注质量指标](./images/day14/annotation-quality-metrics-v2.png)
 *说明：左：标注者间一致性分数的分布。右：不同标注者类型的质量-速度权衡*
 
 大多数生产级 RLHF 管线使用**分层方法**：专家研究员制定指南并验证质量，受训承包商承担主要标注工作，众包工人处理简单明确的任务。
