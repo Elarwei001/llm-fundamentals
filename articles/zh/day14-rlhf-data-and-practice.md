@@ -286,7 +286,7 @@ $$
 
 最近最令人兴奋的进展是用 AI 模型代替（或辅助）人类做标注。这种方法叫 **RLAIF（Reinforcement Learning from AI Feedback，AI 反馈强化学习）**。
 
-![图 5: 传统 RLHF vs RLAIF / Constitutional AI](./images/day14/rlhf-vs-rlaif.png)
+![图 5: 传统 RLHF vs RLAIF / Constitutional AI](./images/day14/rlhf-vs-rlaif-v2.png)
 *说明：传统 RLHF 依赖人类标注者；RLAIF 用 AI 评估替代第 3 步，成本降低 10-100 倍*
 
 ### 5.1 Constitutional AI（宪法 AI）
