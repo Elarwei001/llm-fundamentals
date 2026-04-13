@@ -466,8 +466,20 @@ advantages = grpo_advantages(rewards)
 # The model learns to prefer what works within each group
 ```
 
-![Figure 4: Alignment Methods Comparison](../zh/images/day15/alignment-methods-comparison.png)
-*Caption: Comparison across key dimensions. Lower "Needs Ref Model" and "Needs Pairs" scores are better. Higher scores on stability, efficiency, and simplicity are better.*
+| Feature | DPO (2023) | IPO (2023) | KTO (2023) | ORPO (2024) | SimPO (2024) | GRPO (2024) |
+|---------|-----------|-----------|-----------|------------|-------------|-------------|
+| Needs Reference Model? | Yes | Yes | Yes | **No** | **No** | No |
+| Needs Paired Preferences? | Yes | Yes | **No** (good/bad labels) | Yes | Yes | No (uses groups) |
+| Needs Reward Model? | No | No | No | No | No | Optional |
+| Training Stability | High | High | High | High | High | Medium |
+| Memory Usage | ~2x base | ~2x base | ~2x base | **~1x base** | **~1x base** | ~1x base |
+| Best For | General alignment | Noisy data | Unpaired data | Simplest pipeline | No reference model | Math / reasoning |
+| Data Required | Preference pairs | Preference pairs | Binary labels | Preference pairs | Preference pairs | Any scoring function |
+
+*Table: Comparison of alignment methods. Bold = best in category. "~Nx base" means how many copies of the base model must be in GPU memory during training.*
+
+<!-- ![Figure 4: Alignment Methods Comparison](../zh/images/day15/alignment-methods-comparison.png) -->
+<!-- *Caption: Comparison across key dimensions. Lower "Needs Ref Model" and "Needs Pairs" scores are better. Higher scores on stability, efficiency, and simplicity are better.* -->
 
 ---
 
