@@ -416,6 +416,32 @@ GRPO (used in DeepSeek-V2/V3) is particularly interesting for reasoning tasks. I
 
 **Advantages over PPO for reasoning:** No critic (value function) needed. The group mean serves as the baseline. No reward model needed if you use rule-based verification. This is what enabled DeepSeek-R1 to achieve its breakthrough reasoning capabilities — the model learned to generate chain-of-thought reasoning traces entirely through GRPO, without any human annotations of reasoning steps.
 
+> **Concrete example: How GRPO works step by step**
+>
+> Suppose the prompt is a math problem: *"What is $\sqrt{144} + 3$?"*
+>
+> **Step 1: Generate a group of responses.** The model generates 4 different answers:
+> - Response A: "Let me calculate. $\sqrt{144} = 12$, so $12 + 3 = 15$." → Answer: 15
+> - Response B: "$\sqrt{144} = 14$, so $14 + 3 = 17$." → Answer: 17
+> - Response C: "$\sqrt{144} = 12$, then $12 + 3 = 15$. The answer is 15." → Answer: 15
+> - Response D: "$144 + 3 = 147$." → Answer: 147
+>
+> **Step 2: Score each response with a rule-based verifier.** The ground truth is 15, so:
+> - A: correct → reward = 1.0
+> - B: wrong → reward = 0.0
+> - C: correct → reward = 1.0
+> - D: wrong → reward = 0.0
+>
+> **Step 3: Compute group-relative advantages.** The group mean = (1+0+1+0)/4 = 0.5, std ≈ 0.5.
+> - A: $(1.0 - 0.5) / 0.5 = +1.0$ → positive, reinforce this reasoning
+> - B: $(0.0 - 0.5) / 0.5 = -1.0$ → negative, discourage this reasoning
+> - C: $(1.0 - 0.5) / 0.5 = +1.0$ → positive, reinforce
+> - D: $(0.0 - 0.5) / 0.5 = -1.0$ → negative, discourage
+>
+> **Why "relative" matters:** Suppose the problem was easy and ALL 4 responses were correct (all get reward 1.0). Then the mean = 1.0, and all advantages = 0. The model gets no signal — *because there's nothing to learn from when everyone agrees*. Similarly, if all 4 are wrong, advantages are also 0. GRPO only learns from *diversity within the group* — when some approaches work and others don't.
+>
+> **Key difference from PPO:** PPO would need a trained value function (critic) to estimate "how good is this response expected to be?" GRPO replaces the critic with the group average — much simpler, no extra model needed.
+
 ```python
 def grpo_advantages(rewards_per_group):
     """
