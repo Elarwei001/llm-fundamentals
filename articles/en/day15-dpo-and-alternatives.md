@@ -533,11 +533,17 @@ PPO isn't dead. For the largest production systems (GPT-4, Claude), PPO with rew
 
 > **What does "iterate indefinitely" mean?**
 >
-> DPO runs for a fixed number of epochs on a fixed dataset, then stops. There's a hard ceiling — the model can only learn what's in the dataset.
+> **Per training run**, DPO runs for a fixed number of epochs on a fixed dataset, then stops. Within a single run, the model can only learn what's in the dataset — running more epochs won't help (it'll just overfit).
 >
-> PPO, on the other hand, keeps generating new responses and getting new reward signals. As long as the reward model is improving and the policy hasn't converged, you can keep training. In theory, there's no fixed endpoint.
+> PPO, on the other hand, keeps generating new responses and getting new reward signals. Each step produces fresh training data. As long as the reward model is meaningful and the policy hasn't converged, you can keep training.
 >
-> **Why this matters for production:** Companies like OpenAI and Anthropic can afford to run PPO for weeks or months on massive compute clusters, continuously improving the model. The cost is enormous, but the returns keep coming. DPO simply can't compete in this regime — it plateaus once the dataset is exhausted.
+> **The real difference is cost per improvement cycle:**
+> - **PPO:** One pipeline — train, generate, score, update, repeat. Each cycle is cheap (no human involvement).
+> - **DPO:** Two phases — collect preferences (expensive: humans or large models must label), then train. Each cycle requires a full data collection round.
+>
+> This is why PPO scales better at massive compute: the "fuel" (new training data) is generated automatically. DPO's fuel must be manually produced each time.
+>
+> **Why this matters for production:** Companies like OpenAI and Anthropic run PPO continuously — the model never stops improving because new data flows in automatically. DPO *can* achieve similar results with iterative rounds (collect -> train -> repeat), but each round's data collection is a bottleneck.
 - **Nuanced reward shaping**: A reward model can capture complex trade-offs
 
 But for most practitioners and researchers, the simplicity of DPO-family methods makes them the default choice in 2025.
