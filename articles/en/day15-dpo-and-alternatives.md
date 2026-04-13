@@ -94,7 +94,21 @@ $$
 > - The single $\exp\left(\frac{1}{\beta} r(x,y)\right)$ acts as a multiplier: high reward → larger multiplier → higher probability for that response
 > - $Z(x)$ is just a normalizing constant (ensures probabilities sum to 1) — it's not important, and will cancel out later
 
-where $Z(x)$ is a normalizing constant. Rearranging, we can express the **implicit reward** in terms of the policy:
+where $Z(x)$ is a normalizing constant.
+
+> **How do we get from Formula A to Formula B?** Just two steps — take log, then rearrange:
+>
+> **Step 1:** Take $\log$ of both sides of A:
+>
+> $\log \pi^*(y|x) = -\log Z(x) + \log \pi_{ref}(y|x) + \frac{1}{\beta} r(x,y)$
+>
+> **Step 2:** Move $\log \pi_{ref}(y|x)$ to the left, multiply both sides by $\beta$:
+>
+> $r(x,y) = \beta \log \frac{\pi^*(y|x)}{\pi_{ref}(y|x)} + \beta \log Z(x)$
+>
+> That's Formula B — just A rearranged. Nothing new was introduced.
+
+Rearranging, we can express the **implicit reward** in terms of the policy:
 
 $$
 \begin{aligned}
