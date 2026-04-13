@@ -75,6 +75,11 @@ $$
 \end{aligned}
 $$
 
+> **What is this formula doing?** This is the RLHF objective — two forces pulling in opposite directions:
+> - **First term** $\mathbb{E}[r(x,y)]$: maximize reward — make the model generate high-scoring responses
+> - **Second term** $\beta \cdot D_{KL}$: stay close to the original SFT model — don't drift too far
+> - **$\beta$** is the knob balancing these two forces. High β → conservative (stay close to SFT); Low β → aggressive (chase high rewards)
+
 The optimal solution to this is:
 
 $$
@@ -83,6 +88,11 @@ $$
 \end{aligned}
 $$
 
+> **What is this formula doing?** This is the *exact answer* to the optimization above — the closed-form solution. It says: **optimal policy = reference model × exponential amplification of reward**.
+> - High reward $r(x,y)$ → exp amplifies it → probability goes up
+> - Low reward → exp shrinks it → probability goes down
+> - $Z(x)$ is just a normalizing constant (ensures probabilities sum to 1) — it's not important, and will cancel out later
+
 where $Z(x)$ is a normalizing constant. Rearranging, we can express the **implicit reward** in terms of the policy:
 
 $$
@@ -90,6 +100,11 @@ $$
 r(x,y) = \beta \log \frac{\pi^{*}(y|x)}{\pi_{ref}(y|x)} + \beta \log Z(x)
 \end{aligned}
 $$
+
+> **What is this formula doing?** This is Formula 2 rewritten — now we're *backing out* the reward from the policy instead of computing the policy from the reward.
+> - **Key insight**: when we compare two responses $y_w$ (good) and $y_l$ (bad), the $\beta \log Z(x)$ term appears on both sides and **cancels out** in the subtraction
+> - So we never need to know the actual reward value — only the *relative difference* between two responses matters
+> - This is exactly why we can skip the reward model entirely
 
 The key: $Z(x)$ cancels out when we compare two responses! So we can directly optimize the policy using preference pairs without ever training a reward model.
 
@@ -104,6 +119,14 @@ $$
 $$
 
 where $\sigma$ is the sigmoid function and $\beta$ controls how much the policy deviates from the reference.
+
+> **What is this formula doing?** It looks intimidating, but let's break it down:
+> - $\log \frac{\pi(y_w|x)}{\pi_{ref}(y_w|x)}$ = how much the policy shifted its probability on the **good** response
+> - $\log \frac{\pi(y_l|x)}{\pi_{ref}(y_l|x)}$ = how much the policy shifted its probability on the **bad** response
+> - **Subtracting the two** = the gap between how much the good response went up vs. the bad response went up
+> - The outer $\log \sigma()$ turns this gap into a 0–1 probability, and the negative log penalizes when the gap is too small
+>
+> **In plain English:** make the model increase probability on the good response MORE than on the bad response. The bigger the gap, the lower the loss. It's the same logic as training a classifier — except here we're classifying "good response vs. bad response" instead of "cat vs. dog."
 
 ![Figure 2: DPO Loss Function Visualization](../zh/images/day15/dpo-loss-visualization.png)
 *Caption: Left: The DPO loss landscape — when the model already prefers the chosen response (positive margin), loss is low. Right: The beta parameter controls how strictly the model follows preferences.*
