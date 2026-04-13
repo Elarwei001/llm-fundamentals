@@ -521,11 +521,13 @@ PPO isn't dead. For the largest production systems (GPT-4, Claude), PPO with rew
 
 > **What does "online" vs "offline" mean here?**
 >
-> **Offline (DPO):** You prepare a fixed dataset of preference pairs *before* training starts. The model never sees new data during training — it just learns from the same static examples over and over. Think of it like studying from a fixed textbook.
+> **Offline (DPO):** You prepare a fixed dataset of preference pairs *before* training starts. During training, the model doesn't generate its own data — it just learns from these static examples. However, DPO *can* be run iteratively: collect new preference data (even from new prompts), then retrain. The limitation is that each round of data collection and training is a separate step — the model can't generate and learn from its own outputs *within* a single training run.
 >
-> **Online (PPO):** During training, the model generates responses, the reward model scores them, and the model learns from *these fresh examples* in real time. Each training step creates new data. Think of it like a teacher giving you new practice problems and grading them on the spot.
+> **Online (PPO):** During training, the model generates responses, the reward model scores them, and the model learns from *these fresh examples* in real time. Each training step creates new data *and* learns from it in the same loop. No separate data collection phase needed.
 >
-> **Why online matters at scale:** When you have millions of users, you can continuously collect feedback and update the model. PPO can incorporate this new signal seamlessly. DPO would need to periodically re-collect a new dataset and retrain from scratch.
+> **The real difference:** It's not that DPO can't learn from new data — it's that PPO generates training data *as a byproduct of training itself*, creating a tight feedback loop. DPO requires an external process (humans, other models) to produce preference labels between training runs.
+>
+> **Why online matters at scale:** When you have millions of users, PPO can continuously generate responses, score them, and improve — all in one pipeline. DPO can achieve similar results with iterative rounds (collect preferences -> train -> repeat), but each round requires a separate data collection effort.
 
 - **Scalability**: With enough compute, PPO can iterate indefinitely
 
