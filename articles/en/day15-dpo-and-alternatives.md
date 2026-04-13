@@ -170,6 +170,14 @@ where $\sigma$ is the sigmoid function and $\beta$ controls how much the policy 
 ![Figure 2: DPO Loss Function Visualization](../zh/images/day15/dpo-loss-visualization.png)
 *Caption: Left: The DPO loss landscape — when the model already prefers the chosen response (positive margin), loss is low. Right: The beta parameter controls how strictly the model follows preferences.*
 
+> **How to read these charts:**
+> - **Horizontal axis (Log-Ratio Margin):** This is the value inside the sigmoid in Formula 4 — how much more the model prefers the good response over the bad one, relative to the reference model.
+>   - **> 0 (right):** Model already prefers the good response → loss is low (doing well!)
+>   - **= 0 (center):** Model treats both equally → loss ≈ 0.69 (random guessing, like a coin flip)
+>   - **< 0 (left):** Model actually prefers the bad response → loss is high (needs correction)
+> - **Left chart:** Shows the overall shape of the DPO loss — it's just $-\log \sigma(x)$, decreasing as the margin grows.
+> - **Right chart:** Shows how $\beta$ controls steepness. High β → steep → aggressive updates; Low β → flat → gentle updates.
+
 Think of it like this: DPO is a **race between two runners**. Instead of giving each runner an absolute score (like a reward model), you just measure the gap between them and push the gap wider. The loss is low when the policy assigns much more probability to $y_w$ than $y_l$ relative to the reference model.
 
 ### 2.3 What Beta Actually Does
