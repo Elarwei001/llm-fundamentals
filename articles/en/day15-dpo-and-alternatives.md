@@ -243,6 +243,10 @@ DPO converges to a fixed objective (like supervised learning), while PPO is an i
 ![Figure 3: DPO Training Dynamics](../zh/images/day15/dpo-training-dynamics.png)
 *Caption: Left: DPO training is smooth and stable compared to PPO's noisy dynamics. Right: The implicit reward margin (chosen - rejected) steadily increases during DPO training.*
 
+> **How to read these charts:**
+> - **Left chart:** Compares training loss curves. DPO (blue) decreases smoothly; PPO (orange) is noisy with spikes. Note: DPO isn't perfectly immune to instability — with noisy preference data or excessively high β, loss can still oscillate. But it's far more predictable than PPO.
+> - **Right chart:** The blue line shows the implicit reward margin ($r_{\text{implicit}}(y_w) - r_{\text{implicit}}(y_l)$) over training steps. As training progresses, this margin grows — meaning the model is learning to prefer chosen responses more and more. The light blue band/shading likely represents variance or a confidence interval across training runs.
+
 ### 3.2 The Reference Model Problem
 
 DPO still needs a frozen reference model ($\pi_{ref}$), which doubles memory. This is because DPO needs to know "how much has the policy changed" — without the reference, there's no baseline.
