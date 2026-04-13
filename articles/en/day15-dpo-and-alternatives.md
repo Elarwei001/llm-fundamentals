@@ -277,6 +277,8 @@ $$\tilde{r}(x,y) = \frac{\beta}{|y|} \log \pi(y|x) = \frac{\beta}{|y|} \sum_{t=1
 
 **How it works:** During normal SFT training on chosen responses, ORPO adds an extra loss term that penalizes the model when it can't distinguish chosen from rejected:
 
+> **Why can't SFT distinguish good from bad?** Standard SFT only trains on good responses — it learns to generate them, but has *never seen bad responses*, so it doesn't know what "bad" looks like. A model trained only with SFT might assign high probability to both good and bad responses equally, because nobody told it that the bad ones are bad. ORPO fixes this by feeding it both chosen and rejected responses during the same training step: the SFT loss teaches "generate good stuff," and the odds-ratio loss teaches "good and bad are different — prefer good."
+
 $$
 \begin{aligned}
 \mathcal{L}_{ORPO} = \mathcal{L}_{SFT} + \lambda \cdot \mathcal{L}_{OR}
