@@ -395,6 +395,15 @@ def kto_loss(policy_logps, ref_logps, labels, beta=0.1):
     return w_des * loss_des + w_und * loss_und
 ```
 
+> **FAQ: What if my labels aren't binary? Can KTO handle multi-level ratings (bad, OK, good, excellent)?**
+>
+> KTO's loss is designed for binary labels — push good responses up, push bad responses down. Multi-level labels would require redesigning the loss (e.g., different weights or margins per level), which would make it a new algorithm entirely.
+>
+> **What to do instead if you have multi-level labels:**
+> - **Best option:** Convert to binary (bad/OK → undesirable, good/excellent → desirable) and use KTO. This is what most practitioners do, because annotation noise makes fine-grained distinctions unreliable anyway.
+> - **Alternative:** Pair adjacent levels as preference pairs (excellent vs good, good vs OK, OK vs bad) and use DPO.
+> - **Key insight:** KTO's strength is *not needing comparisons at all*. If you're already ranking things on a scale, you might as well use DPO.
+
 ### 4.4 GRPO: Group Relative Policy Optimization
 
 GRPO (used in DeepSeek-V2/V3) is particularly interesting for reasoning tasks. It takes a fundamentally different approach from DPO:

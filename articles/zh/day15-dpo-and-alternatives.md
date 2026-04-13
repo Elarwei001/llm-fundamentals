@@ -389,6 +389,15 @@ def kto_loss(policy_logps, ref_logps, labels, beta=0.1):
     return w_des * loss_des + w_und * loss_und
 ```
 
+> **常见问题：如果标签不是二元的好/坏，而是多级评分（bad, OK, good, excellent）怎么办？**
+>
+> KTO 的 loss 是为二元标签设计的——把好回复往一个方向推，坏回复往反方向推。多级标签需要重新设计 loss（比如每个等级不同的权重或 margin），这本质上就变成了一个新算法。
+>
+> **有标签时应该怎么做：**
+> - **最推荐：** 把标签二值化（bad/OK → 不好, good/excellent → 好），然后用 KTO。这也是大多数实践者的做法，因为标注本身的噪声已经让细粒度区分不太可靠了。
+> - **备选：** 把相邻等级配对成偏好对（excellent vs good, good vs OK, OK vs bad），然后用 DPO。
+> - **核心洞察：** KTO 的优势在于*完全不需要比较*。如果你已经在给回复打分级了，不如直接用 DPO。
+
 ### 4.4 GRPO：Group Relative Policy Optimization
 
 GRPO（用于 DeepSeek-V2/V3）在推理任务中特别有潜力。它采取了与 DPO 截然不同的方法：
