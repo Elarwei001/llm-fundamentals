@@ -133,6 +133,18 @@ $$
 
 The key: $Z(x)$ cancels out when we compare two responses! So we can directly optimize the policy using preference pairs without ever training a reward model.
 
+But how exactly do we turn this into a training objective? We need one more ingredient: the **Bradley-Terry model**. This model assumes that human preference probability follows a sigmoid of the reward difference:
+
+$$
+\begin{aligned}
+P(y_w \succ y_l | x) = \sigma\left(r(x, y_w) - r(x, y_l)\right)
+\end{aligned}
+$$
+
+*Formula 3.5: The Bradley-Terry preference model — "the probability that humans prefer $y_w$ over $y_l$ is the sigmoid of the reward gap."*
+
+Now substitute Formula 3's expression for $r(x,y_w) - r(x,y_l)$ (after $Z(x)$ cancels) into this, and you get Formula 4 — the DPO loss.
+
 ### 2.2 The DPO Loss Function
 
 Given a preference pair $(y_w, y_l)$ where $y_w$ is chosen (winner) and $y_l$ is rejected (loser):
