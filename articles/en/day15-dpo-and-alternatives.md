@@ -123,7 +123,11 @@ $$
 *Formula 3: Implicit reward — reward expressed in terms of the policy (derived from Formula 2).*
 
 > **What is this formula doing?** This is Formula 2 rearranged — now we're *backing out* the reward from the policy instead of computing the policy from the reward.
-> - **Key insight**: when we compare two responses $y_w$ (good) and $y_l$ (bad), the $\beta \log Z(x)$ term appears on both sides and **cancels out** in the subtraction
+> - **Key insight**: when we compare two responses $y_w$ (good) and $y_l$ (bad), we write Formula 3 for *each* of them:
+>   - $r(x, y_w) = \beta \log \frac{\pi^*(y_w|x)}{\pi_{ref}(y_w|x)} + \beta \log Z(x)$
+>   - $r(x, y_l) = \beta \log \frac{\pi^*(y_l|x)}{\pi_{ref}(y_l|x)} + \beta \log Z(x)$
+>   - $Z(x)$ depends only on the prompt $x$, NOT on the response $y$ — so it's the same in both equations
+>   - Subtracting: $\beta \log Z(x) - \beta \log Z(x) = 0$ — **it cancels!**
 > - So we never need to know the actual reward value — only the *relative difference* between two responses matters
 > - This is exactly why we can skip the reward model entirely
 
