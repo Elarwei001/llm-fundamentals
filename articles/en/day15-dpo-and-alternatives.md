@@ -89,6 +89,8 @@ $$
 $$
 
 > **What is this formula doing?** This is the *exact answer* to the optimization above — the closed-form solution. It says: **optimal policy = reference model × exp(reward/β)**.
+> - $\pi^*(y|x)$ (with the asterisk) = the **optimal policy** — the best possible model we're trying to find
+> - $\pi_{ref}(y|x)$ (with "ref" subscript) = the **reference model** — the frozen SFT model, our starting point
 > - The single $\exp\left(\frac{1}{\beta} r(x,y)\right)$ acts as a multiplier: high reward → larger multiplier → higher probability for that response
 > - $Z(x)$ is just a normalizing constant (ensures probabilities sum to 1) — it's not important, and will cancel out later
 
