@@ -441,6 +441,12 @@ GRPO (used in DeepSeek-V2/V3) is particularly interesting for reasoning tasks. I
 > **Why "relative" matters:** Suppose the problem was easy and ALL 4 responses were correct (all get reward 1.0). Then the mean = 1.0, and all advantages = 0. The model gets no signal — *because there's nothing to learn from when everyone agrees*. Similarly, if all 4 are wrong, advantages are also 0. GRPO only learns from *diversity within the group* — when some approaches work and others don't.
 >
 > **Key difference from PPO:** PPO would need a trained value function (critic) to estimate "how good is this response expected to be?" GRPO replaces the critic with the group average — much simpler, no extra model needed.
+>
+> **What can GRPO handle?** GRPO doesn't *require* verifiable answers (like math/code). It works with any scoring function:
+> - **Rule-based verifier** (math exact match, code test cases) — fully automated, no humans needed. This is the killer use case.
+> - **Trained reward model** — use a reward model to score each response 0-10. GRPO still benefits from group-relative normalization.
+> - **Human or LLM judge scores** — any scoring mechanism works, as long as you can rank responses within a group.
+> - **No signal at all** — if you can't score responses in any way, GRPO can't help. But in that case, no other method can either — you need *some* signal first.
 
 ```python
 def grpo_advantages(rewards_per_group):
