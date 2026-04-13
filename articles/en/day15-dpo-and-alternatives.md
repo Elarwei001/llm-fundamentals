@@ -346,11 +346,28 @@ Key difference: IPO uses a **squared loss** instead of logistic loss, which make
 
 ### 4.2 KTO: Kahneman-Tversky Optimization
 
-KTO (Ethayarajh et al., 2023) is a breakthrough for data-constrained settings. Inspired by prospect theory from behavioral economics:
+KTO (Ethayarajh et al., 2023) is a breakthrough for data-constrained settings.
+
+> **Background: Why was KTO needed?**
+>
+> All the methods above (DPO, IPO) require **paired preference data**: for each prompt, you need two responses ($y_w$ and $y_l$) and a human judgment of which is better. This is expensive and limiting:
+> - You must generate multiple responses per prompt
+> - Humans must carefully compare and rank them
+> - If you already have a dataset of single responses with quality ratings (e.g., "thumbs up" / "thumbs down"), you can't use DPO at all
+>
+> In practice, many real-world datasets are **unpaired**: customer feedback (helpful / not helpful), moderation labels (safe / unsafe), quality scores (good / bad). KTO was designed to work with exactly this kind of data.
+
+**Inspired by prospect theory from behavioral economics:**
+
+> **What is prospect theory?** Developed by Daniel Kahneman and Amos Tversky (Kahneman won the 2002 Nobel Prize in Economics for this work). The key finding: **humans are not rational** when evaluating gains and losses. Specifically:
+> - **Loss aversion**: losing $100 feels roughly twice as painful as gaining $100 feels good
+> - **Diminishing sensitivity**: the difference between $0 and $100 matters more than the difference between $1000 and $1100
+>
+> **How does this connect to alignment?** When training a language model, "desirable" responses are gains and "undesirable" responses are losses. KTO applies the same asymmetry: the model should penalize bad responses *more strongly* than it rewards good ones. This matches human intuition — you'd rather your assistant occasionally give a mediocre response than ever give a truly harmful one.
 
 - **Does NOT require paired preference data** — only binary labels (good/bad)
 - This is huge because paired data is expensive: you need to generate two responses and have humans rank them
-- KTO only needs "this response is good" or "this response is bad"
+- KTO only needs "this response is good" or "this response is bad" — like a simple thumbs up / thumbs down
 
 The loss weights positive and negative examples differently, reflecting how humans are loss-averse (bad outcomes hurt more than good outcomes please):
 
