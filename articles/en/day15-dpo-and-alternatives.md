@@ -518,7 +518,24 @@ In 2022, you needed SFT + RM + PPO. By 2024, you can do alignment in a single st
 PPO isn't dead. For the largest production systems (GPT-4, Claude), PPO with reward models still offers advantages:
 
 - **Online learning**: PPO can learn from new data during training; DPO is offline (fixed dataset)
+
+> **What does "online" vs "offline" mean here?**
+>
+> **Offline (DPO):** You prepare a fixed dataset of preference pairs *before* training starts. The model never sees new data during training — it just learns from the same static examples over and over. Think of it like studying from a fixed textbook.
+>
+> **Online (PPO):** During training, the model generates responses, the reward model scores them, and the model learns from *these fresh examples* in real time. Each training step creates new data. Think of it like a teacher giving you new practice problems and grading them on the spot.
+>
+> **Why online matters at scale:** When you have millions of users, you can continuously collect feedback and update the model. PPO can incorporate this new signal seamlessly. DPO would need to periodically re-collect a new dataset and retrain from scratch.
+
 - **Scalability**: With enough compute, PPO can iterate indefinitely
+
+> **What does "iterate indefinitely" mean?**
+>
+> DPO runs for a fixed number of epochs on a fixed dataset, then stops. There's a hard ceiling — the model can only learn what's in the dataset.
+>
+> PPO, on the other hand, keeps generating new responses and getting new reward signals. As long as the reward model is improving and the policy hasn't converged, you can keep training. In theory, there's no fixed endpoint.
+>
+> **Why this matters for production:** Companies like OpenAI and Anthropic can afford to run PPO for weeks or months on massive compute clusters, continuously improving the model. The cost is enormous, but the returns keep coming. DPO simply can't compete in this regime — it plateaus once the dataset is exhausted.
 - **Nuanced reward shaping**: A reward model can capture complex trade-offs
 
 But for most practitioners and researchers, the simplicity of DPO-family methods makes them the default choice in 2025.
