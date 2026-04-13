@@ -261,9 +261,9 @@ Some newer methods address this:
 
 Instead of computing $\log \frac{\pi(y|x)}{\pi_{ref}(y|x)}$, SimPO replaces the log-ratio with a **length-normalized log-probability** — no reference model needed:
 
-$$\tilde{r}(x,y) = \frac{\beta}{|y|} \log \pi(y|x) = \frac{\beta}{|y|} \sum_{t=1}^{|y|} \log \pi(y_t|x, y_{<t})$$
+$$\tilde{r}(x,y) = \frac{\beta}{|y|} \log \pi(y|x) = \frac{\beta}{|y|} \sum_{t=1}^{|y|} \log \pi(y_t|x, y_{1:t-1})$$
 
-*Formula 5: SimPO uses length-normalized log-probability as the implicit reward, replacing the $\log \frac{\pi}{\pi_{ref}}$ ratio entirely.*
+*Formula 5: SimPO uses length-normalized log-probability as the implicit reward, replacing the $\log \frac{\pi(y|x)}{\pi_{ref}(y|x)}$ ratio entirely.*
 
 > **What does this mean?** Instead of asking "how much did the policy change vs. the frozen model?", SimPO asks "what is the average per-token log-probability of this response?" The length normalization ($\frac{1}{|y|}$) ensures longer responses aren't unfairly favored (since longer sequences have lower total log-prob by definition). The chosen response should have higher average log-prob than the rejected one.
 
