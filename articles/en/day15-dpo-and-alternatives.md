@@ -75,6 +75,8 @@ $$
 \end{aligned}
 $$
 
+*Formula 1: The KL-regularized RLHF objective.*
+
 > **What is this formula doing?** This is the RLHF objective — two forces pulling in opposite directions:
 > - **First term** $\mathbb{E}[r(x,y)]$: maximize reward — make the model generate high-scoring responses
 > - **Second term** $\beta \cdot D_{KL}$: stay close to the original SFT model — don't drift too far
@@ -88,7 +90,9 @@ $$
 \end{aligned}
 $$
 
-> **What is this formula doing?** This is the *exact answer* to the optimization above — the closed-form solution. It says: **optimal policy = reference model × exp(reward/β)**.
+*Formula 2: The closed-form solution — optimal policy in terms of reward.*
+
+> **What is this formula doing?** This is the *exact answer* to Formula 1 — the closed-form solution. It says: **optimal policy = reference model × exp(reward/β)**.
 > - $\pi^*(y|x)$ (with the asterisk) = the **optimal policy** — the best possible model we're trying to find
 > - $\pi_{ref}(y|x)$ (with "ref" subscript) = the **reference model** — the frozen SFT model, our starting point
 > - The single $\exp\left(\frac{1}{\beta} r(x,y)\right)$ acts as a multiplier: high reward → larger multiplier → higher probability for that response
@@ -96,9 +100,9 @@ $$
 
 where $Z(x)$ is a normalizing constant.
 
-> **How do we get from Formula A to Formula B?** Just two steps — take log, then rearrange:
+> **How do we get from Formula 2 to Formula 3?** Just two steps — take log, then rearrange:
 >
-> **Step 1:** Take $\log$ of both sides of A:
+> **Step 1:** Take $\log$ of both sides of Formula 2:
 >
 > $\log \pi^*(y|x) = -\log Z(x) + \log \pi_{ref}(y|x) + \frac{1}{\beta} r(x,y)$
 >
@@ -106,7 +110,7 @@ where $Z(x)$ is a normalizing constant.
 >
 > $r(x,y) = \beta \log \frac{\pi^*(y|x)}{\pi_{ref}(y|x)} + \beta \log Z(x)$
 >
-> That's Formula B — just A rearranged. Nothing new was introduced.
+> That's Formula 3 — just Formula 2 rearranged. Nothing new was introduced.
 
 Rearranging, we can express the **implicit reward** in terms of the policy:
 
@@ -116,7 +120,9 @@ r(x,y) = \beta \log \frac{\pi^{*}(y|x)}{\pi_{ref}(y|x)} + \beta \log Z(x)
 \end{aligned}
 $$
 
-> **What is this formula doing?** This is Formula 2 rewritten — now we're *backing out* the reward from the policy instead of computing the policy from the reward.
+*Formula 3: Implicit reward — reward expressed in terms of the policy (derived from Formula 2).*
+
+> **What is this formula doing?** This is Formula 2 rearranged — now we're *backing out* the reward from the policy instead of computing the policy from the reward.
 > - **Key insight**: when we compare two responses $y_w$ (good) and $y_l$ (bad), the $\beta \log Z(x)$ term appears on both sides and **cancels out** in the subtraction
 > - So we never need to know the actual reward value — only the *relative difference* between two responses matters
 > - This is exactly why we can skip the reward model entirely
@@ -132,6 +138,8 @@ $$
 \mathcal{L}_{DPO} = -\mathbb{E} \left[ \log \sigma \left( \beta \log \frac{\pi(y_w|x)}{\pi_{ref}(y_w|x)} - \beta \log \frac{\pi(y_l|x)}{\pi_{ref}(y_l|x)} \right) \right]
 \end{aligned}
 $$
+
+*Formula 4: The DPO loss function — the only formula you actually need to implement.*
 
 where $\sigma$ is the sigmoid function and $\beta$ controls how much the policy deviates from the reference.
 
