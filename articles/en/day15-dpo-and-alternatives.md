@@ -252,8 +252,48 @@ DPO converges to a fixed objective (like supervised learning), while PPO is an i
 DPO still needs a frozen reference model ($\pi_{ref}$), which doubles memory. This is because DPO needs to know "how much has the policy changed" — without the reference, there's no baseline.
 
 Some newer methods address this:
-- **SimPO** uses the model's own average log-probability as the implicit reference
-- **ORPO** integrates alignment into SFT, eliminating the reference entirely
+
+### 3.2.1 SimPO: Simple Preference Optimization
+
+**What it removes:** The reference model entirely. SimPO (Meng et al., 2024) doesn't need $\pi_{ref}$ at all.
+
+**How it works:** In DPO, the reference model serves as a baseline to measure "how much has the policy changed." SimPO replaces this with a clever trick: use the **model's own average log-probability** of the response as the baseline.
+
+Instead of computing $\log \frac{\pi(y|x)}{\pi_{ref}(y|x)}$, SimPO computes:
+
+$$\log \pi(y|x) - \frac{1}{|y|} \sum_{t=1}^{|y|} \log \pi(y_t|x, y_{<t})$$
+
+*Formula 5: SimPO replaces the reference model ratio with the response's own length-normalized log-probability.*
+
+> **What does this mean?** Instead of asking "how much did the policy change vs. the frozen model?", SimPO asks "does this response have higher-than-average token probability?" The length normalization ($\frac{1}{|y|}$) ensures longer responses aren't unfairly favored.
+
+**Why it works:** The intuition is that a well-aligned model should assign *consistently high* probability to good responses (not just high probability on a few tokens). By comparing against the response's own average, SimPO achieves implicit normalization without needing a separate reference model.
+
+**Memory savings:** From ~2× base model (DPO) down to ~1× — only the policy model is needed.
+
+### 3.2.2 ORPO: Odds Ratio Preference Optimization
+
+**What it removes:** The reference model AND the separate alignment stage. ORPO (Hong et al., 2024) does SFT + alignment in a single pass.
+
+**How it works:** During normal SFT training on chosen responses, ORPO adds an extra loss term that penalizes the model when it can't distinguish chosen from rejected:
+
+$$
+\begin{aligned}
+\mathcal{L}_{ORPO} = \mathcal{L}_{SFT} + \lambda \cdot \mathcal{L}_{OR}
+\end{aligned}
+$$
+
+*Formula 6: ORPO combines SFT loss with an odds-ratio alignment loss.*
+
+> **What is the odds ratio?** The odds of generating the chosen response are $\frac{\pi(y_w|x)}{1 - \pi(y_w|x)}$. Similarly for rejected. The odds ratio is:
+>
+> $$\text{OR} = \frac{\pi(y_w|x) / (1 - \pi(y_w|x))}{\pi(y_l|x) / (1 - \pi(y_l|x))}$$
+>
+> If OR ≈ 1, the model treats chosen and rejected equally (bad). If OR >> 1, the model correctly prefers chosen (good). $\mathcal{L}_{OR}$ pushes OR away from 1.
+
+**Why it works:** Standard SFT only sees good responses — it has no signal about what to avoid. ORPO fixes this by feeding it both chosen and rejected responses during the same training step. The SFT loss teaches it to generate good responses; the odds-ratio loss teaches it to *distinguish* good from bad.
+
+**Memory savings:** ~1× base model — only one model, one training stage. The simplest possible pipeline.
 
 ### 3.3 Common Pitfalls
 
@@ -312,20 +352,6 @@ def kto_loss(policy_logps, ref_logps, labels, beta=0.1):
     
     return w_des * loss_des + w_und * loss_und
 ```
-
-### 4.3 ORPO: Odds Ratio Preference Optimization
-
-ORPO (Hong et al., 2024) goes even further: it **combines SFT and alignment into a single stage**. No reference model, no separate DPO step.
-
-It adds an odds-ratio penalty to the standard SFT loss:
-
-$$
-\begin{aligned}
-\mathcal{L}_{ORPO} = \mathcal{L}_{SFT} + \lambda \cdot \mathcal{L}_{OR}
-\end{aligned}
-$$
-
-where $\mathcal{L}_{OR}$ penalizes the model when the odds ratio between chosen and rejected is too close to 1 (i.e., the model doesn't distinguish them).
 
 ### 4.4 GRPO: Group Relative Policy Optimization
 
