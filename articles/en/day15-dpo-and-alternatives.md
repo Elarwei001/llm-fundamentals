@@ -88,9 +88,8 @@ $$
 \end{aligned}
 $$
 
-> **What is this formula doing?** This is the *exact answer* to the optimization above — the closed-form solution. It says: **optimal policy = reference model × exponential amplification of reward**.
-> - High reward $r(x,y)$ → exp amplifies it → probability goes up
-> - Low reward → exp shrinks it → probability goes down
+> **What is this formula doing?** This is the *exact answer* to the optimization above — the closed-form solution. It says: **optimal policy = reference model × exp(reward/β)**.
+> - The single $\exp\left(\frac{1}{\beta} r(x,y)\right)$ acts as a multiplier: high reward → larger multiplier → higher probability for that response
 > - $Z(x)$ is just a normalizing constant (ensures probabilities sum to 1) — it's not important, and will cancel out later
 
 where $Z(x)$ is a normalizing constant. Rearranging, we can express the **implicit reward** in terms of the policy:
