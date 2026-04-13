@@ -259,13 +259,13 @@ Some newer methods address this:
 
 **How it works:** In DPO, the reference model serves as a baseline to measure "how much has the policy changed." SimPO replaces this with a clever trick: use the **model's own average log-probability** of the response as the baseline.
 
-Instead of computing $\log \frac{\pi(y|x)}{\pi_{ref}(y|x)}$, SimPO computes:
+Instead of computing $\log \frac{\pi(y|x)}{\pi_{ref}(y|x)}$, SimPO replaces the log-ratio with a **length-normalized log-probability** — no reference model needed:
 
-$$\log \pi(y|x) - \frac{1}{|y|} \sum_{t=1}^{|y|} \log \pi(y_t|x, y_{<t})$$
+$$\tilde{r}(x,y) = \frac{\beta}{|y|} \log \pi(y|x) = \frac{\beta}{|y|} \sum_{t=1}^{|y|} \log \pi(y_t|x, y_{<t})$$
 
-*Formula 5: SimPO replaces the reference model ratio with the response's own length-normalized log-probability.*
+*Formula 5: SimPO uses length-normalized log-probability as the implicit reward, replacing the $\log \frac{\pi}{\pi_{ref}}$ ratio entirely.*
 
-> **What does this mean?** Instead of asking "how much did the policy change vs. the frozen model?", SimPO asks "does this response have higher-than-average token probability?" The length normalization ($\frac{1}{|y|}$) ensures longer responses aren't unfairly favored.
+> **What does this mean?** Instead of asking "how much did the policy change vs. the frozen model?", SimPO asks "what is the average per-token log-probability of this response?" The length normalization ($\frac{1}{|y|}$) ensures longer responses aren't unfairly favored (since longer sequences have lower total log-prob by definition). The chosen response should have higher average log-prob than the rejected one.
 
 **Why it works:** The intuition is that a well-aligned model should assign *consistently high* probability to good responses (not just high probability on a few tokens). By comparing against the response's own average, SimPO achieves implicit normalization without needing a separate reference model.
 
