@@ -325,13 +325,24 @@ $$
 
 IPO（Azar 等人，2023）解决了 DPO 的一个理论弱点：它假设偏好数据来自 Bradley-Terry 模型（一种特定的偏好模型）。IPO 直接优化一个后悔值（regret）界：
 
+> **什么是 regret（后悔值）？** 在决策论中，regret = "我的策略实际表现"与"最优策略的表现"之间的差距。不是你输了多少，而是你*本可以多赢多少*。比如最优策略能得 100 分，你的策略只得 70 分，regret 就是 30。
+>
+> **什么是 regret bound（后悔值上界）？** 一个数学保证，说"无论发生什么，我的算法跟最优策略的差距不会超过 X"。它给你一个最坏情况下的性能保底。
+>
+> **为什么 IPO 用 regret 而不是 Bradley-Terry？** DPO 假设人类偏好服从 Bradley-Terry 模型（$P(y_w \succ y_l) = \sigma(r(y_w) - r(y_l))$）。如果这个假设错了（现实中经常错——人类标注有噪声且不一致），DPO 的理论保证就失效了。IPO 完全回避这个假设，直接最小化最坏情况下的 regret。
+
 $$
 \begin{aligned}
 \mathcal{L}_{IPO} = \mathbb{E}\left[ \left( \log \frac{\pi(y_w|x)}{\pi_{ref}(y_w|x)} - \log \frac{\pi(y_l|x)}{\pi_{ref}(y_l|x)} - \frac{1}{2\beta} \right)^2 \right]
 \end{aligned}
 $$
 
-关键区别：IPO 用平方损失代替 logistic 损失，使其在偏好数据有噪声时更鲁棒（实践中几乎总是有噪声的）。
+关键区别：IPO 用**平方损失**代替 logistic 损失，使其在偏好数据有噪声时更鲁棒（实践中几乎总是有噪声的）。
+
+> **regret bound 在公式中如何体现：**
+> - 外面的**平方** $(\cdot)^2$ 替代了 DPO 的 $\log \sigma(\cdot)$——平方损失对异常值更鲁棒（单个坏标注不会让 loss 爆炸）
+> - **$-\frac{1}{2\beta}$** 这一项直接来自 regret bound 的推导——它确保我们在最小化真正的 regret，而不是在拟合一个可能错误的偏好模型
+> - 这两个变化意味着，即使 Bradley-Terry 假设不成立，IPO 也能提供性能保证
 
 ### 4.2 KTO：Kahneman-Tversky Optimization
 

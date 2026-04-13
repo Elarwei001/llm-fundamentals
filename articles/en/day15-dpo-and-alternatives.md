@@ -325,13 +325,24 @@ $$
 
 IPO (Azar et al., 2023) addresses a theoretical weakness of DPO: it assumes the preference data comes from a Bradley-Terry model (a specific preference model). IPO instead directly optimizes a regret bound:
 
+> **What is regret?** In decision theory, regret = the gap between "what my strategy achieved" and "what the optimal strategy would have achieved." It's not about how much you lost — it's about how much *more* you could have won. For example, if the best possible policy scores 100 and yours scores 70, your regret is 30.
+>
+> **What is a regret bound?** A mathematical guarantee that says "no matter what, the gap between my algorithm and the optimal strategy won't exceed X." It gives you a worst-case performance floor.
+>
+> **Why does IPO use regret instead of Bradley-Terry?** DPO assumes human preferences follow the Bradley-Terry model ($P(y_w \succ y_l) = \sigma(r(y_w) - r(y_l))$). If this assumption is wrong (it often is — human annotations are noisy and inconsistent), DPO's guarantees break down. IPO avoids this assumption entirely by directly minimizing the worst-case regret.
+
 $$
 \begin{aligned}
 \mathcal{L}_{IPO} = \mathbb{E}\left[ \left( \log \frac{\pi(y_w|x)}{\pi_{ref}(y_w|x)} - \log \frac{\pi(y_l|x)}{\pi_{ref}(y_l|x)} - \frac{1}{2\beta} \right)^2 \right]
 \end{aligned}
 $$
 
-Key difference: IPO uses a squared loss instead of logistic loss, which makes it more robust when preferences are noisy (which they almost always are in practice).
+Key difference: IPO uses a **squared loss** instead of logistic loss, which makes it more robust when preferences are noisy (which they almost always are in practice).
+
+> **How the regret bound shows up in the formula:**
+> - The outer **squared** $(\cdot)^2$ replaces DPO's $\log \sigma(\cdot)$ — squared loss is more robust to outliers (a single bad annotation can't blow up the loss)
+> - The **$-\frac{1}{2\beta}$** term comes directly from the regret bound derivation — it ensures we're minimizing actual regret, not just fitting a possibly-wrong preference model
+> - Together, these changes mean IPO provides guarantees even when the Bradley-Terry assumption is violated
 
 ### 4.2 KTO: Kahneman-Tversky Optimization
 
