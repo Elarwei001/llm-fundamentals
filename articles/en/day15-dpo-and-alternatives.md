@@ -538,8 +538,8 @@ PPO isn't dead. For the largest production systems (GPT-4, Claude), PPO with rew
 > PPO, on the other hand, keeps generating new responses and getting new reward signals. Each step produces fresh training data. As long as the reward model is meaningful and the policy hasn't converged, you can keep training.
 >
 > **The real difference is cost per improvement cycle:**
-> - **PPO:** One pipeline — train, generate, score, update, repeat. Each cycle is cheap (no human involvement).
-> - **DPO:** Two phases — collect preferences (expensive: humans or large models must label), then train. Each cycle requires a full data collection round.
+> - **PPO:** One pipeline — train, generate, score, update, repeat. Each cycle is cheap (no human involvement). PPO has a reward model that can automatically label "good" vs "bad" responses, so the loop is self-contained.
+> - **DPO:** Two phases — collect preferences (expensive: humans or large models must label), then train. Each cycle requires a full data collection round. **The bottleneck is exactly this: DPO has no automatic way to label responses as good or bad**, so it breaks the self-contained loop.
 >
 > This is why PPO scales better at massive compute: the "fuel" (new training data) is generated automatically. DPO's fuel must be manually produced each time.
 >
