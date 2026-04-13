@@ -65,6 +65,8 @@ class PPOTrainingSetup:
 
 DPO's breakthrough (Rafailov et al., NeurIPS 2023) is a mathematical trick: **you can skip the reward model because the optimal policy under the RLHF objective has a closed-form solution**.
 
+> **What is a closed-form solution?** A "closed-form solution" means you can write down the exact answer using a formula — no iteration, no trial-and-error, no gradual approximation needed. For example, the quadratic formula $x = \frac{-b \pm \sqrt{b^2-4ac}}{2a}$ is a closed-form solution: plug in the coefficients, get the answer immediately. In contrast, most RL problems (including PPO) have *no* closed-form solution — you can only approximate the answer through repeated trial-and-error updates. DPO's key insight is that, under the KL-regularized RLHF objective, the optimal policy *does* have one, which means we can solve it directly instead of iterating.
+
 Here's the intuition. In RLHF, we train a reward model $r(x, y)$, then optimize:
 
 $$
