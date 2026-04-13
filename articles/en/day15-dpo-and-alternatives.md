@@ -299,6 +299,20 @@ $$
 
 **Edit distance matters.** DPO works best when $y_w$ and $y_l$ are similar in structure but differ in quality. If they're completely different, the model may learn spurious features rather than the actual preference.
 
+> **What does "similar structure, different quality" mean?** Here's a concrete example. Suppose the prompt is "Explain what a black hole is":
+>
+> **Good preference pair (similar structure, different quality):**
+> - *Chosen:* "A black hole is a region of spacetime where gravity is so strong that nothing, not even light, can escape. It forms when a massive star collapses. The event horizon marks its boundary."
+> - *Rejected:* "A black hole is a very dark thing with strong gravity, stuff goes in and can't come out. Stars explode and become black holes."
+> - Both have the same 3-part structure (what it is → how it forms → key concept), but the chosen version is precise and complete while the rejected version is vague and colloquial.
+>
+> **Bad preference pair (completely different structure):**
+> - *Chosen:* "A black hole is a region of spacetime where gravity is so strong..." (precise 3-sentence explanation)
+> - *Rejected:* "Haha black holes are so cool, I saw a movie about them! They're just really powerful stuff I guess."
+> - These are too different — the model might learn "formal vs. casual tone" instead of "accurate vs. inaccurate content."
+>
+> **Why structure matters:** DPO only adjusts the ranking of the existing probability distribution. When responses are structurally similar, the model only needs to fine-tune "which words are better." When they're completely different, it may pick up on surface-level style differences instead of substantive quality differences.
+
 **Capacity for editing, not generating.** DPO primarily teaches the model to reorder its existing probability distribution, not to generate genuinely new capabilities. If you need the model to learn new skills, SFT first, then DPO.
 
 **Overfitting to preferences.** With small datasets (< 5K pairs), DPO can memorize specific patterns. Regular evaluation on held-out tasks is essential.
