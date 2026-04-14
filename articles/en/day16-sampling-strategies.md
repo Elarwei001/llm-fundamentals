@@ -71,6 +71,15 @@ p_i^{(T)} &= \frac{\exp(z_i / T)}{\sum_j \exp(z_j / T)}
 \end{aligned}
 $$
 
+> **What is $T$ in this formula?** $T$ is the Temperature parameter you set when calling an API (e.g., `temperature=0.7`). It sits in the denominator, so it controls whether the score differences between tokens are amplified or dampened:
+> - $z_i$ = the raw score (logit) the model assigns to each candidate token
+> - Low $T$ (e.g. 0.5) = scores divided by a small number = differences amplified = model strongly prefers top tokens
+> - High $T$ (e.g. 2.0) = scores divided by a large number = differences shrunk = weaker tokens get more chance
+>
+> **Example:** Suppose the model scores "cat"=4, "dog"=2.
+> - T=0.5: exp(8) : exp(4) = 2980:54 = almost certainly picks "cat"
+> - T=2.0: exp(2) : exp(1) = 7.4:2.7 = likely "cat", but "dog" has a real chance
+
 This one equation explains a lot:
 
 - If $T < 1$, the distribution gets sharper.
