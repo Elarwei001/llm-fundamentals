@@ -142,6 +142,18 @@ This has a clear effect: it chops off the low-probability tail. If your model's 
 
 Top-k is easy to reason about, but it has a weakness: the right value of $k$ depends on the context. For a predictable prompt, only a few tokens may be plausible. For an ambiguous prompt, many may be plausible. A fixed $k$ does not adapt.
 
+> **Example of why fixed k is problematic:**
+>
+> **Predictable context** — Prompt: *"The capital of France is"*
+> - "Paris" (0.95), "Lyon" (0.02), "Marseille" (0.01)...
+> - Only 1-2 tokens are plausible. If k=10, you're including 8 meaningless tokens as noise.
+>
+> **Ambiguous context** — Prompt: *"She looked at the"*
+> - "sky" (0.15), "ocean" (0.12), "clock" (0.10), "mountain" (0.09), "painting" (0.08)...
+> - Many tokens are plausible. k=10 might not even be enough for good diversity.
+>
+> **The problem:** k=10 treats both cases identically. It can't adapt. This is why the next section introduces **top-p (nucleus sampling)**, which adapts based on total probability mass instead of a fixed count.
+
 ### 3.2 Top-p or nucleus sampling
 
 **Top-p sampling** fixes this by keeping the smallest set of tokens whose cumulative probability exceeds a threshold $p$, such as 0.9 or 0.95.
