@@ -260,6 +260,19 @@ Sampling strategy is also about avoiding degenerate loops. Language models somet
 Newer truncation methods try to improve on top-p.
 
 - **Typical sampling** prefers tokens whose surprise is close to the distribution's expected surprise, rather than just taking the highest-probability tokens.
+
+> **What does "surprise" mean here?** This is a concept from information theory, not the everyday meaning of "surprise."
+>
+> **Surprise = -log(p)**, the "information content" of a token:
+> - Model is very sure the next word is "the" (p=0.9) -> surprise = -log(0.9) = 0.15 -> low surprise (expected, not much information)
+> - Model thinks "banana" has only p=0.001 -> surprise = -log(0.001) = 6.9 -> high surprise (unexpected, lots of information)
+>
+> **Typical sampling's approach:**
+> - Compute the "average surprise" of the entire distribution (this is actually the entropy)
+> - Keep only tokens whose surprise is close to this average
+> - Exclude two extremes: too certain (boring) and too unexpected (unreliable)
+>
+> **In one sentence:** Typical sampling doesn't pick "the most likely" or "the most exciting" — it picks "the most typical" — tokens whose information content is right at the average level.
 - **Min-p sampling** keeps tokens whose probability exceeds a threshold relative to the top token.
 
 The acronym story is worth being explicit about here. **Top-k** means “keep a fixed number of candidates.” **Top-p**, also called **nucleus sampling**, means “keep enough candidates to cover a target probability mass.” **Beam Search** means “track several high-scoring partial sequences in parallel.” They solve related problems, but they are not interchangeable controls.
