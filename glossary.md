@@ -17,6 +17,7 @@
 | Backpropagation | 反向传播 | 计算梯度的高效算法 |
 | Batch Size | 批大小 | 每次训练使用的样本数 |
 | BERT | BERT | Bidirectional Encoder Representations from Transformers |
+| Beam Search | 束搜索 | 保留多个高分候选序列并继续扩展的解码算法 |
 | BIG-bench | BIG-bench | Beyond the Imitation Game，包含 200+ 任务的大型语言模型评测基准 |
 | BPE | 字节对编码 | Byte Pair Encoding，子词分词算法 |
 | Brier Score | Brier 分数 | 概率预测的准确性度量，值越低越好 |
@@ -99,6 +100,7 @@
 | Large Language Model (LLM) | 大语言模型 | 大规模预训练的语言模型 |
 | Learning Rate | 学习率 | 梯度下降的步长 |
 | LoRA | LoRA | Low-Rank Adaptation，参数高效微调方法 |
+| Logits | Logits / 未归一化分数 | Softmax 之前的原始输出分数，用于计算概率分布 |
 | Loss Function | 损失函数 | 衡量预测与真实值差距的函数 |
 
 ## M
@@ -117,6 +119,7 @@
 | Negative Sampling | 负采样 | Word2Vec 训练技巧，通过区分真假词对避免全词表 softmax |
 | Neural Network | 神经网络 | 由神经元组成的计算图 |
 | Next Token Prediction | 下一个词预测 | 语言模型的核心训练目标 |
+| Nucleus Sampling | 核采样 | Top-p 采样，只保留累计概率达到阈值的最小 token 集合 |
 
 ## O
 
@@ -166,6 +169,7 @@
 | Softmax | Softmax | 将 logits 转换为概率分布 |
 | Subword Tokenization | 子词分词 | 介于字符和词之间的分词策略 |
 | Synthetic Data | 合成数据 | 由模型生成的用于训练其他模型的数据 |
+| Typical Sampling | 典型采样 | 偏好惊讶度接近分布平均值 token 的解码方法 |
 
 ## T
 

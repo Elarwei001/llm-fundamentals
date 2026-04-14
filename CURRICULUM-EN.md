@@ -69,7 +69,7 @@
 
 | Day | Topic | Core Question | Trend Source |
 |-----|-------|---------------|--------------|
-| D16 | Sampling Strategies | Temperature, Top-k, Top-p, Beam search | Common parameters |
+| D16 | Sampling Strategies | Temperature, Top-k, Top-p, Beam search | [EN](articles/en/day16-sampling-strategies.md) / [中文](articles/zh/day16-sampling-strategies.md) |
 | D17 | KV Cache | Why inference can be accelerated, memory-compute trade-off | Inference optimization |
 | D18 | Speculative Decoding | Using small models to speed up large model inference | Cutting-edge technique |
 | D19 | Context Window | From 2K to 1M, long context technology evolution | Context limitations |

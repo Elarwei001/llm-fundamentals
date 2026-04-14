@@ -1,6 +1,6 @@
 {
-  "current_day": 12,
-  "last_generated": "2026-04-08",
+  "current_day": 16,
+  "last_generated": "2026-04-14",
   "total_days": 60,
   "status": "active",
   "history": [
@@ -193,6 +193,68 @@
         "zh/images/day12/lora-merge-process.png",
         "zh/images/day12/qlora-pipeline.png",
         "zh/images/day12/peft-methods-comparison.png"
+      ]
+    },
+    {
+      "day": 13,
+      "date": "2026-04-09",
+      "topic": "RLHF Explained",
+      "en_path": "en/day13-rlhf-explained.md",
+      "zh_path": "zh/day13-rlhf-explained.md",
+      "qa_score": 91.2,
+      "qa_rounds": 0,
+      "images": [
+        "zh/images/day13/rlhf-three-stage-pipeline.png",
+        "zh/images/day13/reward-model-training.png",
+        "zh/images/day13/ppo-optimization-loop.png",
+        "zh/images/day13/reward-hacking-and-kl-penalty.png",
+        "zh/images/day13/base-vs-sft-vs-rlhf.png"
+      ]
+    },
+    {
+      "day": 14,
+      "date": "2026-04-10",
+      "topic": "RLHF Data & Practice",
+      "en_path": "en/day14-rlhf-data-and-practice.md",
+      "zh_path": "zh/day14-rlhf-data-and-practice.md",
+      "qa_score": 91.0,
+      "qa_rounds": 0,
+      "images": [
+        "zh/images/day14/rlhf-data-pipeline.png",
+        "zh/images/day14/preference-annotation-workflow.png",
+        "zh/images/day14/rlhf-cost-breakdown.png",
+        "zh/images/day14/annotation-quality-metrics.png",
+        "zh/images/day14/rlhf-vs-rlaif.png"
+      ]
+    },
+    {
+      "day": 15,
+      "date": "2026-04-13",
+      "topic": "DPO and Alternatives",
+      "en_path": "en/day15-dpo-and-alternatives.md",
+      "zh_path": "zh/day15-dpo-and-alternatives.md",
+      "qa_score": 91.0,
+      "qa_rounds": 0,
+      "images": [
+        "zh/images/day15/rlhf-vs-dpo-pipeline.png",
+        "zh/images/day15/dpo-loss-visualization.png",
+        "zh/images/day15/alignment-methods-comparison.png",
+        "zh/images/day15/dpo-training-dynamics.png",
+        "zh/images/day15/alignment-timeline.png"
+      ]
+    },
+    {
+      "day": 16,
+      "date": "2026-04-14",
+      "topic": "Sampling Strategies",
+      "en_path": "en/day16-sampling-strategies.md",
+      "zh_path": "zh/day16-sampling-strategies.md",
+      "qa_score": 0,
+      "qa_rounds": 0,
+      "images": [
+        "zh/images/day16/temperature-distribution.png",
+        "zh/images/day16/top-k-vs-top-p.png",
+        "zh/images/day16/sampling-strategy-map.png"
       ]
     }
   ]
