@@ -243,7 +243,17 @@ A common stack might look like this:
 
 Sampling strategy is also about avoiding degenerate loops. Language models sometimes fall into repeated phrases because once repetition begins, those tokens can become self-reinforcing in the context. Repetition penalties lower the probability of tokens that have already appeared, reducing this loop effect.
 
-This is especially useful in long-form generation. Without it, even a strong model can produce sequences that feel like a sentence is trying to climb out of a hole by repeating the same words.
+> **How repeat penalty works:** The model checks which tokens have already appeared in the generated text and reduces their logits (scores) before sampling. This makes already-seen tokens less likely to be picked again.
+>
+> **Two common variants you'll see in APIs:**
+> - **frequency_penalty** — the more times a token has appeared, the heavier the penalty. If "the" appeared 5 times, it gets penalized more than if it appeared once.
+> - **presence_penalty** — whether a token has appeared *at all* matters, but not how many times. Any previously seen token gets a flat penalty.
+>
+> **Example without penalty:** "The cat sat on the mat. The cat looked around. The cat decided to..." (keeps repeating "The cat")
+>
+> **Example with penalty:** "The cat sat on the mat. It looked around briefly, then decided to..." (avoids repeating the same pattern)
+>
+> This is especially useful in long-form generation. Without it, even a strong model can produce sequences that feel like a sentence is trying to climb out of a hole by repeating the same words.
 
 ### 5.2 Typical sampling and min-p
 
