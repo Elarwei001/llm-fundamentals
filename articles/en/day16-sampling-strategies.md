@@ -10,7 +10,11 @@ A language model does not directly "write" the next word. It produces a ranked m
 
 Think of the model as a jazz pianist who knows many valid next notes. Sampling strategy is the bandleader. A strict bandleader says, "Always play the most likely note." That gives you something orderly, but often predictable and lifeless. A chaotic bandleader says, "Anything goes." That creates surprise, but also mistakes. Good generation sits between those extremes. You want enough freedom for originality, but enough discipline for structure.
 
-This is why the same base model can feel completely different under different settings. Temperature, top-k, and top-p are not cosmetic knobs. They control the shape of uncertainty. Beam search is not just "better search" either, because in open-ended language generation, the most likely sequence is not always the most interesting or most human-sounding one. In this article, we will build intuition for the main sampling strategies, see the math behind them, study their trade-offs, and end with practical rules for choosing them in real systems.
+This is why the same base model can feel completely different under different settings. Temperature, top-k, and top-p are not cosmetic knobs. They control the shape of uncertainty. Beam search is not just "better search" either, because in open-ended language generation, the most likely sequence is not always the most interesting or most human-sounding one.
+
+> **What is beam search?** Instead of picking only the single best token at each step (greedy decoding), beam search keeps the top $B$ candidate sequences alive simultaneously and picks the best complete sequence at the end. It's more thorough than greedy, but tends to produce safe, generic text. We'll explain it in detail in Section 4.
+
+In this article, we will build intuition for the main sampling strategies, see the math behind them, study their trade-offs, and end with practical rules for choosing them in real systems.
 
 ---
 
