@@ -168,6 +168,25 @@ That combination gives controlled creativity. Temperature controls boldness. Top
 
 **Beam Search** is not sampling in the usual sense. It keeps the top $B$ partial sequences at each step, expands them, and continues with the best-scoring beams. This approximates global sequence search better than greedy decoding.
 
+> **How beam search works (concrete example, beam width = 3):**
+>
+> Regular decoding (greedy) picks the single highest-probability token at each step — like always taking the nearest path in a maze. Fast, but you might miss a better route.
+>
+> Beam search instead keeps $B$ candidate paths alive simultaneously:
+>
+> **Step 1:** Model outputs candidate tokens: "The" (0.5), "A" (0.3), "This" (0.15)... Keep top 3: `["The", "A", "This"]`
+>
+> **Step 2:** Expand each path with next tokens:
+> - "The cat" (0.5 x 0.4 = 0.20)
+> - "The dog" (0.5 x 0.3 = 0.15)
+> - "A cat" (0.3 x 0.4 = 0.12)
+> - "A dog" (0.3 x 0.3 = 0.09)
+> - "This is" (0.15 x 0.5 = 0.075)
+>
+> Keep top 3 by total score: `["The cat", "The dog", "A cat"]`
+>
+> **Repeat** until generation ends, then pick the highest-scoring complete sequence.
+
 Beam search is powerful in tasks where there is a relatively clear target sequence, such as machine translation or speech recognition. In such settings, finding a high-probability sequence is closely aligned with finding a good answer.
 
 But open-ended language generation is different. The highest-probability continuation is often generic. If you use beam search for storytelling or chat, you often get text that is grammatically clean but dull, repetitive, and over-safe. This is sometimes called the **likelihood trap**. Models assign high probability to boring continuations because those continuations are broadly acceptable.
