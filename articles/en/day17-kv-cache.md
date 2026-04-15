@@ -255,6 +255,9 @@ KV cache sits inside a broader family of inference optimizations.
 
 ### 7.1 Multi-query attention and grouped-query attention
 
+![Figure: MHA vs MQA vs GQA Comparison](../zh/images/day17/mha-mqa-gqa-comparison.png)
+*Caption: MHA gives each head its own K and V (full quality, large cache). MQA shares one K/V across all heads (tiny cache, some quality tradeoff). GQA shares K/V within groups (balanced). Most modern LLMs use GQA.*
+
 In standard multi-head attention, every head has its own keys and values. **Multi-query attention (MQA)** shares keys and values across heads, while **grouped-query attention (GQA)** shares them within groups. The main motivation is to reduce cache size and memory bandwidth during decoding.
 
 The trade-off is architectural. Sharing KV tensors can slightly reduce representational flexibility, but the serving gains are often worth it. This is one reason many modern LLMs adopt GQA.
