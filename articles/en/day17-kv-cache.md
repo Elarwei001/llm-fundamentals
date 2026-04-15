@@ -358,7 +358,7 @@ Beyond PIM, researchers are exploring entirely new chip architectures:
 
 - **IANUS (2024)**: A dual-mode architecture that switches between compute-heavy prefill mode and bandwidth-heavy decode mode, reconfiguring memory attributes on the fly.
 - **Chiplet-based designs**: Instead of one monolithic GPU, use multiple small specialized chips connected by high-speed interconnects. Some chips handle prefill (compute-heavy), others handle decode (memory-heavy), each optimized for their workload.
-- **Optical interconnects**: Research into using light-based connections between chips to dramatically increase bandwidth between memory and compute, potentially breaking the memory wall.
+- **Optical interconnects**: Research into using light-based connections between chips to dramatically increase bandwidth **between chips** (not within a single chip). Note: this addresses a different bottleneck than the on-chip memory wall in Section 9.1 — that one is about GPU cores vs HBM bandwidth *within* a chip, while optical interconnects address the *chip-to-chip* communication bottleneck in multi-GPU or chiplet setups.
 
 ### 9.4 Why this matters for you
 
