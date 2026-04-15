@@ -106,9 +106,20 @@ for layer in transformer_layers:
     x_new = attention(q_new, K_cache[layer], V_cache[layer])
 ```
 
-The pseudocode hides many details, but it captures the essential point: **append once, reuse many times**.
+The pseudocode hides many details, but it captures the essential point: **append once, reuse many times.**
 
 ---
+
+> **Why only cache K and V, not Q?**
+>
+> Look at the attention formula: softmax(QK^T / sqrt(d_k)) V
+>
+> - **Q** is the "question asker" -- only the **new** token needs to ask "which previous tokens should I attend to?" Old tokens' questions are irrelevant for the current step.
+> - **K** is the "index tag" for every token -- the new token needs to compare against ALL previous tokens' keys. So we must keep all old K.
+> - **V** is the "actual content" -- after attention weights are computed, we retrieve content from ALL previous tokens' values. So we must keep all old V.
+>
+> **Library analogy:** You are searching a library. Q = your current question (only need the latest one). K = every book's index tag (must keep all). V = every book's content (must keep all). You do not need to remember what questions you asked before -- but you always need access to the full catalog and book collection.
+
 
 ## 3. Prefill versus decode, two very different inference phases
 
