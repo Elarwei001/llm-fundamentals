@@ -163,6 +163,9 @@ for layer in transformer_layers:
 
 ## 4. KV 缓存为什么会快这么多
 
+![图：KV Cache 为什么能加速推理](./images/day17/kv-cache-speedup.png)
+*说明：没有 KV cache 时，每个解码步都要重算所有历史 token 的投影。有了 KV cache 后，每个 token 只算一次——本例中从 22 次计算减少到 4 次（约 5.5 倍加速）。*
+
 没有 KV 缓存时，模型会一次又一次重算旧 token 的投影。有了 KV 缓存后，每个 token 的 key 和 value 只算一次，之后持续复用。
 
 对于第 $t$ 步生成的一个新 token，主要的注意力开销来自“一个 query”和“$t$ 个缓存 key”之间的计算。也就是说，单步主要是和上下文长度成正比，而不是重新把整个前缀从头编码一遍。从整段解码过程看，这个节省会非常显著。

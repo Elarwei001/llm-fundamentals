@@ -163,6 +163,9 @@ A simple analogy is cooking. Prefill is like chopping all the vegetables and pre
 
 ## 4. Why KV cache speeds things up
 
+![Figure: Why KV Cache Speeds Up Inference](../zh/images/day17/kv-cache-speedup.png)
+*Caption: Without KV cache, every decoding step recomputes all previous tokens' projections. With KV cache, each token is computed only once — reducing 22 computations to just 4 in this example (~5.5x speedup).*
+
 Without KV cache, the model recomputes old projections again and again. With KV cache, each token's key and value are computed once and then reused.
 
 For a single new token at step $t$, the dominant attention score computation is between one query and $t$ cached keys, giving work proportional to $O(t)$ for that head, rather than recomputing all $t$ queries, all $t$ keys, and all $t$ values for the whole prefix again. Across the full decoding process, the savings are enormous in practice.
