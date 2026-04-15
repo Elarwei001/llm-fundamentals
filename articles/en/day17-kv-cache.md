@@ -68,6 +68,9 @@ This is the core inefficiency. If we ignore caching, the total attention work ac
 
 ## 2. The basic idea of KV cache
 
+![Figure: How KV Cache Works — Step-by-Step Matrix Operations](../zh/images/day17/kv-cache-how-it-works.png)
+*Caption: At each decoding step, only the new token's Q, K, V are computed. K_new and V_new are appended to the cache. The new query attends over all cached keys and values. Previous tokens' K and V are never recomputed.*
+
 **The key observation is that previous keys and values are fixed during inference.** Once token $i$ has been projected into $K_i$ and $V_i$, those tensors can be stored and reused for future steps.
 
 At decode step $t$, instead of recomputing all projections for tokens $1 \ldots t$, we do this:

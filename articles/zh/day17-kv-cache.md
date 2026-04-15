@@ -68,6 +68,9 @@ $$
 
 ## 2. KV 缓存的基本思想
 
+![图：KV Cache 工作原理——逐步矩阵操作](./images/day17/kv-cache-how-it-works.png)
+*说明：每个解码步只计算新 token 的 Q、K、V。K_new 和 V_new 追加到缓存中。新 query 对所有缓存的 key 和 value 做 attention。历史 token 的 K 和 V 永远不需要重算。*
+
 **关键观察是：在推理阶段，过去 token 的 key 和 value 是固定不变的。** 某个 token 一旦被投影成 $K_i$ 和 $V_i$，这些张量就可以保存下来，在未来的所有解码步骤中复用。
 
 所以在第 $t$ 个解码步，我们不再重算 1 到 $t$ 的全部投影，而是这样做：
