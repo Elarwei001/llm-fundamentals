@@ -21,7 +21,7 @@ KV cache sounds like an implementation detail, but it is really a bridge between
 The probability model is still the usual next-token objective:
 
 $$
-P(x_{1:T}) = \prod_{t=1}^{T} P(x_t \mid x_{<t}).
+P(x_{1:T}) = \prod_{t=1}^{T} P(x_t \mid x_{1:t-1}).
 $$
 
 At inference time, generation proceeds step by step. Suppose the prompt has length $n$, and we are generating token $n+1$, then $n+2$, and so on. In a decoder-only Transformer, each new step runs self-attention over the prefix seen so far.
