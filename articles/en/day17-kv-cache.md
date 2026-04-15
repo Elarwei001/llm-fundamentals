@@ -308,6 +308,15 @@ Quantization is the single most impactful technique for long-context cache compr
 > **Why is quantizing KV cache harder than quantizing weights?**
 >
 > Weights are static and can be calibrated offline. KV cache entries are dynamic — they are produced at runtime and vary wildly in magnitude. Keys tend to have large per-channel outliers (due to RoPE positional encoding), while Values are more uniform per-token. This asymmetry is why KIVI uses different quantization strategies for K and V.
+>
+> **What does "per-channel" vs "per-token" mean?**
+>
+> Imagine the K_cache matrix with shape (n_tokens x d_k). Each row is a token, each column is a dimension ("channel").
+>
+> - **Per-channel** = quantize each **column** (dimension) separately. Each dimension gets its own scale factor. This handles the fact that different dimensions can have wildly different value ranges (e.g., dim_1 is always around 2.0 due to RoPE, while dim_0 ranges from -0.5 to 0.3).
+> - **Per-token** = quantize each **row** (token) separately. Each token gets its own scale factor.
+>
+> **Analogy:** You are normalizing test scores across 10 classes. Per-channel = normalize each subject (math, English, science) independently. Per-token = normalize each student independently. If one subject has everyone scoring 90+ while another ranges 40-60, per-subject normalization preserves more information.
 
 ### 8.3 Distributed and offloaded KV cache
 
