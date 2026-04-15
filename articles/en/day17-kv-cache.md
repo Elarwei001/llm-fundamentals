@@ -51,6 +51,12 @@ $$
 
 where $M$ is the causal mask.
 
+> **What is $d_k$?** $d_k$ is the dimension of the Key (and Query) vector in each attention head. It is computed as: $d_k = d / h$, where $d$ is the model hidden dimension and $h$ is the number of attention heads.
+>
+> **Example:** LLaMA-7B has $d = 4096$, $h = 32$, so $d_k = 4096 / 32 = 128$. Each head projects Q, K, V into 128-dimensional space.
+>
+> **Why divide by $\sqrt{d_k}$?** This is the "scaled" in Scaled Dot-Product Attention. When $d_k$ is large, the dot product $QK^T$ produces large values, which pushes softmax into regions with near-zero gradients (gradient vanishing). Dividing by $\sqrt{d_k}$ normalizes the variance: if $d_k = 128$, random vectors' dot product has variance ~128, and dividing by $\sqrt{128} pprox 11.3$ brings variance back to ~1. This keeps softmax healthy and gradients flowing.
+
 During training, computing all queries, keys, and values together is natural because the whole sequence is available. During decoding, however, token $t$ has already had its $K_t$ and $V_t$ computed in previous steps. Recomputing them again for steps $t+1$, $t+2$, and $t+3$ adds work but no new information.
 
 ![Figure 1: Decoding cost with and without cache](../zh/images/day17/prefill-vs-decode-cost.png)
