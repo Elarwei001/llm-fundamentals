@@ -275,7 +275,92 @@ Just as model weights can be quantized, cached activations can sometimes be stor
 
 ---
 
-## 8. Common misconceptions
+## 8. Surviving ultra-long contexts (100K–1M+ tokens)
+
+Modern LLMs increasingly support context windows of 100K, 1M, or even several million tokens. Gemini 2.5 Pro supports 2M tokens; Claude Sonnet 4 supports 1M; open-source models like Qwen2.5-1M push the boundary further. But serving these context lengths turns KV cache from a "nice optimization" into an existential engineering challenge.
+
+> **How big is KV cache at 1M tokens?**
+>
+> For a 70B model with GQA (8 KV heads), hidden dimension 8192, fp16:
+> - Per token: 2 (K+V) x 8 (heads) x 8192 (dim) x 2 (bytes) = 256 KB
+> - At 1M tokens: **~244 GB per request**
+>
+> That is 3x the capacity of an A100-80GB GPU. Just for one user's cache. This is why long-context serving requires aggressive optimization.
+
+### 8.1 KV cache eviction and compression
+
+When the cache cannot fit everything, the system must decide what to keep and what to discard.
+
+- **Attention sinks** (Streaming LLM, 2023): The first few tokens receive disproportionate attention across all layers. Evicting them destroys quality. Streaming LLM keeps a fixed window of recent tokens plus the initial "sink" tokens, discarding everything in between.
+- **Heavy-Hitter Oracle (H2O)**: Tracks which KV pairs receive the most cumulative attention scores and evicts the rest. The insight is that a small fraction of tokens account for most attention weight.
+- **SnapKV, TokenSelect**: More sophisticated eviction that considers per-head and per-layer attention patterns, rather than a single global policy.
+- **Cache merging**: Instead of discarding tokens entirely, adjacent KV pairs can be merged (averaged), preserving more information than hard eviction.
+
+### 8.2 KV cache quantization at scale
+
+Quantization is the single most impactful technique for long-context cache compression.
+
+- **FP8 / INT8**: Straightforward 2x compression. Widely deployed in production (vLLM, TensorRT-LLM).
+- **4-bit quantization**: 4x compression with minimal quality loss when done carefully. Requires per-channel calibration.
+- **KIVI (ICML 2024)**: 2-bit asymmetric quantization that quantizes Keys per-channel and Values per-token, achieving ~8x compression with negligible perplexity increase. No fine-tuning required.
+- **KVQuant (NeurIPS 2024)**: Pushes to 3-bit and even 2-bit precision using per-channel key quantization, pre-rope key quantization, and outlier handling. Enables serving LLaMA-7B with **1M context on a single A100-80GB GPU**, or even 10M context with multi-GPU setups.
+
+> **Why is quantizing KV cache harder than quantizing weights?**
+>
+> Weights are static and can be calibrated offline. KV cache entries are dynamic — they are produced at runtime and vary wildly in magnitude. Keys tend to have large per-channel outliers (due to RoPE positional encoding), while Values are more uniform per-token. This asymmetry is why KIVI uses different quantization strategies for K and V.
+
+### 8.3 Distributed and offloaded KV cache
+
+When a single GPU cannot hold the cache, the system must go beyond one device.
+
+- **KV cache offloading**: Store the cache in CPU RAM or SSD, and transfer to GPU on demand. Reduces GPU memory pressure at the cost of higher latency. Works well when only a subset of the cache is accessed per decode step.
+- **DisAttention / Infinite-LLM**: Distributes KV cache across a cluster of machines, treating the aggregate memory as a single logical cache. A central scheduler routes attention queries to the right node.
+- **Prefix caching across nodes**: Shared prompt prefixes (system prompts, tool definitions) are cached once and reused across requests, even across different machines.
+
+---
+
+## 9. Frontier: Redesigning hardware for LLM inference
+
+The KV cache bottleneck is not just a software problem. It reflects a fundamental mismatch between how GPUs are designed (optimized for dense matrix math) and how LLM inference actually works (dominated by memory bandwidth during decode).
+
+### 9.1 The memory wall
+
+Modern GPUs have massive compute (thousands of TFLOPS) but relatively modest memory bandwidth. During decode:
+- Each step reads the entire KV cache (hundreds of MB to GB)
+- Does minimal compute (one token's attention)
+- GPU utilization drops to single-digit percentages
+
+This is the **memory wall**: compute capability outpaces the ability to feed it data.
+
+### 9.2 Processing-in-Memory (PIM)
+
+Processing-in-Memory flips the traditional architecture: instead of moving data to the processor, move computation to where the data lives.
+
+- **HBM-PIM (Samsung)**: Adds small arithmetic units inside HBM memory chips. Attention scores can be partially computed where K and V are stored, avoiding the round-trip to GPU cores.
+- **DIMM-PIM**: Extends the idea to DDR memory modules. Projects like **L3** and **Hermes** (2025) explore using DIMM-PIM for both fully-connected layers and multi-head attention, targeting consumer-grade GPUs that lack HBM.
+- **AiM, AttAcc, NeuPIMs**: Research architectures that add dedicated attention accelerators inside or near memory, specifically designed for the KV-cache access pattern.
+
+> **Analogy: The library problem.**
+> Imagine you need to search 1000 books for a keyword. Traditional GPU: ship all 1000 books to your desk, search them, ship them back. PIM: the bookshelves themselves can search their own contents and just send you the answers. Much less shipping.
+
+### 9.3 Specialized accelerators and chiplet designs
+
+Beyond PIM, researchers are exploring entirely new chip architectures:
+
+- **IANUS (2024)**: A dual-mode architecture that switches between compute-heavy prefill mode and bandwidth-heavy decode mode, reconfiguring memory attributes on the fly.
+- **Chiplet-based designs**: Instead of one monolithic GPU, use multiple small specialized chips connected by high-speed interconnects. Some chips handle prefill (compute-heavy), others handle decode (memory-heavy), each optimized for their workload.
+- **Optical interconnects**: Research into using light-based connections between chips to dramatically increase bandwidth between memory and compute, potentially breaking the memory wall.
+
+### 9.4 Why this matters for you
+
+You may not be designing chips, but understanding the hardware trajectory helps you:
+- **Predict what will improve**: Memory bandwidth is the bottleneck, so expect rapid innovation in HBM, PIM, and interconnects.
+- **Choose models wisely**: GQA and smaller KV dimensions directly reduce memory pressure — this is why most production models now use GQA.
+- **Understand pricing**: GPU rental costs are increasingly driven by memory capacity and bandwidth, not just FLOPS.
+
+---
+
+## 10. Common misconceptions
 
 ### Misconception 1: “KV cache makes decoding constant time.”
 
@@ -295,7 +380,7 @@ Also no. Bandwidth matters as much as capacity. A system can have enough raw mem
 
 ---
 
-## 9. Practical guidance
+## 11. Practical guidance
 
 If you are building or evaluating an LLM system, here are the operational questions KV cache should trigger in your mind:
 
@@ -309,7 +394,7 @@ For many real applications, the performance story of an LLM is not just “how m
 
 ---
 
-## 10. Further reading and reflection
+## 12. Further reading and reflection
 
 ### Further reading
 
