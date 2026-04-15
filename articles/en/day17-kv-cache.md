@@ -226,6 +226,16 @@ So KV cache is not just an optimization trick. It reshapes the whole systems pro
 
 ## 6. Why batching becomes complicated
 
+> **What is batching?**
+>
+> Batching means packing multiple requests together and processing them simultaneously, rather than handling them one by one.
+>
+> **Analogy:** No batching = taxi (one passenger per trip). Batching = bus (30 passengers per trip, much higher throughput).
+>
+> **In LLM inference:** If users A, B, and C all send requests at the same time, batching combines their inputs and processes them in parallel on the GPU -- fully utilizing compute resources instead of running the GPU at a fraction of its capacity.
+>
+> **Why does batching interact with KV cache?** Each request in the batch has a differently-sized KV cache (short question = small cache, long document = huge cache). Fitting all of them into GPU memory simultaneously is the hard part -- that is what this section is about.
+
 Batching sounds easy in training because sequences are padded and processed together. In serving, requests arrive at different times and generate different numbers of tokens. One user may stop after 20 tokens, another may continue for 800 tokens. Their cache footprints evolve dynamically.
 
 This is where naïve memory allocation breaks down. If every request gets one giant contiguous block for all possible future tokens, memory is wasted. If the blocks are resized often, fragmentation grows.
