@@ -28,6 +28,17 @@ At inference time, generation proceeds step by step. Suppose the prompt has leng
 
 In a single attention head, we compute
 
+> **What is $X$ here?** $X$ is the **input matrix** containing embeddings for all tokens processed so far. If we have processed $n$ tokens, each with embedding dimension $d$, then $X$ is an $n \times d$ matrix — each row is one token's embedding.
+>
+> The three projections produce:
+> - **$Q = XW_Q$** — Query matrix ("what am I looking for?")
+> - **$K = XW_K$** — Key matrix ("what information can I provide?")
+> - **$V = XW_V$** — Value matrix ("what is my actual content?")
+>
+> **Example:** Prompt = "I love cats" (3 tokens). $X$ is $3 \times d$. After projection, $Q, K, V$ are each $3 \times d_k$.
+>
+> **The waste:** When generating token 4 ("are"), $X$ becomes $4 \times d$, and we recompute ALL four tokens' $Q, K, V$. But tokens 1-3's $K$ and $V$ were already computed last step — that's redundant. KV cache eliminates this duplication.
+
 $$
 Q = XW_Q, \quad K = XW_K, \quad V = XW_V,
 $$

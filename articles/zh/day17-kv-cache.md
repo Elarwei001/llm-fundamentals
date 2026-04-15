@@ -28,6 +28,17 @@ $$
 
 对于单个注意力头，我们要计算
 
+> **$X$ 是什么？** $X$ 是**输入矩阵**，包含到目前为止所有 token 的 embedding。如果已经处理了 $n$ 个 token，每个 embedding 维度是 $d$，那 $X$ 就是一个 $n \times d$ 的矩阵——每一行是一个 token 的 embedding。
+>
+> 三个投影分别产生：
+> - **$Q = XW_Q$** — Query 矩阵（"我在找什么？"）
+> - **$K = XW_K$** — Key 矩阵（"我能提供什么信息？"）
+> - **$V = XW_V$** — Value 矩阵（"我的实际内容是什么？"）
+>
+> **例子：** Prompt = "I love cats"（3 个 token）。$X$ 是 $3 \times d$ 的矩阵。投影后 $Q, K, V$ 各是 $3 \times d_k$。
+>
+> **浪费在哪里：** 生成第 4 个 token（"are"）时，$X$ 变成 $4 \times d$，需要重新计算所有 4 个 token 的 $Q, K, V$。但前 3 个 token 的 $K$ 和 $V$ 上一步已经算过了——这就是重复计算。KV cache 就是把这个重复省掉。
+
 $$
 Q = XW_Q, \quad K = XW_K, \quad V = XW_V,
 $$
