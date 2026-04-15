@@ -133,6 +133,20 @@ The **prefill** phase processes the entire prompt. If the user sends a 4,000-tok
 
 The **decode** phase begins after the prompt is encoded. Now the model generates one new token at a time. This phase uses the existing cache and extends it incrementally. Compute per step is smaller, but memory traffic becomes dominant because every new query must read a large pile of cached keys and values.
 
+> **Prefill vs Decode speed — which is faster?**
+>
+> Neither is "faster" in absolute terms -- they have different bottlenecks:
+>
+> - **Prefill** processes many tokens in parallel -- high throughput (tokens/sec), but heavy compute (lots of matrix multiplications)
+> - **Decode** generates one token at a time -- low throughput (tokens/sec), bottlenecked by memory bandwidth (reading the growing KV cache each step)
+>
+> **Concrete example:** Prompt = 2,000 tokens, generating 200 tokens back
+> - Prefill: process all 2,000 tokens at once, maybe 0.5 seconds
+> - Decode: generate 200 tokens sequentially, maybe 2.0 seconds
+> - Decode takes longer overall even though each step does less compute
+>
+> **One sentence:** Prefill is fast and bursty (parallel), Decode is slow and steady (sequential) -- long generation makes Decode the dominant bottleneck.
+
 One important clarification: we normally talk about KV cache for **inference**, not for ordinary training. During training, the model processes full sequences in parallel and backpropagates through them, so storing a growing decode-style cache is not the central optimization.
 
 This prefill/decode distinction matters a lot in serving. New requests often spend time in prefill, while long generations are dominated by decode. If you want to optimize latency, you need to know which phase is the bottleneck.
