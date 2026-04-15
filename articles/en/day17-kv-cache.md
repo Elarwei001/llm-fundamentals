@@ -207,6 +207,19 @@ This trade-off creates several real-world problems:
 - memory bandwidth can dominate latency,
 - fragmentation becomes painful when many requests have different lengths.
 
+> **What does "fragmentation" mean here?**
+>
+> When serving multiple users simultaneously, each request generates a KV cache of different size:
+> - User A asks a short question → small cache (maybe 100 tokens)
+> - User B sends a long document → huge cache (maybe 4000 tokens)
+> - User C has a medium conversation → medium cache (maybe 500 tokens)
+>
+> If you pre-allocate a fixed-size memory block for each request, you get two problems:
+> - **Over-allocation**: User A's block wastes most of its space
+> - **External fragmentation**: freed blocks are different sizes, hard to reuse
+>
+> **Concrete example:** Imagine GPU memory as a parking lot. You reserve 4000 spaces for every car, but most cars only need 100. Soon the lot is "full" even though most spaces are empty. Paged attention solves this by using small fixed-size "pages" (like virtual memory in an OS) that can be flexibly assigned to any request.
+
 So KV cache is not just an optimization trick. It reshapes the whole systems problem of LLM serving.
 
 ---
