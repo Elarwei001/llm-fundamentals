@@ -71,6 +71,10 @@ Why is this promising? Because the target model can score the drafted block in o
 > The comparison is trivial: compute p/q and decide accept or reject. No extra computation needed.
 >
 > **Analogy:** A teacher grading a pre-filled answer sheet does not check questions one by one. They scan the entire sheet at once, and all probabilities come out simultaneously. Then they compare the student's pre-filled answers against the standard.
+>
+> **Common misunderstanding:** The target model does NOT split the 5 draft tokens into 5 separate computations and run them in parallel. It really is just **1 normal forward pass** with the entire sequence as input. The input just happens to be longer than usual (prefix + draft tokens). The output naturally contains probability distributions for every position — including the draft positions.
+>
+> **One more thing:** Since the target model processes the entire sequence, it also computes the prefix tokens' representations. This is not wasted work — those become KV cache entries that future decode steps can reuse.
 
 The intuition is simple. If the draft model is usually a decent guesser of the target model, then most verification work confirms tokens rather than replacing them. In that regime, speculative decoding converts serial generation into a chunked workflow.
 
