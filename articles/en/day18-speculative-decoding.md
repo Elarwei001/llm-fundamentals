@@ -91,6 +91,18 @@ $$
 
 where $(z)_+ = \max(z, 0)$. This is the leftover probability mass that the target assigns but the accepted draft process has not already accounted for. That correction is what keeps the final result exact.
 
+> **What is the "corrected residual distribution" in plain terms?**
+>
+> Imagine a buffet. The draft model (your friend) picked 10 dishes. The target model (nutritionist) reviews them:
+> - 8 dishes pass review — these are accepted draft tokens.
+> - Dish 9 is rejected — this is the first rejection.
+>
+> Now the nutritionist must pick a replacement for dish 9. But they cannot just pick from their full ideal menu, because dishes 1-8 already "used up" some of that ideal probability. The residual distribution is what remains **after subtracting what was already consumed**.
+>
+> Think of it as a budget: the nutritionist's ideal meal plan is p(x). Dishes 1-8 already spent some of that budget (via q(x)). The residual (p(x) - q(x))₊ is the remaining budget — only the positive parts. The replacement dish is sampled from this remainder.
+>
+> **Why not just sample from p(x) directly?** Because that would double-count the probability mass that dishes 1-8 already consumed. The residual correction ensures the final distribution is *exactly* the target model's distribution, not an approximation.
+
 You do not need to memorize the proof, but the mechanism is worth understanding. Imagine two cashiers reconciling the same receipt. The draft cashier pre-fills obvious items. The target cashier checks each line. If an item is plausible under both, keep it. If the draft overclaimed something, the target subtracts that excess and redraws from the remaining valid choices. The goal is not "close enough." The goal is "exactly the same accounting in distribution."
 
 > **Where does this rule come from?**
