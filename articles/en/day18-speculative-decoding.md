@@ -60,6 +60,18 @@ Suppose the current prefix is $x_{1:t}$. Instead of asking the target model for 
 
 Why is this promising? Because the target model can score the drafted block in one pass. If the first three drafted tokens are acceptable, then one expensive target pass may move generation forward by three or four positions instead of just one.
 
+> **How does the target model "know" whether a draft token is good or bad?**
+>
+> The target model does NOT check tokens one by one. It simply runs **one forward pass** over the entire sequence (prefix + all draft tokens). A Transformer naturally outputs a probability distribution for **every position** in a single pass.
+>
+> So for each draft token position, we get two numbers:
+> - q(draft_token): the draft model's probability (already known from drafting)
+> - p(draft_token): the target model's probability (from this single forward pass)
+>
+> The comparison is trivial: compute p/q and decide accept or reject. No extra computation needed.
+>
+> **Analogy:** A teacher grading a pre-filled answer sheet does not check questions one by one. They scan the entire sheet at once, and all probabilities come out simultaneously. Then they compare the student's pre-filled answers against the standard.
+
 The intuition is simple. If the draft model is usually a decent guesser of the target model, then most verification work confirms tokens rather than replacing them. In that regime, speculative decoding converts serial generation into a chunked workflow.
 
 But there is a subtle requirement: the final output must remain faithful to the **target distribution**, not the draft distribution. Otherwise we would merely be using a weaker model and hoping for the best. The clever part of speculative decoding is that it preserves exactness through accept-reject logic.
