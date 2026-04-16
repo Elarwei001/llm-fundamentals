@@ -52,7 +52,7 @@ The idea is not to replace the target model. The target model is still the autho
 
 Suppose the current prefix is $x_{1:t}$. Instead of asking the target model for only $x_{t+1}$, we do this:
 
-1. Use a cheap **draft model** $q$ to generate $\gamma$ candidate tokens: $\hat{x}_{t+1}, \hat{x}_{t+2}, \ldots, \hat{x}_{t+\gamma}$.
+1. Use a cheap **draft model** $q$ to generate *γ* candidate tokens.
 2. Run the **target model** $p$ once on the prefix plus those drafted tokens.
 3. Compare the draft proposals with what the target model would allow.
 4. Accept a matching prefix of the draft tokens.
