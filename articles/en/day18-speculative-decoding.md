@@ -91,12 +91,24 @@ $$
 
 where $(z)_+ = \max(z, 0)$. This is the leftover probability mass that the target assigns but the accepted draft process has not already accounted for. That correction is what keeps the final result exact.
 
-You do not need to memorize the proof, but the mechanism is worth understanding. Imagine two cashiers reconciling the same receipt. The draft cashier pre-fills obvious items. The target cashier checks each line. If an item is plausible under both, keep it. If the draft overclaimed something, the target subtracts that excess and redraws from the remaining valid choices. The goal is not “close enough.” The goal is “exactly the same accounting in distribution.”
+You do not need to memorize the proof, but the mechanism is worth understanding. Imagine two cashiers reconciling the same receipt. The draft cashier pre-fills obvious items. The target cashier checks each line. If an item is plausible under both, keep it. If the draft overclaimed something, the target subtracts that excess and redraws from the remaining valid choices. The goal is not "close enough." The goal is "exactly the same accounting in distribution."
+
+> **Where does this rule come from?**
+>
+> The acceptance rule $\alpha(y) = \min(1, p(y)/q(y))$ is rooted in **rejection sampling** (von Neumann, 1947), a classical statistical technique. The contribution of speculative decoding was applying this technique to LLM inference acceleration.
+>
+> Two teams independently proposed this in 2023:
+> - **Leviathan, Kalman, Matias (Google)** — *"Fast Inference from Transformers via Speculative Decoding"*
+> - **Chen et al. (DeepMind)** — *"Accelerating Large Language Model Decoding with Speculative Sampling"*
+>
+> **Key property:** This rule guarantees the final output distribution is **exactly equal** to the target model p — not an approximation. This is not trading quality for speed; it is a mathematically provable equivalence.
+>
+> **Analogy:** Imagine a buffet where a friend (draft model) pre-selects dishes for you, and a nutritionist (target model) reviews them. If the nutritionist thinks a dish is fine, you eat it. If not, there is a chance you put it back. The final distribution of what you eat is **identical** to what the nutritionist would have chosen directly.
 
 ![Figure 2: Accepted prefix and first rejection](../zh/images/day18/acceptance-walk.png)
 *Caption: Verification usually accepts a prefix of the drafted tokens, then stops at the first mismatch. That accepted-prefix structure is the main source of speedup.*
 
-In practice, many explanations simplify this to “accept tokens while the target agrees, reject when it does not.” That intuition is directionally useful, but the real algorithm is more careful because it must preserve the target model's sampling behavior, not just its greedy choices.
+In practice, many explanations simplify this to "accept tokens while the target agrees, reject when it does not." That intuition is directionally useful, but the real algorithm is more careful because it must preserve the target model's sampling behavior, not just its greedy choices.
 
 ---
 
@@ -157,7 +169,7 @@ Another useful perspective is that speculative decoding is a cousin of branch pr
 
 **One-sentence summary**: The best draft model is not the smartest possible one, but the cheapest one that still predicts the target model well enough.
 
-This is the part many first explanations skip. It is tempting to think “better draft model means better speedup.” Not always.
+This is the part many first explanations skip. It is tempting to think "better draft model means better speedup." Not always.
 
 A larger draft model usually raises acceptance because its distribution is closer to the target model. But it also costs more to run. A tiny draft model is extremely cheap, yet it may hallucinate the continuation so badly that the target rejects most of its proposals. Either extreme can lose.
 
@@ -297,19 +309,19 @@ This toy example omits KV cache details, batching, and tensor-level efficiency, 
 
 ## 10. Common misconceptions
 
-### ❌ “Speculative decoding changes the model's behavior.”
+### ❌ "Speculative decoding changes the model's behavior."
 
 In the classic exact algorithm, no. The final output distribution matches the target model. The point is acceleration, not approximation.
 
-### ❌ “If I draft more tokens, speedup always gets better.”
+### ❌ "If I draft more tokens, speedup always gets better."
 
 No. Longer draft blocks help only when the draft model remains accurate enough. Otherwise rejection wipes out the gain.
 
-### ❌ “This replaces KV cache.”
+### ❌ "This replaces KV cache."
 
 No. They solve different problems. KV cache avoids recomputing past keys and values. Speculative decoding reduces how often the target model must produce the next-token distribution.
 
-### ❌ “Acceptance rate is just a minor tuning detail.”
+### ❌ "Acceptance rate is just a minor tuning detail."
 
 It is the main economic variable. A speculative system with poor acceptance can be slower than vanilla decoding.
 
@@ -319,21 +331,21 @@ It is the main economic variable. A speculative system with poor acceptance can 
 
 ### Beginner
 
-1. [Fast Inference from Transformers via Speculative Decoding](https://arxiv.org/abs/2211.17192)  
+1. [Fast Inference from Transformers via Speculative Decoding](https://arxiv.org/abs/2211.17192)
    The classic Leviathan et al. paper that introduced exact speculative decoding.
 
-2. [Accelerating Large Language Model Decoding with Speculative Sampling](https://arxiv.org/abs/2302.01318)  
+2. [Accelerating Large Language Model Decoding with Speculative Sampling](https://arxiv.org/abs/2302.01318)
    Another influential 2023 treatment with related acceptance-sampling ideas.
 
-3. [An Introduction to Speculative Decoding for Reducing Latency in AI Inference](https://developer.nvidia.com/blog/an-introduction-to-speculative-decoding-for-reducing-latency-in-ai-inference/)  
+3. [An Introduction to Speculative Decoding for Reducing Latency in AI Inference](https://developer.nvidia.com/blog/an-introduction-to-speculative-decoding-for-reducing-latency-in-ai-inference/)
    A practical systems-oriented overview from NVIDIA.
 
 ### Advanced
 
-1. [Medusa: Simple LLM Inference Acceleration Framework with Multiple Decoding Heads](https://arxiv.org/abs/2401.10774)  
+1. [Medusa: Simple LLM Inference Acceleration Framework with Multiple Decoding Heads](https://arxiv.org/abs/2401.10774)
    A strong example of self-speculative style acceleration without a separate external draft model.
 
-2. [vLLM documentation](https://docs.vllm.ai/)  
+2. [vLLM documentation](https://docs.vllm.ai/)
    Useful for understanding how speculative decoding interacts with real serving stacks.
 
 ### Papers
@@ -366,5 +378,5 @@ It is the main economic variable. A speculative system with poor acceptance can 
 
 ---
 
-*Day 18 of 60 | LLM Fundamentals*  
+*Day 18 of 60 | LLM Fundamentals*
 *Word count: ~2850 | Reading time: ~17 minutes*
