@@ -283,27 +283,13 @@ These variants all chase the same dream, reduce serial dependence without giving
 
 **One-sentence summary**: Speculative decoding helps only when the draft and target cooperate well; otherwise it adds work and complexity.
 
-Here are the main failure modes.
-
-### 8.1 Low acceptance rate
-
-If the draft model is often wrong, the target rejects early and the system gains little. You still paid for the draft model, so speedup may disappear or even become a slowdown.
-
-### 8.2 Draft model overhead
-
-Running a second model means more memory, more engineering, more scheduling logic, and sometimes more tokenizer or cache coordination. The algorithm may be mathematically elegant while the production stack becomes messier.
-
-### 8.3 Verification still uses the expensive model
-
-Speculative decoding reduces how often the target model is consulted, but it does not eliminate the target model. If target verification dominates overall latency, the ceiling on improvement may remain limited.
-
-### 8.4 Workload dependence
-
-Acceptance can vary by task. Deterministic summarization may be easier to draft than open-ended creative writing. Code completion may be bursty, with easy stretches followed by exacting syntax checks.
-
-### 8.5 Interaction with batching and serving
-
-In multi-request serving, keeping two models busy efficiently is not trivial. A clean single-request paper result does not automatically translate into the same win in a production cluster.
+| Failure mode | What happens | Why it hurts |
+|---|---|---|
+| Low acceptance rate | Target rejects most draft tokens early | You paid for the draft model but gained little; speedup may become a slowdown |
+| Draft model overhead | Running a second model adds memory, scheduling, and engineering complexity | The algorithm is elegant, but the production stack becomes messier |
+| Verification ceiling | Target model still dominates latency | Speculative decoding reduces target invocations, but does not eliminate them; improvement has a ceiling |
+| Workload dependence | Acceptance varies by task (structured text vs creative writing) | What works for summarization may not work for open-ended generation |
+| Batching and serving | Keeping two models busy in multi-request serving is non-trivial | A clean single-request result does not automatically translate to a production cluster |
 
 ---
 
