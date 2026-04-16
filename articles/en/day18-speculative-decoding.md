@@ -255,10 +255,27 @@ Getting a good draft model is crucial for acceptance rate. Different training st
 - **Offline distillation**: Collect target model outputs on a dataset, then train the draft model on these (target_input, target_output) pairs. Research shows this outperforms online distillation by 11-25% (Hong et al., 2025).
 - **Online distillation**: The draft model generates tokens on-the-fly, and the target model provides feedback during training.
 - **DistillSpec** (Zhou et al., 2024): Uses on-policy data from the draft model and task-specific divergence functions. Key finding: training on what the draft model *actually* produces is more effective than training on static teacher data alone.
+
+  > **What does "on-policy" mean here?**
+  >
+  > Standard distillation trains the draft model on outputs collected from the *target* model's inputs. But at inference time, the draft model faces *its own* generated inputs — a different distribution. DistillSpec fixes this: let the draft model generate text first, then ask the target model for probability distributions on those *actual* draft contexts, and train on that.
+  >
+  > **Analogy:** Standard distillation = watching pro game replays to learn tennis. DistillSpec = you play first, then a coach corrects your *actual* strokes — directly teaching you in the situations you really encounter.
 - **EAGLE**: Instead of predicting tokens directly, trains the draft model to predict the target model's *hidden features* (the layer before the LM head), then uses the target's LM head to convert features to tokens. This leverages the target model's own representations.
 
 **Approach 3: N-gram and retrieval-based methods (no model training)**
 - **N-gram draft**: Use statistical n-gram models to predict likely next tokens based on frequency patterns in the current context. Extremely cheap, but only captures shallow patterns.
+
+  > **What is an N-gram?**
+  >
+  > An N-gram counts how often sequences of N consecutive words appear in text. Example with "I love cats and I love dogs":
+  > - Unigram (1-gram): {I: 2, love: 2, cats: 1, dogs: 1}
+  > - Bigram (2-gram): {"I love": 2, "love cats": 1, "love dogs": 1}
+  > - Trigram (3-gram): {"I love cats": 1, "I love dogs": 1}
+  >
+  > To predict the next token after "I love", look up the bigram table: "cats" appeared 1 time, "dogs" appeared 1 time. No neural network needed — just a table lookup.
+  >
+  > **Trade-off:** Extremely fast (zero computation, just a lookup) but can only see the last N-1 words. It completely ignores long-range context. Like someone who predicts the next word by only hearing the last few words, with no understanding of the full conversation.
 - **Retrieval-augmented drafting**: Look up similar contexts in a database and use those completions as draft candidates. Useful for code completion and domain-specific tasks where patterns repeat.
 - Pros: no neural network to run for drafting, minimal memory overhead.
 - Cons: limited to repetitive or highly structured text.
