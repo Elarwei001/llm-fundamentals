@@ -89,7 +89,7 @@ $$
 \bigl(p(x) - q(x)\bigr)_+,
 $$
 
-where $(z)_+ = \max(z, 0)$. This is the leftover probability mass that the target assigns but the accepted draft process has not already accounted for. That correction is what keeps the final result exact.
+where the subscript $_+$ means "keep only the positive part" — i.e., $\max(p(x) - q(x),\, 0)$. If the target model assigns more probability to a token than the draft did, that surplus remains. If the draft overclaimed, the difference is negative and gets zeroed out. This is the leftover probability mass that the target assigns but the accepted draft process has not already accounted for. That correction is what keeps the final result exact.
 
 > **What is the "corrected residual distribution" in plain terms?**
 >
