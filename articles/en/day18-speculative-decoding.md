@@ -81,7 +81,7 @@ This rule encodes a powerful idea:
 - if the draft **underestimates** the token compared with the target, then $p(y) / q(y) > 1$, so acceptance is clipped to 1,
 - if the draft **overestimates** the token, then acceptance drops below 1.
 
-So the system is more tolerant when the draft is conservative and stricter when the draft is too confident about something the target does not like.
+In plain terms: if the draft model is cautious and only proposes "safe" tokens, the target model almost always agrees. But if the draft model is overconfident and proposes tokens the target model dislikes, those get rejected.
 
 After the first rejection, we do not simply continue as if nothing happened. We sample from a **corrected residual distribution**, conceptually proportional to
 
