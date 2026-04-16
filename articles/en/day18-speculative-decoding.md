@@ -187,6 +187,16 @@ Speculative decoding changes the shape of the workload. The draft model runs fas
 1. it reduces the number of expensive synchronization points with the target model,
 2. it gives the target model a denser verification workload per invocation.
 
+> **What do these four concepts mean in plain terms?**
+>
+> **1. "Wide parallel kernels":** GPUs are like 8-lane highways — designed for heavy traffic. Normal decoding sends 1 car at a time (1 token per step), wasting most lanes. Speculative decoding fills more lanes by processing a whole draft block at once.
+>
+> **2. "Fewer synchronization points":** Normal decoding: compute token, sync, read result, decide next token, compute, sync... Speculative decoding: draft a whole block, then verify all at once. Fewer stops = less overhead. Like delivering packages in batches instead of one trip per package.
+>
+> **3. "Denser verification workload":** Each target model invocation now verifies multiple tokens instead of just one. Same GPU launch cost, more useful work done. Like a taxi that carries 1 passenger vs a bus that carries 30 — same trip, much more throughput.
+>
+> **4. "Branch prediction analogy":** CPUs have a classic trick: at an if/else, guess one branch and execute ahead. If right, you saved time. If wrong, rollback and try the other path. Speculative decoding does exactly this — draft model guesses, target model verifies, wrong guesses get rolled back.
+
 This is also why the benefit depends on the serving stack. If your target model is already perfectly optimized, the gain may be modest. If your baseline is decode-bound and launch-heavy, speculative decoding can help a lot. Real systems live in that messy middle ground.
 
 Another useful perspective is that speculative decoding is a cousin of branch prediction in CPUs. The processor guesses the next path, executes ahead, and rolls back if the guess was wrong. The analogy is not exact, but it is close enough to build intuition: prediction is cheap, rollback is acceptable, and overall throughput improves if the prediction accuracy is high enough.
@@ -202,9 +212,9 @@ This is the part many first explanations skip. It is tempting to think "better d
 A larger draft model usually raises acceptance because its distribution is closer to the target model. But it also costs more to run. A tiny draft model is extremely cheap, yet it may hallucinate the continuation so badly that the target rejects most of its proposals. Either extreme can lose.
 
 ![Figure 4: Draft quality versus draft cost](../zh/images/day18/draft-model-tradeoff-map.png)
-*Caption: A useful draft model lives in the middle of the trade-off map: cheap enough to run ahead, but accurate enough that the target often accepts its proposals.*
+*A useful draft model lives in the sweet spot — cheap enough to run ahead, but accurate enough that the target often accepts its proposals.*
 
-In practice, the sweet spot depends on model family, tokenizer compatibility, serving hardware, and workload. Chat completions with repetitive structures may get better acceptance than highly creative generation. Domain-specific prompts may help or hurt depending on whether the draft model was trained on similar data.
+In practice, the sweet spot depends on model family, tokenizer compatibility, serving hardware, and **workload**. For example, chat completions with repetitive structures may get better acceptance than highly creative generation. Domain-specific prompts may help or hurt depending on whether the draft model was trained on similar data.
 
 This is why speculative decoding is often presented as a systems optimization, not just a sampling trick. The theoretical algorithm is elegant, but deployment success depends on choosing a good draft-target pairing.
 
