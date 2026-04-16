@@ -224,21 +224,12 @@ This is why speculative decoding is often presented as a systems optimization, n
 
 **One-sentence summary**: Modern variants try to keep the same idea while reducing the cost of maintaining a separate draft model.
 
-### 7.1 Classic speculative decoding
-
-This is the Leviathan et al. 2023 setup. A separate small model drafts, a large model verifies, and the output distribution matches the large model exactly.
-
-### 7.2 Speculative sampling and related formulations
-
-Different papers package the same family of ideas with slightly different acceptance logic, implementation details, or performance analyses. The shared goal is the same: batch verification while preserving target-quality sampling.
-
-### 7.3 Medusa and multi-head drafting
-
-Methods like **Medusa** avoid an entirely separate draft model by attaching extra decoding heads to the main model. The model predicts several future positions in parallel, then verifies them. This can simplify deployment because there is no second model to host, although it may require training modifications.
-
-### 7.4 Self-speculative decoding
-
-Another direction uses early exits or lighter internal pathways from the same model as the draft source. The intuition is appealing: let the large model make a rough guess using a cheaper internal computation path, then confirm with the full path.
+| Variant | How it works | Pros | Cons |
+|---|---|---|---|
+| Classic speculative decoding | Separate small model drafts, large model verifies (Leviathan et al. 2023) | Mathematically exact output distribution; conceptually simple | Need to host and manage a second model |
+| Speculative sampling variants | Same core idea, different acceptance logic or implementation details | Different trade-offs for different serving stacks | No fundamental difference from classic approach |
+| Medusa / multi-head drafting | Attach extra decoding heads to the main model to predict future positions in parallel | No separate draft model needed; simpler deployment | Requires training modifications to add extra heads |
+| Self-speculative decoding | Use early exits or lighter internal paths of the same model as draft source | No second model at all; "same model, guess then verify" | May sacrifice some draft quality compared to a dedicated small model |
 
 ### 7.5 How are draft models trained?
 
