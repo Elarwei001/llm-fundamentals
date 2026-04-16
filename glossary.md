@@ -163,6 +163,7 @@
 | Scaling Laws | 缩放定律 | 模型性能与规模的关系 |
 | Self-Attention | 自注意力 | Token 之间相互计算注意力 |
 | Self-supervised Learning | 自监督学习 | 标签来自数据本身的机器学习方法，无需人类标注 |
+| Speculative Decoding | 推测解码 | 用小模型先提议多个 token，再由大模型成批验证以加速推理 |
 | Semantic Space | 语义空间 | 嵌入向量所在的高维空间，相似含义的词距离更近 |
 | SentencePiece | SentencePiece | Google 的语言无关子词分词器 |
 | Skip-gram | Skip-gram | Word2Vec 的一种变体，从中心词预测上下文 |
@@ -179,6 +180,7 @@
 | Token | Token | 文本的基本单位 |
 | Tokenizer | 分词器 | 将文本转换为 token 的工具 |
 | Transformer | Transformer | 基于注意力机制的神经网络架构 |
+| Verification Pass | 验证前向 / 验证步骤 | 目标模型对草稿 token 块进行一次性检查的前向计算 |
 
 ## U
 

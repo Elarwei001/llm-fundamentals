@@ -1,6 +1,6 @@
 {
-  "current_day": 16,
-  "last_generated": "2026-04-14",
+  "current_day": 18,
+  "last_generated": "2026-04-16",
   "total_days": 60,
   "status": "active",
   "history": [
@@ -255,6 +255,36 @@
         "zh/images/day16/temperature-distribution.png",
         "zh/images/day16/top-k-vs-top-p.png",
         "zh/images/day16/sampling-strategy-map.png"
+      ]
+    },
+    {
+      "day": 17,
+      "date": "2026-04-15",
+      "topic": "KV Cache",
+      "en_path": "en/day17-kv-cache.md",
+      "zh_path": "zh/day17-kv-cache.md",
+      "qa_score": 91.4,
+      "qa_rounds": 1,
+      "images": [
+        "zh/images/day17/prefill-vs-decode-cost.png",
+        "zh/images/day17/kv-cache-memory-growth.png",
+        "zh/images/day17/kv-cache-per-layer.png",
+        "zh/images/day17/paged-attention-blocks.png"
+      ]
+    },
+    {
+      "day": 18,
+      "date": "2026-04-16",
+      "topic": "Speculative Decoding",
+      "en_path": "en/day18-speculative-decoding.md",
+      "zh_path": "zh/day18-speculative-decoding.md",
+      "qa_score": 92.4,
+      "qa_rounds": 1,
+      "images": [
+        "zh/images/day18/speculative-timeline.png",
+        "zh/images/day18/acceptance-walk.png",
+        "zh/images/day18/speedup-vs-acceptance.png",
+        "zh/images/day18/draft-model-tradeoff-map.png"
       ]
     }
   ]
