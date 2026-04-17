@@ -60,7 +60,7 @@ $$
 If you double the sequence length, you do not merely double the attention work. You roughly quadruple it.
 
 ![Figure 1: Quadratic cost of full attention](../zh/images/day19/quadratic-cost-vs-context.png)
-*Caption: Full attention becomes much more expensive as the context window grows. This is one reason long-context inference is costly even when the model architecture stays the same.*
+*Full attention becomes much more expensive as the context window grows. This is one reason long-context inference is costly even when the model architecture stays the same.*
 
 That quadratic scaling shows up in two ways:
 
@@ -78,7 +78,7 @@ A good analogy is a meeting room. With 10 people, letting everyone talk to every
 **One-sentence summary**: Extending context requires solving positional representation, attention efficiency, and memory management at the same time.
 
 ![Figure 2: The long-context pipeline](../zh/images/day19/long-context-pipeline.png)
-*Caption: A large context window is not one trick. It requires the position scheme, attention pattern, and serving system to scale together.*
+*A large context window is not one trick. It requires the position scheme, attention pattern, and serving system to scale together.*
 
 ### 3.1 Position must still make sense far beyond training length
 
@@ -126,12 +126,12 @@ This sounds obvious, but it is expensive. Long examples are costly to batch, slo
 ### 4.2 Position interpolation and RoPE scaling
 
 ![Figure 4: Intuition for RoPE](../zh/images/day19/rope-intuition.png)
-*Caption: RoPE rotates query and key vectors by position-dependent angles, so relative position is encoded directly inside attention. This is why RoPE can preserve order without a separate absolute-position table.*
+*RoPE rotates query and key vectors by position-dependent angles, so relative position is encoded directly inside attention. This is why RoPE can preserve order without a separate absolute-position table.*
 
 For RoPE-based models, a common trick is to *rescale* positions so that a wider inference range maps more gently onto the positional frequencies learned during training.
 
 ![Figure 3: Position extension intuition](../zh/images/day19/position-extension-intuition.png)
-*Caption: Naively extrapolating position signals far beyond the training range can distort the phase pattern. Position interpolation or scaling compresses the larger range back into a better-behaved regime.*
+*Naively extrapolating position signals far beyond the training range can distort the phase pattern. Position interpolation or scaling compresses the larger range back into a better-behaved regime.*
 
 A simple intuition is this: if the model learned smooth positional patterns from 0 to 4K, then asking it to jump directly to 128K may be like stretching a rubber band too far. Position interpolation compresses the new longer sequence back into a range whose geometry is more familiar.
 
@@ -140,7 +140,7 @@ That is not free. Compression helps stability, but it can also make very distant
 ### 4.3 ALiBi and length-friendly biasing
 
 ![Figure 5: Intuition for ALiBi](../zh/images/day19/alibi-intuition.png)
-*Caption: ALiBi adds a simple distance-based penalty to attention scores. Farther tokens are penalized more, so the model becomes distance-aware without needing a fixed embedding for each absolute position.*
+*ALiBi adds a simple distance-based penalty to attention scores. Farther tokens are penalized more, so the model becomes distance-aware without needing a fixed embedding for each absolute position.*
 
 ALiBi uses linear attention biases that encourage distance-aware behavior without relying on fixed learned embeddings for each absolute position. This often generalizes more gracefully to longer sequences, though performance depends on the model and task.
 
@@ -165,7 +165,7 @@ This is why **long context** and **RAG (Retrieval-Augmented Generation)** are co
 One of the most important lessons from long-context evaluation is that usable recall is not uniform across positions.
 
 ![Figure 4: Lost in the middle](../zh/images/day19/lost-in-the-middle.png)
-*Caption: Toy retrieval curves illustrating a common pattern: facts near the edges of the prompt are often easier to recover than facts buried deep in the middle.*
+*Toy retrieval curves illustrating a common pattern: facts near the edges of the prompt are often easier to recover than facts buried deep in the middle.*
 
 In many studies, models perform better when the key fact is:
 
