@@ -233,25 +233,13 @@ So when a company advertises “1M context,” the correct question is not only 
 
 These three ideas are often mixed up.
 
-### 6.1 Long context
-
-This is what the model can read *right now* in the current forward pass.
-
-### 6.2 Retrieval
-
-This is a system outside the model that searches a larger corpus and inserts relevant chunks into the prompt.
-
-### 6.3 Memory
-
-In agent systems, memory often means structured storage across turns or sessions: notes, summaries, vector stores, user profiles, task state, and so on.
+| Concept | What it is | Best use |
+|---|---|---|
+| **Long context** | What the model can read *right now* in the current forward pass | Continuity and precise grounding within a bounded set of documents |
+| **Retrieval** | A system outside the model that searches a larger corpus and inserts relevant chunks into the prompt | When the knowledge base is much larger than any sensible prompt |
+| **Memory** | Structured storage across turns or sessions: notes, summaries, vector stores, user profiles, task state, and so on | Persistent state across time |
 
 A larger context window helps because you can keep more raw history without summarizing. But it does not replace retrieval or memory management. If you dump 500 pages into context, you may overload the model with irrelevant text. More context can become more distraction.
-
-A good rule of thumb is:
-
-- use **long context** for continuity and precise grounding in a bounded set of documents,
-- use **retrieval** when the knowledge base is much larger than any sensible prompt,
-- use **memory** for persistent state across time.
 
 In practice, the best agent systems combine all three.
 
