@@ -253,6 +253,14 @@ This is why modern long-context evaluation is usually split into several categor
 - **global understanding**,
 - **instruction following under long context**.
 
+| Evaluation theme | What it tests | Current research progress | Real-world examples |
+|---|---|---|---|
+| **Retrieval** | Can the model find one crucial fact buried in a long context? | This is the most mature and widely studied setting. Needle-in-a-haystack, passkey retrieval, and key-value retrieval are now standard sanity checks for long-context models. | Searching a legal contract for one clause, finding a date in a medical record, locating a function definition in a large codebase |
+| **Aggregation** | Can the model combine many relevant facts scattered across the context? | Progress is mixed. Models are often decent at retrieving one fact, but weaker when they must gather 10-20 small facts and summarize them consistently. | Summarizing a long meeting transcript, extracting all action items from a chat history, consolidating evidence across many documents |
+| **Multi-hop reasoning** | Can the model connect facts from multiple distant locations and reason across them? | Still challenging. Benchmarks increasingly test not just recall but chaining: fact A from one section plus fact B from another section must be combined to answer correctly. | Tracing dependencies across multiple files in a code repository, answering questions that require linking two distant sections of a research report |
+| **Global understanding** | Does the model grasp the overall structure, theme, or argument of a very long document? | Harder than people expect. Models may remember fragments but still miss the full narrative, discourse structure, or main claim. | Understanding a book chapter, a long strategy memo, or the overall arc of a court opinion |
+| **Instruction following under long context** | Can the model obey the user’s instruction while ignoring distracting text inside the long prompt? | An active practical concern. Long prompts often contain many competing instructions, quoted text, or tool outputs. Models can drift or follow the wrong instruction source. | Following the current user task inside a long agent trajectory, answering based only on the newest policy, ignoring outdated instructions in prior context |
+
 Beyond custom needle tests, common academic benchmarks include **LongBench**, **RULER**, and **InfiniteBench**, which test broader long-context abilities such as question answering, summarization, retrieval, and reasoning.
 
 In industry, teams often combine:
