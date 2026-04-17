@@ -160,7 +160,24 @@ ALiBi uses linear attention biases that encourage distance-aware behavior withou
 
 Some architectures reduce cost by giving each token local attention plus occasional global access. This is like reading a long book by keeping sharp awareness of the current chapter while also checking the table of contents or a few bookmarks.
 
-The downside is obvious: if the relevant fact is far away and not connected through the chosen sparse pattern, retrieval becomes harder.
+> **How is this implemented?**
+>
+> The key idea is to change the **attention mask / connectivity pattern**.
+>
+> In full attention, token *i* can attend to every token from 1 to *n*. In sparse attention, token *i* is only allowed to attend to:
+> - a small **local window** around itself, and
+> - a few special **global tokens**.
+>
+> **Example:** If the current token is at position 1000, it might only attend to positions 992–1008 (local neighbors), plus a few anchor positions such as:
+> - the first token,
+> - a section-summary token,
+> - or a manually designated global token.
+>
+> So the model does not look everywhere. It only looks at **nearby tokens + a few long-range shortcuts**.
+>
+> **Why is this cheaper?** Instead of comparing each token against all *n* positions, it only compares against a small window plus a few global anchors. That can reduce the cost from quadratic growth toward something much closer to linear.
+>
+> **What is the trade-off?** If an important fact is far away and not reachable through the sparse pattern, retrieval becomes harder. Information must travel step by step through local windows, or pass through a global token acting like a relay station.
 
 ### 4.5 External memory and retrieval instead of raw stuffing
 
