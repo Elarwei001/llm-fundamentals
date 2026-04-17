@@ -128,6 +128,21 @@ This sounds obvious, but it is expensive. Long examples are costly to batch, slo
 ![Figure 4: Intuition for RoPE](../zh/images/day19/rope-intuition.png)
 *RoPE rotates query and key vectors by position-dependent angles, so relative position is encoded directly inside attention. This is why RoPE can preserve order without a separate absolute-position table.*
 
+> **Why does RoPE act on Q and K, not V?**
+>
+> Because attention scores are computed from the dot product $Q_i \cdot K_j$. That is the step where the model decides **who to attend to**. If you want position information to directly affect attention scores, the natural place to put it is in **Q and K**.
+>
+> - **Q (query)** = what the current token is looking for
+> - **K (key)** = what each past token can offer
+> - **V (value)** = the actual content retrieved *after* scoring
+>
+> If only Q were rotated but K stayed unchanged, the dot product would not encode relative position in a stable way. But if **both Q and K are rotated by their own positions**, the dot product naturally becomes a function of the **rotation difference**, which corresponds to relative position.
+>
+> In short: **Q/K decide "who to look at," so RoPE belongs there. V carries content after the score is already computed.**
+
+![Figure 5: Why RoPE rotates Q and K](../zh/images/day19/rope-qk-why.png)
+*RoPE is applied to Q and K because attention scores come from $QK^T$. Rotating both makes the score depend on relative position. V is not part of the scoring step, so it usually is not rotated.*
+
 For RoPE-based models, a common trick is to *rescale* positions so that a wider inference range maps more gently onto the positional frequencies learned during training.
 
 ![Figure 3: Position extension intuition](../zh/images/day19/position-extension-intuition.png)
@@ -139,7 +154,7 @@ That is not free. Compression helps stability, but it can also make very distant
 
 ### 4.3 ALiBi and length-friendly biasing
 
-![Figure 5: Intuition for ALiBi](../zh/images/day19/alibi-intuition.png)
+![Figure 6: Intuition for ALiBi](../zh/images/day19/alibi-intuition.png)
 *ALiBi adds a simple distance-based penalty to attention scores. Farther tokens are penalized more, so the model becomes distance-aware without needing a fixed embedding for each absolute position.*
 
 ALiBi uses linear attention biases that encourage distance-aware behavior without relying on fixed learned embeddings for each absolute position. This often generalizes more gracefully to longer sequences, though performance depends on the model and task.
