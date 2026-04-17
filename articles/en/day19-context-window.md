@@ -145,12 +145,9 @@ This sounds obvious, but it is expensive. Long examples are costly to batch, slo
 
 For RoPE-based models, a common trick is to *rescale* positions so that a wider inference range maps more gently onto the positional frequencies learned during training.
 
-![Figure 3: Position extension intuition](../zh/images/day19/position-extension-intuition.png)
-*Naively extrapolating position signals far beyond the training range can distort the phase pattern. Position interpolation or scaling compresses the larger range back into a better-behaved regime.*
-
-A simple intuition is this: if the model learned smooth positional patterns from 0 to 4K, then asking it to jump directly to 128K may be like stretching a rubber band too far. Position interpolation compresses the new longer sequence back into a range whose geometry is more familiar.
-
-That is not free. Compression helps stability, but it can also make very distant positions less distinguishable from one another. In other words, extension often trades precision for reach.
+| Intuitive reading of the figure | Figure |
+|---|---|
+| **Blue line: Seen during training (0–4K)**<br><br>This is the range the model truly saw during training. For the model, this is the “normal operating zone,” and it learned this smooth positional rhythm well.<br><br>**Orange dashed line: Naive extrapolation to 32K**<br><br>This shows what happens if you do nothing and simply stretch the original RoPE out to 32K. The curve oscillates wildly, meaning the positional signal has entered a regime the model never learned. Position sense becomes distorted.<br><br>**Green line: Position interpolation / scaling**<br><br>This shows the effect of rescaling. The longer range is compressed back into a scale that looks more familiar to the model, so the curve becomes smoother and more stable again.<br><br>**What the figure is really saying:**<br>It is not that the green line is “more correct.” The point is that without rescaling, RoPE at very long positions enters a region the model never learned. Interpolation/scaling tries to make the long-context positional pattern look more like the pattern seen during training.<br><br>**Trade-off:** This compression improves stability, but it also makes very distant positions less distinguishable from one another. In effect, long-context extension often trades some positional precision for more reach. | ![Figure 3: Position extension intuition](../zh/images/day19/position-extension-intuition.png)<br><br>*Naively extrapolating position signals far beyond the training range can distort the phase pattern. Position interpolation or scaling compresses the larger range back into a better-behaved regime.* |
 
 ### 4.3 ALiBi and length-friendly biasing
 
