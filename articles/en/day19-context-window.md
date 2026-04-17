@@ -187,7 +187,9 @@ This is why **long context** and **RAG (Retrieval-Augmented Generation)** are co
 
 ---
 
-## 5. Why long context still fails, the “lost in the middle” problem
+## 5. Why long context still fails
+
+### 5.1 The “lost in the middle” problem
 
 **One-sentence summary**: Models often retrieve information near the beginning or end of a long prompt more reliably than information buried in the middle.
 
