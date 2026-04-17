@@ -125,6 +125,9 @@ This sounds obvious, but it is expensive. Long examples are costly to batch, slo
 
 ### 4.2 Position interpolation and RoPE scaling
 
+![Figure 4: Intuition for RoPE](../zh/images/day19/rope-intuition.png)
+*Caption: RoPE rotates query and key vectors by position-dependent angles, so relative position is encoded directly inside attention. This is why RoPE can preserve order without a separate absolute-position table.*
+
 For RoPE-based models, a common trick is to *rescale* positions so that a wider inference range maps more gently onto the positional frequencies learned during training.
 
 ![Figure 3: Position extension intuition](../zh/images/day19/position-extension-intuition.png)
@@ -135,6 +138,9 @@ A simple intuition is this: if the model learned smooth positional patterns from
 That is not free. Compression helps stability, but it can also make very distant positions less distinguishable from one another. In other words, extension often trades precision for reach.
 
 ### 4.3 ALiBi and length-friendly biasing
+
+![Figure 5: Intuition for ALiBi](../zh/images/day19/alibi-intuition.png)
+*Caption: ALiBi adds a simple distance-based penalty to attention scores. Farther tokens are penalized more, so the model becomes distance-aware without needing a fixed embedding for each absolute position.*
 
 ALiBi uses linear attention biases that encourage distance-aware behavior without relying on fixed learned embeddings for each absolute position. This often generalizes more gracefully to longer sequences, though performance depends on the model and task.
 
