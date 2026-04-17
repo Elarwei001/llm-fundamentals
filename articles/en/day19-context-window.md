@@ -193,8 +193,18 @@ This is why **long context** and **RAG (Retrieval-Augmented Generation)** are co
 
 One of the most important lessons from long-context evaluation is that usable recall is not uniform across positions.
 
-![Figure 4: Lost in the middle](../zh/images/day19/lost-in-the-middle.png)
+![Figure 7: Lost in the middle](../zh/images/day19/lost-in-the-middle.png)
 *Toy retrieval curves illustrating a common pattern: facts near the edges of the prompt are often easier to recover than facts buried deep in the middle.*
+
+> **What does "toy retrieval curves" mean?**
+>
+> This is **not** the name of an algorithm, and not the name of a formal benchmark. Here, **toy** means a simplified teaching figure, and **retrieval curves** means curves showing how often the model successfully recovers a fact when that fact is placed at different positions in the prompt.
+>
+> The research idea is simple: put one crucial fact at the beginning, middle, or end of a long context, then ask a question that can only be answered if the model retrieves that fact. Plot accuracy against the fact's position, and you get a retrieval curve.
+>
+> This figure is a **conceptual visualization** of a common result, not an exact reproduction of one paper's raw data.
+>
+> The most famous paper behind this line of work is **Liu et al., 2024, _Lost in the Middle: How Language Models Use Long Contexts_**. That paper showed a recurring pattern: many models retrieve facts near the beginning or end more reliably than facts buried in the middle.
 
 In many studies, models perform better when the key fact is:
 
