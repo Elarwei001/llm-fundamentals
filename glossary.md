@@ -7,6 +7,7 @@
 | English | 中文 | 简要说明 |
 |---------|------|----------|
 | Activation Function | 激活函数 | 引入非线性的函数，如 ReLU、Sigmoid |
+| ALiBi | ALiBi / 线性偏置注意力 | Attention with Linear Biases，通过距离相关的线性偏置帮助模型外推到更长输入长度 |
 | Attention | 注意力机制 | 让模型关注输入的不同部分 |
 | Autoregressive | 自回归 | 根据前面的 token 预测下一个 token |
 
@@ -71,6 +72,7 @@
 |---------|------|----------|
 | Gradient Descent | 梯度下降 | 优化神经网络的核心算法 |
 | GPT | GPT | Generative Pre-trained Transformer |
+| Grouped-Query Attention (GQA) | 分组查询注意力 | 多个 query 头按组共享 key/value 的注意力变体，降低缓存开销 |
 
 ## H
 
@@ -91,7 +93,7 @@
 
 | English | 中文 | 简要说明 |
 |---------|------|----------|
-| KV Cache | KV 缓存 | 加速自回归生成的技术 |
+| KV Cache | KV 缓存 | 在推理时缓存历史 token 的 key/value 张量，避免重复计算 |
 
 ## L
 
@@ -111,6 +113,7 @@
 | MLP | 多层感知机 | Multi-Layer Perceptron，基础神经网络 |
 | MoE | 混合专家 | Mixture of Experts，稀疏激活架构 |
 | Multi-head Attention | 多头注意力 | 并行计算多组注意力 |
+| Multi-Query Attention (MQA) | 多查询注意力 | 多个 query 头共享同一组 key/value 的注意力变体，降低解码内存带宽压力 |
 
 ## N
 
@@ -132,12 +135,15 @@
 
 | English | 中文 | 简要说明 |
 |---------|------|----------|
+| Paged Attention | 分页注意力 | 将 KV 缓存按块存储和映射的推理优化技术，常用于减少内存碎片 |
 | Parameter | 参数 | 模型中可学习的权重 |
 | Phase Transition | 相变 | 在临界阈值发生的质的变化（物理学概念，用于类比涌现） |
 | Pipeline Parallelism | 流水线并行 | 不同 Transformer 层分布在不同 GPU 上，数据像流水线一样流过 |
 | Position Encoding | 位置编码 | 让模型感知 token 顺序 |
+| Position Interpolation | 位置插值 | 通过重缩放位置索引，把更长序列压缩映射到模型更熟悉的位置范围 |
 | Power Law | 幂律 | 变量间的乘幂关系，如 $y \propto x^{\alpha}$，缩放定律的数学基础 |
 | Pre-training | 预训练 | 在大规模数据上的初始训练 |
+| Prefix Caching | 前缀缓存 | 复用共享 prompt 前缀的 prefill 结果，避免重复构建 KV 缓存 |
 | Prompt | 提示词 | 给模型的输入指令 |
 
 ## Q
@@ -167,6 +173,7 @@
 | Semantic Space | 语义空间 | 嵌入向量所在的高维空间，相似含义的词距离更近 |
 | SentencePiece | SentencePiece | Google 的语言无关子词分词器 |
 | Skip-gram | Skip-gram | Word2Vec 的一种变体，从中心词预测上下文 |
+| Sliding-Window Attention | 滑动窗口注意力 | 每个 token 主要关注固定邻域内的 token，以降低长序列计算和内存成本 |
 | Softmax | Softmax | 将 logits 转换为概率分布 |
 | Subword Tokenization | 子词分词 | 介于字符和词之间的分词策略 |
 | Synthetic Data | 合成数据 | 由模型生成的用于训练其他模型的数据 |

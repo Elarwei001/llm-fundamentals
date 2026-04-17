@@ -1,6 +1,6 @@
 {
-  "current_day": 13,
-  "last_generated": "2026-04-09",
+  "current_day": 19,
+  "last_generated": "2026-04-17",
   "total_days": 60,
   "status": "active",
   "history": [
@@ -185,7 +185,7 @@
       "topic": "Fine-tuning",
       "en_path": "en/day12-fine-tuning.md",
       "zh_path": "zh/day12-fine-tuning.md",
-"qa_score": 91.2,
+      "qa_score": 91.2,
       "qa_rounds": 0,
       "images": [
         "zh/images/day12/full-finetuning-vs-lora.png",
@@ -209,6 +209,97 @@
         "zh/images/day13/ppo-optimization-loop.png",
         "zh/images/day13/reward-hacking-and-kl-penalty.png",
         "zh/images/day13/base-vs-sft-vs-rlhf.png"
+      ]
+    },
+    {
+      "day": 14,
+      "date": "2026-04-10",
+      "topic": "RLHF Data & Practice",
+      "en_path": "en/day14-rlhf-data-and-practice.md",
+      "zh_path": "zh/day14-rlhf-data-and-practice.md",
+      "qa_score": 91.0,
+      "qa_rounds": 0,
+      "images": [
+        "zh/images/day14/rlhf-data-pipeline.png",
+        "zh/images/day14/preference-annotation-workflow.png",
+        "zh/images/day14/rlhf-cost-breakdown.png",
+        "zh/images/day14/annotation-quality-metrics.png",
+        "zh/images/day14/rlhf-vs-rlaif.png"
+      ]
+    },
+    {
+      "day": 15,
+      "date": "2026-04-13",
+      "topic": "DPO and Alternatives",
+      "en_path": "en/day15-dpo-and-alternatives.md",
+      "zh_path": "zh/day15-dpo-and-alternatives.md",
+      "qa_score": 91.0,
+      "qa_rounds": 0,
+      "images": [
+        "zh/images/day15/rlhf-vs-dpo-pipeline.png",
+        "zh/images/day15/dpo-loss-visualization.png",
+        "zh/images/day15/alignment-methods-comparison.png",
+        "zh/images/day15/dpo-training-dynamics.png",
+        "zh/images/day15/alignment-timeline.png"
+      ]
+    },
+    {
+      "day": 16,
+      "date": "2026-04-14",
+      "topic": "Sampling Strategies",
+      "en_path": "en/day16-sampling-strategies.md",
+      "zh_path": "zh/day16-sampling-strategies.md",
+      "qa_score": 0,
+      "qa_rounds": 0,
+      "images": [
+        "zh/images/day16/temperature-distribution.png",
+        "zh/images/day16/top-k-vs-top-p.png",
+        "zh/images/day16/sampling-strategy-map.png"
+      ]
+    },
+    {
+      "day": 17,
+      "date": "2026-04-15",
+      "topic": "KV Cache",
+      "en_path": "en/day17-kv-cache.md",
+      "zh_path": "zh/day17-kv-cache.md",
+      "qa_score": 91.4,
+      "qa_rounds": 1,
+      "images": [
+        "zh/images/day17/prefill-vs-decode-cost.png",
+        "zh/images/day17/kv-cache-memory-growth.png",
+        "zh/images/day17/kv-cache-per-layer.png",
+        "zh/images/day17/paged-attention-blocks.png"
+      ]
+    },
+    {
+      "day": 18,
+      "date": "2026-04-16",
+      "topic": "Speculative Decoding",
+      "en_path": "en/day18-speculative-decoding.md",
+      "zh_path": "zh/day18-speculative-decoding.md",
+      "qa_score": 92.4,
+      "qa_rounds": 1,
+      "images": [
+        "zh/images/day18/speculative-timeline.png",
+        "zh/images/day18/acceptance-walk.png",
+        "zh/images/day18/speedup-vs-acceptance.png",
+        "zh/images/day18/draft-model-tradeoff-map.png"
+      ]
+    },
+    {
+      "day": 19,
+      "date": "2026-04-17",
+      "topic": "Context Window",
+      "en_path": "en/day19-context-window.md",
+      "zh_path": "zh/day19-context-window.md",
+      "qa_score": 91.8,
+      "qa_rounds": 0,
+      "images": [
+        "zh/images/day19/quadratic-cost-vs-context.png",
+        "zh/images/day19/long-context-pipeline.png",
+        "zh/images/day19/position-extension-intuition.png",
+        "zh/images/day19/lost-in-the-middle.png"
       ]
     }
   ]
