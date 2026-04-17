@@ -225,6 +225,40 @@ A useful analogy is searching a long email thread. You usually remember the open
 
 So when a company advertises “1M context,” the correct question is not only “Can it ingest 1M?” but also “How reliably can it recover a small fact from position 523,814?”
 
+### 5.2 How long-context retrieval is evaluated
+
+A common evaluation family is **Needle-in-a-Haystack** testing.
+
+The idea is simple:
+- prepare a very long context full of mostly irrelevant text (the haystack),
+- insert one short but crucial fact (the needle),
+- ask a question that can only be answered if the model finds that fact.
+
+**Example:** hide a sentence like *"The secret code is 47291"* somewhere inside a 100K-token prompt, then ask *"What is the secret code?"*
+
+Researchers usually vary several things:
+- **context length** (8K, 32K, 128K, 1M),
+- **needle position** (beginning, middle, end, random),
+- **needle complexity** (simple string, number, multi-hop clue),
+- **distractor strength** (similar fake facts nearby, repeated mentions, noisy context).
+
+> **Important:** passing a needle test does not necessarily mean the model deeply understands the whole context. Sometimes it only proves the model can retrieve and copy one buried fact.
+
+This is why modern long-context evaluation is usually split into several categories:
+- **retrieval**,
+- **aggregation**,
+- **multi-hop reasoning**,
+- **global understanding**,
+- **instruction following under long context**.
+
+Beyond custom needle tests, common academic benchmarks include **LongBench**, **RULER**, and **InfiniteBench**, which test broader long-context abilities such as question answering, summarization, retrieval, and reasoning.
+
+In industry, teams often combine:
+- **synthetic tests** like needle-in-a-haystack or passkey retrieval, and
+- **real task tests** such as legal search, codebase navigation, or long customer-support threads.
+
+So the practical lesson is: **“supports 1M context” is only the capacity claim. The real capability question is whether the model can still retrieve, reason over, and correctly use information buried inside that 1M.**
+
 ---
 
 ## 6. Long context versus memory versus RAG
