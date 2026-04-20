@@ -216,6 +216,19 @@ But there are caveats.
 
 So the deeper lesson is not "always ask for step-by-step reasoning." It is: **good prompts allocate computation and structure to the hard parts of the task**.
 
+> **Concrete example:** Suppose the task is to classify a long news article into *politics*, *business*, or *technology*.
+>
+> A weak prompt says: *"Read this article and classify it."* That leaves the model to decide everything itself, and it may waste effort on surface details.
+>
+> A stronger prompt says:
+> 1. Identify the main event.
+> 2. Identify the key people or organizations involved.
+> 3. Decide whether the article is mainly about politics, business, or technology.
+> 4. If more than one label seems plausible, explain the ambiguity in one sentence.
+> 5. Output the final label and confidence.
+>
+> This prompt adds **structure** (clear steps) and allocates more **computation** to the hardest part, the category boundary and ambiguity, instead of letting the model guess too quickly.
+
 ---
 
 ## 6. Prompt engineering versus fine-tuning
