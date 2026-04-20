@@ -291,35 +291,15 @@ This is a major shift in modern LLM application design. People used to hunt for 
 
 Here is a practical workflow that works better than prompt superstition.
 
-### Step 1: Define success precisely
-
-What should a correct answer look like? What wrong answers are common but unacceptable?
-
-### Step 2: Specify the output format
-
-If downstream code or humans need a particular structure, lock that down early.
-
-### Step 3: Add only the necessary context
-
-Include the evidence, examples, or metadata that truly changes the answer.
-
-### Step 4: Add constraints
-
-Examples: "cite the source sentence," "do not use external knowledge," "if uncertain, say insufficient information."
-
-### Step 5: Add examples if ambiguity remains
-
-Few-shot examples are especially useful when there is a subtle decision boundary.
-
-### Step 6: Evaluate on adversarial cases
-
-Do not test only easy inputs. Test edge cases, conflicting evidence, missing fields, and noisy documents.
-
-### Step 7: Decide whether the problem is really a prompt problem
-
-Sometimes people keep rewriting prompts when the real issue is missing retrieval, missing tools, bad data, or a model that is too weak for the task.
-
-Prompt engineering is powerful, but it is not a miracle patch for every product failure.
+| Step | What to do | Why it matters |
+|---|---|---|
+| **1. Define success precisely** | State what a correct answer should look like and what wrong answers are unacceptable | If success is vague, the prompt will be vague |
+| **2. Specify the output format** | Lock down the schema, fields, or structure early | Downstream code or human reviewers need predictable outputs |
+| **3. Add only the necessary context** | Include only evidence, examples, or metadata that truly changes the answer | Extra context can become noise rather than help |
+| **4. Add constraints** | Examples: cite the source sentence, do not use external knowledge, say "insufficient information" if needed | Constraints reduce failure modes and make behavior more reliable |
+| **5. Add examples if ambiguity remains** | Use few-shot examples when the decision boundary is subtle | Examples often teach better than long abstract instructions |
+| **6. Evaluate on adversarial cases** | Test edge cases, conflicting evidence, missing fields, and noisy documents | Easy examples can hide real failure modes |
+| **7. Decide whether this is really a prompt problem** | Ask whether the bottleneck is actually retrieval, tools, data quality, or model capability | Prompting is powerful, but it is not a miracle patch for every product failure |
 
 ---
 
@@ -327,21 +307,12 @@ Prompt engineering is powerful, but it is not a miracle patch for every product 
 
 **One-sentence summary**: Many myths about prompt engineering come from treating prompts as magic spells instead of temporary task specifications.
 
-### Misconception 1: There exists one perfect universal prompt
-
-No. Prompts are highly task-dependent and model-dependent.
-
-### Misconception 2: Longer prompts are always better
-
-No. Useful information helps. Irrelevant verbosity hurts.
-
-### Misconception 3: Prompt engineering will disappear because models get smarter
-
-Partly false. Crude wording sensitivity may decline, but specification will always matter. Even a brilliant assistant still needs clear instructions, good context, and explicit constraints.
-
-### Misconception 4: Prompt engineering is only about wording tricks
-
-Also false. The deeper work is task design: examples, structure, tools, retrieval, validation, and output contracts.
+| Misconception | Reality |
+|---|---|
+| **There exists one perfect universal prompt** | No. Prompts are highly task-dependent and model-dependent |
+| **Longer prompts are always better** | No. Useful information helps; irrelevant verbosity hurts |
+| **Prompt engineering will disappear because models get smarter** | Only partly true. Crude wording sensitivity may decline, but specification will always matter |
+| **Prompt engineering is only about wording tricks** | False. The deeper work is task design: examples, structure, tools, retrieval, validation, and output contracts |
 
 ---
 
