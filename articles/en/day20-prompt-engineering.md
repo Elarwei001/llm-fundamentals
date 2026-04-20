@@ -283,6 +283,27 @@ A nice rule is: **add information that changes the correct answer, remove inform
 
 This is a major shift in modern LLM application design. People used to hunt for one perfect prompt. Strong systems now use **prompt pipelines** with retrieval, tools, self-checks, and structured outputs.
 
+### 7.1 What are prompt pipelines?
+
+A **prompt pipeline** means you do not ask one giant prompt to do everything at once. Instead, you split the task into stages, and each stage has its own prompt, tool, or check.
+
+A typical pipeline might look like this:
+
+| Stage | What happens |
+|---|---|
+| Query rewriting | Rewrite the user question into a better search query |
+| Retrieval | Search documents or databases for relevant evidence |
+| Evidence filtering | Keep only the passages actually needed |
+| Draft answer | Generate an answer from the selected evidence |
+| Verification | Check whether each claim is supported |
+| Final formatting | Convert the result into the required schema or style |
+
+This is different from **chain-of-thought**. Chain-of-thought usually means one model response expands its reasoning internally. A prompt pipeline is a **system-level workflow** with multiple steps, and it can include retrieval, tool use, and explicit validation.
+
+**Why use a pipeline?** Because one prompt often has too many jobs at once: understand the task, find evidence, reason, format the output, and avoid hallucinations. Splitting the work makes the system easier to debug and more reliable, especially for high-stakes tasks.
+
+**Trade-off:** pipelines improve control, but they also add latency and engineering complexity. They are most useful when the task is multi-step, high-risk, or tool-heavy.
+
 ---
 
 ## 8. A practical recipe for prompt design

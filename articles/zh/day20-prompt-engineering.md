@@ -287,6 +287,27 @@ $$
 
 这也是现代 LLM 系统设计的一个重要转向。早期大家迷信“一条完美 prompt”。现在更成熟的做法是：**prompt pipeline + retrieval + tools + validation + structured outputs**。
 
+### 7.1 什么是 prompt pipeline？
+
+**Prompt pipeline** 的意思是：不要指望一条超长 prompt 一次性把所有事情做完，而是把任务拆成多个阶段，每个阶段有自己的 prompt、工具或校验步骤。
+
+一个典型 pipeline 可能长这样：
+
+| 阶段 | 发生了什么 |
+|---|---|
+| Query rewriting | 先把用户问题改写成更适合检索的查询 |
+| Retrieval | 去文档或数据库里找相关证据 |
+| Evidence filtering | 只保留真正需要的段落 |
+| Draft answer | 基于筛选后的证据生成草稿答案 |
+| Verification | 检查每个结论是否真的有依据 |
+| Final formatting | 把结果整理成要求的 schema 或风格 |
+
+它和 **chain-of-thought** 不一样。Chain-of-thought 通常还是一次模型响应，只是在内部展开推理；而 prompt pipeline 是一个**系统层面的多步工作流**，中间可以插入检索、工具调用和显式校验。
+
+**为什么要这样做？** 因为一条 prompt 往往同时承担太多职责：理解任务、找证据、推理、控制格式、避免 hallucination。拆开之后，系统更容易调试，也更可靠，尤其适合高风险任务。
+
+**代价：** pipeline 会提升可控性，但也会增加延迟和工程复杂度。它最适合多步骤、高风险、强依赖工具的任务。
+
 ---
 
 ## 8. 一个实用的 prompt 设计流程
