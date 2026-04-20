@@ -1,6 +1,6 @@
 {
-  "current_day": 18,
-  "last_generated": "2026-04-16",
+  "current_day": 20,
+  "last_generated": "2026-04-20",
   "total_days": 60,
   "status": "active",
   "history": [
@@ -285,6 +285,36 @@
         "zh/images/day18/acceptance-walk.png",
         "zh/images/day18/speedup-vs-acceptance.png",
         "zh/images/day18/draft-model-tradeoff-map.png"
+      ]
+    },
+    {
+      "day": 19,
+      "date": "2026-04-17",
+      "topic": "Context Window",
+      "en_path": "en/day19-context-window.md",
+      "zh_path": "zh/day19-context-window.md",
+      "qa_score": 91.8,
+      "qa_rounds": 0,
+      "images": [
+        "zh/images/day19/quadratic-cost-vs-context.png",
+        "zh/images/day19/long-context-pipeline.png",
+        "zh/images/day19/position-extension-intuition.png",
+        "zh/images/day19/lost-in-the-middle.png"
+      ]
+    },
+    {
+      "day": 20,
+      "date": "2026-04-20",
+      "topic": "Prompt Engineering",
+      "en_path": "en/day20-prompt-engineering.md",
+      "zh_path": "zh/day20-prompt-engineering.md",
+      "qa_score": 92.6,
+      "qa_rounds": 0,
+      "images": [
+        "zh/images/day20/prompt-anatomy.png",
+        "zh/images/day20/in-context-learning-pattern.png",
+        "zh/images/day20/prompt-decomposition-tree.png",
+        "zh/images/day20/specificity-vs-performance.png"
       ]
     }
   ]

@@ -64,6 +64,7 @@
 |---------|------|----------|
 | Fine-tuning | 微调 | 在预训练模型基础上针对特定任务训练 |
 | FlashAttention | FlashAttention | 内存高效的注意力计算方法 |
+| Few-shot Prompting | 少样本提示 | 在 prompt 中提供少量示例，让模型临时学会任务模式 |
 | Function Calling | 函数调用 | LLM 调用外部工具的能力 |
 
 ## G
@@ -88,6 +89,7 @@
 | In-context Learning | 上下文学习 | 通过 prompt 中的示例学习，无需更新参数 |
 | Inference | 推理 | 使用训练好的模型进行预测 |
 | Inference-Time Scaling | 推理时缩放 | 通过增加推理计算（如更长的思维链）提升性能 |
+| Instruction Tuning | 指令微调 | 用指令-回答数据训练模型，使其更好地遵循自然语言指令 |
 
 ## K
 
@@ -145,6 +147,7 @@
 | Pre-training | 预训练 | 在大规模数据上的初始训练 |
 | Prefix Caching | 前缀缓存 | 复用共享 prompt 前缀的 prefill 结果，避免重复构建 KV 缓存 |
 | Prompt | 提示词 | 给模型的输入指令 |
+| Prompt Engineering | 提示工程 | 通过设计指令、上下文、示例和输出约束来改善模型行为的方法 |
 
 ## Q
 

@@ -73,7 +73,7 @@
 | D17 | KV Cache | Why inference can be accelerated, memory-compute trade-off | Inference optimization |
 | D18 | Speculative Decoding | Using small models to speed up large model inference | [EN](articles/en/day18-speculative-decoding.md) / [中文](articles/zh/day18-speculative-decoding.md) |
 | D19 | Context Window | From 2K to 1M, long context technology evolution | [EN](articles/en/day19-context-window.md) / [中文](articles/zh/day19-context-window.md) |
-| D20 | **Prompt Engineering** | In-context learning, why prompts matter | Practical skill |
+| D20 | **Prompt Engineering** | In-context learning, why prompts matter | [EN](articles/en/day20-prompt-engineering.md) / [中文](articles/zh/day20-prompt-engineering.md) |
 
 ### Week 5: Model Capability Boundaries
 
