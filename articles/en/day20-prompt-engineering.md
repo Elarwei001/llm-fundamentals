@@ -267,34 +267,19 @@ Prompt engineering is best seen as the fastest control surface. Fine-tuning is t
 
 **One-sentence summary**: Prompt failures are usually failures of specification, salience, overload, or verification.
 
-### 7.1 Vague goals
-
-"Analyze this" is underspecified. Analyze for what? Risk? sentiment? timeline? root cause? audience level?
-
-### 7.2 Conflicting instructions
-
-If you ask for "be concise" and also "cover every detail," the model must guess which instruction matters more.
-
-### 7.3 Context overload
-
-More context is not always better. Irrelevant content can drown the signal.
+| Failure mode | What it looks like | Why it fails |
+|---|---|---|
+| **Vague goals** | "Analyze this" | The task is underspecified. Analyze for what, risk, sentiment, timeline, root cause, or audience level? |
+| **Conflicting instructions** | "Be concise" and "cover every detail" in the same prompt | The model must guess which instruction matters more |
+| **Context overload** | Huge prompt with lots of irrelevant material | Noise drowns the real signal |
+| **Missing format constraints** | You want a table, schema, ranked list, or JSON, but never say so | The model improvises the format |
+| **No grounding requirement** | The task should rely only on provided documents, but that is never stated | The model may mix prompt evidence with background knowledge and produce unsupported claims |
+| **No validation loop** | High-stakes task handled in one pass with no checks | Errors go unverified; a second pass, tools, or explicit validation would be safer |
 
 ![Figure 4: Specificity versus performance](../zh/images/day20/specificity-vs-performance.png)
 *Caption: Better prompts usually add useful structure first. After a point, too much detail or irrelevant context can hurt quality and increase latency.*
 
 A nice rule is: **add information that changes the correct answer, remove information that only increases confusion**.
-
-### 7.4 Missing format constraints
-
-If you need a table, schema, or ranked list, ask for it explicitly.
-
-### 7.5 No grounding requirement
-
-If the model should only use the provided documents, say so. Otherwise it may combine prompt evidence with background knowledge and produce confident but unsupported claims.
-
-### 7.6 No validation loop
-
-If the task is high stakes, one-pass prompting is rarely enough. Add checks, tool use, or a second verification step.
 
 This is a major shift in modern LLM application design. People used to hunt for one perfect prompt. Strong systems now use **prompt pipelines** with retrieval, tools, self-checks, and structured outputs.
 
