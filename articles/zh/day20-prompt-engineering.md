@@ -29,7 +29,7 @@
 自回归语言模型生成答案的方式可以写成：
 
 $$
-P(y \mid x) = \prod_{t=1}^{T} P(y_t \mid x, y_{<t}),
+P(y \mid x) = \prod_{t=1}^{T} P(y_t \mid x, y_{1:t-1}),
 $$
 
 其中 $x$ 是 prompt，$y$ 是输出序列。只要你改了 prompt，也就是改了 $x$，后面每一个 token 的条件概率都会变化。

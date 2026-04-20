@@ -27,7 +27,7 @@ This article explains what prompt engineering really is, why it works, the main 
 An autoregressive language model produces tokens according to
 
 $$
-P(y \mid x) = \prod_{t=1}^{T} P(y_t \mid x, y_{<t}),
+P(y \mid x) = \prod_{t=1}^{T} P(y_t \mid x, y_{1:t-1}),
 $$
 
 where $x$ is the prompt and $y$ is the generated answer. Prompt engineering changes $x$, so it changes every later conditional probability.
