@@ -116,8 +116,9 @@ Common causes include:
 4. **Context overload**: in long prompts, key evidence may be buried or contradicted by distractors.
 5. **Tool-output mismatch**: the system may retrieve evidence in one format while the model is prompted to answer in another, causing brittle synthesis.
 
-![Figure 2: Several paths can lead to the same symptom](../zh/images/day21/hallucination-causes-map.png)
-*Caption: Hallucinated answers are usually the visible symptom of multiple upstream problems, not one isolated defect.*
+| Explanation | Figure |
+|---|---|
+| **What do “decoding effects” mean?**<br><br>Even if the model’s internal probability distribution is already a bit shaky, the **decoding strategy** is what decides which token actually gets emitted. This includes choices like greedy decoding, temperature, top-k, and top-p sampling.<br><br>If the distribution contains some low-quality but plausible-looking continuations, an aggressive sampling strategy can amplify them. In other words, the model may already be uncertain, and decoding decides whether that uncertainty turns into a cautious answer or a confident-looking hallucination.<br><br>So decoding effects are not always the root cause. They often act as an **amplifier**: upstream problems create weak candidates, and decoding determines whether one of those weak candidates becomes the actual output and then snowballs. | ![Figure 2: Several paths can lead to the same symptom](../zh/images/day21/hallucination-causes-map.png)<br><br>*Hallucinated answers are usually the visible symptom of multiple upstream problems, not one isolated defect.* | 
 
 This is why saying “just use RAG” is too shallow. Retrieval reduces hallucination only when three conditions hold:
 
