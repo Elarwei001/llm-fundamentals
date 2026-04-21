@@ -10,6 +10,7 @@
 | ALiBi | ALiBi / 线性偏置注意力 | Attention with Linear Biases，通过距离相关的线性偏置帮助模型外推到更长输入长度 |
 | Attention | 注意力机制 | 让模型关注输入的不同部分 |
 | Autoregressive | 自回归 | 根据前面的 token 预测下一个 token |
+| Abstention | 保留判断 / 拒答 | 在证据不足时选择明确表示不确定或拒绝给出结论 |
 
 ## B
 
@@ -57,6 +58,7 @@
 | Emergent Abilities | 涌现能力 | 在特定模型规模突然出现的能力，小模型完全不具备 |
 | Emergence | 涌现 | 大模型展现出小模型没有的能力 |
 | Encoder | 编码器 | Transformer 的理解部分 |
+| Exposure Bias | 暴露偏差 | 训练时看真实前缀、推理时看模型自生成前缀所带来的分布差异 |
 
 ## F
 
@@ -64,6 +66,7 @@
 |---------|------|----------|
 | Fine-tuning | 微调 | 在预训练模型基础上针对特定任务训练 |
 | FlashAttention | FlashAttention | 内存高效的注意力计算方法 |
+| Factuality | 事实性 / 事实一致性 | 输出与真实世界事实或可信证据保持一致的程度 |
 | Few-shot Prompting | 少样本提示 | 在 prompt 中提供少量示例，让模型临时学会任务模式 |
 | Function Calling | 函数调用 | LLM 调用外部工具的能力 |
 
@@ -73,6 +76,7 @@
 |---------|------|----------|
 | Gradient Descent | 梯度下降 | 优化神经网络的核心算法 |
 | GPT | GPT | Generative Pre-trained Transformer |
+| Grounding | 基于证据对齐 / 落地支撑 | 让模型的回答明确建立在输入文档、检索结果或工具输出之上 |
 | Grouped-Query Attention (GQA) | 分组查询注意力 | 多个 query 头按组共享 key/value 的注意力变体，降低缓存开销 |
 
 ## H

@@ -79,7 +79,7 @@
 
 | Day | Topic | Core Question | Trend Source |
 |-----|-------|---------------|--------------|
-| D21 | **Hallucination Problem** | Why LLMs confidently make things up | 🔥 Common question |
+| D21 | **Hallucination Problem** | Why LLMs confidently make things up | [EN](articles/en/day21-hallucination-problem.md) / [中文](articles/zh/day21-hallucination-problem.md) |
 | D22 | Reasoning Ability | Can LLMs really reason? The nature of Chain-of-Thought | Capability debate |
 | D23 | Math and Logic | Why LLMs struggle with math, return of Symbolic AI | Known limitations |
 | D24 | World Models | Do LLMs have world models? Yann LeCun vs Ilya | Academic debate |

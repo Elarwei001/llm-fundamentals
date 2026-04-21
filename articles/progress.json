@@ -1,6 +1,6 @@
 {
-  "current_day": 20,
-  "last_generated": "2026-04-20",
+  "current_day": 21,
+  "last_generated": "2026-04-21",
   "total_days": 60,
   "status": "active",
   "history": [
@@ -315,6 +315,21 @@
         "zh/images/day20/in-context-learning-pattern.png",
         "zh/images/day20/prompt-decomposition-tree.png",
         "zh/images/day20/specificity-vs-performance.png"
+      ]
+    },
+    {
+      "day": 21,
+      "date": "2026-04-21",
+      "topic": "Hallucination Problem",
+      "en_path": "en/day21-hallucination-problem.md",
+      "zh_path": "zh/day21-hallucination-problem.md",
+      "qa_score": 92.4,
+      "qa_rounds": 0,
+      "images": [
+        "zh/images/day21/confidence-vs-factuality.png",
+        "zh/images/day21/hallucination-causes-map.png",
+        "zh/images/day21/mitigation-ladder.png",
+        "zh/images/day21/teacher-forcing-vs-inference.png"
       ]
     }
   ]
