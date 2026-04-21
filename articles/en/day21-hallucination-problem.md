@@ -74,6 +74,8 @@ That objective is powerful because so much structure is hidden inside language. 
 
 If the training data often contains a pattern like “Question -> specific answer,” then a specific answer may receive higher probability than a careful refusal, even when the model is operating near the boundary of what it actually knows.
 
+> **Intuition:** the model may not be confidently correct, but it has learned a strong habit: when a question appears, a concrete answer usually follows. In the gray zone where it only half-knows the fact, producing a specific-looking answer can still look more like the training distribution than saying “I’m not sure.” In other words, the model is rewarded for sounding like an answer machine before it is rewarded for being epistemically cautious.
+
 This is one reason a model may guess instead of saying “I don’t know.” During standard supervised language modeling, guessing can still be locally rewarded if the guess often resembles what answers look like in the corpus.
 
 A good analogy is autocomplete on steroids. Autocomplete is excellent at producing the next likely phrase. But “likely continuation” and “truthful response to a novel question” are only partly aligned.
