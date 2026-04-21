@@ -62,7 +62,7 @@ A useful phrase here is **factuality**. Factuality asks whether the answer match
 A language model is trained to minimize next-token prediction loss:
 
 $$
-\mathcal{L} = - \sum_{t=1}^{T} \log P(x_t \mid x_{<t}).
+\mathcal{L} = - \sum_{t=1}^{T} \log P(x_t \mid x_{1:t-1}).
 $$
 
 That objective is powerful because so much structure is hidden inside language. It teaches syntax, semantics, style, broad world knowledge, and many latent task patterns. But notice what it does **not** directly say. It does not say:
@@ -139,7 +139,7 @@ If retrieval fetches a semantically similar but wrong document, the model may be
 
 Another structural issue is the gap between training and inference.
 
-During training, models often use **teacher forcing**: when predicting token $x_t$, the model is conditioned on the true prefix $x_{<t}$. During inference, it must condition on its own previous outputs.
+During training, models often use **teacher forcing**: when predicting token $x_t$, the model is conditioned on the true prefix $x_{1:t-1}$. During inference, it must condition on its own previous outputs.
 
 That means the distribution at generation time is different from the distribution at training time. If the model makes one unsupported claim early, that claim becomes part of the context for later tokens. The model may then elaborate on it, adding fake specifics, invented citations, and fabricated causal explanations.
 
