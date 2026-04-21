@@ -192,21 +192,12 @@ A practical slogan is: **prompting shapes behavior, retrieval supplies evidence,
 
 **One-sentence summary**: Hallucination is often misunderstood as either a solved problem or proof that LLMs are useless, and both extremes are wrong.
 
-### Misconception 1: “Hallucination means the model is broken.”
-
-Not exactly. Hallucination is a predictable consequence of using a probabilistic language model for tasks that users interpret as truth-seeking. The model can still be extremely useful if the task and safeguards fit the failure mode.
-
-### Misconception 2: “A better prompt can eliminate hallucination.”
-
-No. Prompting can reduce some failure modes, especially context confusion, but it cannot give the model real-time world knowledge or perfect verification.
-
-### Misconception 3: “RAG solves hallucination.”
-
-Also no. RAG reduces one class of failure by providing evidence, but retrieval itself can fail and the model can still misread, ignore, or overgeneralize from the evidence.
-
-### Misconception 4: “Hallucination only matters for factual Q&A.”
-
-It matters anywhere unsupported details are costly. That includes summaries, code generation, compliance reports, clinical notes, and agent tool use.
+| Misconception | Reality |
+|---|---|
+| **“Hallucination means the model is broken.”** | Not exactly. Hallucination is a predictable consequence of using a probabilistic language model for tasks users interpret as truth-seeking. The model can still be very useful if the task and safeguards fit the failure mode. |
+| **“A better prompt can eliminate hallucination.”** | No. Prompting can reduce some failure modes, especially context confusion, but it cannot give the model real-time world knowledge or perfect verification. |
+| **“RAG solves hallucination.”** | Also no. RAG reduces one class of failure by providing evidence, but retrieval itself can fail and the model can still misread, ignore, or overgeneralize from that evidence. |
+| **“Hallucination only matters for factual Q&A.”** | False. It matters anywhere unsupported details are costly, including summaries, code generation, compliance reports, clinical notes, and agent tool use. |
 
 ---
 
