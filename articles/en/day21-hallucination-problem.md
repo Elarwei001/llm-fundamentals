@@ -228,6 +228,14 @@ $$
 
 where $q$ is the question and $\lambda$ reflects how strongly the system uses retrieved evidence.
 
+> **Plain-English intuition:** the final answer is like a mixture of two habits:
+> - answering from the model's own old memory $M$,
+> - and answering from the retrieved evidence $R$.
+>
+> If $\lambda$ is larger, the system relies more on retrieval. If retrieval is correct and relevant, that usually helps. But if retrieval is noisy, outdated, or semantically similar-but-wrong, then a larger $\lambda$ can make the model more confidently wrong, because it is now leaning harder on bad evidence.
+>
+> So this formula is not saying the model literally computes a clean weighted average internally. It is a **cartoon intuition**: RAG helps when the final answer is pushed more by good evidence than by stale parametric memory.
+
 If retrieval is relevant and the prompt emphasizes grounding, increasing $\lambda$ should reduce unsupported claims. But if retrieval is noisy or irrelevant, a larger $\lambda$ may not help. In other words, retrieval is not magic. It only helps when the evidence pipeline is good.
 
 ---
