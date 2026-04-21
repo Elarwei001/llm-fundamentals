@@ -92,19 +92,11 @@ Some recent work frames the issue in terms of training and evaluation incentives
 
 LLMs do not store facts the way a database does. They compress statistical patterns from huge corpora into parameters. This gives them impressive recall, but it has hard limits.
 
-### 3.1 Compression is not exact storage
-
-When a model answers “Who wrote *The Hobbit*?” the answer is usually reliable because that fact is common and stable. But when you ask for a niche API change from last week or the page number of a specific result in a rare paper, the model is in a much weaker regime.
-
-The weights contain a blurry, distributed memory, not an indexed table with provenance.
-
-### 3.2 Knowledge can be outdated
-
-A pretrained model only knows what its training process gave it, plus what later fine-tuning added. If the world changes after the cutoff, the model may confidently answer from stale information.
-
-### 3.3 Long-tail facts are harder
-
-High-frequency patterns get reinforced during training. Rare facts, rare names, and edge-case details receive much weaker support. This is why models are often good at broad explanations but weaker on exact citations, obscure entities, and rapidly changing data.
+| Problem | What it means | Why it matters |
+|---|---|---|
+| **Compression is not exact storage** | Model weights contain a blurry, distributed memory, not an indexed table with provenance | Common stable facts are often reliable, but niche API changes, rare paper details, or exact citations are much weaker |
+| **Knowledge can be outdated** | A pretrained model only knows what was present before its cutoff, plus what later tuning added | If the world changes after the cutoff, the model may confidently answer from stale information |
+| **Long-tail facts are harder** | Rare facts, rare names, and edge-case details receive much weaker training support | Models are often good at broad explanations but weaker on obscure entities, exact references, and rapidly changing data |
 
 You can think of the model’s knowledge boundary like the edge of a map. Near the center, the terrain is detailed. Near the edge, the model still tries to draw roads, but some of them are invented.
 
