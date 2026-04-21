@@ -80,6 +80,8 @@ This is one reason a model may guess instead of saying “I don’t know.” Dur
 
 A good analogy is autocomplete on steroids. Autocomplete is excellent at producing the next likely phrase. But “likely continuation” and “truthful response to a novel question” are only partly aligned.
 
+> **Intuition:** Sometimes the most likely continuation is also the true answer, as in “The capital of France is ... Paris.” But for a rare or novel question, the model may not really know the fact. It still has strong pressure to continue with something that *looks like an answer* — a date, a number, a name, a fluent sentence. So “what sounds like the next plausible phrase” and “what is actually true” overlap often, but they are not the same objective.
+
 Some recent work frames the issue in terms of training and evaluation incentives. If systems are rewarded for producing complete-looking answers more than calibrated uncertainty, then confident guessing becomes rational under the objective, even if it is harmful for users.
 
 ---
