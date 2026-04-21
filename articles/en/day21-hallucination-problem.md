@@ -145,6 +145,8 @@ That means the distribution at generation time is different from the distributio
 
 This is sometimes discussed under **exposure bias**. The idea is simple. The model is exposed during training to clean prefixes more often than to its own imperfect generations. So at test time, it may respond poorly to the kind of corrupted context it created itself.
 
+> **A useful intuition:** in effect, the model gets pulled into a pattern of *making the current story hang together*. Once a wrong claim enters the prefix, the next-token objective rewards local coherence, so later tokens often continue to support that claim rather than stop and correct it. The model is not deliberately lying, but it can behave as if it is trying to "make its story self-consistent."
+
 This helps explain why hallucinations often come in clusters. Once the answer starts drifting, later details may be built on top of an already false premise.
 
 ---
