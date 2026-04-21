@@ -173,39 +173,13 @@ For users, the operational lesson is blunt: **confidence must be earned by groun
 
 There is no universal fix, but there is a reliable hierarchy of interventions.
 
-### 7.1 Better prompts and better task framing
-
-Prompting helps most when it reduces ambiguity. Good prompts can require the model to:
-
-- answer only from provided evidence,
-- quote supporting spans,
-- separate facts from assumptions,
-- say “insufficient evidence” when needed,
-- or return structured uncertainty fields.
-
-This does not solve hallucination, but it often reduces unnecessary speculation.
-
-### 7.2 Retrieval and tool use
-
-When the question depends on external facts, retrieval usually helps more than clever wording alone. Search tools, databases, documentation lookup, and calculators all provide something the base model lacks: contact with the outside world.
-
-This is one reason modern AI systems look increasingly like **LLM + tools** rather than “LLM alone.”
-
-### 7.3 Verification and cross-checking
-
-After generation, you can run a second pass that checks claims against sources. The checker can be:
-
-- symbolic, like schema validation,
-- retrieval-based, like source attribution,
-- or model-based, like claim verification with explicit evidence.
-
-### 7.4 Abstention and calibrated refusal
-
-In many domains, a useful system should be allowed to refuse. A partial answer plus uncertainty marker is often much better than a fabricated complete answer.
-
-### 7.5 Training-time improvements
-
-Fine-tuning on grounded data, preference tuning for honesty, and factuality-aware objectives can all help. But these methods are complements, not replacements, for good system design.
+| Mitigation | What it does | Why it helps |
+|---|---|---|
+| **Better prompts and better task framing** | Reduce ambiguity, require evidence use, separate facts from assumptions, request uncertainty fields | Often reduces unnecessary speculation, though it does not solve hallucination by itself |
+| **Retrieval and tool use** | Bring in search, databases, documentation lookup, calculators, and other tools | Gives the model contact with the outside world rather than relying only on parametric memory |
+| **Verification and cross-checking** | Run a second pass to check claims against sources, schemas, or explicit evidence | Catches unsupported claims after generation |
+| **Abstention and calibrated refusal** | Allow the system to say “I don’t know” or provide a partial answer with uncertainty markers | Safer than forcing a confident full answer in high-risk domains |
+| **Training-time improvements** | Fine-tune on grounded data, encourage honesty, or optimize for factuality-aware behavior | Helps on average, but still complements rather than replaces good system design |
 
 ![Figure 4: The mitigation ladder](../zh/images/day21/mitigation-ladder.png)
 *Caption: Prompting helps, but grounding and verification usually have larger effects on factual reliability.*
