@@ -169,29 +169,13 @@ Of course, the trade-off is obvious. More test-time compute means more latency a
 
 It is tempting to see reasoning benchmarks improving and conclude that the debate is settled. I think that would be too optimistic.
 
-There are at least five recurring failure modes.
-
-### 5.1 Arithmetic and symbolic brittleness
-
-LLMs can perform surprisingly well on some arithmetic tasks, especially when given scratchpads, but they are still brittle. Exact symbolic manipulation is unforgiving. One incorrect carry digit or variable substitution can corrupt the whole solution.
-
-This happens because neural sequence models are approximate function learners, not exact symbolic machines by default. Sometimes they simulate the algorithm well enough. Sometimes they drift.
-
-### 5.2 Premature heuristic closure
-
-A model may latch onto a familiar template too early. Instead of genuinely exploring the problem, it recognizes a superficial resemblance to something common in training and commits fast. Humans do this too, but LLMs have a particularly strong pressure toward locally plausible continuations.
-
-### 5.3 Faithfulness gaps
-
-The model’s written steps may not be the real causal story behind the answer. This makes debugging hard. If the chain is partly a rationalization, inspecting it tells you less than you hope.
-
-### 5.4 Long-horizon planning problems
-
-Multi-step planning across many constraints is still a weak spot. Even if each local step looks reasonable, the global plan may violate a constraint introduced ten steps earlier. Maintaining a consistent world model over long trajectories remains difficult.
-
-### 5.5 Weak self-verification
-
-People often say, “Just ask the model to check its own work.” Sometimes that helps. Often it does not. If the same biases that produced the mistake are reused during verification, the checker may simply bless the wrong answer in a more formal tone.
+| Failure mode | What it looks like | Why it happens |
+|---|---|---|
+| **Arithmetic and symbolic brittleness** | One wrong carry digit or substitution can corrupt the whole solution | Neural sequence models are approximate function learners, not exact symbolic machines by default |
+| **Premature heuristic closure** | The model locks onto a familiar template too early instead of genuinely exploring the problem | It feels strong pressure toward locally plausible continuations |
+| **Faithfulness gaps** | The written reasoning steps may not be the real causal story behind the answer | Some chains are partly rationalizations rather than faithful traces |
+| **Long-horizon planning problems** | Local steps look reasonable, but the global plan violates constraints introduced much earlier | Maintaining a consistent world model across long trajectories is still hard |
+| **Weak self-verification** | The model “checks” its own work but simply blesses the same wrong answer in a more formal tone | The same biases may be reused during verification |
 
 ![Figure 4: Several different failure modes hide under the label “bad reasoning”](../zh/images/day22/reasoning-failure-modes.png)
 *Caption: Reasoning failures can arise from arithmetic slips, unfaithful chains, premature heuristics, lack of tools, or weak verifiers.*
