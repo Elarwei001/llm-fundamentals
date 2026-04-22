@@ -103,6 +103,12 @@ But there is a catch. The visible chain is not guaranteed to be a faithful trans
 
 A model may produce a convincing explanation *after* already being biased toward an answer. It may rationalize. It may include irrelevant steps that sound logical. It may reach the right answer for the wrong reason. This is why researchers distinguish **performance gains from reasoning traces** and **faithfulness of reasoning traces**.
 
+> **Plainly stated:** these are two different questions.
+> - **Performance gains from reasoning traces** = does asking the model to write intermediate steps improve accuracy?
+> - **Faithfulness of reasoning traces** = do those written steps actually reflect the model's real internal path to the answer?
+>
+> A student can sometimes guess the right answer first and then write a neat-looking solution afterward. In that case, the visible reasoning trace may still help performance or satisfy the teacher, but it is not a faithful window into how the answer was actually produced. Researchers separate these two ideas because the first can be true even when the second is false.
+
 Think of it like a student who got the answer first from intuition, then reverse-engineered a neat derivation to satisfy the teacher. The derivation may look fine, and the answer may even be correct, but the derivation was not actually what generated the answer.
 
 This matters for safety and interpretability. If we treat every natural-language chain as ground truth about model internals, we will overestimate how transparent the system really is.
