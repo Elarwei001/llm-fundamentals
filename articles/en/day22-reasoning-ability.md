@@ -54,7 +54,7 @@ This is why debates become confusing. When one researcher says, “LLMs reason,�
 At first glance, next-token prediction sounds too weak to produce real reasoning. The training loss is just
 
 $$
-\mathcal{L} = -\sum_{t=1}^{T} \log P(x_t \mid x_{<t}).
+\mathcal{L} = -\sum_{t=1}^{T} \log P(x_t \mid x_{1:t-1}).
 $$
 
 There is no explicit variable called “belief,” no theorem prover built into the objective, and no hard guarantee that the model is learning correct world models. So why does reasoning-like behavior appear at all?

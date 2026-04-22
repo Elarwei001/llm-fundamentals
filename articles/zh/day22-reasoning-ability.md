@@ -54,7 +54,7 @@
 乍一看，next-token prediction 似乎太弱了，怎么可能支持真正推理？训练目标只是
 
 $$
-\mathcal{L} = -\sum_{t=1}^{T} \log P(x_t \mid x_{<t}).
+\mathcal{L} = -\sum_{t=1}^{T} \log P(x_t \mid x_{1:t-1}).
 $$
 
 这里没有一个显式叫“belief（信念）”的变量，也没有内置 theorem prover（定理证明器），更没有任何硬保证说模型一定学到了正确的世界模型。那为什么推理味道这么重的能力会出现？
