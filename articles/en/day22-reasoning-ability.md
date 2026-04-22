@@ -177,9 +177,6 @@ It is tempting to see reasoning benchmarks improving and conclude that the debat
 | **Long-horizon planning problems** | Local steps look reasonable, but the global plan violates constraints introduced much earlier | Maintaining a consistent world model across long trajectories is still hard |
 | **Weak self-verification** | The model “checks” its own work but simply blesses the same wrong answer in a more formal tone | The same biases may be reused during verification |
 
-![Figure 4: Several different failure modes hide under the label “bad reasoning”](../zh/images/day22/reasoning-failure-modes.png)
-*Caption: Reasoning failures can arise from arithmetic slips, unfaithful chains, premature heuristics, lack of tools, or weak verifiers.*
-
 A good mental model is that LLM reasoning today is **impressive but patchy**. It is strong enough to be useful, weak enough to be dangerous if you assume it is systematic.
 
 ---
