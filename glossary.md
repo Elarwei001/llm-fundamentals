@@ -65,6 +65,7 @@
 | English | 中文 | 简要说明 |
 |---------|------|----------|
 | Fine-tuning | 微调 | 在预训练模型基础上针对特定任务训练 |
+| Faithful Reasoning | 忠实推理 | 可见的推理过程与模型真实导致答案的内部因果过程较一致的性质 |
 | FlashAttention | FlashAttention | 内存高效的注意力计算方法 |
 | Factuality | 事实性 / 事实一致性 | 输出与真实世界事实或可信证据保持一致的程度 |
 | Few-shot Prompting | 少样本提示 | 在 prompt 中提供少量示例，让模型临时学会任务模式 |
@@ -174,6 +175,7 @@
 | English | 中文 | 简要说明 |
 |---------|------|----------|
 | Scaling Laws | 缩放定律 | 模型性能与规模的关系 |
+| Self-Consistency | 自洽采样 / 自一致性 | 采样多条推理路径并通过答案一致性选择更可靠结果的方法 |
 | Self-Attention | 自注意力 | Token 之间相互计算注意力 |
 | Self-supervised Learning | 自监督学习 | 标签来自数据本身的机器学习方法，无需人类标注 |
 | Speculative Decoding | 推测解码 | 用小模型先提议多个 token，再由大模型成批验证以加速推理 |
@@ -191,10 +193,12 @@
 | English | 中文 | 简要说明 |
 |---------|------|----------|
 | Temperature | 温度 | 控制生成随机性的参数 |
+| Test-Time Compute | 测试时计算 | 在推理阶段通过采样、搜索、验证等额外计算提升结果质量的做法 |
 | Token | Token | 文本的基本单位 |
 | Tokenizer | 分词器 | 将文本转换为 token 的工具 |
 | Transformer | Transformer | 基于注意力机制的神经网络架构 |
 | Verification Pass | 验证前向 / 验证步骤 | 目标模型对草稿 token 块进行一次性检查的前向计算 |
+| Verifier | 验证器 | 用来检查候选答案或中间步骤是否正确、是否有证据支撑的组件 |
 
 ## U
 

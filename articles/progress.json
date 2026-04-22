@@ -1,6 +1,6 @@
 {
-  "current_day": 21,
-  "last_generated": "2026-04-21",
+  "current_day": 22,
+  "last_generated": "2026-04-22",
   "total_days": 60,
   "status": "active",
   "history": [
@@ -330,6 +330,21 @@
         "zh/images/day21/hallucination-causes-map.png",
         "zh/images/day21/mitigation-ladder.png",
         "zh/images/day21/teacher-forcing-vs-inference.png"
+      ]
+    },
+    {
+      "day": 22,
+      "date": "2026-04-22",
+      "topic": "Reasoning Ability",
+      "en_path": "en/day22-reasoning-ability.md",
+      "zh_path": "zh/day22-reasoning-ability.md",
+      "qa_score": 91.35,
+      "qa_rounds": 0,
+      "images": [
+        "zh/images/day22/reasoning-task-map.png",
+        "zh/images/day22/cot-vs-difficulty.png",
+        "zh/images/day22/test-time-compute-tradeoff.png",
+        "zh/images/day22/reasoning-failure-modes.png"
       ]
     }
   ]
