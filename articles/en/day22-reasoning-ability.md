@@ -236,25 +236,13 @@ The right attitude is pragmatic. Treat reasoning traces like debug logs written 
 
 **One-sentence summary**: The biggest misunderstandings come from treating reasoning as either fully solved or completely fake.
 
-### Misconception 1: “If it is next-token prediction, it cannot reason.”
-
-This is too strong. Many sophisticated behaviors can emerge from simple training objectives when the data contains rich structure and the model has enough capacity.
-
-### Misconception 2: “If it writes a chain, that proves it reasoned.”
-
-Also too strong. A readable chain may help, but it is not definitive evidence of faithful internal reasoning.
-
-### Misconception 3: “Reasoning is just memorization.”
-
-Memorization matters for some tasks, but it cannot explain everything. Generalization to novel compositions, especially with search or tools, shows there is more going on than nearest-neighbor recall.
-
-### Misconception 4: “Bigger models automatically solve reasoning.”
-
-Scale helps, but brittle exactness and verification problems remain. Scaling alone does not replace good system design.
-
-### Misconception 5: “A model that reasons well in benchmarks will be reliable in production.”
-
-Benchmarks often isolate narrow tasks. Real systems face noisy input, ambiguous goals, missing evidence, tool errors, latency limits, and changing environments.
+| Misconception | Reality |
+|---|---|
+| **“If it is next-token prediction, it cannot reason.”** | Too strong. Many sophisticated behaviors can emerge from simple training objectives when the data contains rich structure and the model has enough capacity. |
+| **“If it writes a chain, that proves it reasoned.”** | Also too strong. A readable chain may help, but it is not definitive evidence of faithful internal reasoning. |
+| **“Reasoning is just memorization.”** | Memorization matters for some tasks, but it cannot explain everything. Generalization to novel compositions, especially with search or tools, shows there is more going on than nearest-neighbor recall. |
+| **“Bigger models automatically solve reasoning.”** | Scale helps, but brittle exactness and verification problems remain. Scaling alone does not replace good system design. |
+| **“A model that reasons well in benchmarks will be reliable in production.”** | Benchmarks often isolate narrow tasks. Real systems face noisy input, ambiguous goals, missing evidence, tool errors, latency limits, and changing environments. |
 
 ---
 
