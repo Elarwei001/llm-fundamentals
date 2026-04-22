@@ -129,6 +129,21 @@ $$
 P(y \mid x) = \sum_{r} P(y \mid r, x) P(r \mid x).
 $$
 
+> **How should you read this formula?**
+>
+> - **$x$** = the input problem or prompt
+> - **$y$** = the final answer
+> - **$r$** = one possible reasoning path or chain of thought
+>
+> The equation says: the probability of the final answer $y$ is the sum of contributions from **all possible reasoning paths** $r$.
+>
+> - **$P(r \mid x)$** = how likely the model is to follow reasoning path $r$ on this problem
+> - **$P(y \mid r, x)$** = if the model follows path $r$, how likely it is to end at answer $y$
+>
+> So the correct answer may be supported by multiple different reasoning paths, while wrong answers are often scattered across many inconsistent paths. That is why sampling several chains and taking the most consistent final answer can work better than trusting the first greedy chain.
+>
+> In that sense, self-consistency is trying to approximate this sum by sampling a few representative paths instead of enumerating all of them.
+
 Self-consistency approximates that marginalization by sampling several paths and aggregating answers.
 
 This opens a broader theme that has become central in modern reasoning systems: **test-time compute**. Instead of training a much larger base model, you can spend more inference compute on the same prompt by doing one or more of the following:
