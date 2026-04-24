@@ -161,7 +161,7 @@ where $\text{cont}_t$ is a continuation flag (episode not done), and the $\beta$
 
 ## 3. Architecture Deep Dive
 
-![Figure: World model architecture stack](../zh/images/day24/world-model-stack.png)
+![Figure: World model architecture stack](./images/day24/world-model-stack.png)
 *A world model architecture: encoder maps observations to latent states; the RSSM maintains deterministic and stochastic state paths; reward and continuation heads predict task signals; a decoder optionally reconstructs observations.*
 
 ### 3.1 Encoder
@@ -204,7 +204,7 @@ Alternative planning approaches include Cross-Entropy Method (CEM) for shooting-
 
 ## 4. What World Models Buy You That LLMs Don't
 
-![Figure: Next-token prediction vs world dynamics](../zh/images/day24/next-token-vs-world-dynamics.png)
+![Figure: Next-token prediction vs world dynamics](./images/day24/next-token-vs-world-dynamics.png)
 *Comparing the training objectives: next-token cross-entropy vs state-transition ELBO.*
 
 The "word model vs world model" framing is catchy but shallow. The real differences are structural and run far deeper than a pun.
@@ -282,7 +282,7 @@ The strongest counterarguments:
 
 ## 6. Current Frontier: Convergence and Open Problems
 
-![Figure: Planning in latent space](../zh/images/day24/planning-in-latent-space.png)
+![Figure: Planning in latent space](./images/day24/planning-in-latent-space.png)
 *Agents plan by imagining trajectories through learned latent dynamics before committing to actions in the real world.*
 
 ### 6.1 Video generation as world modeling
@@ -308,7 +308,7 @@ An emerging architecture combines a large pretrained vision-language model with 
 - **Long-horizon reliability**: Compounding error in latent space remains the fundamental bottleneck. Can hierarchical or compositional world models maintain coherence over thousands of steps?
 - **The architecture question**: Can a single architecture — presumably a large transformer — serve both as a language model and a world model, or are there fundamental tradeoffs between the distribution modeling required for language and the dynamics modeling required for planning?
 
-![Figure: World model limitations](../zh/images/day24/world-model-limitations-radar.png)
+![Figure: World model limitations](./images/day24/world-model-limitations-radar.png)
 *Radar chart of current world model limitations across key dimensions.*
 
 ---
