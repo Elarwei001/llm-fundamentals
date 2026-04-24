@@ -1,340 +1,390 @@
-# Day 24: World Models
+# Day 24: World Models — Learned Simulators of Reality
 
-> **Core Question**: Do LLMs actually have a model of the world, and what do researchers mean when they say future AI may need explicit world models?
+> **Core Question**: What does it mean for a system to *model* the world rather than merely describe it, and has this become the central architectural question in AI?
 
 ---
 
 ## Opening
 
-"World model" is one of those terms that sounds obvious until you try to define it.
+A toddler who has never seen a physics textbook still knows that a ball rolling behind a sofa continues to exist. She can predict, roughly, where it will emerge. She has, in some sense, a *model* of object permanence and physical dynamics — not a symbolic one, not one she can articulate, but one that supports prediction and action.
 
-When people say ChatGPT seems to understand the world, they usually mean something like this: it knows that cups fall when pushed, that lawyers write contracts before signing them, and that if Alice gives Bob a book then Alice no longer has that same copy. That kind of knowledge feels broader than memorized trivia. It feels structural. So a natural question follows: **has the model learned a world model, or has it only learned powerful word patterns?**
+The question of whether machine learning systems can acquire something analogous — an internal predictive model of how states of the world evolve under actions and time — has become one of the defining questions of the field. Not because it is new (control theorists and roboticists have studied state-space models for decades), but because two major research programs now converge on it from opposite directions. On one side, the reinforcement learning community has spent the last decade building increasingly sophisticated learned simulators — *world models* — that enable planning, imagination, and sample-efficient learning. On the other side, large language models trained on text alone appear, to some researchers, to have implicitly learned rich world structure through the proxy of next-token prediction.
 
-This question matters because it sits right in the middle of one of the biggest arguments in AI. One camp says large language models already learn compressed abstractions of the world by predicting text at enormous scale. Another camp says text alone is too indirect, and that robust intelligence, especially for planning, robotics, and long-horizon decision making, needs an explicit predictive model of how the world changes under actions.
+The debate is not merely philosophical. If LLMs already contain latent world models, then scaling language modeling further may be the most direct path to general intelligence. If they do not — if there is a fundamental gap between modeling the distribution of text and modeling the dynamics of the world — then we may need explicit architectural commitments to world modeling, and the question becomes: what form should those commitments take?
 
-Think of the difference like this. A very well-read travel writer may describe how to drive through Singapore traffic, where accidents usually happen, and what drivers tend to do in heavy rain. A driving simulator, by contrast, must actually predict what happens if you brake late, turn sharply, or accelerate into a merge. The first system models descriptions. The second system models dynamics.
-
-That is the core tension. LLMs are astonishingly good at modeling descriptions of the world. But in many settings, we want something stronger: a system that can imagine possible futures, estimate which ones are likely, and choose actions before paying the cost in reality.
-
-In this article we will make the term precise, separate weak and strong meanings of "world model," explain why the debate exists at all, and show where explicit world models help, where they currently struggle, and how they connect to the broader LLM roadmap.
+This article treats world models as a rigorous research topic, not a buzzword. We trace the intellectual lineage from classical control to modern latent dynamics models, work through the actual mathematics of how they are trained, examine the architectural innovations that make them work, and then confront the hard question: how do learned world models compare to what LLMs implicitly acquire?
 
 ---
 
-## 1. What people mean by a world model
+## 1. Academic Lineage: From State Estimation to Learned Simulators
 
-A **world model** is an internal predictive model of how states of the environment evolve, often including the effect of actions, uncertainty, and latent variables that are not directly observed.
+### 1.1 Classical roots
 
-That definition is deliberately broader than language. A world model is not just a bag of facts. It is closer to a compact simulator or belief tracker. It tries to answer questions such as:
+The idea that an agent should maintain an internal model of its environment predates machine learning entirely. In classical control theory, a *state-space model* consists of:
 
-- What hidden state best explains what I am seeing now?
-- If I take action $a_t$ in state $s_t$, what is likely to happen next?
-- Which future trajectories lead to reward, danger, or contradiction?
-- Which parts of the current observation matter causally, and which are just surface detail?
+$$s_{t+1} = f(s_t, a_t) + \epsilon_t, \quad o_t = g(s_t) + \eta_t$$
 
-A common abstract formulation is:
+where $s_t$ is the (possibly partially observed) state, $a_t$ is a control input, $o_t$ is an observation, and $\epsilon_t, \eta_t$ are noise terms. The Kalman filter (Kalman, 1960) provides the optimal recursive estimator for linear-Gaussian instances of this model. The entire framework presumes that someone — an engineer — has specified $f$ and $g$ by hand.
 
-$$
-P(s_{t+1}, o_{t+1}, r_{t+1} \mid s_t, a_t),
-$$
+### 1.2 Model-based reinforcement learning
 
-where $s_t$ is latent state, $a_t$ is action, $o_t$ is observation, and $r_t$ may be reward or task signal. The exact notation varies, but the key idea is stable: the model learns compressed state and predicts transitions.
+The transition to *learned* models began in earnest with Sutton's Dyna architecture (Sutton, 1991). Dyna interleaves real experience with *simulated* experience: the agent learns both a value function and a one-step model $\hat{P}(s_{t+1} | s_t, a_t)$, then uses the model to generate imaginary rollouts for additional policy updates. The insight was fundamental: a model, even an imperfect one, can massively amplify the value of each real interaction.
 
-This is why world models became important in reinforcement learning long before the current LLM boom. In the classical model-based RL story, the agent does not only learn a policy mapping observations directly to actions. It also learns or uses a model of the environment, then plans inside that model.
+Subsequent work tightened the loop. PILCO (Deisenroth & Rasmussen, 2011) used Gaussian processes as forward models, propagating uncertainty through predicted trajectories to achieve remarkable sample efficiency on low-dimensional control tasks. PETS (Chua et al., 2018) replaced GPs with ensembles of probabilistic neural networks, scaling to higher dimensions while retaining uncertainty-aware planning via model-predictive control (MPC).
 
-![Figure 1: A minimal world-model stack](../zh/images/day24/world-model-stack.png)
-*Caption: A world model typically contains an encoder, a latent state, a dynamics model, and a planner or policy that chooses actions using imagined futures.*
+### 1.3 Ha & Schmidhuber (2018): The turning point
 
-David Ha and Jürgen Schmidhuber's 2018 paper *World Models* made this framing intuitive for many people. Their agent learned a compressed representation of an environment and could even train a policy inside a hallucinated dream generated by the model. That was a vivid demonstration that useful behavior can emerge from planning over learned latent dynamics, not just from reacting to raw observations.
+The paper simply titled *World Models* (Ha & Schmidhuber, 2018) reframed the conversation for the deep learning era. Their system had three components: a VAE encoder compressing visual observations into latent vectors; an MDN-RNN predicting the next latent state given the current latent state and action; and a small controller mapping latent states to actions. The key result was that the controller could be trained *entirely inside the model's own dreams* — hallucinated trajectories sampled from the learned dynamics — and then transferred to the real environment.
 
-So at minimum, a world model is about **predictive structure**, not just factual lookup.
+This was vivid but architecturally limited. The VAE and RNN were trained separately, the latent space was purely stochastic with no deterministic path, and there was no variational inference over full sequences. But the conceptual impact was enormous: it showed that a learned simulator could replace a hand-engineered one, and that policies trained in imagination could work in reality.
 
----
+### 1.4 Dreamer: Recurrent State-Space Models
 
-## 2. Why the term became controversial in the LLM era
+The Dreamer line of work (Hafner et al., 2020; 2023) represents the current state of the art in learned world models for control. The core innovation is the **Recurrent State-Space Model (RSSM)**, which combines a deterministic recurrent path (a GRU or similar) with a stochastic latent path:
 
-The controversy appears because text prediction sits in an awkward middle ground.
+$$\bar{s}_t = f_\theta^{\text{det}}(\bar{s}_{t-1}, s_{t-1}, a_{t-1})$$
+$$s_t \sim q_\theta(s_t | \bar{s}_t, o_t)$$
 
-If you train a model on enough language, it clearly learns many regularities of the world. Otherwise it could not answer commonsense questions, continue stories coherently, or explain the causal skeleton of everyday situations. LLMs know a lot about people, objects, institutions, software systems, and even parts of physical reasoning.
+Here $\bar{s}_t$ is the deterministic state (carrying long-term memory through recurrence), $s_t$ is the stochastic state (capturing uncertainty about the current situation), and $q_\theta$ is an approximate posterior inferred from the current observation. The transition prior is $p_\theta(s_t | \bar{s}_t)$.
 
-But the route by which they learn this knowledge is indirect. The model sees **descriptions** of the world, not the world itself. It observes millions of sentences about collisions, marriages, legal disputes, and code execution, but it does not directly observe the underlying state transitions in the way a physics engine, robot, or video-based agent might.
+Dreamer trains the world model end-to-end via variational inference, then learns a policy and value function entirely in latent space using imagined rollouts. DreamerV2 (2021) introduced discrete latents via straight-through gradients; DreamerV3 (2023) demonstrated that a single fixed hyperparameter configuration achieves state-of-the-art across 150+ diverse benchmarks — a level of generality previously unseen in model-based RL.
 
-That leads to two different claims, and they are easy to confuse.
+### 1.5 LeCun's JEPA and beyond
 
-### Claim A: LLMs have some kind of world model
+Yann LeCun's Joint-Embedding Predictive Architecture (JEPA) proposal (LeCun, 2022) reframes world modeling away from pixel-level reconstruction. A JEPA predicts the *representation* of the next state rather than the next observation itself:
 
-This weaker claim is very plausible. If an LLM can answer questions about social norms, object affordances, causal sequences, and plausible consequences, then it must contain useful abstractions that reflect real-world structure. Otherwise its generalization would be too brittle.
+$$z_{t+1} = P_\theta(z_t, a_t)$$
 
-### Claim B: LLMs are sufficient as world models for autonomous intelligence
+where $z_t = \text{Enc}(o_t)$ and the predictor $P_\theta$ operates in embedding space. A critic network enforces that predicted embeddings lie on the manifold of valid representations, replacing reconstruction with a consistency constraint. The motivation is clear: much of what we perceive is irrelevant to planning, and forcing a model to reconstruct pixels wastes capacity on details that do not matter for decision-making.
 
-This stronger claim is much harder to defend. A text-trained model may capture many correlations and some causal patterns, but it is still missing several things that explicit world models care about: grounded state estimation, action-conditioned transitions, calibrated uncertainty over rollouts, and robust planning under feedback.
-
-![Figure 2: Word models and world models predict different things](../zh/images/day24/next-token-vs-world-dynamics.png)
-*Caption: An LLM predicts the next token from previous tokens. A world model predicts how states evolve, often under actions. These are related, but not identical, objectives.*
-
-That is why arguments in this area often sound more dramatic than they really are. The real issue is not whether LLMs know anything about the world. Clearly they do. The issue is whether next-token prediction alone is the right training objective for systems that must act, plan, and stay consistent across long horizons.
+The trajectory is clear: **hand-crafted simulators → learned dynamics with fixed representations → end-to-end learned latent simulators → prediction in abstract embedding spaces**. Each step trades generality for efficiency, and the current frontier asks whether this progression can merge with the capabilities of large-scale foundation models.
 
 ---
 
-## 3. Word models versus world models
+## 2. Core Formulation: Variational Inference over Latent Dynamics
 
-One useful slogan in this debate is **word models versus world models**. It is catchy, but it can also oversimplify.
+### 2.1 The generative model
 
-A word model predicts linguistic continuations:
+A world model defines a generative process over sequences of observations $o_{1:T}$, actions $a_{1:T}$, and rewards $r_{1:T}$. The core latent variable model is:
 
-$$
-P(x_t \mid x_{1:t-1}).
-$$
+$$p_\theta(o_{1:T}, r_{1:T}, s_{1:T} | a_{1:T}) = \prod_{t=1}^{T} p_\theta(o_t | s_t) \, p_\theta(r_t | s_t) \, p_\theta(s_t | s_{t-1}, a_{t-1})$$
 
-A world model predicts latent transitions and observations:
+where $s_t$ are latent states, $p_\theta(o_t | s_t)$ is the observation model (decoder), $p_\theta(r_t | s_t)$ is the reward model, and $p_\theta(s_t | s_{t-1}, a_{t-1})$ is the transition model. For the RSSM, the transition prior decomposes as $p_\theta(s_t | \bar{s}_t)$ where $\bar{s}_t$ is the deterministic recurrent state.
 
-$$
-P(s_{t+1}, o_{t+1} \mid s_t, a_t).
-$$
+### 2.2 Training via the ELBO
 
-That looks like a clean separation, but in practice language often carries compressed traces of world structure. Text is not reality, yet it is full of causal fingerprints left by reality. This is why a gigantic language model can partly behave like an implicit world model, especially for domains where humans have already written down a lot of structured experience.
+We cannot compute the true posterior $p(s_{1:T} | o_{1:T}, a_{1:T})$, so we introduce an approximate posterior $q_\theta(s_{1:T} | o_{1:T}, a_{1:T})$ — typically factorized as $\prod_t q_\theta(s_t | \bar{s}_t, o_t)$ — and maximize the evidence lower bound (ELBO):
 
-Still, three differences matter.
+$$\mathcal{L} = \mathbb{E}_{q(s_{1:T})} \left[ \sum_{t=1}^{T} \left( \log p_\theta(o_t | s_t) + \log p_\theta(r_t | s_t) \right) \right] - \sum_{t=1}^{T} \text{KL}\left( q_\theta(s_t | \bar{s}_t, o_t) \, \| \, p_\theta(s_t | \bar{s}_t) \right)$$
 
-### 3.1 Actions are optional in language, central in world models
+This decomposes into three interpretable terms:
 
-Most text is observational. It tells you what happened, not what would happen if **you** took a different action. World models care deeply about interventions and counterfactuals.
+- **Reconstruction loss**: $\log p_\theta(o_t | s_t)$ — can the latent state reconstruct the observation?
+- **Reward prediction**: $\log p_\theta(r_t | s_t)$ — does the latent state contain enough information to predict reward?
+- **KL regularization**: $\text{KL}(q \| p)$ — keeps the approximate posterior close to the transition prior, preventing the model from memorizing observations into the posterior without learning good dynamics.
 
-### 3.2 Hidden state matters more than surface wording
+This is *not* simply "predict the next state." It is approximate Bayesian inference: the model maintains a *belief* over latent states, updated by observations via the encoder and regularized by the learned dynamics. The KL term is what makes this a principled probabilistic model rather than a deterministic autoencoder with a prediction head.
 
-Two stories can look different in words while encoding the same latent situation. Conversely, the same sentence may correspond to different underlying states depending on context. Explicit world models are built to compress observations into latent state. LLMs do something like this internally, but not with the same training pressure or instrumentation.
+### 2.3 Deterministic vs. stochastic: why RSSM matters
 
-### 3.3 Planning quality depends on rollout quality
+Earlier models (Ha & Schmidhuber, 2018) used purely stochastic transitions. This created a problem: stochastic state alone forgets slowly. Gradients through sampling are noisy, and long-range dependencies degrade. The RSSM's innovation is the deterministic path $\bar{s}_t = f(\bar{s}_{t-1}, s_{t-1}, a_{t-1})$, which provides a stable memory channel. The stochastic state $s_t$ then only needs to capture *what is uncertain* about the current situation, conditioned on the deterministic summary. This separation is analogous to the way Kalman filters maintain both a state estimate and a covariance matrix — one for the best guess, one for the uncertainty.
 
-If you want an agent to imagine ten steps ahead, local fluency is not enough. The imagined future must remain dynamically coherent. Tiny transition errors compound over time.
+### 2.4 The full Dreamer-style loss
 
-You can think of an LLM as being great at writing a plausible diary entry about the future. A strong world model needs to be closer to a simulator that can survive repeated "what if" questions without drifting into fantasy.
+In practice, DreamerV3 optimizes:
 
----
+$$\mathcal{L}_{\text{world}} = \mathbb{E}_q \left[ \sum_t \beta_o \log p(o_t|s_t) + \beta_r \log p(r_t|s_t) + \beta_c \log p(\text{cont}_t|s_t) \right] - \beta_{\text{kl}} \sum_t \text{KL}(q_t \| p_t)$$
 
-## 4. Why researchers want explicit world models
-
-The strongest case for explicit world models appears when the system must act in environments rather than only talk about them.
-
-### 4.1 Robotics and embodied AI
-
-A household robot cannot live on text priors alone. It needs to predict how objects move, how grippers interact with surfaces, and how partial observations hide important state. Language can help describe the task, but control requires action-conditioned prediction.
-
-### 4.2 Long-horizon planning
-
-If you are scheduling resources, controlling a vehicle, running scientific experiments, or navigating a game environment, you care about future branches, not just the most likely next sentence. A planner needs a model it can roll forward repeatedly.
-
-### 4.3 Sample efficiency
-
-Explicit models can improve data efficiency by letting agents learn from imagined trajectories, not just expensive real interactions. This was one of the main intuitions behind early model-based RL and remains attractive today.
-
-### 4.4 Causal and counterfactual reasoning
-
-Many real decisions are counterfactual at their core: what happens if I do X instead of Y? Text corpora contain some evidence for such questions, but they are not a substitute for a system trained to predict interventions systematically.
-
-This is also where Yann LeCun's position paper *A Path Towards Autonomous Machine Intelligence* enters the conversation. His view, in simplified form, is that human-level or animal-like intelligence likely needs configurable predictive world models, hierarchical representations, and planning over latent state, not just passive sequence prediction. Whether you agree with his whole roadmap or not, the underlying concern is serious: autonomous intelligence probably needs stronger machinery for modeling dynamics than today's vanilla LLM pipeline provides.
+where $\text{cont}_t$ is a continuation flag (episode not done), and the $\beta$ coefficients are tuned to balance terms. Notably, DreamerV3 uses *discrete* latents (categorical distributions with straight-through gradients) and symlog predictions for the reward and continuation heads to handle non-Gaussian distributions gracefully.
 
 ---
 
-## 5. What counts as evidence that LLMs already have one?
+## 3. Architecture Deep Dive
 
-This is where the debate gets interesting instead of ideological.
+![Figure: World model architecture stack](../zh/images/day24/world-model-stack.png)
+*A world model architecture: encoder maps observations to latent states; the RSSM maintains deterministic and stochastic state paths; reward and continuation heads predict task signals; a decoder optionally reconstructs observations.*
 
-There are real reasons to think LLMs learn **partial** world models.
+### 3.1 Encoder
 
-1. **Commonsense and script knowledge**. They know typical event orderings, social expectations, and object uses.
-2. **Latent variable compression**. Internally, they must map many surface forms to more abstract shared representations, or they would fail at paraphrase and transfer.
-3. **Some physical and causal intuition**. They often answer qualitative questions about support, containment, or everyday causal outcomes surprisingly well.
-4. **Planning-like behavior in text**. Given a goal, they can generate plausible multi-step plans, meaning they encode at least weak future-structure priors.
+The encoder maps a high-dimensional observation $o_t$ (image, point cloud, etc.) to parameters of the approximate posterior $q_\theta(s_t | \bar{s}_t, o_t)$. In DreamerV3, this is a shallow CNN followed by a linear layer producing logits for a categorical distribution over a $32 \times 32$ discrete latent. The encoder is essentially a VAE-style inference network, conditioned on the deterministic state $\bar{s}_t$ to provide temporal context.
 
-But none of these prove that the model contains a robust simulator-like representation. They only show that language modeling can induce useful abstractions of the world.
+Alternatives include continuous Gaussian latents (DreamerV1/V2), VQ-VAE discretization, or patch-based encoders borrowed from vision transformers.
 
-That is why the smartest version of the pro-LLM view is usually not "text alone solves everything." It is closer to this: **next-token prediction may already be a surprisingly rich compression objective, and scaling plus multimodal grounding might push it much further than critics expect.**
+### 3.2 Transition model (RSSM)
 
-I think that is a fair position. It avoids both hype and dismissal.
+The heart of the system. At each step:
 
----
+1. **Deterministic update**: $\bar{s}_t = \text{GRU}(\bar{s}_{t-1}, \text{concat}(s_{t-1}, a_{t-1}))$
+2. **Prior**: $p_\theta(s_t | \bar{s}_t)$ — what the model *expects* before seeing the observation
+3. **Posterior**: $q_\theta(s_t | \bar{s}_t, o_t)$ — what the model *infers* after seeing the observation
+4. **KL divergence** between prior and posterior measures the *surprise* of the observation
 
-## 6. Where plain LLMs still come up short
+During imagination (no observation available), the prior is used as the state, enabling rollouts without grounding.
 
-The weaker parts of the LLM story show up when the system needs stable state, intervention modeling, or repeated rollouts.
+### 3.3 Reward and continuation heads
 
-| Limitation | What it looks like | Why it matters |
-|------------|--------------------|---------------|
-| **Fragile counterfactuals** | Can answer many "what if" questions, but does so by pattern completion rather than simulating intervention consequences over a maintained latent state | A planning system needs to reliably predict "if I do X, what happens next" — not just generate plausible-sounding text |
-| **Weak action feedback loops** | Pure language training rarely provides dense action-feedback experience; the very thing that makes a world model most useful — actions changing what the agent sees next — is largely absent from LLM training | Without a dense action-feedback loop, the model struggles to learn that "my actions changed the environment" |
-| **Long-horizon drift** | Even when the first few imagined steps are sensible, a plain LLM gradually loses track of constraints, inventory, geometry, or causal commitments as steps accumulate | The deeper and longer the plan, the more error accumulates; a chain that starts reasonable may diverge from reality later on |
-| **Poor calibration under uncertainty** | LLM confidence does not equal rollout calibration quality; it produces the "most plausible" future rather than a usable distribution over futures | A planning system needs to know what it explicitly does **not** know, not just a confident but potentially wrong answer |
+Small MLPs map the latent state $(\bar{s}_t, s_t)$ to a predicted reward $\hat{r}_t$ and continuation probability. These are trained as part of the world model loss. The reward head is critical for planning: it tells the agent which imagined futures are desirable.
 
-In short, an LLM can talk about a chess position, explain why a move is bad, and narrate a strategy. A real planning engine must maintain the board state exactly and evaluate branches reliably. Those are different standards.
+### 3.4 Decoder
 
----
+The decoder reconstructs $o_t$ from $s_t$, providing the reconstruction loss term. Some recent work argues the decoder is unnecessary — if the model predicts rewards and dynamics well in latent space, reconstructing pixels is wasted capacity (cf. JEPA). In practice, the decoder acts as a regularizer: it forces the latent state to retain enough information to reconstruct the observation, which prevents the model from collapsing to a trivial representation. DreamerV3 retains the decoder but with a small $\beta_o$.
 
-## 7. A useful middle position: implicit versus explicit world models
+### 3.5 Planner / Policy
 
-I think the cleanest way to think about this is to separate **implicit** and **explicit** world models.
+Dreamer learns a separate actor-critic network that operates *entirely in latent space*. The actor maps latent states to actions; the critic estimates the value function. Both are trained on imagined rollouts:
 
-- An **implicit world model** is not directly exposed as state variables and transition equations, but it is embedded in the parameters and activations of a system that can predict consequences to some degree.
-- An **explicit world model** has more structured latent state, clearer transition machinery, and a direct role in planning, control, or simulation.
+1. Imagine $H$ steps forward using the RSSM prior
+2. Compute imagined returns using the reward head and critic
+3. Update actor to maximize returns via policy gradients
+4. Update critic via temporal-difference learning on imagined trajectories
 
-On this framing, modern LLMs probably do contain implicit world models of many domains. The controversy is really about whether those implicit models are reliable enough, controllable enough, and action-aware enough for the next stage of AI.
-
-That is a much better question than the cartoon version, "Do LLMs understand anything at all?"
+Alternative planning approaches include Cross-Entropy Method (CEM) for shooting-based trajectory optimization (used in PETS, TD-MPC) or MPC with learned dynamics. The tradeoff: learned policies are fast at inference time but require training; CEM/MPC can adapt online but are computationally expensive per decision.
 
 ---
 
-## 8. How the field may converge
+## 4. What World Models Buy You That LLMs Don't
 
-The most likely future is not pure word models or pure world models. It is hybrid systems.
+![Figure: Next-token prediction vs world dynamics](../zh/images/day24/next-token-vs-world-dynamics.png)
+*Comparing the training objectives: next-token cross-entropy vs state-transition ELBO.*
 
-Language models are incredible interfaces. They are flexible, compositional, and data-efficient in domains where humans have written down rich traces. Explicit world models are attractive when we need grounded latent state, controllable rollouts, and action-aware planning.
+The "word model vs world model" framing is catchy but shallow. The real differences are structural and run far deeper than a pun.
 
-So the natural convergence is:
+### 4.1 Training objective
 
-$$
-\text{use language models for abstraction and interface} + \text{use world models for dynamics and planning}.
-$$
+An LLM is trained to minimize cross-entropy loss on next-token prediction:
 
-This could take many forms:
+$$\mathcal{L}_{\text{LM}} = -\sum_{t=1}^{T} \log p_\theta(x_t | x_{<t})$$
 
-- multimodal foundation models with latent dynamics components,
-- agent systems that call simulators or learned environment models,
-- robot stacks where language handles task specification while a world model handles control,
-- planning systems that alternate between symbolic tools, language reasoning, and learned rollouts.
+A world model is trained to maximize the ELBO over latent state sequences:
 
-![Figure 4: Different strengths, not a single winner](../zh/images/day24/world-model-limitations-radar.png)
-*Caption: LLM-centric and world-model-centric systems shine on different axes. The likely future is composition, not a single universal winner.*
+$$\mathcal{L}_{\text{WM}} = \mathbb{E}_q \left[ \sum_t \log p(o_t|s_t) + \log p(r_t|s_t) \right] - \text{KL}(q \| p)$$
 
-This is one reason the debate can be productive rather than tribal. The two camps are often pointing at different failure modes.
+These are not just different losses — they define different *modeling targets*. The LLM loss is purely discriminative: which token follows? The world model loss is generative: what is the latent state, and does it coherently explain observations, rewards, and dynamics? The ELBO enforces that the latent space has consistent geometry — states that are close in latent space produce similar futures — something no token-level objective guarantees.
 
-- LLM enthusiasts are right that scale has already produced surprisingly broad abstractions.
-- World-model advocates are right that autonomous action demands stronger dynamics than polished text alone guarantees.
+### 4.2 Information-theoretic argument
 
-Both observations can be true at once.
+Language is a *lossy, observational channel* for world state. When a text describes "the cat knocked the vase off the table," it compresses a high-dimensional physical event — trajectories, masses, friction, glass fragments — into a handful of tokens. Training on text means your signal about world dynamics passes through this bottleneck. A world model, by contrast, can be trained on raw sensorimotor data (pixels, joint angles, point clouds) that preserves the full information content of the interaction. The modeling target is the generative process itself, not a linguistic summary of its outputs.
+
+### 4.3 Action conditioning
+
+World models are explicitly conditioned on actions: the transition function takes $(s_t, a_t)$ as input. This is not an afterthought — it is the core of the architecture. The model *must* predict what happens *if* the agent does $a_t$, which is precisely what planning requires. LLMs receive action information only incidentally through text (e.g., "I moved the knight to e4"). There is no architectural mechanism that forces an LLM to maintain counterfactual state estimates under different action sequences.
+
+### 4.4 Latent state consistency
+
+World models enforce state persistence through the RSSM: $\bar{s}_t$ is a deterministic function of the entire history $(\bar{s}_{0:t-1}, s_{0:t-1}, a_{0:t-1})$. This means the latent state is a *sufficient statistic* for the history (approximately, modulo stochastic state). LLMs have no explicit state variable — the entire history must be reconstructed from the context window. This works remarkably well within the context window but degrades catastrophically when the window is exceeded, and there is no principled mechanism for maintaining a persistent belief state across turns without the KV cache acting as a surrogate.
+
+### 4.5 Compounding error
+
+All autoregressive models suffer from compounding error: errors at step $t$ become inputs to step $t+1$, and the distribution of rollouts diverges from reality. World model architectures address this in several ways:
+
+- **KL regularization** forces the posterior to stay close to the prior, preventing the model from making brittle predictions that exploit specific observation details.
+- **Deterministic paths** in the RSSM provide stable gradients across long horizons.
+- **Short imagination horizons** with value function backups (Dreamer) avoid the need for very long accurate rollouts.
+
+LLMs have no analogous mechanism. Chain-of-thought reasoning accumulates errors, and there is no latent variable that gets regularized toward a consistent dynamics model. The model simply conditions on its own outputs, errors and all.
+
+### 4.6 Uncertainty representation
+
+The stochastic component of the RSSM provides a natural mechanism for representing *epistemic uncertainty* — uncertainty about the model's own knowledge. When the model is in a novel situation, the posterior will be broad (high entropy), and the KL divergence will be large. This signal can be used for exploration, risk-sensitive planning, or detecting distribution shift. LLM confidence scores, by contrast, are poorly calibrated for state estimation. Token probabilities reflect the distribution of text, not the model's uncertainty about the underlying state of the world.
 
 ---
 
-## 9. A tiny code sketch: planning with a learned world model
+## 5. Where LLMs Genuinely Compete
 
-A simplified planning loop looks like this. The language model or perception stack turns observations into a latent state, the world model rolls candidate futures forward, and the planner keeps the action sequence with the best predicted return.
+Despite these structural advantages, dismissing LLMs as "merely word models" would be a mistake. Several lines of evidence suggest that LLMs acquire something like world structure through scale.
+
+### 5.1 Emergent world modeling from scale
+
+Probing studies have shown that LLM internal representations encode surprisingly rich structure. OthelloGPT (Li et al., 2023) demonstrated that a GPT-2 model trained only on Othello game transcripts develops internal representations that linearly encode the board state — despite never seeing the board. The model learned to maintain a world state because predicting the next move *requires* it, and the training distribution is clean enough that the signal is recoverable.
+
+Similar findings have emerged for spatial reasoning (reading comprehension tasks that implicitly require spatial maps), temporal reasoning (tracking event sequences), and causal reasoning (identifying causal direction from correlational text).
+
+### 5.2 Text as a surprisingly rich training signal
+
+Text is not just a lossy compression of the world — it is a *highly curated* compression produced by intelligent agents who highlight causal, temporal, and spatial structure. A physics textbook, a news report, and a novel all encode world dynamics, just at different levels of abstraction. At sufficient scale, the statistical structure of text may be rich enough that a model trained to predict it *must* learn world structure as an intermediate representation — because doing so is the most efficient way to compress the training distribution.
+
+### 5.3 The "latent world model" argument
+
+The argument, stated formally: if $P(x_t | x_{<t})$ depends on some latent world state $s_t$, and the text distribution is rich enough that $s_t$ is (approximately) identifiable from $x_{<t}$, then the LLM's internal representation at layer $l$, position $t$, must encode something functionally similar to $s_t$ — because that is the most parameter-efficient way to implement the conditional distribution.
+
+This is a plausible but unproven argument. The key question is *identifiability*: is the world state sufficiently determined by the text? In many domains (games, formal reasoning, simple physical scenarios), yes. In open-ended, partially observed, embodied settings — almost certainly not, or at least not without massive redundancy.
+
+### 5.4 Limitations
+
+The strongest counterarguments:
+
+- **Coverage**: Text does not cover all states the agent may encounter, especially novel physical configurations.
+- **Granularity**: Text describes the world at the level of objects, events, and relations, not at the level of continuous dynamics needed for control.
+- **Action grounding**: Text describes actions after the fact; it does not provide the counterfactual experience of trying actions and observing outcomes.
+- **Distribution shift**: LLMs are trained on human-written text. When an agent acts in the world and generates novel situations, the text distribution no longer covers the relevant state space.
+
+---
+
+## 6. Current Frontier: Convergence and Open Problems
+
+![Figure: Planning in latent space](../zh/images/day24/planning-in-latent-space.png)
+*Agents plan by imagining trajectories through learned latent dynamics before committing to actions in the real world.*
+
+### 6.1 Video generation as world modeling
+
+Sora (OpenAI, 2024), Genie (Bruce et al., 2024), and similar systems generate video conditioned on initial frames and (optionally) actions. To generate coherent video over many frames, the model must learn something about physical dynamics — object persistence, occlusion, gravity, collision. These systems can be seen as world models trained on passive (non-interactive) data, with the decoder being a video generator rather than a single-frame reconstructor.
+
+The gap: these models are not yet action-conditioned at the granularity needed for control, and they lack the reward/value structure needed for planning. But the convergence direction is clear.
+
+### 6.2 World models for LLM agents
+
+Systems like Voyager (Wang et al., 2023) and DEPS (Wang et al., 2023) use LLMs as planners in Minecraft-like environments, maintaining explicit state libraries and skill libraries. The LLM generates plans in natural language, executes them, and receives text-based feedback from the environment. This is world modeling at the *linguistic level* — effective for high-level planning but brittle for fine-grained control.
+
+More recent work explores training world models on *internet-scale data* (video, text, action logs) to create general-purpose simulators that LLM agents can query during planning. The vision: an LLM that can "imagine" physical outcomes before acting, using a learned world model as a mental simulator.
+
+### 6.3 Multimodal foundation models with dynamics heads
+
+An emerging architecture combines a large pretrained vision-language model with a dynamics prediction head. The VLM provides semantic understanding; the dynamics head learns to predict future states conditioned on actions. This hybrid approach sidesteps the question of whether text alone is sufficient by simply giving the model access to richer modalities.
+
+### 6.4 Open problems
+
+- **Scaling latent world models**: Current world models (DreamerV3) are trained from scratch on single environments. Scaling to internet-scale diverse data without losing the precision needed for control is an open challenge.
+- **Grounding**: How do you ground a world model trained on passive video data so that it can be used for planning? Action labels are scarce.
+- **Long-horizon reliability**: Compounding error in latent space remains the fundamental bottleneck. Can hierarchical or compositional world models maintain coherence over thousands of steps?
+- **The architecture question**: Can a single architecture — presumably a large transformer — serve both as a language model and a world model, or are there fundamental tradeoffs between the distribution modeling required for language and the dynamics modeling required for planning?
+
+![Figure: World model limitations](../zh/images/day24/world-model-limitations-radar.png)
+*Radar chart of current world model limitations across key dimensions.*
+
+---
+
+## 7. Code Sketch: Dreamer-Style Planning in Latent Space
 
 ```python
-# Toy model-predictive planning loop.
-def plan_with_world_model(world_model, encoder, planner, obs, horizon=5):
-    # Compress the current observation into latent state.
-    state = encoder(obs)
+import torch
+import torch.nn as nn
 
-    best_score = float('-inf')
-    best_actions = None
+class RSSM(nn.Module):
+    """Simplified Recurrent State-Space Model."""
+    def __init__(self, det_dim=200, stoch_dim=30, stoch_classes=32, action_dim=7):
+        super().__init__()
+        self.det_dim = det_dim
+        self.stoch_dim = stoch_dim
+        self.stoch_classes = stoch_classes
+        # Deterministic path: GRU
+        self.gru = nn.GRUCell(det_dim, det_dim)
+        # Prior: predict stochastic state from deterministic state
+        self.prior_net = nn.Linear(det_dim, stoch_dim * stoch_classes)
+        # Posterior: condition on deterministic state + encoded observation
+        self.post_net = nn.Linear(det_dim + 256, stoch_dim * stoch_classes)
+        # Action embedding
+        self.action_embed = nn.Linear(action_dim, det_dim)
 
-    # Sample candidate action sequences.
-    for actions in planner.sample_action_sequences(horizon=horizon, num_samples=128):
-        imagined_state = state
-        total_reward = 0.0
+    def get_dist(self, logits):
+        """Reshape logits to categorical distribution parameters."""
+        return logits.view(-1, self.stoch_dim, self.stoch_classes)
 
-        for action in actions:
-            # Predict the next latent state and reward.
-            imagined_state, reward = world_model.step(imagined_state, action)
-            total_reward += reward
+    def forward(self, prev_det, prev_stoch, action, obs_embed=None):
+        # Deterministic update
+        x = prev_stoch.flatten(-2).mean(-1) if prev_stoch.dim() == 3 else prev_stoch
+        gru_input = self.action_embed(action) + x
+        det_state = self.gru(gru_input.unsqueeze(0), prev_det.unsqueeze(0)).squeeze(0)
+        # Prior
+        prior_logits = self.get_dist(self.prior_net(det_state))
+        if obs_embed is None:
+            # Imagination: use prior
+            stoch_state = torch.softmax(prior_logits, -1)
+        else:
+            # Inference: use posterior
+            post_logits = self.get_dist(self.post_net(
+                torch.cat([det_state, obs_embed], -1)))
+            stoch_state = torch.softmax(post_logits, -1)
+        return det_state, stoch_state, prior_logits
 
-        if total_reward > best_score:
-            best_score = total_reward
-            best_actions = actions
 
-    return best_actions[0]  # execute only the first action, then re-plan
+class WorldModel(nn.Module):
+    """Minimal world model with RSSM, reward head, and decoder."""
+    def __init__(self):
+        super().__init__()
+        self.rssm = RSSM()
+        self.encoder = nn.Sequential(
+            nn.Linear(64 * 64 * 3, 512), nn.ELU(),
+            nn.Linear(512, 256))
+        self.reward_head = nn.Sequential(
+            nn.Linear(200 + 30 * 32, 256), nn.ELU(),
+            nn.Linear(256, 1))
+        self.decoder = nn.Sequential(
+            nn.Linear(200 + 30 * 32, 512), nn.ELU(),
+            nn.Linear(512, 64 * 64 * 3))
+
+    def imagine(self, initial_det, initial_stoch, policy, horizon=15):
+        """Imagine a trajectory using the learned dynamics."""
+        det, stoch = initial_det, initial_stoch
+        rewards = []
+        for _ in range(horizon):
+            latent = torch.cat([det, stoch.flatten(-2).mean(-1)], -1)
+            action = policy(latent)  # learned actor
+            det, stoch, _ = self.rssm(det, stoch, action, obs_embed=None)
+            reward = self.reward_head(torch.cat([det, stoch.flatten(-2).mean(-1)], -1))
+            rewards.append(reward)
+        return torch.stack(rewards)
 ```
 
-This style of control is often called **model-predictive control**. The exact algorithm changes, but the pattern is stable: imagine several futures, score them, execute a small part of the best one, then observe again and re-plan.
+This sketch shows the core loop: the RSSM maintains a deterministic state and samples a stochastic state; during imagination, the prior (no observation) is used; the reward head evaluates imagined futures; a policy learns to maximize imagined returns.
 
 ---
 
-## 10. Math view [Optional]
+## 8. Common Misconceptions
 
-Suppose a model must plan a sequence of actions $a_{t:t+H-1}$ over horizon $H$. A model-based objective can be written schematically as:
+**"World models are just simulators."** A simulator (e.g., MuJoCo, Unity) is hand-engineered with known physics. A learned world model discovers dynamics from data, including dynamics that are difficult or impossible to specify by hand (e.g., deformable objects, multi-agent interactions, visual appearance under novel lighting).
 
-$$
-\hat{a}_{t:t+H-1} = \arg\max_{a_{t:t+H-1}} \mathbb{E}\left[\sum_{k=0}^{H-1} \gamma^k r_{t+k+1}\right],
-$$
+**"World models need pixel reconstruction."** The JEPA line of work explicitly argues against this. Prediction in latent space, with a consistency constraint, can be more efficient than reconstruction. The debate over whether reconstruction is necessary or merely convenient is ongoing.
 
-subject to latent dynamics
+**"LLMs already have world models, so this is moot."** Having representations that *probe* as world-state-like is not the same as having a dynamics model that supports reliable multi-step planning with action conditioning and uncertainty estimation. The gap may close with scale, but it has not closed yet.
 
-$$
-s_{t+k+1} \sim P_\theta(s_{t+k+1} \mid s_{t+k}, a_{t+k}).
-$$
-
-The planner searches over imagined trajectories produced by the learned transition model. If the dynamics model is good, the agent can evaluate decisions before taking them.
-
-By contrast, a plain language model optimizes
-
-$$
-\mathcal{L}_{\text{LM}} = -\sum_t \log P(x_t \mid x_{1:t-1}).
-$$
-
-That objective can still produce latent structure useful for planning, but it does not directly penalize poor action-conditioned rollouts. That gap, between text continuation loss and decision-quality loss, is the mathematical heart of the debate.
+**"World models solve the sample efficiency problem."** They help dramatically in domains where interaction is expensive, but they introduce their own failure mode: if the model is wrong, the policy trained in imagination will exploit the model's errors (the classic "model exploitation" problem in model-based RL).
 
 ---
 
-## 11. Common misconceptions
+## 9. Further Reading
 
-### ❌ "A world model is just a big database of facts."
-
-No. Facts matter, but a world model is primarily about state, transition, and consequence.
-
-### ❌ "If LLMs know commonsense, they already solved world modeling."
-
-Commonsense is evidence of useful structure, not proof of robust action-aware dynamics.
-
-### ❌ "World models mean old-school symbolic AI is back."
-
-Not necessarily. Many modern world models are learned neural latent-state models, not hand-coded rules.
-
-### ❌ "This debate has one winner."
-
-Probably not. Different tasks need different mixtures of language priors, perception, memory, tools, and predictive dynamics.
-
----
-
-## 12. Further Reading
-
-### Beginner
-1. [World Models](https://arxiv.org/abs/1803.10122)  
-   David Ha and Jürgen Schmidhuber's influential 2018 paper that popularized the term in modern deep learning.
-
-2. [A Path Towards Autonomous Machine Intelligence](https://openreview.net/forum?id=BZ5a1r-kVsf)  
-   Yann LeCun's position paper arguing for predictive world models, hierarchical representations, and planning-oriented architectures.
-
-### Advanced
-1. [DreamerV3: Mastering Diverse Domains through World Models](https://arxiv.org/abs/2301.04104)  
-   A strong example of modern latent world models enabling general control across domains.
-
-2. [Mastering Atari with Discrete World Models](https://arxiv.org/abs/2010.02193)  
-   Shows how learned world models can support planning and efficient control in high-dimensional environments.
-
-3. [The Platonic Representation Hypothesis](https://arxiv.org/abs/2405.07987)  
-   Relevant to the question of whether different models converge toward shared latent abstractions of the world.
+| Paper | Year | Key Contribution |
+|-------|------|------------------|
+| Sutton, "Dyna, an Integrated Architecture for Learning, Planning, and Reacting" | 1991 | First integration of learned model + planning in RL |
+| Deisenroth & Rasmussen, "PILCO" | 2011 | GP-based model for sample-efficient policy search |
+| Ha & Schmidhuber, "World Models" | 2018 | VAE + MDN-RNN; training in imagination |
+| Hafner et al., "Dream to Control" (Dreamer) | 2020 | RSSM; end-to-end latent actor-critic |
+| Hafner et al., "Mastering Diverse Domains" (DreamerV3) | 2023 | Fixed hyperparameters across 150+ benchmarks |
+| LeCun, "A Path Towards Autonomous Machine Intelligence" (JEPA) | 2022 | Predict in embedding space, not observation space |
+| Li et al., "OthelloGPT" | 2023 | Emergent board state in LLM trained on game transcripts |
+| Bruce et al., "Genie" | 2024 | Interactive environment generation from video |
+| OpenAI, "Sora" | 2024 | Video generation as implicit world modeling |
 
 ---
 
 ## Reflection Questions
 
-1. If an LLM predicts realistic consequences from text alone, when should we call that an implicit world model?
-2. Which domains, law, coding, robotics, scientific experimentation, most urgently need explicit action-conditioned world models?
-3. Could multimodal training turn large language models into stronger world models, or does the objective itself still need to change?
+1. If an LLM's internal representations linearly decode to world state (as in OthelloGPT), does that constitute a world model? What additional capabilities would it need before you would call it one?
+
+2. The JEPA proposal argues against reconstruction. But without reconstruction, how do you prevent the latent space from collapsing? What constraints make prediction-in-latent-space non-trivial?
+
+3. Consider the compounding error problem. If a world model's rollouts diverge from reality after $k$ steps, what are the implications for planning horizon $H$? How does the Dreamer architecture sidestep this?
+
+4. Can a single transformer architecture jointly serve as a language model and a world model? What would the training objective look like? What are the fundamental tradeoffs?
 
 ---
 
 ## Summary
 
-| Concept | One-line Explanation |
-|---------|---------------------|
-| World model | A predictive model of latent state transitions, often conditioned on actions. |
-| Implicit world model | World structure encoded inside a model without an explicitly exposed simulator. |
-| Explicit world model | A structured latent dynamics model used directly for planning or control. |
-| Word model | A system optimized to predict token continuations rather than environment transitions. |
-| Hybrid future | The likely path is combining language abstraction with action-aware predictive models. |
+| Aspect | World Model (Dreamer-style) | LLM (next-token) |
+|--------|----------------------------|-------------------|
+| Training objective | ELBO: reconstruction + reward + KL | Cross-entropy on tokens |
+| State representation | Explicit latent $s_t$ (deterministic + stochastic) | Implicit (context window + KV cache) |
+| Action conditioning | Architecturally built-in | Incidental through text |
+| Uncertainty | Modeled via stochastic latent | Token probabilities (poorly calibrated for state) |
+| Planning | Imagined rollouts in latent space | Chain-of-thought / in-context reasoning |
+| Compounding error | Mitigated by KL, deterministic path, short rollouts | No architectural mitigation |
+| Data modality | Sensorimotor (pixels, actions, rewards) | Text (optionally multimodal) |
+| Sample efficiency | High (reuses model for imagined experience) | High (due to internet-scale pretraining) |
+| Generality | Limited per-environment training | Broad but shallow physical reasoning |
 
-**Key Takeaway**: LLMs almost certainly learn useful abstractions about the world, otherwise they would not generalize as well as they do. But that does not automatically mean next-token prediction is the whole recipe for autonomous intelligence. When action, counterfactuals, and long-horizon planning matter, explicit world models still offer something important: a place to simulate futures before reality makes the bill due.
+World models are not a competing paradigm to LLMs — they are a complementary one. The central question is not "which is better" but "how do we combine the broad knowledge of foundation models with the structured dynamics modeling of learned simulators?" The answer to that question will shape the next generation of AI systems.
 
 ---
 
-*Day 24 of 60 | LLM Fundamentals*  
-*Word count: ~2820 | Reading time: ~18 minutes*
+*Day 24 of 60 | LLM Fundamentals*
