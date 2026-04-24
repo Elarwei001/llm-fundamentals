@@ -26,6 +26,16 @@ $$s_{t+1} = f(s_t, a_t) + \epsilon_t, \quad o_t = g(s_t) + \eta_t$$
 
 where $s_t$ is the (possibly partially observed) state, $a_t$ is a control input, $o_t$ is an observation, and $\epsilon_t, \eta_t$ are noise terms. The Kalman filter (Kalman, 1960) provides the optimal recursive estimator for linear-Gaussian instances of this model. The entire framework presumes that someone — an engineer — has specified $f$ and $g$ by hand.
 
+**Understanding the Kalman filter.** The Kalman filter operates in two alternating steps. In the *predict* step, the previous state estimate is propagated forward through the dynamics model to produce a prior $\hat{s}_{t|t-1}$. In the *update* step, a new observation $o_t$ is used to correct this prior, producing a posterior $\hat{s}_{t|t}$. The fusion is controlled by the **Kalman gain** $K_t$:
+
+$$\hat{s}_{t|t} = \hat{s}_{t|t-1} + K_t(o_t - \hat{o}_{t|t-1})$$
+
+The term $o_t - \hat{o}_{t|t-1}$ is the *innovation* or residual — the gap between what the sensor reports and what the model expected. The Kalman gain $K_t$ is computed automatically from the covariance matrices of the prediction and the observation: when the model's uncertainty is large relative to the sensor's, $K_t$ is large (trust the sensor more); when the sensor is noisy, $K_t$ is small (trust the model more). This is not a hyperparameter to tune — it falls out of the math.
+
+**Why the linear-Gaussian assumption matters.** A natural question is: if we already have observations, why bother with predictions at all? There are several reasons. Observations are noisy (a GPS reading might be off by 10 meters), partial (a sensor gives position but not velocity), and sometimes missing entirely (GPS drops in a tunnel). The prediction step provides a principled prior that the update step then refines.
+
+But the linear-Gaussian assumption is what makes the whole thing *tractable*. The key property is **closure under linear transformation**: if $x \sim \mathcal{N}(\mu, \Sigma)$ and $y = Ax + b$, then $y \sim \mathcal{N}(A\mu + b, A\Sigma A^\top)$. A Gaussian stays Gaussian after linear transformation. This means that throughout the entire predict-update cycle — linear transition, add Gaussian noise, observe with a linear sensor, add more Gaussian noise — the posterior distribution over the state remains Gaussian at every timestep. You only need to track two quantities: the mean and the covariance. Once the system is nonlinear or the noise is non-Gaussian, the posterior may become multi-modal or skewed, and no simple recursive formula exists — you must resort to approximations like extended Kalman filters, particle filters, or, in the modern deep learning setting, variational inference with neural networks. This is precisely the trajectory from classical control to modern world models.
+
 ### 1.2 Model-based reinforcement learning
 
 The transition to *learned* models began in earnest with Sutton's Dyna architecture (Sutton, 1991). Dyna interleaves real experience with *simulated* experience: the agent learns both a value function and a one-step model $\hat{P}(s_{t+1} | s_t, a_t)$, then uses the model to generate imaginary rollouts for additional policy updates. The insight was fundamental: a model, even an imperfect one, can massively amplify the value of each real interaction.
