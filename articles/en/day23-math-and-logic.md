@@ -47,6 +47,16 @@ A sentence can be locally plausible while still being slightly vague. Readers of
 
 Many logic tasks depend on hidden bookkeeping: which assumptions are still active, which constraints are binding, which objects refer to which entities. Humans often externalize that bookkeeping on paper. A plain LLM must compress it into activations and generated text. That is possible, but brittle.
 
+> **Would an external file or scratchpad solve this?** It helps a lot, but it does not automatically make the system exact. Writing intermediate state into an external scratchpad makes reasoning more stable because the model no longer has to keep everything hidden in activations. It can reread assumptions, variable bindings, and partial results. But this mainly solves the **state-tracking** problem. It does not guarantee the state itself is correct. A wrong intermediate update is still wrong, it is just written down more clearly.
+>
+> In practice, the strongest systems combine:
+> - an LLM to decompose the task,
+> - an external scratchpad or memory state to store intermediate results,
+> - tools for exact computation,
+> - and verifiers to check whether the intermediate state stays consistent.
+>
+> So external state usually improves reliability, but the real jump comes from **external state + tools + verification**, not from note-taking alone.
+
 ### 1.3 Symbolic tasks are adversarial to approximation
 
 Neural networks are excellent approximate learners. Symbolic reasoning is often an exact game. You either preserved the variable binding or you did not. You either respected the quantifier or you did not. This gap between approximate computation and exact symbolic manipulation is one of the central tensions in LLM reasoning.

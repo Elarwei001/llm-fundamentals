@@ -52,6 +52,26 @@ Subsequent work tightened the loop. PILCO (Deisenroth & Rasmussen, 2011) used Ga
 
 The paper simply titled *World Models* (Ha & Schmidhuber, 2018) reframed the conversation for the deep learning era. Their system had three components: a VAE encoder compressing visual observations into latent vectors; an MDN-RNN predicting the next latent state given the current latent state and action; and a small controller mapping latent states to actions. The key result was that the controller could be trained *entirely inside the model's own dreams* — hallucinated trajectories sampled from the learned dynamics — and then transferred to the real environment.
 
+The paper opens with an evocative metaphor:
+
+![The bicycle metaphor from Ha & Schmidhuber (2018)](./images/day24/ha-schmidhuber/bicycle-metaphor.png)
+*Figure: An agent riding a bicycle while imagining itself doing a wheelie — intelligence as mental simulation. The paper's core thesis is that an agent can learn to act not by reacting to raw sensory input, but by building an internal model of the world and practicing inside it.*
+
+Their architecture has three modules, which they call **V**, **M**, and **C**:
+
+![The V-M-C architecture](./images/day24/ha-schmidhuber/vmc-architecture.png)
+*Figure: The three-component architecture of the World Models system. **V** (VAE) compresses raw pixel observations into latent codes. **M** (MDN-RNN) predicts future latent states from past latents and actions. **C** (Controller) maps latent states and RNN hidden states to actions. The controller is small enough to be trained with evolutionary methods.*
+
+The VAE (**V**) learns to compress high-dimensional game frames into a small latent vector, preserving enough task-relevant structure for control:
+
+![VAE reconstruction](./images/day24/ha-schmidhuber/vae-reconstruction.png)
+*Figure: Original game frames (left), latent representation (center), and VAE reconstruction (right). The reconstructions are blurry but preserve the essential scene structure — road shape, obstacles, vehicle position — which is what the downstream controller actually needs.*
+
+The MDN-RNN (**M**) can then generate entire dream trajectories that look plausible enough to train a controller:
+
+![Dream generation](./images/day24/ha-schmidhuber/dream-generation.png)
+*Figure: Frames generated entirely by the world model's "dream" — the MDN-RNN hallucinates plausible game scenarios from its learned latent dynamics. The controller can be trained inside this dream and then deployed in the real environment.*
+
 This was vivid but architecturally limited. The VAE and RNN were trained separately, the latent space was purely stochastic with no deterministic path, and there was no variational inference over full sequences. But the conceptual impact was enormous: it showed that a learned simulator could replace a hand-engineered one, and that policies trained in imagination could work in reality.
 
 ### 1.4 Dreamer: Recurrent State-Space Models
