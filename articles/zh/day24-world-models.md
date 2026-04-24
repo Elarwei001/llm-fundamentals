@@ -54,22 +54,22 @@ $$\hat{s}_{t|t} = \hat{s}_{t|t-1} + K_t\,(o_t - \hat{o}_{t|t-1})$$
 
 论文以一个引人入胜的比喻开头：
 
-![Ha & Schmidhuber (2018) 的自行车比喻](./images/day24/ha-schmidhuber/bicycle-metaphor.png)
+![Ha & Schmidhuber (2018) 的自行车比喻](./images/day24/ha-schmidhuber/bicycle-metaphor-v2.png)
 *图：一个人骑自行车的同时在脑中想象自己翘起前轮——智能行为作为心理模拟。论文的核心论点是：智能体不需要直接对原始感知输入做出反应，而是可以构建一个内部的世界模型，并在其中练习。*
 
 他们的架构有三个模块，分别称为 **V**、**M** 和 **C**：
 
-![V-M-C 架构](./images/day24/ha-schmidhuber/vmc-architecture.png)
+![V-M-C 架构](./images/day24/ha-schmidhuber/vmc-architecture-v2.png)
 *图：World Models 系统的三组件架构。**V**（VAE）将原始像素观测压缩为潜在编码。**M**（MDN-RNN）根据历史潜在状态和动作预测未来潜在状态。**C**（控制器）将潜在状态和 RNN 隐状态映射为动作。控制器足够小，可以用进化方法训练。*
 
 VAE（**V**）学会将高维游戏帧压缩为一个小型潜在向量，保留足够的任务相关结构用于控制：
 
-![VAE 重建](./images/day24/ha-schmidhuber/vae-reconstruction.png)
+![VAE 重建](./images/day24/ha-schmidhuber/vae-reconstruction-v2.png)
 *图：原始游戏帧（左）、潜在表示（中）和 VAE 重建结果（右）。重建图虽然模糊，但保留了场景的关键结构——道路形状、障碍物、车辆位置——而这正是下游控制器实际需要的。*
 
 MDN-RNN（**M**）可以生成完整的梦境轨迹，看起来足够逼真，可以用来训练控制器：
 
-![梦境生成](./images/day24/ha-schmidhuber/dream-generation.png)
+![梦境生成](./images/day24/ha-schmidhuber/dream-generation-v2.png)
 *图：完全由世界模型“梦境”生成的帧——MDN-RNN 从学到的潜在动力学中幻觉出合理的游戏场景。控制器可以在这个梦境中训练，然后部署到真实环境中。*
 
 这个结果很有冲击力，但架构上有局限。VAE 和 RNN 是分开训练的，潜在空间是纯随机的（没有确定性路径），也没有对完整序列做变分推断。但概念上的影响是巨大的：它表明学习型模拟器可以替代手工设计的模拟器，在想象中训练的策略在现实中也能工作。
