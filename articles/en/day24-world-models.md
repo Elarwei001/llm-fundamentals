@@ -26,11 +26,11 @@ $$s_{t+1} = f(s_t, a_t) + \epsilon_t, \quad o_t = g(s_t) + \eta_t$$
 
 where $s_t$ is the (possibly partially observed) state, $a_t$ is a control input, $o_t$ is an observation, and $\epsilon_t, \eta_t$ are noise terms. The Kalman filter (Kalman, 1960) provides the optimal recursive estimator for linear-Gaussian instances of this model. The entire framework presumes that someone — an engineer — has specified $f$ and $g$ by hand.
 
-**Understanding the Kalman filter.** The Kalman filter operates in two alternating steps. In the *predict* step, the previous state estimate is propagated forward through the dynamics model to produce a prior $\hat{s}_{t|t-1}$. In the *update* step, a new observation $o_t$ is used to correct this prior, producing a posterior $\hat{s}_{t|t}$. The fusion is controlled by the **Kalman gain** $K_t$:
+**Understanding the Kalman filter.** The Kalman filter operates in two alternating steps. In the *predict* step, the previous state estimate is propagated forward through the dynamics model to produce a prior. In the *update* step, a new observation is used to correct this prior, producing a posterior. The fusion is controlled by the **Kalman gain**:
 
-$$\hat{s}_{t|t} = \hat{s}_{t|t-1} + K_t(o_t - \hat{o}_{t|t-1})$$
+$$\hat{s}_{t|t} = \hat{s}_{t|t-1} + K_t\,(o_t - \hat{o}_{t|t-1})$$
 
-The term $o_t - \hat{o}_{t|t-1}$ is the *innovation* or residual — the gap between what the sensor reports and what the model expected. The Kalman gain $K_t$ is computed automatically from the covariance matrices of the prediction and the observation: when the model's uncertainty is large relative to the sensor's, $K_t$ is large (trust the sensor more); when the sensor is noisy, $K_t$ is small (trust the model more). This is not a hyperparameter to tune — it falls out of the math.
+Here $\hat{s}_{t|t-1}$ is the predicted state (prior), $\hat{s}_{t|t}$ is the corrected state (posterior), $o_t$ is the observation, and $\hat{o}_{t|t-1}$ is the predicted observation. The term $(o_t - \hat{o}_{t|t-1})$ is the *innovation* or residual — the gap between what the sensor reports and what the model expected. The Kalman gain $K_t$ is computed automatically from the covariance matrices: when the model's uncertainty is large relative to the sensor's, $K_t$ is large (trust the sensor more); when the sensor is noisy, $K_t$ is small (trust the model more). This is not a hyperparameter to tune — it falls out of the math.
 
 **Why the linear-Gaussian assumption matters.** A natural question is: if we already have observations, why bother with predictions at all? There are several reasons. Observations are noisy (a GPS reading might be off by 10 meters), partial (a sensor gives position but not velocity), and sometimes missing entirely (GPS drops in a tunnel). The prediction step provides a principled prior that the update step then refines.
 
