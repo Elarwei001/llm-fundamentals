@@ -76,14 +76,38 @@ This was vivid but architecturally limited. The VAE and RNN were trained separat
 
 ### 1.4 Dreamer: Recurrent State-Space Models
 
-The Dreamer line of work (Hafner et al., 2020; 2023) represents the current state of the art in learned world models for control. The core innovation is the **Recurrent State-Space Model (RSSM)**, which combines a deterministic recurrent path (a GRU or similar) with a stochastic latent path:
+The Dreamer line of work (Hafner et al., 2020; 2023) represents the current state of the art in learned world models for control. The core innovation is the **Recurrent State-Space Model (RSSM)**, which combines a deterministic recurrent path with a stochastic latent path.
 
-$$\bar{s}_t = f_\theta^{\text{det}}(\bar{s}_{t-1}, s_{t-1}, a_{t-1})$$
-$$s_t \sim q_\theta(s_t | \bar{s}_t, o_t)$$
+The key insight is that the model needs *two* kinds of state:
 
-Here $\bar{s}_t$ is the deterministic state (carrying long-term memory through recurrence), $s_t$ is the stochastic state (capturing uncertainty about the current situation), and $q_\theta$ is an approximate posterior inferred from the current observation. The transition prior is $p_\theta(s_t | \bar{s}_t)$.
+- A **deterministic state** that carries long-term memory through recurrence (like a GRU hidden state). This remembers "what happened" across many timesteps.
+- A **stochastic state** that captures uncertainty about the current situation. This represents "what might be happening right now, given the noisy observation."
 
-Dreamer trains the world model end-to-end via variational inference, then learns a policy and value function entirely in latent space using imagined rollouts. DreamerV2 (2021) introduced discrete latents via straight-through gradients; DreamerV3 (2023) demonstrated that a single fixed hyperparameter configuration achieves state-of-the-art across 150+ diverse benchmarks — a level of generality previously unseen in model-based RL.
+The update rules are:
+
+$$h_t = \text{GRU}(h_{t-1},\, s_{t-1},\, a_{t-1})$$
+
+This deterministic recurrence propagates memory forward. Then the stochastic state is inferred from the current observation:
+
+$$s_t \sim q_\theta(s_t \,|\, h_t,\, o_t)$$
+
+This is the **posterior** — what the model believes the current state is, after seeing the observation. During imagination (when there is no real observation), the model instead uses a **prior**:
+
+$$\hat{s}_t \sim p_\theta(s_t \,|\, h_t)$$
+
+The world model is trained to make the prior match the posterior as closely as possible (via a KL divergence loss), so that it can imagine realistic futures without needing real observations.
+
+![DreamerV2 RSSM architecture](./images/day24/dreamer/rssm-architecture-v2.png)
+*Figure: The RSSM architecture from DreamerV2 (Hafner et al., 2021). Green boxes are deterministic recurrent states. Each timestep has a prior and a posterior stochastic state connected by a KL loss ("min KL"). Images are encoded from below; reconstructed images and predicted rewards are produced above. On the right, the categorical latent structure is shown: 32 categorical variables, each with 32 classes — DreamerV2's key innovation over Gaussian latents.*
+
+Once the world model is trained, Dreamer learns a policy and value function entirely inside the model's imagination:
+
+![DreamerV3 architecture](./images/day24/dreamer/architecture-v3.png)
+*Figure: The two-panel architecture from DreamerV3 (Hafner et al., 2023). **Left panel (a)**: World model learning — observations are encoded into stochastic latents, propagated through recurrent dynamics, and reconstructed. **Right panel (b)**: Actor-critic learning in imagination — starting from a real encoded state, the actor proposes actions, the world model predicts future latent states, and the critic evaluates them. The policy is trained by backpropagating through the imagined trajectories.*
+
+DreamerV2 (2021) introduced discrete latents via straight-through gradients, replacing continuous Gaussian latents with 32 categorical variables each having 32 classes — this made the latent space more expressive and improved performance on Atari games. DreamerV3 (2023) demonstrated that a single fixed hyperparameter configuration achieves state-of-the-art across 150+ diverse benchmarks — a level of generality previously unseen in model-based RL.
+
+The key architectural progression from Ha & Schmidhuber to Dreamer is: separate VAE + RNN → end-to-end variational training → deterministic + stochastic dual-path state → discrete latents → universal hyperparameters. Each step made the learned simulator more robust and more general.
 
 ### 1.5 LeCun's JEPA and beyond
 
