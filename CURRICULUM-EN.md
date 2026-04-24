@@ -82,7 +82,7 @@
 | D21 | **Hallucination Problem** | Why LLMs confidently make things up | [EN](articles/en/day21-hallucination-problem.md) / [中文](articles/zh/day21-hallucination-problem.md) |
 | D22 | Reasoning Ability | Can LLMs really reason? The nature of Chain-of-Thought | [EN](articles/en/day22-reasoning-ability.md) / [中文](articles/zh/day22-reasoning-ability.md) |
 | D23 | Math and Logic | Why LLMs struggle with math, return of Symbolic AI | Known limitations |
-| D24 | World Models | Do LLMs have world models? Yann LeCun vs Ilya | Academic debate |
+| D24 | World Models | Do LLMs have world models? Yann LeCun vs Ilya | [EN](articles/en/day24-world-models.md) / [中文](articles/zh/day24-world-models.md) |
 | D25 | Evaluation & Benchmarks | MMLU, HumanEval, ARC — What are we measuring? | Evaluation methods |
 
 ### Week 6: Advanced Model Architecture 🔥🔥

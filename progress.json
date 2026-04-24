@@ -1,6 +1,6 @@
 {
-  "current_day": 19,
-  "last_generated": "2026-04-17",
+  "current_day": 24,
+  "last_generated": "2026-04-24",
   "total_days": 60,
   "status": "active",
   "history": [
@@ -300,6 +300,81 @@
         "zh/images/day19/long-context-pipeline.png",
         "zh/images/day19/position-extension-intuition.png",
         "zh/images/day19/lost-in-the-middle.png"
+      ]
+    },
+    {
+      "day": 20,
+      "date": "2026-04-20",
+      "topic": "Prompt Engineering",
+      "en_path": "en/day20-prompt-engineering.md",
+      "zh_path": "zh/day20-prompt-engineering.md",
+      "qa_score": 92.6,
+      "qa_rounds": 0,
+      "images": [
+        "zh/images/day20/prompt-anatomy.png",
+        "zh/images/day20/in-context-learning-pattern.png",
+        "zh/images/day20/prompt-decomposition-tree.png",
+        "zh/images/day20/specificity-vs-performance.png"
+      ]
+    },
+    {
+      "day": 21,
+      "date": "2026-04-21",
+      "topic": "Hallucination Problem",
+      "en_path": "en/day21-hallucination-problem.md",
+      "zh_path": "zh/day21-hallucination-problem.md",
+      "qa_score": 92.4,
+      "qa_rounds": 0,
+      "images": [
+        "zh/images/day21/confidence-vs-factuality.png",
+        "zh/images/day21/hallucination-causes-map.png",
+        "zh/images/day21/mitigation-ladder.png",
+        "zh/images/day21/teacher-forcing-vs-inference.png"
+      ]
+    },
+    {
+      "day": 22,
+      "date": "2026-04-22",
+      "topic": "Reasoning Ability",
+      "en_path": "en/day22-reasoning-ability.md",
+      "zh_path": "zh/day22-reasoning-ability.md",
+      "qa_score": 91.35,
+      "qa_rounds": 0,
+      "images": [
+        "zh/images/day22/reasoning-task-map.png",
+        "zh/images/day22/cot-vs-difficulty.png",
+        "zh/images/day22/test-time-compute-tradeoff.png",
+        "zh/images/day22/reasoning-failure-modes.png"
+      ]
+    },
+    {
+      "day": 23,
+      "date": "2026-04-23",
+      "topic": "Math and Logic",
+      "en_path": "en/day23-math-and-logic.md",
+      "zh_path": "zh/day23-math-and-logic.md",
+      "qa_score": 91.95,
+      "qa_rounds": 1,
+      "images": [
+        "zh/images/day23/math-error-amplification.png",
+        "zh/images/day23/neural-vs-symbolic-strengths.png",
+        "zh/images/day23/reasoning-tool-pipeline.png",
+        "zh/images/day23/benchmark-vs-robustness.png"
+      ]
+    },
+    {
+      "day": 24,
+      "date": "2026-04-24",
+      "topic": "World Models",
+      "en_path": "en/day24-world-models.md",
+      "zh_path": "zh/day24-world-models.md",
+      "qa_score": 92.1,
+      "qa_rounds": 1,
+      "images": [
+        "zh/images/day24/world-model-stack.png",
+        "zh/images/day24/next-token-vs-world-dynamics.png",
+        "zh/images/day24/planning-in-latent-space.png",
+        "zh/images/day24/world-model-limitations-radar.png"
       ]
     }
   ]

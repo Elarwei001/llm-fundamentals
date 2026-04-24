@@ -118,6 +118,8 @@
 |---------|------|----------|
 | Measurement Artifact | 测量假象 | 由离散指标（如准确率）导致的表面涌现现象 |
 | MLP | 多层感知机 | Multi-Layer Perceptron，基础神经网络 |
+| Model-Based Reinforcement Learning | 基于模型的强化学习 | 先学习或利用环境模型，再在模型中规划或生成训练信号的强化学习范式 |
+| Model-Predictive Control (MPC) | 模型预测控制 | 先用模型评估多条未来动作序列，只执行当前最优方案的前几步，再重新规划 |
 | MoE | 混合专家 | Mixture of Experts，稀疏激活架构 |
 | Multi-head Attention | 多头注意力 | 并行计算多组注意力 |
 | Multi-Query Attention (MQA) | 多查询注意力 | 多个 query 头共享同一组 key/value 的注意力变体，降低解码内存带宽压力 |
@@ -184,7 +186,9 @@
 | Skip-gram | Skip-gram | Word2Vec 的一种变体，从中心词预测上下文 |
 | Sliding-Window Attention | 滑动窗口注意力 | 每个 token 主要关注固定邻域内的 token，以降低长序列计算和内存成本 |
 | Softmax | Softmax | 将 logits 转换为概率分布 |
+| SAT Solver | 可满足性求解器 | 用于求解布尔可满足性问题的程序，常用于形式约束检查和组合优化 |
 | Subword Tokenization | 子词分词 | 介于字符和词之间的分词策略 |
+| Symbolic Perturbation | 符号扰动 | 在不改变底层数学结构的前提下，改写变量名、数字顺序或表面叙述，用于测试推理鲁棒性 |
 | Synthetic Data | 合成数据 | 由模型生成的用于训练其他模型的数据 |
 | Typical Sampling | 典型采样 | 偏好惊讶度接近分布平均值 token 的解码方法 |
 
@@ -226,6 +230,7 @@
 | Word Analogy | 词类比 | 嵌入空间中的向量算术，如 king - man + woman ≈ queen |
 | Word2Vec | Word2Vec | Google 2013 年提出的词嵌入学习算法 |
 | WordPiece | WordPiece | Google BERT 使用的子词分词算法 |
+| World Model | 世界模型 | 关于环境潜在状态、状态转移和动作后果的预测模型，常用于规划与控制 |
 
 ---
 

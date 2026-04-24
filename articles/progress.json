@@ -1,6 +1,6 @@
 {
-  "current_day": 22,
-  "last_generated": "2026-04-22",
+  "current_day": 24,
+  "last_generated": "2026-04-24",
   "total_days": 60,
   "status": "active",
   "history": [
@@ -345,6 +345,36 @@
         "zh/images/day22/cot-vs-difficulty.png",
         "zh/images/day22/test-time-compute-tradeoff.png",
         "zh/images/day22/reasoning-failure-modes.png"
+      ]
+    },
+    {
+      "day": 23,
+      "date": "2026-04-23",
+      "topic": "Math and Logic",
+      "en_path": "en/day23-math-and-logic.md",
+      "zh_path": "zh/day23-math-and-logic.md",
+      "qa_score": 91.95,
+      "qa_rounds": 1,
+      "images": [
+        "zh/images/day23/math-error-amplification.png",
+        "zh/images/day23/neural-vs-symbolic-strengths.png",
+        "zh/images/day23/reasoning-tool-pipeline.png",
+        "zh/images/day23/benchmark-vs-robustness.png"
+      ]
+    },
+    {
+      "day": 24,
+      "date": "2026-04-24",
+      "topic": "World Models",
+      "en_path": "en/day24-world-models.md",
+      "zh_path": "zh/day24-world-models.md",
+      "qa_score": 92.1,
+      "qa_rounds": 1,
+      "images": [
+        "zh/images/day24/world-model-stack.png",
+        "zh/images/day24/next-token-vs-world-dynamics.png",
+        "zh/images/day24/planning-in-latent-space.png",
+        "zh/images/day24/world-model-limitations-radar.png"
       ]
     }
   ]
