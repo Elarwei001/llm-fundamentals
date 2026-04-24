@@ -158,24 +158,12 @@ I think that is a fair position. It avoids both hype and dismissal.
 
 The weaker parts of the LLM story show up when the system needs stable state, intervention modeling, or repeated rollouts.
 
-### 6.1 Fragile counterfactuals
-
-LLMs can answer many "what if" questions, but they often do so by pattern completion rather than by simulating the consequences of interventions over a maintained latent state.
-
-### 6.2 Weak action feedback loops
-
-A world model becomes most useful when actions change what the agent sees next. Pure language training rarely gives dense experience of that loop.
-
-### 6.3 Long-horizon drift
-
-Even when the first few imagined steps are sensible, a plain LLM can gradually lose track of constraints, inventory, geometry, or causal commitments.
-
-### 6.4 Poor calibration under uncertainty
-
-A planning system needs more than one plausible future. It needs a usable distribution over futures, including what it does **not** know. LLM confidence is often not the same thing as rollout calibration.
-
-![Figure 3: Planning in latent space](../zh/images/day24/planning-in-latent-space.png)
-*Caption: Planning with a world model means rolling possible futures forward in latent space, then choosing actions before committing in the real environment.*
+| Limitation | What it looks like | Why it matters |
+|------------|--------------------|---------------|
+| **Fragile counterfactuals** | Can answer many "what if" questions, but does so by pattern completion rather than simulating intervention consequences over a maintained latent state | A planning system needs to reliably predict "if I do X, what happens next" — not just generate plausible-sounding text |
+| **Weak action feedback loops** | Pure language training rarely provides dense action-feedback experience; the very thing that makes a world model most useful — actions changing what the agent sees next — is largely absent from LLM training | Without a dense action-feedback loop, the model struggles to learn that "my actions changed the environment" |
+| **Long-horizon drift** | Even when the first few imagined steps are sensible, a plain LLM gradually loses track of constraints, inventory, geometry, or causal commitments as steps accumulate | The deeper and longer the plan, the more error accumulates; a chain that starts reasonable may diverge from reality later on |
+| **Poor calibration under uncertainty** | LLM confidence does not equal rollout calibration quality; it produces the "most plausible" future rather than a usable distribution over futures | A planning system needs to know what it explicitly does **not** know, not just a confident but potentially wrong answer |
 
 In short, an LLM can talk about a chess position, explain why a move is bad, and narrate a strategy. A real planning engine must maintain the board state exactly and evaluate branches reliably. Those are different standards.
 
