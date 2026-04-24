@@ -38,7 +38,13 @@ But the linear-Gaussian assumption is what makes the whole thing *tractable*. Th
 
 ### 1.2 Model-based reinforcement learning
 
-The transition to *learned* models began in earnest with Sutton's Dyna architecture (Sutton, 1991). Dyna interleaves real experience with *simulated* experience: the agent learns both a value function and a one-step model $\hat{P}(s_{t+1} | s_t, a_t)$, then uses the model to generate imaginary rollouts for additional policy updates. The insight was fundamental: a model, even an imperfect one, can massively amplify the value of each real interaction.
+The transition to *learned* models began in earnest with Sutton's Dyna architecture (Sutton, 1991). Dyna interleaves real experience with *simulated* experience: the agent learns both a value function and a one-step model $\hat{P}(s_{t+1} | s_t, a_t)$, then uses the model to generate imaginary rollouts for additional policy updates.
+
+The idea is beautifully simple. In ordinary RL, the agent takes one step in the real environment, gets one experience tuple $(s_t, a_t, r_t, s_{t+1})$, and uses it to update the policy. One step, one lesson. Dyna adds a twist: **also learn a model of the environment, then practice against it for free**. Every real step improves the model; the improved model generates hundreds or thousands of simulated steps; the policy trains on all of them. Real experience is expensive (you must act in the world, risk failure, wait for feedback). Simulated experience is nearly free (just a forward pass through the model). The insight was fundamental: a model, even an imperfect one, can massively amplify the value of each real interaction.
+
+Think of it like learning to drive. Each real driving lesson is costly and time-limited. But between lessons, you can close your eyes and mentally rehearse — what if the car in front brakes suddenly? What if the light turns yellow just as you approach? Your internal "driving simulator" is not perfect, but rehearsing against it makes every real lesson far more productive than it would be alone. Dyna formalizes exactly this intuition.
+
+There is a catch, of course: if the model is inaccurate, training against its fantasies can produce a worse policy than doing nothing. This is why subsequent work focused heavily on improving model quality and managing model error.
 
 Subsequent work tightened the loop. PILCO (Deisenroth & Rasmussen, 2011) used Gaussian processes as forward models, propagating uncertainty through predicted trajectories to achieve remarkable sample efficiency on low-dimensional control tasks. PETS (Chua et al., 2018) replaced GPs with ensembles of probabilistic neural networks, scaling to higher dimensions while retaining uncertainty-aware planning via model-predictive control (MPC).
 
