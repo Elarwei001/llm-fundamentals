@@ -184,39 +184,103 @@ The trajectory is clear: **hand-crafted simulators → learned dynamics with fix
 
 ## 2. Core Formulation: Variational Inference over Latent Dynamics
 
+This section gets into the math. The equations look intimidating, but every one of them answers a concrete question. Think of a world model as a *recipe that can produce realistic game playthroughs*: given a starting state and a sequence of actions, it can hallucinate what you'd see, what reward you'd get, and how the scene would evolve. The math below is just a precise way of writing down that recipe.
+
 ### 2.1 The generative model
 
-A world model defines a generative process over sequences of observations $o_{1:T}$, actions $a_{1:T}$, and rewards $r_{1:T}$. The core latent variable model is:
+#### Intuition: a recipe for simulated experience
 
-$$p_\theta(o_{1:T}, r_{1:T}, s_{1:T} | a_{1:T}) = \prod_{t=1}^{T} p_\theta(o_t | s_t) \, p_\theta(r_t | s_t) \, p_\theta(s_t | s_{t-1}, a_{t-1})$$
+Imagine you have a video game engine in your head. At every moment, three things happen:
+1. The world changes from one state to the next based on what you did (**transition**)
+2. You see a picture of the new state (**observation / decoder**)
+3. You get a score telling you how well you're doing (**reward**)
 
-where $s_t$ are latent states, $p_\theta(o_t | s_t)$ is the observation model (decoder), $p_\theta(r_t | s_t)$ is the reward model, and $p_\theta(s_t | s_{t-1}, a_{t-1})$ is the transition model. For the RSSM, the transition prior decomposes as $p_\theta(s_t | \bar{s}_t)$ where $\bar{s}_t$ is the deterministic recurrent state.
+A generative model writes this down as a probability distribution. For a sequence of observations $o_{1:T}$, actions $a_{1:T}$, and rewards $r_{1:T}$, the model factorizes as:
+
+$$p_\theta(o_{1:T}, r_{1:T}, s_{1:T} | a_{1:T}) = \prod_{t=1}^{T} \underbrace{p_\theta(o_t | s_t)}_{\text{decoder}} \, \underbrace{p_\theta(r_t | s_t)}_{\text{reward}} \, \underbrace{p_\theta(s_t | s_{t-1}, a_{t-1})}_{\text{transition}}$$
+
+Each factor answers one question:
+
+| Factor | Question it answers | Plain English |
+|--------|---------------------|---------------|
+| $p_\theta(s_t \mid s_{t-1}, a_{t-1})$ | Transition | "If I was in this state and took this action, where would I end up?" |
+| $p_\theta(o_t \mid s_t)$ | Decoder | "If the state is this, what would I see on screen?" |
+| $p_\theta(r_t \mid s_t)$ | Reward | "If the state is this, how many points would I get?" |
+
+For the RSSM (Dreamer's architecture), the transition factor further splits: the deterministic recurrent state $\bar{s}_t$ is computed first, then the stochastic state $s_t$ is drawn from a prior $p_\theta(s_t \mid \bar{s}_t)$ conditioned on it.
 
 ### 2.2 Training via the ELBO
 
-We cannot compute the true posterior $p(s_{1:T} | o_{1:T}, a_{1:T})$, so we introduce an approximate posterior $q_\theta(s_{1:T} | o_{1:T}, a_{1:T})$ — typically factorized as $\prod_t q_\theta(s_t | \bar{s}_t, o_t)$ — and maximize the evidence lower bound (ELBO):
+#### Intuition: why we can't just compute the answer directly
 
-$$\mathcal{L} = \mathbb{E}_{q(s_{1:T})} \left[ \sum_{t=1}^{T} \left( \log p_\theta(o_t | s_t) + \log p_\theta(r_t | s_t) \right) \right] - \sum_{t=1}^{T} \text{KL}\left( q_\theta(s_t | \bar{s}_t, o_t) \, \| \, p_\theta(s_t | \bar{s}_t) \right)$$
+The ideal training objective would be: "find the parameters $\theta$ that maximize the probability of the observed data." That means computing the true posterior $p(s_{1:T} \mid o_{1:T}, a_{1:T})$ — the exact distribution over all possible latent state sequences that could explain what we observed.
 
-This decomposes into three interpretable terms:
+**The problem:** this requires integrating over *all possible* latent sequences $s_{1:T}$. The latent space is high-dimensional, the sequence is long, and the integral is intractable. It's like a detective trying to consider every possible explanation of a crime scene simultaneously — infinitely many theories, no way to enumerate them all.
 
-- **Reconstruction loss**: $\log p_\theta(o_t | s_t)$ — can the latent state reconstruct the observation?
-- **Reward prediction**: $\log p_\theta(r_t | s_t)$ — does the latent state contain enough information to predict reward?
-- **KL regularization**: $\text{KL}(q \| p)$ — keeps the approximate posterior close to the transition prior, preventing the model from memorizing observations into the posterior without learning good dynamics.
+**The solution:** instead of finding the *perfect* explanation, we train a neural network (the encoder) to produce a *good enough* approximation. We call this the **approximate posterior** $q_\theta(s_t \mid \bar{s}_t, o_t)$ — the encoder's best guess at the latent state, given the observation and the deterministic context.
+
+We then maximize the **Evidence Lower Bound (ELBO)** — a conservative estimate of how well the model explains the data:
+
+$$\mathcal{L} = \underbrace{\mathbb{E}_{q(s_{1:T})} \left[ \sum_{t=1}^{T} \left( \log p_\theta(o_t | s_t) + \log p_\theta(r_t | s_t) \right) \right]}_{\text{"Does my summary explain the evidence?"}} - \underbrace{\sum_{t=1}^{T} \text{KL}\left( q_\theta(s_t | \bar{s}_t, o_t) \, \| \, p_\theta(s_t | \bar{s}_t) \right)}_{\text{"Does my summary stay reasonable?"}}$$
+
+Let's unpack the three terms:
+
+- **Reconstruction** ($\log p_\theta(o_t | s_t)$): "Given my summary of the current state, can I recreate what I actually saw?" If the summary is good, the reconstructed image should match the original.
+
+- **Reward prediction** ($\log p_\theta(r_t | s_t)$): "Given my summary, can I predict what reward I got?" This forces the summary to retain task-relevant information — not just visual detail, but *what matters for the game*.
+
+- **KL regularization** ($\text{KL}(q \| p)$): "Given my summary after looking at the evidence, is it still close to what I would have guessed *before* looking?" This prevents cheating — the encoder can't just copy the raw observation into the latent state. It has to produce a summary that's consistent with the dynamics the model has learned.
+
+Think of it like writing a book report:
+- **Reconstruction** = "Can you describe the scene from your notes?" (accuracy)
+- **Reward prediction** = "Can you identify the key plot points?" (relevance)
+- **KL** = "Are your notes concise, or did you just photocopy the whole book?" (parsimony)
 
 This is *not* simply "predict the next state." It is approximate Bayesian inference: the model maintains a *belief* over latent states, updated by observations via the encoder and regularized by the learned dynamics. The KL term is what makes this a principled probabilistic model rather than a deterministic autoencoder with a prediction head.
 
 ### 2.3 Deterministic vs. stochastic: why RSSM matters
 
-Earlier models (Ha & Schmidhuber, 2018) used purely stochastic transitions. This created a problem: stochastic state alone forgets slowly. Gradients through sampling are noisy, and long-range dependencies degrade. The RSSM's innovation is the deterministic path $\bar{s}_t = f(\bar{s}_{t-1}, s_{t-1}, a_{t-1})$, which provides a stable memory channel. The stochastic state $s_t$ then only needs to capture *what is uncertain* about the current situation, conditioned on the deterministic summary. This separation is analogous to the way Kalman filters maintain both a state estimate and a covariance matrix — one for the best guess, one for the uncertainty.
+#### Intuition: your diary vs. your guesses
+
+Imagine you're writing two things every day:
+- A **diary** (deterministic): "Drove 50 km. Stopped at 3 red lights. Bought groceries." These are facts — stable, reliable, no ambiguity.
+- A **prediction journal** (stochastic): "Tomorrow it might rain (60%) or be sunny (40%)." These are guesses — uncertain, probabilistic, might change.
+
+Earlier world models (Ha & Schmidhuber, 2018) kept *only* the prediction journal — pure stochastic state. This caused two problems:
+
+1. **Noisy gradients.** Every time you sample from a stochastic distribution, you get a slightly different result. Backpropagating through these samples is like trying to follow a path that shifts under your feet. Training becomes unstable.
+2. **Forgetting over long horizons.** Stochastic state is resampled every step. Over 100 steps, the chain of samples drifts further and further from reality — like playing telephone, where each person whispers something slightly different.
+
+The RSSM's fix: add the diary alongside the prediction journal. The **deterministic path** $\bar{s}_t = f(\bar{s}_{t-1}, s_{t-1}, a_{t-1})$ uses a GRU to maintain stable, flowing memory across time. The **stochastic state** $s_t$ only needs to capture *what is uncertain* about the current moment, conditioned on that stable context.
+
+This mirrors the Kalman filter, which maintains two things simultaneously:
+- A **mean** (best guess — like the deterministic path)
+- A **covariance** (uncertainty — like the stochastic path)
+
+Having both gives you reliable memory *and* calibrated uncertainty. Pure deterministic would miss surprises; pure stochastic would forget the past. Together, they're powerful.
 
 ### 2.4 The full Dreamer-style loss
 
+#### Intuition: four volume knobs
+
 In practice, DreamerV3 optimizes:
 
-$$\mathcal{L}_{\text{world}} = \mathbb{E}_q \left[ \sum_t \beta_o \log p(o_t|s_t) + \beta_r \log p(r_t|s_t) + \beta_c \log p(\text{cont}_t|s_t) \right] - \beta_{\text{kl}} \sum_t \text{KL}(q_t \| p_t)$$
+$$\mathcal{L}_{\text{world}} = \mathbb{E}_q \left[ \sum_t \underbrace{\beta_o \log p(o_t|s_t)}_{\text{reconstruction}} + \underbrace{\beta_r \log p(r_t|s_t)}_{\text{reward}} + \underbrace{\beta_c \log p(\text{cont}_t|s_t)}_{\text{continuation}} \right] - \underbrace{\beta_{\text{kl}} \sum_t \text{KL}(q_t \| p_t)}_{\text{regularization}}$$
 
-where $\text{cont}_t$ is a continuation flag (episode not done), and the $\beta$ coefficients are tuned to balance terms. Notably, DreamerV3 uses *discrete* latents (categorical distributions with straight-through gradients) and symlog predictions for the reward and continuation heads to handle non-Gaussian distributions gracefully.
+Each $\beta$ is a **volume knob** controlling how much that term matters:
+
+| Knob | Controls | Too high → | Too low → |
+|------|----------|------------|----------|
+| $\beta_o$ | How much the latent state must reconstruct pixels | Wastes capacity on visual detail | Latent might lose scene info |
+| $\beta_r$ | How much the latent state must predict reward | Overfits to reward, ignores dynamics | Agent doesn't learn what's good |
+| $\beta_c$ | How much the latent state must predict episode continuation | — | Agent can't plan episode endings |
+| $\beta_{\text{kl}}$ | How much the posterior must stay close to the prior | Posterior is too generic (underfitting) | Posterior copies observations (overfitting) |
+
+**What's new in DreamerV3** compared to earlier versions:
+
+- **Continuation flag** ($\text{cont}_t$): a small predictor that answers "is the episode still going?" This matters because the agent needs to know when a trajectory ends — dying in a game is very different from surviving.
+- **Symlog predictions**: instead of assuming rewards are Gaussian (they're often skewed or have huge outliers), DreamerV3 applies a symmetric log transform. This lets a single network handle both tiny rewards (+0.01) and huge ones (+1000) gracefully.
+- **Discrete latents**: instead of continuous Gaussian variables, DreamerV3 uses 32 categorical variables each with 32 classes. This matches the structure of many real-world states ("door is open *or* closed", not "door is 0.73 open") and makes the KL term more stable to compute.
 
 ---
 
@@ -227,39 +291,95 @@ where $\text{cont}_t$ is a continuation flag (episode not done), and the $\beta$
 
 ### 3.1 Encoder
 
-The encoder maps a high-dimensional observation $o_t$ (image, point cloud, etc.) to parameters of the approximate posterior $q_\theta(s_t | \bar{s}_t, o_t)$. In DreamerV3, this is a shallow CNN followed by a linear layer producing logits for a categorical distribution over a $32 \times 32$ discrete latent. The encoder is essentially a VAE-style inference network, conditioned on the deterministic state $\bar{s}_t$ to provide temporal context.
+#### Intuition: your eyes compressing the world
 
-Alternatives include continuous Gaussian latents (DreamerV1/V2), VQ-VAE discretization, or patch-based encoders borrowed from vision transformers.
+When you walk into a room, you don't memorize every pixel of what you see. Your eyes and visual cortex compress the raw sensory input into a *mental impression* — you notice "there's a table with a laptop on it, near a window." The encoder does exactly this: it takes a high-dimensional observation (a 64×64 RGB image = 12,288 numbers) and compresses it into a compact latent representation.
+
+**What it actually does:** A shallow CNN processes the image through a few convolutional layers, then a linear layer produces *logits* for a categorical distribution. In DreamerV3, the output is a $32 \times 32$ grid — 32 independent categorical variables, each choosing among 32 classes. Think of it as 32 multiple-choice questions, each with 32 possible answers, collectively describing "what's in this frame."
+
+Why condition on the deterministic state $\bar{s}_t$? Because the encoder shouldn't start from scratch each frame. If your deterministic memory says "you're in a car racing game," the encoder should use that context to interpret ambiguous pixels — the same brown blob could be a rock in a racing game or a tree in an adventure game.
+
+Alternatives include continuous Gaussian latents (DreamerV1), VQ-VAE discretization, or patch-based encoders borrowed from vision transformers.
 
 ### 3.2 Transition model (RSSM)
 
-The heart of the system. At each step:
+#### Intuition: prior vs. posterior — what you expected vs. what you saw
 
-1. **Deterministic update**: $\bar{s}_t = \text{GRU}(\bar{s}_{t-1}, \text{concat}(s_{t-1}, a_{t-1}))$
-2. **Prior**: $p_\theta(s_t | \bar{s}_t)$ — what the model *expects* before seeing the observation
-3. **Posterior**: $q_\theta(s_t | \bar{s}_t, o_t)$ — what the model *infers* after seeing the observation
-4. **KL divergence** between prior and posterior measures the *surprise* of the observation
+This is the heart of the system. At each timestep, four things happen in sequence:
 
-During imagination (no observation available), the prior is used as the state, enabling rollouts without grounding.
+**Step 1 — Deterministic update** (update the diary):
+$$\bar{s}_t = \text{GRU}(\bar{s}_{t-1}, \text{concat}(s_{t-1}, a_{t-1}))$$
+The GRU takes the previous deterministic state, the previous stochastic state, and the last action, and produces the new deterministic state. This is the stable memory flowing forward — "I was here, I did that, now I'm here."
+
+**Step 2 — Prior** (guess before looking):
+$$p_\theta(s_t \mid \bar{s}_t)$$
+Based solely on the deterministic state, the model makes its best guess about what the stochastic state should be. This is the *prior* — "what I expected before opening my eyes." If the model has learned good dynamics, this guess should be pretty close to reality.
+
+**Step 3 — Posterior** (look and correct):
+$$q_\theta(s_t \mid \bar{s}_t, o_t)$$
+Now the encoder looks at the actual observation and produces an updated estimate. This is the *posterior* — "what I think after opening my eyes." If the prior was good, the posterior barely adjusts. If something surprising happened, the posterior shifts noticeably.
+
+**Step 4 — KL divergence** (measure surprise):
+$$\text{KL}(q_\theta \| p_\theta)$$
+The KL divergence between prior and posterior measures how *surprised* the model was by the observation. Small KL → "I expected this." Large KL → "I didn't see that coming." This signal drives learning: the model trains to make its priors more accurate so surprises shrink.
+
+**During imagination** (no real observation available), Steps 3 and 4 are skipped — the prior *becomes* the state. This is what lets the model roll forward in time without any grounding, dreaming up plausible futures.
 
 ### 3.3 Reward and continuation heads
 
-Small MLPs map the latent state $(\bar{s}_t, s_t)$ to a predicted reward $\hat{r}_t$ and continuation probability. These are trained as part of the world model loss. The reward head is critical for planning: it tells the agent which imagined futures are desirable.
+These are simple small MLPs (2-3 layers) that sit on top of the latent state $(\bar{s}_t, s_t)$ and answer two practical questions:
+
+- **Reward head:** "How good is this state?" — predicts the scalar reward $\hat{r}_t$. This is what tells the agent which imagined futures are worth pursuing.
+- **Continuation head:** "Is the episode still going?" — predicts a binary flag (1 = continue, 0 = game over). This matters because reaching a terminal state is qualitatively different from surviving — the agent needs to learn to avoid death, not just chase reward.
+
+Both heads are trained as part of the world model loss (see Section 2.4). They're small but critical: without the reward head, the agent has no direction; without the continuation head, it can't distinguish between "I won" and "I died."
 
 ### 3.4 Decoder
 
-The decoder reconstructs $o_t$ from $s_t$, providing the reconstruction loss term. Some recent work argues the decoder is unnecessary — if the model predicts rewards and dynamics well in latent space, reconstructing pixels is wasted capacity (cf. JEPA). In practice, the decoder acts as a regularizer: it forces the latent state to retain enough information to reconstruct the observation, which prevents the model from collapsing to a trivial representation. DreamerV3 retains the decoder but with a small $\beta_o$.
+#### Intuition: why it exists and why some people hate it
+
+The decoder reconstructs the original observation $o_t$ from the latent state $s_t$. It's essentially running the encoder in reverse — taking the compressed mental impression and painting it back into pixels.
+
+**Why it exists:** The decoder acts as a *regularizer*. Without it, the latent state could collapse to something trivial — just encoding the reward and nothing else. The reconstruction loss forces the latent to retain rich information about the scene. Think of it as a quality check: "If I can reconstruct the image from my summary, my summary must be pretty detailed."
+
+**Why some researchers think it shouldn't exist:** LeCun's JEPA argument (Section 1.5) says forcing the model to reconstruct pixels wastes capacity on irrelevant details. Do you really need to remember the exact shade of the sky to decide whether to brake? The model could be spending those parameters on learning better dynamics instead.
+
+**DreamerV3's compromise:** Keep the decoder, but turn its volume knob down. The weight $\beta_o$ on reconstruction loss is small — enough to prevent collapse, but not so large that the model wastes capacity on pixel-perfect reconstruction. It's a pragmatic middle ground.
 
 ### 3.5 Planner / Policy
 
-Dreamer learns a separate actor-critic network that operates *entirely in latent space*. The actor maps latent states to actions; the critic estimates the value function. Both are trained on imagined rollouts:
+#### Intuition: learning to act in your dreams
 
-1. Imagine $H$ steps forward using the RSSM prior
-2. Compute imagined returns using the reward head and critic
-3. Update actor to maximize returns via policy gradients
-4. Update critic via temporal-difference learning on imagined trajectories
+Once the world model is trained, it becomes a *simulator* the agent can practice in. There are two main approaches to using it:
 
-Alternative planning approaches include Cross-Entropy Method (CEM) for shooting-based trajectory optimization (used in PETS, TD-MPC) or MPC with learned dynamics. The tradeoff: learned policies are fast at inference time but require training; CEM/MPC can adapt online but are computationally expensive per decision.
+**Approach 1: Learned policy (Dreamer's actor-critic)**
+
+Dreamer trains a separate actor network and critic network that operate *entirely in latent space*:
+
+1. Start from a real encoded state
+2. The **actor** proposes an action; the world model imagines forward one step
+3. Repeat for $H$ steps to produce an imagined trajectory
+4. The **reward head** scores each step; the **critic** estimates long-term value
+5. Gradients backpropagate through the entire imagined trajectory to improve the actor and critic
+
+This is like a golf player mentally rehearsing a swing 50 times, each time adjusting slightly based on imagined outcomes, then stepping up to the ball with an optimized motion. The key insight: because the world model is differentiable, the agent can calculate exactly how a small change in action would ripple through the imagined future.
+
+**Approach 2: Online planning (CEM / MPC)**
+
+Instead of a learned policy, you can use **sampling-based planning**: generate many candidate action sequences, simulate each one through the world model, pick the best, execute the first action, then replan. This is Cross-Entropy Method (CEM) or Model-Predictive Control (MPC).
+
+Imagine throwing 100 darts at a board, seeing where they land, then aiming at the cluster closest to the bullseye. You don't need a pre-trained throwing policy — just evaluate many options and pick the winner.
+
+**The tradeoff:**
+
+| | Learned policy (Dreamer) | Online planning (CEM/MPC) |
+|---|---|---|
+| **Speed** | Fast at inference (one forward pass) | Slow (must simulate many trajectories) |
+| **Adaptability** | Needs training; fixed after training | Adapts online to new situations |
+| **Quality** | Limited by training | Can find better solutions given enough compute |
+| **Use case** | Real-time control (robotics, games) | Offline or slow decision-making |
+
+Dreamer uses the learned policy approach for efficiency — once trained, the actor can choose actions in a single forward pass, making it fast enough for real-time control.
 
 ---
 
