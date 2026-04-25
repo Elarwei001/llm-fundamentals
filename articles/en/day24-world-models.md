@@ -460,7 +460,7 @@ The strongest counterarguments:
 
 ## 6. Current Frontier: Convergence and Open Problems
 
-![Figure: Planning in latent space](./images/day24/planning-in-latent-space.png)
+![Figure: Planning in latent space](./images/day24/planning-in-latent-space-v2.png)
 *Agents plan by imagining trajectories through learned latent dynamics before committing to actions in the real world.*
 
 The field is converging. Three major research threads are pushing world models from single-environment tools toward general-purpose intelligence:
