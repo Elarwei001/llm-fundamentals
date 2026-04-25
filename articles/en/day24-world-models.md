@@ -207,7 +207,7 @@ Each factor answers one question:
 | $p_\theta(o_t \mid s_t)$ | Decoder | "If the state is this, what would I see on screen?" |
 | $p_\theta(r_t \mid s_t)$ | Reward | "If the state is this, how many points would I get?" |
 
-For the RSSM (Dreamer's architecture), the transition factor further splits: the deterministic recurrent state $\bar{s}_t$ is computed first, then the stochastic state $s_t$ is drawn from a prior $p_\theta(s_t \mid \bar{s}_t)$ conditioned on it.
+For the RSSM (Dreamer's architecture), the transition factor further splits: the deterministic recurrent state $h_t$ is computed first, then the stochastic state $s_t$ is drawn from a prior $p_\theta(s_t \mid h_t)$ conditioned on it.
 
 ### 2.2 Training via the ELBO
 
@@ -217,11 +217,11 @@ The ideal training objective would be: "find the parameters $\theta$ that maximi
 
 **The problem:** this requires integrating over *all possible* latent sequences $s_{1:T}$. The latent space is high-dimensional, the sequence is long, and the integral is intractable. It's like a detective trying to consider every possible explanation of a crime scene simultaneously — infinitely many theories, no way to enumerate them all.
 
-**The solution:** instead of finding the *perfect* explanation, we train a neural network (the encoder) to produce a *good enough* approximation. We call this the **approximate posterior** $q_\theta(s_t \mid \bar{s}_t, o_t)$ — the encoder's best guess at the latent state, given the observation and the deterministic context.
+**The solution:** instead of finding the *perfect* explanation, we train a neural network (the encoder) to produce a *good enough* approximation. We call this the **approximate posterior** $q_\theta(s_t \mid h_t, o_t)$ — the encoder's best guess at the latent state, given the observation and the deterministic context.
 
 We then maximize the **Evidence Lower Bound (ELBO)** — a conservative estimate of how well the model explains the data:
 
-$$\mathcal{L} = \underbrace{\mathbb{E}_{q(s_{1:T})} \left[ \sum_{t=1}^{T} \left( \log p_\theta(o_t | s_t) + \log p_\theta(r_t | s_t) \right) \right]}_{\text{"Does my summary explain the evidence?"}} - \underbrace{\sum_{t=1}^{T} \text{KL}\left( q_\theta(s_t | \bar{s}_t, o_t) \, \| \, p_\theta(s_t | \bar{s}_t) \right)}_{\text{"Does my summary stay reasonable?"}}$$
+$$\mathcal{L} = \underbrace{\mathbb{E}_{q(s_{1:T})} \left[ \sum_{t=1}^{T} \left( \log p_\theta(o_t | s_t) + \log p_\theta(r_t | s_t) \right) \right]}_{\text{"Does my summary explain the evidence?"}} - \underbrace{\sum_{t=1}^{T} \text{KL}\left( q_\theta(s_t | h_t, o_t) \, \| \, p_\theta(s_t | h_t) \right)}_{\text{"Does my summary stay reasonable?"}}$$
 
 Let's unpack the three terms:
 
@@ -251,7 +251,7 @@ Earlier world models (Ha & Schmidhuber, 2018) kept *only* the prediction journal
 1. **Noisy gradients.** Every time you sample from a stochastic distribution, you get a slightly different result. Backpropagating through these samples is like trying to follow a path that shifts under your feet. Training becomes unstable.
 2. **Forgetting over long horizons.** Stochastic state is resampled every step. Over 100 steps, the chain of samples drifts further and further from reality — like playing telephone, where each person whispers something slightly different.
 
-The RSSM's fix: add the diary alongside the prediction journal. The **deterministic path** $\bar{s}_t = f(\bar{s}_{t-1}, s_{t-1}, a_{t-1})$ uses a GRU to maintain stable, flowing memory across time. The **stochastic state** $s_t$ only needs to capture *what is uncertain* about the current moment, conditioned on that stable context.
+The RSSM's fix: add the diary alongside the prediction journal. The **deterministic path** $h_t = f(h_{t-1}, s_{t-1}, a_{t-1})$ uses a GRU to maintain stable, flowing memory across time. The **stochastic state** $s_t$ only needs to capture *what is uncertain* about the current moment, conditioned on that stable context.
 
 This mirrors the Kalman filter, which maintains two things simultaneously:
 - A **mean** (best guess — like the deterministic path)
@@ -297,7 +297,7 @@ When you walk into a room, you don't memorize every pixel of what you see. Your 
 
 **What it actually does:** A shallow CNN processes the image through a few convolutional layers, then a linear layer produces *logits* for a categorical distribution. In DreamerV3, the output is a $32 \times 32$ grid — 32 independent categorical variables, each choosing among 32 classes. Think of it as 32 multiple-choice questions, each with 32 possible answers, collectively describing "what's in this frame."
 
-Why condition on the deterministic state $\bar{s}_t$? Because the encoder shouldn't start from scratch each frame. If your deterministic memory says "you're in a car racing game," the encoder should use that context to interpret ambiguous pixels — the same brown blob could be a rock in a racing game or a tree in an adventure game.
+Why condition on the deterministic state $h_t$? Because the encoder shouldn't start from scratch each frame. If your deterministic memory says "you're in a car racing game," the encoder should use that context to interpret ambiguous pixels — the same brown blob could be a rock in a racing game or a tree in an adventure game.
 
 Alternatives include continuous Gaussian latents (DreamerV1), VQ-VAE discretization, or patch-based encoders borrowed from vision transformers.
 
@@ -308,15 +308,15 @@ Alternatives include continuous Gaussian latents (DreamerV1), VQ-VAE discretizat
 This is the heart of the system. At each timestep, four things happen in sequence:
 
 **Step 1 — Deterministic update** (update the diary):
-$$\bar{s}_t = \text{GRU}(\bar{s}_{t-1}, \text{concat}(s_{t-1}, a_{t-1}))$$
+$$h_t = \text{GRU}(h_{t-1}, \text{concat}(s_{t-1}, a_{t-1}))$$
 The GRU takes the previous deterministic state, the previous stochastic state, and the last action, and produces the new deterministic state. This is the stable memory flowing forward — "I was here, I did that, now I'm here."
 
 **Step 2 — Prior** (guess before looking):
-$$p_\theta(s_t \mid \bar{s}_t)$$
+$$p_\theta(s_t \mid h_t)$$
 Based solely on the deterministic state, the model makes its best guess about what the stochastic state should be. This is the *prior* — "what I expected before opening my eyes." If the model has learned good dynamics, this guess should be pretty close to reality.
 
 **Step 3 — Posterior** (look and correct):
-$$q_\theta(s_t \mid \bar{s}_t, o_t)$$
+$$q_\theta(s_t \mid h_t, o_t)$$
 Now the encoder looks at the actual observation and produces an updated estimate. This is the *posterior* — "what I think after opening my eyes." If the prior was good, the posterior barely adjusts. If something surprising happened, the posterior shifts noticeably.
 
 **Step 4 — KL divergence** (measure surprise):
@@ -327,7 +327,7 @@ The KL divergence between prior and posterior measures how *surprised* the model
 
 ### 3.3 Reward and continuation heads
 
-These are simple small MLPs (2-3 layers) that sit on top of the latent state $(\bar{s}_t, s_t)$ and answer two practical questions:
+These are simple small MLPs (2-3 layers) that sit on top of the latent state $(h_t, s_t)$ and answer two practical questions:
 
 - **Reward head:** "How good is this state?" — predicts the scalar reward $\hat{r}_t$. This is what tells the agent which imagined futures are worth pursuing.
 - **Continuation head:** "Is the episode still going?" — predicts a binary flag (1 = continue, 0 = game over). This matters because reaching a terminal state is qualitatively different from surviving — the agent needs to learn to avoid death, not just chase reward.
@@ -412,7 +412,7 @@ World models are explicitly conditioned on actions: the transition function take
 
 ### 4.4 Latent state consistency
 
-World models enforce state persistence through the RSSM: $\bar{s}_t$ is a deterministic function of the entire history $(\bar{s}_{0:t-1}, s_{0:t-1}, a_{0:t-1})$. This means the latent state is a *sufficient statistic* for the history (approximately, modulo stochastic state). LLMs have no explicit state variable — the entire history must be reconstructed from the context window. This works remarkably well within the context window but degrades catastrophically when the window is exceeded, and there is no principled mechanism for maintaining a persistent belief state across turns without the KV cache acting as a surrogate.
+World models enforce state persistence through the RSSM: $h_t$ is a deterministic function of the entire history $(h_{0:t-1}, s_{0:t-1}, a_{0:t-1})$. This means the latent state is a *sufficient statistic* for the history (approximately, modulo stochastic state). LLMs have no explicit state variable — the entire history must be reconstructed from the context window. This works remarkably well within the context window but degrades catastrophically when the window is exceeded, and there is no principled mechanism for maintaining a persistent belief state across turns without the KV cache acting as a surrogate.
 
 ### 4.5 Compounding error
 
