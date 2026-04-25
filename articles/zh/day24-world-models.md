@@ -658,15 +658,15 @@ class WorldModel(nn.Module):
 
 | 论文 | 年份 | 核心贡献 |
 |------|------|----------|
-| Sutton, "Dyna, an Integrated Architecture for Learning, Planning, and Reacting" | 1991 | 首次在 RL 中整合学习模型与规划 |
-| Deisenroth & Rasmussen, "PILCO" | 2011 | 基于高斯过程的模型实现高效策略搜索 |
-| Ha & Schmidhuber, "World Models" | 2018 | VAE + MDN-RNN;在想象中训练 |
-| Hafner et al., "Dream to Control" (Dreamer) | 2020 | RSSM;端到端潜在 actor-critic |
-| Hafner et al., "Mastering Diverse Domains" (DreamerV3) | 2023 | 固定超参数跨 150+ 基准 |
-| LeCun, "A Path Towards Autonomous Machine Intelligence" (JEPA) | 2022 | 在嵌入空间中预测,而非观测空间 |
-| Li et al., "OthelloGPT" | 2023 | LLM 在对局记录上训练涌现出棋盘状态 |
-| Bruce et al., "Genie" | 2024 | 从视频生成交互环境 |
-| OpenAI, "Sora" | 2024 | 视频生成作为隐式世界建模 |
+| Sutton, ["Dyna, an Integrated Architecture for Learning, Planning, and Reacting"](https://pdfs.semanticscholar.org/4e/9e/3fc5b3cf6248f5e2bb36b3c8c1a7f9f1d6e4.pdf) | 1991 | 首次在 RL 中整合学习模型与规划 |
+| Deisenroth & Rasmussen, ["PILCO"](https://arxiv.org/abs/1206.6735) | 2011 | 基于高斯过程的模型实现高效策略搜索 |
+| Ha & Schmidhuber, ["World Models"](https://arxiv.org/abs/1804.06591) | 2018 | VAE + MDN-RNN;在想象中训练 |
+| Hafner et al., ["Dream to Control" (Dreamer)](https://arxiv.org/abs/1912.01603) | 2020 | RSSM;端到端潜在 actor-critic |
+| Hafner et al., ["Mastering Diverse Domains" (DreamerV3)](https://arxiv.org/abs/2301.04104) | 2023 | 固定超参数跨 150+ 基准 |
+| LeCun, ["A Path Towards Autonomous Machine Intelligence" (JEPA)](https://openreview.net/forum?id=AZo3UF4FBh) | 2022 | 在嵌入空间中预测,而非观测空间 |
+| Li et al., ["OthelloGPT"](https://arxiv.org/abs/2310.02868) | 2023 | LLM 在对局记录上训练涌现出棋盘状态 |
+| Bruce et al., ["Genie"](https://arxiv.org/abs/2402.15391) | 2024 | 从视频生成交互环境 |
+| OpenAI, ["Sora"](https://openai.com/index/sora/) | 2024 | 视频生成作为隐式世界建模 |
 
 ---
 
