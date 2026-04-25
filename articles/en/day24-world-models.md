@@ -513,7 +513,7 @@ In 2025, a new category of AI product emerged: **LLM agents that operate in real
 
 - **OpenAI's Operator** ([operator.chatgpt.com](https://operator.chatgpt.com), January 2025) and **ChatGPT Agent** ([openai.com](https://openai.com/index/introducing-operator/), July 2025) can browse the web, click buttons, fill forms, and complete real-world tasks. The agent observes a webpage screenshot, decides what to click, and iterates. On WebArena, it achieved 58.1% success; on WebVoyager, 87%.
 - **Anthropic's Computer Use** ([docs.anthropic.com](https://docs.anthropic.com/en/docs/agents-and-tools/computer-use)) takes a similar approach for desktop applications.
-- **Google DeepMind's Mariner** (Gemini 2.0) operates as a web-browsing agent.
+- **Google DeepMind's Mariner** ([deepmind.google](https://deepmind.google/models/project-mariner/), Gemini 2.0) operates as a web-browsing agent.
 
 These agents maintain an implicit world model of the digital environment — understanding that "clicking this button submits the form" or "scrolling reveals more results." They plan, act, observe feedback, and replan.
 

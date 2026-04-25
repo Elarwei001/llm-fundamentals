@@ -513,7 +513,7 @@ NVIDIA 的 **Cosmos** 平台（[nvidia.com/cosmos](https://www.nvidia.com/en-us/
 
 - **OpenAI 的 Operator**（[operator.chatgpt.com](https://operator.chatgpt.com)，2025 年 1 月）和 **ChatGPT Agent**（[openai.com](https://openai.com/index/introducing-operator/)，2025 年 7 月）可以浏览网页、点击按钮、填写表单、完成真实任务。智能体观察网页截图，决定点击什么，然后迭代。在 WebArena 上达到 58.1% 成功率，WebVoyager 上达到 87%。
 - **Anthropic 的 Computer Use**（[docs.anthropic.com](https://docs.anthropic.com/en/docs/agents-and-tools/computer-use)）对桌面应用采用类似方法。
-- **Google DeepMind 的 Mariner**（Gemini 2.0）作为网页浏览智能体运行。
+- **Google DeepMind 的 Mariner**（[deepmind.google](https://deepmind.google/models/project-mariner/)，Gemini 2.0）作为网页浏览智能体运行。
 
 这些智能体维护了数字环境的隐式世界模型——理解"点击这个按钮会提交表单"或"滚动会显示更多结果"。它们规划、行动、观察反馈、重新规划。
 
