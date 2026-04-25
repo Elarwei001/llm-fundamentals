@@ -273,7 +273,7 @@ Each $\beta$ is a **volume knob** controlling how much that term matters:
 |------|----------|------------|----------|
 | $\beta_o$ | How much the latent state must reconstruct pixels | Wastes capacity on visual detail | Latent might lose scene info |
 | $\beta_r$ | How much the latent state must predict reward | Overfits to reward, ignores dynamics | Agent doesn't learn what's good |
-| $\beta_c$ | How much the latent state must predict episode continuation | — | Agent can't plan episode endings |
+| $\beta_c$ | How much the latent state must predict episode continuation | Over-focuses on "am I dead", squeezing out other important info | Agent can't plan episode endings |
 | $\beta_{\text{kl}}$ | How much the posterior must stay close to the prior | Posterior is too generic (underfitting) | Posterior copies observations (overfitting) |
 
 **What's new in DreamerV3** compared to earlier versions:
