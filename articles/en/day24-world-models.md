@@ -509,18 +509,27 @@ NVIDIA's **Cosmos** platform (January 2025, updated September 2025) takes yet an
 
 **Intuition:** An LLM playing Minecraft by writing plans in English is doing world modeling — just in language instead of pixels.
 
-Systems like Voyager (Wang et al., 2023) use LLMs as planners in game environments. The LLM writes a plan ("craft wooden pickaxe → mine stone → build furnace"), executes it, and receives text feedback. It maintains explicit skill and state libraries — essentially a world model at the linguistic level.
+Early systems like Voyager (Wang et al., 2023) used LLMs as planners in game environments. The LLM writes a plan ("craft wooden pickaxe → mine stone → build furnace"), executes it, and receives text feedback. It maintains explicit skill and state libraries — essentially a world model at the linguistic level.
+
+**Since then, LLM agents have moved far beyond Minecraft.** In 2025, the focus shifted from game worlds to the real digital world:
+
+- **OpenAI's Operator** (January 2025) and **ChatGPT Agent** (July 2025) can browse the web, click buttons, fill forms, and complete real-world tasks. The agent observes a webpage screenshot, decides what to click, and iterates — treating the browser as its "environment." On WebArena, it achieved 58.1% success; on WebVoyager, 87%.
+- **Anthropic's Computer Use** (Claude) takes a similar approach for desktop applications.
+- **Google DeepMind's Mariner** (Gemini 2.0) operates as a web-browsing agent.
+
+These agents maintain an implicit world model of the digital environment — understanding that "clicking this button submits the form" or "scrolling reveals more results." They plan, act, observe feedback, and replan, just like Voyager did in Minecraft but now in real web/desktop interfaces.
 
 **The tradeoff:**
 
 | Aspect | Linguistic world model (LLM agent) | Latent world model (Dreamer) |
 |---|---|---|
-| **Planning granularity** | High-level ("build a house") | Low-level (joint angles, pixel movements) |
+| **Planning granularity** | High-level ("book a flight") | Low-level (joint angles, pixel movements) |
 | **Robustness** | Brittle — language plans can be vague or wrong | Precise — learned from actual interaction data |
 | **Generalization** | Broad — works across many tasks via language | Narrow — trained per-environment |
 | **Speed** | Slow — requires multiple LLM calls per step | Fast — single forward pass |
+| **Domain** | Digital (web, apps, code) | Physical (robots, games) |
 
-The emerging vision: combine both. An LLM handles high-level planning ("go to the village"), and a latent world model handles low-level control (move joints, avoid obstacles). Each does what it's best at.
+The emerging vision: combine both. An LLM handles high-level planning ("go to the village"), and a latent world model handles low-level control (move joints, avoid obstacles). In the digital domain, LLM agents are *already* the dominant approach — they don't need pixel-level dynamics because websites are structured text. In the physical domain, latent world models still reign.
 
 ### 6.4 Multimodal foundation models + dynamics heads
 
