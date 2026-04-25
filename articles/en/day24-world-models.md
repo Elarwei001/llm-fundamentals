@@ -488,15 +488,15 @@ The convergence direction is clear: video generators are learning world dynamics
 
 **Intuition:** Before you can predict what happens next, you need to understand the 3D structure of the scene.
 
-Fei-Fei Li's company **World Labs** released **Marble** (November 2025), a world model that generates explorable 3D environments from text, images, or video. Marble doesn't just generate pixels — it builds a full spatial structure with persistent geometry, lighting, and object relationships. Filmmakers, game designers, and architects can walk through the generated worlds in real time.
+Fei-Fei Li's company **World Labs** released **Marble** ([worldlabs.ai](https://www.worldlabs.ai/blog), November 2025), a world model that generates explorable 3D environments from text, images, or video. Marble doesn't just generate pixels — it builds a full spatial structure with persistent geometry, lighting, and object relationships. Filmmakers, game designers, and architects can walk through the generated worlds in real time.
 
 This is a fundamentally different approach from 2D video generation: instead of predicting pixel sequences, Marble builds an explicit 3D representation — closer to how humans understand space. It's world modeling at the *geometric level*.
 
-Meanwhile, Google DeepMind released **Genie 3** (January 2026), their most capable world model to date. Genie 1 (March 2024) generated 2D interactive environments; Genie 2 (December 2024) expanded to 3D; Genie 3 offers real-time interaction, environmental consistency, and dynamic scene modification — users can move through AI-generated scenes and regenerate variations on the fly.
+Meanwhile, Google DeepMind released **Genie 3** ([deepmind.google](https://deepmind.google/blog/genie-2-a-large-scale-foundation-world-model/), January 2026), their most capable world model to date. Genie 1 (March 2024) generated 2D interactive environments; Genie 2 (December 2024) expanded to 3D; Genie 3 offers real-time interaction, environmental consistency, and dynamic scene modification — users can move through AI-generated scenes and regenerate variations on the fly.
 
 **The emerging landscape:**
 
-NVIDIA's **Cosmos** platform (January 2025, updated September 2025) takes yet another approach: open-source world foundation models specifically designed for physical AI — robots and autonomous vehicles. Cosmos generates physics-aware synthetic video for training, with post-training scripts for customizing the models. It's the most "planning-ready" of the current generation.
+NVIDIA's **Cosmos** platform ([nvidia.com/cosmos](https://www.nvidia.com/en-us/ai/cosmos/), January 2025, updated September 2025) takes yet another approach: open-source world foundation models specifically designed for physical AI — robots and autonomous vehicles. Cosmos generates physics-aware synthetic video for training, with post-training scripts for customizing the models. It's the most "planning-ready" of the current generation.
 
 | System | What it generates | Key innovation | Planning-ready? |
 |---|---|---|---|
@@ -511,8 +511,8 @@ NVIDIA's **Cosmos** platform (January 2025, updated September 2025) takes yet an
 
 In 2025, a new category of AI product emerged: **LLM agents that operate in real digital environments**.
 
-- **OpenAI's Operator** (January 2025) and **ChatGPT Agent** (July 2025) can browse the web, click buttons, fill forms, and complete real-world tasks. The agent observes a webpage screenshot, decides what to click, and iterates. On WebArena, it achieved 58.1% success; on WebVoyager, 87%.
-- **Anthropic's Computer Use** (Claude) takes a similar approach for desktop applications.
+- **OpenAI's Operator** ([operator.chatgpt.com](https://operator.chatgpt.com), January 2025) and **ChatGPT Agent** ([openai.com](https://openai.com/index/introducing-operator/), July 2025) can browse the web, click buttons, fill forms, and complete real-world tasks. The agent observes a webpage screenshot, decides what to click, and iterates. On WebArena, it achieved 58.1% success; on WebVoyager, 87%.
+- **Anthropic's Computer Use** ([docs.anthropic.com](https://docs.anthropic.com/en/docs/agents-and-tools/computer-use)) takes a similar approach for desktop applications.
 - **Google DeepMind's Mariner** (Gemini 2.0) operates as a web-browsing agent.
 
 These agents maintain an implicit world model of the digital environment — understanding that "clicking this button submits the form" or "scrolling reveals more results." They plan, act, observe feedback, and replan.
@@ -541,9 +541,9 @@ An emerging architecture combines a large pretrained vision-language model (VLM)
 
 This is no longer theoretical. Several major systems have shipped in 2024-2025:
 
-**Google DeepMind's Gemini Robotics** (March 2025) is a vision-language-action (VLA) model built on Gemini 2.0 that brings multimodal reasoning into the physical world. The model understands natural language instructions, perceives the scene through cameras, and outputs robot actions — combining semantic understanding with physical control. Its predecessor RT-2 (2023) first demonstrated that web-scale vision-language pretraining transfers to robotics; Gemini Robotics is the mature version.
+**Google DeepMind's Gemini Robotics** ([deepmind.google](https://deepmind.google/blog/gemini-robotics-brings-ai-into-the-physical-world/), March 2025) is a vision-language-action (VLA) model built on Gemini 2.0 that brings multimodal reasoning into the physical world. The model understands natural language instructions, perceives the scene through cameras, and outputs robot actions — combining semantic understanding with physical control. Its predecessor RT-2 (2023) first demonstrated that web-scale vision-language pretraining transfers to robotics; Gemini Robotics is the mature version.
 
-**Physical Intelligence's π₀** (October 2024, open-sourced February 2025) is a generalist robot policy trained on multi-task, multi-robot data. The startup raised $600M at a $5.6B valuation (November 2025). π₀ uses a VLM backbone to understand scenes and a flow-matching action head to generate dexterous robot motions — folding laundry, making coffee, assembling boxes. It's the most capable generalist robot policy to date, and it works across different robot hardware without retraining.
+**Physical Intelligence's π₀** ([pi.website](https://www.pi.website/blog/pi0), October 2024, open-sourced February 2025) is a generalist robot policy trained on multi-task, multi-robot data. The startup raised $600M at a $5.6B valuation (November 2025). π₀ uses a VLM backbone to understand scenes and a flow-matching action head to generate dexterous robot motions — folding laundry, making coffee, assembling boxes. It's the most capable generalist robot policy to date, and it works across different robot hardware without retraining.
 
 **NVIDIA's Cosmos** (January 2025) provides the open-source world foundation model platform that these systems can build on — generating physics-aware synthetic video for training physical AI.
 
@@ -559,7 +559,7 @@ The four big unsolved questions:
 |---|---|---|
 | **Scaling** | Can Dreamer-style models scale from single games to internet-scale diverse data? | Single-environment training is precise but narrow; internet data is broad but noisy. Hafner & Yan's 2025 work is the first serious attempt at this. |
 | **Grounding** | Can a world model trained on passive YouTube videos be used for planning? | Video has no action labels. You see what happened, not *why* or *what else could have happened*. |
-| **Long-horizon reliability** | Can world models stay coherent over thousands of imagined steps? | Compounding error is the fundamental bottleneck. The latest work is tackling this head-on: **H-WM** (arXiv, February 2026) uses hierarchical world models to guide robot task and motion planning; **Hierarchical Planning with Latent World Models** (arXiv, April 2026) learns world models at *multiple temporal scales* — a high-level planner sets subgoals, and low-level planners execute them. Early results show this substantially reduces planning time while handling tasks that flat planners cannot. |
+| **Long-horizon reliability** | Can world models stay coherent over thousands of imagined steps? | Compounding error is the fundamental bottleneck. The latest work is tackling this head-on: **H-WM** ([arXiv](https://arxiv.org/abs/2602.11291), February 2026) uses hierarchical world models to guide robot task and motion planning; **Hierarchical Planning with Latent World Models** ([arXiv](https://arxiv.org/abs/2604.03208), April 2026) learns world models at *multiple temporal scales* — a high-level planner sets subgoals, and low-level planners execute them. Early results show this substantially reduces planning time while handling tasks that flat planners cannot. |
 | **Unified architecture** | Can one Transformer serve as both language model and world model? | Language modeling optimizes for text distribution; dynamics modeling optimizes for physical consistency. These may conflict — or they may be two sides of the same coin. We don't know yet. |
 
 
