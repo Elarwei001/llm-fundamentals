@@ -60,7 +60,18 @@ The paper opens with an evocative metaphor:
 Their architecture has three modules, which they call **V**, **M**, and **C**:
 
 ![The V-M-C architecture](./images/day24/ha-schmidhuber/vmc-architecture-v3.png)
-*Figure: The three-component architecture of the World Models system. **V** (VAE) compresses raw pixel observations into latent codes. **M** (MDN-RNN) predicts future latent states from past latents and actions. **C** (Controller) maps latent states and RNN hidden states to actions. The controller is small enough to be trained with evolutionary methods.*
+
+**Diagram legend:**
+- **x₁, x₂, x₃** — Observations (raw pixel frames from the environment)
+- **V₁, V₂, V₃** — Vision module (VAE encoder), compresses high-dimensional pixels into low-dimensional latent vectors
+- **z₁, z₂, z₃** — Latent codes (output of V), e.g. a 32-dim vector summarizing a 64×64 image
+- **M₁, M₂, M₃** — Memory module (MDN-RNN), predicts future latent states given past latents, hidden states, and actions
+- **h₁, h₂** — Hidden states (RNN memory), compress past experience into a vector that flows between timesteps
+- **C₁, C₂, C₃** — Controller, decides what action to take based on current z (what you see) and h (what you remember)
+- **a** — Action, output of C, sent back to the environment and also fed into M (because M needs to know what action was taken to predict the next state — different actions lead to different futures)
+- **World Model** — V + M together form the "world model", handling perception and prediction
+
+**Data flow in one sentence:** Environment produces observation x → V compresses it to z → M combines z, h, and action a to predict the future → C uses z and h to choose action a → action goes back to environment → cycle repeats.
 
 The VAE (**V**) learns to compress high-dimensional game frames into a small latent vector, preserving enough task-relevant structure for control:
 
