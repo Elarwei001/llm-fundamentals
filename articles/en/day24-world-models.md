@@ -560,11 +560,7 @@ The four big unsolved questions:
 | **Long-horizon reliability** | Can world models stay coherent over thousands of imagined steps? | Compounding error is the fundamental bottleneck. The latest work is tackling this head-on: **H-WM** (arXiv, February 2026) uses hierarchical world models to guide robot task and motion planning; **Hierarchical Planning with Latent World Models** (arXiv, April 2026) learns world models at *multiple temporal scales* — a high-level planner sets subgoals, and low-level planners execute them. Early results show this substantially reduces planning time while handling tasks that flat planners cannot. |
 | **Unified architecture** | Can one Transformer serve as both language model and world model? | Language modeling optimizes for text distribution; dynamics modeling optimizes for physical consistency. These may conflict — or they may be two sides of the same coin. We don't know yet. |
 
-![Figure: World model limitations](./images/day24/world-model-limitations-radar.png)
-*Radar chart of current world model limitations across key dimensions.*
 
-![Figure: World model limitations](./images/day24/world-model-limitations-radar.png)
-*Radar chart of current world model limitations across key dimensions.*
 
 ---
 
