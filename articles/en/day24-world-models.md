@@ -278,7 +278,7 @@ Each $\beta$ is a **volume knob** controlling how much that term matters:
 
 **What's new in DreamerV3** compared to earlier versions:
 
-- **Continuation flag** ($\text{cont}_t$): a small predictor that answers "is the episode still going?" This matters because the agent needs to know when a trajectory ends — dying in a game is very different from surviving.
+- **Continuation flag** `cont_t` : a small predictor that answers "is the episode still going?" This matters because the agent needs to know when a trajectory ends — dying in a game is very different from surviving.
 - **Symlog predictions**: instead of assuming rewards are Gaussian (they're often skewed or have huge outliers), DreamerV3 applies a symmetric log transform. This lets a single network handle both tiny rewards (+0.01) and huge ones (+1000) gracefully.
 - **Discrete latents**: instead of continuous Gaussian variables, DreamerV3 uses 32 categorical variables each with 32 classes. This matches the structure of many real-world states ("door is open *or* closed", not "door is 0.73 open") and makes the KL term more stable to compute.
 
