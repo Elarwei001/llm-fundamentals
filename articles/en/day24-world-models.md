@@ -537,7 +537,17 @@ The emerging vision: combine both. An LLM handles high-level planning ("go to th
 
 An emerging architecture combines a large pretrained vision-language model (VLM) with a dynamics prediction head. The VLM provides rich semantic understanding ("this is a kitchen, that's a stove"); the dynamics head learns to predict future states conditioned on actions ("if I turn the knob, the flame will grow").
 
-This hybrid sidesteps the "is text enough?" debate by simply giving the model access to richer modalities. Danijar Hafner (Dreamer's creator) and Wilson Yan's latest work on **scalable world models** (September 2025) explores training agents inside large-scale world models — moving beyond single-environment DreamerV3 toward internet-scale generalization.
+This is no longer theoretical. Several major systems have shipped in 2024-2025:
+
+**Google DeepMind's Gemini Robotics** (March 2025) is a vision-language-action (VLA) model built on Gemini 2.0 that brings multimodal reasoning into the physical world. The model understands natural language instructions, perceives the scene through cameras, and outputs robot actions — combining semantic understanding with physical control. Its predecessor RT-2 (2023) first demonstrated that web-scale vision-language pretraining transfers to robotics; Gemini Robotics is the mature version.
+
+**Physical Intelligence's π₀** (October 2024, open-sourced February 2025) is a generalist robot policy trained on multi-task, multi-robot data. The startup raised $600M at a $5.6B valuation (November 2025). π₀ uses a VLM backbone to understand scenes and a flow-matching action head to generate dexterous robot motions — folding laundry, making coffee, assembling boxes. It's the most capable generalist robot policy to date, and it works across different robot hardware without retraining.
+
+**NVIDIA's Cosmos** (January 2025) provides the open-source world foundation model platform that these systems can build on — generating physics-aware synthetic video for training physical AI.
+
+**The academic picture** is also converging. A comprehensive survey ("Bridging the Gap Between Multimodal Foundation Models and World Models," arXiv, October 2025) maps how VLMs and world models are merging into a single architecture. The key insight: VLMs provide the *understanding*, world models provide the *prediction*, and the dynamics head is the bridge between them.
+
+**In plain terms:** these systems are like giving a world model a brain transplant — replacing hand-crafted encoders with a pretrained VLM that already understands objects, scenes, and language. The result is a world model that generalizes far beyond its training environments.
 
 ### 6.5 Open problems
 
