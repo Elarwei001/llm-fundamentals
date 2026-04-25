@@ -388,45 +388,42 @@ Dreamer uses the learned policy approach for efficiency — once trained, the ac
 ![Figure: Next-token prediction vs world dynamics](./images/day24/next-token-vs-world-dynamics.png)
 *Comparing the training objectives: next-token cross-entropy vs state-transition ELBO.*
 
-The "word model vs world model" framing is catchy but shallow. The real differences are structural and run far deeper than a pun.
+The "word model vs world model" framing is catchy but shallow. The real differences are structural and run far deeper than a pun. Here is a systematic comparison across six dimensions:
 
-### 4.1 Training objective
+| Dimension | World Model | LLM | Why it matters |
+|---|---|---|---|
+| **Training objective** | Generative: ELBO over latent states, reconstructing observations and predicting rewards | Discriminative: next-token cross-entropy | World models learn *what the state IS*; LLMs learn *what word comes NEXT*. Different targets → different capabilities. |
+| **Information source** | Raw sensorimotor data (pixels, joint angles, point clouds) | Compressed language (text) | Language is a lossy bottleneck — "the cat knocked the vase off the table" discards trajectories, masses, friction. World models see the full signal. |
+| **Action conditioning** | Core of architecture: transition takes $(s_t, a_t)$ as input, predicts "what happens IF I do this" | Incidental via text ("I moved the knight to e4") | Planning requires answering "what if?" — world models are built for counterfactuals; LLMs have no architectural mechanism for it. |
+| **State persistence** | Explicit latent state via RSSM: $h_t$ is a sufficient statistic for history | No explicit state — history reconstructed from context window | Works within context window but degrades catastrophically beyond it. World models maintain belief indefinitely. |
+| **Compounding error** | KL regularization + deterministic paths + short imagination horizons | No analogous mechanism — conditions on own outputs, errors and all | World models have built-in error correction; LLM chain-of-thought accumulates errors with no regularization. |
+| **Uncertainty** | Stochastic latent captures epistemic uncertainty (broad posterior = "I don't know") | Token probabilities reflect text distribution, not world-state uncertainty | World models can signal "I'm unsure" in novel situations; LLM confidence is poorly calibrated for state estimation. |
 
-An LLM is trained to minimize cross-entropy loss on next-token prediction:
+### Training objective in detail
 
-$$\mathcal{L}_{\text{LM}} = -\sum_{t=1}^{T} \log p_\theta(x_t | x_{<t})$$
+An LLM minimizes cross-entropy on next-token prediction:
 
-A world model is trained to maximize the ELBO over latent state sequences:
+$$\mathcal{L}_{\text{LM}} = -\sum_{t=1}^{T} \log p_\theta(x_t \mid x_{<t})$$
 
-$$\mathcal{L}_{\text{WM}} = \mathbb{E}_q \left[ \sum_t \log p(o_t|s_t) + \log p(r_t|s_t) \right] - \text{KL}(q \| p)$$
+A world model maximizes the ELBO over latent state sequences:
 
-These are not just different losses — they define different *modeling targets*. The LLM loss is purely discriminative: which token follows? The world model loss is generative: what is the latent state, and does it coherently explain observations, rewards, and dynamics? The ELBO enforces that the latent space has consistent geometry — states that are close in latent space produce similar futures — something no token-level objective guarantees.
+$$\mathcal{L}_{\text{WM}} = \mathbb{E}_q \left[ \sum_t \log p(o_t \mid s_t) + \log p(r_t \mid s_t) \right] - \text{KL}(q \parallel p)$$
 
-### 4.2 Information-theoretic argument
+The LLM loss asks: "which token follows?" The world model loss asks: "what is the latent state, and does it coherently explain observations, rewards, and dynamics?" The ELBO enforces that the latent space has consistent geometry — states close in latent space produce similar futures. No token-level objective guarantees this.
 
-Language is a *lossy, observational channel* for world state. When a text describes "the cat knocked the vase off the table," it compresses a high-dimensional physical event — trajectories, masses, friction, glass fragments — into a handful of tokens. Training on text means your signal about world dynamics passes through this bottleneck. A world model, by contrast, can be trained on raw sensorimotor data (pixels, joint angles, point clouds) that preserves the full information content of the interaction. The modeling target is the generative process itself, not a linguistic summary of its outputs.
+### Information bottleneck: why text is not enough
 
-### 4.3 Action conditioning
+Language is a *lossy, observational channel* for world state. When a text describes "the cat knocked the vase off the table," it compresses a high-dimensional physical event — trajectories, masses, friction, glass fragments — into a handful of tokens. Training on text means your signal about world dynamics passes through this bottleneck. A world model trains on raw sensorimotor data that preserves the full information content of the interaction.
 
-World models are explicitly conditioned on actions: the transition function takes $(s_t, a_t)$ as input. This is not an afterthought — it is the core of the architecture. The model *must* predict what happens *if* the agent does $a_t$, which is precisely what planning requires. LLMs receive action information only incidentally through text (e.g., "I moved the knight to e4"). There is no architectural mechanism that forces an LLM to maintain counterfactual state estimates under different action sequences.
+### Action conditioning: the "what if" question
 
-### 4.4 Latent state consistency
+World models are built around counterfactuals. The transition function *must* predict what happens *if* the agent takes action $a_t$. This is the core of planning. LLMs receive action information only incidentally through text — there is no architectural mechanism that forces an LLM to maintain counterfactual state estimates under different action sequences.
 
-World models enforce state persistence through the RSSM: $h_t$ is a deterministic function of the entire history $(h_{0:t-1}, s_{0:t-1}, a_{0:t-1})$. This means the latent state is a *sufficient statistic* for the history (approximately, modulo stochastic state). LLMs have no explicit state variable — the entire history must be reconstructed from the context window. This works remarkably well within the context window but degrades catastrophically when the window is exceeded, and there is no principled mechanism for maintaining a persistent belief state across turns without the KV cache acting as a surrogate.
+### Why the other dimensions matter
 
-### 4.5 Compounding error
-
-All autoregressive models suffer from compounding error: errors at step $t$ become inputs to step $t+1$, and the distribution of rollouts diverges from reality. World model architectures address this in several ways:
-
-- **KL regularization** forces the posterior to stay close to the prior, preventing the model from making brittle predictions that exploit specific observation details.
-- **Deterministic paths** in the RSSM provide stable gradients across long horizons.
-- **Short imagination horizons** with value function backups (Dreamer) avoid the need for very long accurate rollouts.
-
-LLMs have no analogous mechanism. Chain-of-thought reasoning accumulates errors, and there is no latent variable that gets regularized toward a consistent dynamics model. The model simply conditions on its own outputs, errors and all.
-
-### 4.6 Uncertainty representation
-
-The stochastic component of the RSSM provides a natural mechanism for representing *epistemic uncertainty* — uncertainty about the model's own knowledge. When the model is in a novel situation, the posterior will be broad (high entropy), and the KL divergence will be large. This signal can be used for exploration, risk-sensitive planning, or detecting distribution shift. LLM confidence scores, by contrast, are poorly calibrated for state estimation. Token probabilities reflect the distribution of text, not the model's uncertainty about the underlying state of the world.
+- **State persistence**: the RSSM's $h_t$ is a deterministic function of the entire history. LLMs have no explicit state variable — the KV cache is a surrogate, not a principled belief state.
+- **Compounding error**: world models use KL regularization, deterministic paths, and short imagination horizons to control error accumulation. LLMs have no analogous mechanism.
+- **Uncertainty**: the stochastic latent provides epistemic uncertainty — when the model is in a novel situation, the posterior is broad and the KL is large. This signal drives exploration and risk-aware planning. LLM token probabilities reflect text distribution, not world-state uncertainty.
 
 ---
 
