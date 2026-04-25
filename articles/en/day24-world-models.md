@@ -492,7 +492,7 @@ Fei-Fei Li's company **World Labs** released **Marble** ([worldlabs.ai](https://
 
 This is a fundamentally different approach from 2D video generation: instead of predicting pixel sequences, Marble builds an explicit 3D representation — closer to how humans understand space. It's world modeling at the *geometric level*.
 
-Meanwhile, Google DeepMind released **Genie 3** ([deepmind.google](https://deepmind.google/blog/genie-2-a-large-scale-foundation-world-model/), January 2026), their most capable world model to date. Genie 1 (March 2024) generated 2D interactive environments; Genie 2 (December 2024) expanded to 3D; Genie 3 offers real-time interaction, environmental consistency, and dynamic scene modification — users can move through AI-generated scenes and regenerate variations on the fly.
+Meanwhile, Google DeepMind released **Genie 3** ([deepmind.google](https://genie3.org/), January 2026), their most capable world model to date. Genie 1 (March 2024) generated 2D interactive environments; Genie 2 (December 2024) expanded to 3D; Genie 3 offers real-time interaction, environmental consistency, and dynamic scene modification — users can move through AI-generated scenes and regenerate variations on the fly.
 
 **The emerging landscape:**
 
