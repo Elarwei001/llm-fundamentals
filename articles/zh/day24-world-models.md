@@ -59,7 +59,7 @@ $$\hat{s}_{t|t} = \hat{s}_{t|t-1} + K_t\,(o_t - \hat{o}_{t|t-1})$$
 
 他们的架构有三个模块，分别称为 **V**、**M** 和 **C**：
 
-![V-M-C 架构](./images/day24/ha-schmidhuber/vmc-architecture-v2.png)
+![V-M-C 架构](./images/day24/ha-schmidhuber/vmc-architecture-v3.png)
 *图：World Models 系统的三组件架构。**V**（VAE）将原始像素观测压缩为潜在编码。**M**（MDN-RNN）根据历史潜在状态和动作预测未来潜在状态。**C**（控制器）将潜在状态和 RNN 隐状态映射为动作。控制器足够小，可以用进化方法训练。*
 
 VAE（**V**）学会将高维游戏帧压缩为一个小型潜在向量，保留足够的任务相关结构用于控制：

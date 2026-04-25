@@ -59,7 +59,7 @@ The paper opens with an evocative metaphor:
 
 Their architecture has three modules, which they call **V**, **M**, and **C**:
 
-![The V-M-C architecture](./images/day24/ha-schmidhuber/vmc-architecture-v2.png)
+![The V-M-C architecture](./images/day24/ha-schmidhuber/vmc-architecture-v3.png)
 *Figure: The three-component architecture of the World Models system. **V** (VAE) compresses raw pixel observations into latent codes. **M** (MDN-RNN) predicts future latent states from past latents and actions. **C** (Controller) maps latent states and RNN hidden states to actions. The controller is small enough to be trained with evolutionary methods.*
 
 The VAE (**V**) learns to compress high-dimensional game frames into a small latent vector, preserving enough task-relevant structure for control:
