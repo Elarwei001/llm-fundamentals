@@ -89,36 +89,47 @@ This was vivid but architecturally limited. The VAE and RNN were trained separat
 
 The Dreamer line of work (Hafner et al., 2020; 2023) represents the current state of the art in learned world models for control. The core innovation is the **Recurrent State-Space Model (RSSM)**, which combines a deterministic recurrent path with a stochastic latent path.
 
-The key insight is that the model needs *two* kinds of state:
+#### Intuition: how Dreamer differs from the original World Models
 
-- A **deterministic state** that carries long-term memory through recurrence (like a GRU hidden state). This remembers "what happened" across many timesteps.
-- A **stochastic state** that captures uncertainty about the current situation. This represents "what might be happening right now, given the noisy observation."
+Think of the original Ha & Schmidhuber system as learning to drive by taking three separate classes: first a vision class (train your eyes), then an imagination class (train your mental simulator), then a driving class (train your hands and feet). Each class is independent — you don't improve your imagination based on what helps you steer.
 
-The update rules are:
+Dreamer says: **train everything together**. The vision, imagination, and control all improve in coordination, because they share a single training objective. There are three key improvements:
+
+**1. End-to-end training.** Instead of training V, M, and C separately, Dreamer optimizes the entire world model jointly via variational inference. The encoder, dynamics model, and reward predictor all learn from the same loss function. This means the components evolve to work well *together*, rather than being individually good but poorly coordinated.
+
+**2. Dual-path state (deterministic + stochastic).** The original World Models had only stochastic imagination — each imagined future was different, which made it unstable. Dreamer adds a deterministic recurrent path (a GRU) alongside the stochastic path. Think of it as having two parts of your brain:
+- The **deterministic part** remembers facts: "I've driven 3 km and passed two traffic lights." This is stable, long-term memory.
+- The **stochastic part** handles uncertainty: "That blurry shape ahead might be a pedestrian or a trash can." This captures what you're unsure about.
+
+Using both together gives you reliable memory *and* calibrated uncertainty — much like how the Kalman filter combines model prediction with observation.
+
+**3. Gradients through imagination.** The original World Models trained its controller with evolutionary algorithms (essentially random trial-and-error), which is slow. Dreamer instead imagines a trajectory, evaluates it, and **backpropagates gradients directly through the imagined future** to improve the policy. Because the entire imagination pipeline is made of differentiable neural networks, the model can precisely calculate "if I had steered 2 degrees more, the outcome would have been X better" — and adjust accordingly. This is dramatically more efficient than blind trial-and-error.
+
+#### The math behind it
+
+The update rules for the dual-path state are:
 
 $$h_t = \text{GRU}(h_{t-1},\, s_{t-1},\, a_{t-1})$$
 
-This deterministic recurrence propagates memory forward. Then the stochastic state is inferred from the current observation:
+This is the deterministic recurrence — propagating memory forward. Then the stochastic state is inferred from the current observation:
 
 $$s_t \sim q_\theta(s_t \,|\, h_t,\, o_t)$$
 
-This is the **posterior** — what the model believes the current state is, after seeing the observation. During imagination (when there is no real observation), the model instead uses a **prior**:
+This is the **posterior** — what the model believes the current state is, after seeing the observation. During imagination (no real observation available), the model uses a **prior** instead:
 
 $$\hat{s}_t \sim p_\theta(s_t \,|\, h_t)$$
 
-The world model is trained to make the prior match the posterior as closely as possible (via a KL divergence loss), so that it can imagine realistic futures without needing real observations.
+The world model is trained to make the prior match the posterior as closely as possible (via a KL divergence loss), so it can imagine realistic futures without needing real observations.
 
-![DreamerV2 RSSM architecture](./images/day24/dreamer/rssm-architecture-v3.png)
-*Figure: The RSSM architecture from DreamerV2 (Hafner et al., 2021). Green boxes are deterministic recurrent states. Each timestep has a prior and a posterior stochastic state connected by a KL loss ("min KL"). Images are encoded from below; reconstructed images and predicted rewards are produced above. On the right, the categorical latent structure is shown: 32 categorical variables, each with 32 classes — DreamerV2's key innovation over Gaussian latents.*
+![Dreamer RSSM architecture](./images/day24/dreamer/rssm-architecture-v3.png)
+*Figure: The RSSM architecture. Green boxes are deterministic recurrent states (h). Each timestep has a prior and a posterior stochastic state connected by a KL loss. Observations are encoded from below; reconstructed observations and predicted rewards are produced above. The latent state uses 32 categorical variables, each with 32 classes.*
 
 Once the world model is trained, Dreamer learns a policy and value function entirely inside the model's imagination:
 
-![DreamerV3 architecture](./images/day24/dreamer/architecture-v3.png)
-*Figure: The two-panel architecture from DreamerV3 (Hafner et al., 2023). **Left panel (a)**: World model learning — observations are encoded into stochastic latents, propagated through recurrent dynamics, and reconstructed. **Right panel (b)**: Actor-critic learning in imagination — starting from a real encoded state, the actor proposes actions, the world model predicts future latent states, and the critic evaluates them. The policy is trained by backpropagating through the imagined trajectories.*
+![Dreamer imagination training](./images/day24/dreamer/architecture-v3.png)
+*Figure: **Left panel**: World model learning — observations are encoded into stochastic latents, propagated through recurrent dynamics, and reconstructed. **Right panel**: Actor-critic learning in imagination — starting from a real encoded state, the actor proposes actions, the world model predicts future latent states, and the critic evaluates them. Gradients backpropagate through the entire imagined trajectory.*
 
-DreamerV2 (2021) introduced discrete latents via straight-through gradients, replacing continuous Gaussian latents with 32 categorical variables each having 32 classes — this made the latent space more expressive and improved performance on Atari games. DreamerV3 (2023) demonstrated that a single fixed hyperparameter configuration achieves state-of-the-art across 150+ diverse benchmarks — a level of generality previously unseen in model-based RL.
-
-The key architectural progression from Ha & Schmidhuber to Dreamer is: separate VAE + RNN → end-to-end variational training → deterministic + stochastic dual-path state → discrete latents → universal hyperparameters. Each step made the learned simulator more robust and more general.
+**In one sentence:** The original World Models was three separately-trained modules bolted together; Dreamer is an end-to-end trained system with dual-path states (deterministic memory + stochastic uncertainty) that trains its policy by backpropagating gradients through imagined futures. Same core idea — learn a world model, then train inside it — but with three engineering innovations that make it actually work well across diverse tasks.
 
 ### 1.5 LeCun's JEPA and beyond
 
