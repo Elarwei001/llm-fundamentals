@@ -131,6 +131,27 @@ Once the world model is trained, Dreamer learns a policy and value function enti
 
 **In one sentence:** The original World Models was three separately-trained modules bolted together; Dreamer is an end-to-end trained system with dual-path states (deterministic memory + stochastic uncertainty) that trains its policy by backpropagating gradients through imagined futures. Same core idea — learn a world model, then train inside it — but with three engineering innovations that make it actually work well across diverse tasks.
 
+#### From DreamerV2 to DreamerV3
+
+**DreamerV2 (2021)** proved that world models can compete with the best methods.
+
+Its main innovation was replacing continuous Gaussian latent variables with **discrete categorical latents** — 32 categorical variables, each with 32 classes. Think of it like this: DreamerV1 described "what's on the road" using continuous numbers ("obstacle at approximately 23.7°"), while DreamerV2 switched to discrete categories ("obstacle type A / type B / type C..."). Like going from "describe the color with a decimal number" to "pick from 32 color cards."
+
+Why does this matter? Many real-world states are inherently discrete — "the door is open or closed," "the enemy is alive or dead." Using continuous numbers to represent discrete states is like measuring a light switch with a ruler — it works, but awkwardly. With categorical latents, DreamerV2 was the first world model to match or beat the strongest model-free methods on Atari games, proving that world models are not just theoretical toys.
+
+**But DreamerV2 had a practical problem:** every game needed its own hyperparameter tuning. Switch to a different game, and you'd need to re-tune learning rates, KL weights, imagination horizon, etc. — like retuning your car's engine every time you switch to a different racetrack.
+
+**DreamerV3 (2023)** proved that world models can work everywhere without tuning.
+
+Its core contribution: **a single fixed hyperparameter configuration achieves state-of-the-art across 150+ diverse benchmarks** — including continuous control (robot locomotion, robotic arm grasping), discrete control (Atari games), 3D navigation (Minecraft diamond challenge), and competitive games (racing, pinball).
+
+How? Several engineering improvements:
+1. **Robust loss normalization**: each loss term is normalized so no single loss dominates the others. Like a choir where no one singer drowns out the rest.
+2. **Stable training**: exponential moving average updates for target networks, keeping training smooth.
+3. **Smarter imagination starting points**: instead of imagining from random states, DreamerV3 starts from real experience in the replay buffer.
+
+**One-sentence summary:** DreamerV2 proved "world models can be strong"; DreamerV3 proved "world models can work everywhere without tuning." It turned world models from a research method into a ready-to-use tool.
+
 ### 1.5 LeCun's JEPA and beyond
 
 Yann LeCun's Joint-Embedding Predictive Architecture (JEPA) proposal (LeCun, 2022) reframes world modeling away from pixel-level reconstruction. A JEPA predicts the *representation* of the next state rather than the next observation itself:
