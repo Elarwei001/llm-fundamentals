@@ -108,7 +108,7 @@ $$\hat{s}_t \sim p_\theta(s_t \,|\, h_t)$$
 
 世界模型的训练目标是让先验尽可能匹配后验（通过 KL 散度损失），这样它就可以在没有真实观测的情况下想象出逼真的未来。
 
-![DreamerV2 RSSM 架构](./images/day24/dreamer/rssm-architecture-v2.png)
+![DreamerV2 RSSM 架构](./images/day24/dreamer/rssm-architecture-v3.png)
 *图：DreamerV2（Hafner et al., 2021）的 RSSM 架构。绿色方框是确定性循环状态。每个时间步有一个先验和一个后验随机状态，通过 KL 损失（"min KL"）连接。图像从下方编码；重建图像和预测奖励在上方生成。右侧展示了类别型潜在变量的结构：32 个类别型变量，每个有 32 个类别——这是 DreamerV2 相比高斯潜在变量的关键创新。*
 
 世界模型训练好之后，Dreamer 完全在模型的想象中学习策略和价值函数：

@@ -108,7 +108,7 @@ $$\hat{s}_t \sim p_\theta(s_t \,|\, h_t)$$
 
 The world model is trained to make the prior match the posterior as closely as possible (via a KL divergence loss), so that it can imagine realistic futures without needing real observations.
 
-![DreamerV2 RSSM architecture](./images/day24/dreamer/rssm-architecture-v2.png)
+![DreamerV2 RSSM architecture](./images/day24/dreamer/rssm-architecture-v3.png)
 *Figure: The RSSM architecture from DreamerV2 (Hafner et al., 2021). Green boxes are deterministic recurrent states. Each timestep has a prior and a posterior stochastic state connected by a KL loss ("min KL"). Images are encoded from below; reconstructed images and predicted rewards are produced above. On the right, the categorical latent structure is shown: 32 categorical variables, each with 32 classes — DreamerV2's key innovation over Gaussian latents.*
 
 Once the world model is trained, Dreamer learns a policy and value function entirely inside the model's imagination:
