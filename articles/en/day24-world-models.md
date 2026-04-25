@@ -496,6 +496,8 @@ Meanwhile, Google DeepMind released **Genie 3** (January 2026), their most capab
 
 **The emerging landscape:**
 
+NVIDIA's **Cosmos** platform (January 2025, updated September 2025) takes yet another approach: open-source world foundation models specifically designed for physical AI — robots and autonomous vehicles. Cosmos generates physics-aware synthetic video for training, with post-training scripts for customizing the models. It's the most "planning-ready" of the current generation.
+
 | System | What it generates | Key innovation | Planning-ready? |
 |---|---|---|---|
 | Sora 2 (OpenAI) | 2D video with audio | Photorealistic physics, social integration | Not yet — no action control or rewards |
@@ -503,33 +505,33 @@ Meanwhile, Google DeepMind released **Genie 3** (January 2026), their most capab
 | Genie 3 (DeepMind) | Interactive 3D environments | Real-time interaction, dynamic modification | Closest — supports user interaction |
 | Cosmos (NVIDIA) | Physics-aware video for robotics | Open platform for physical AI training | Yes — designed for robot/AV training |
 
-NVIDIA's **Cosmos** platform (January 2025, updated September 2025) takes yet another approach: open-source world foundation models specifically designed for physical AI — robots and autonomous vehicles. Cosmos generates physics-aware synthetic video for training, with post-training scripts for customizing the models. It's the most "planning-ready" of the current generation.
-
 ### 6.3 LLM agents as (linguistic) world models
 
-**Intuition:** An LLM playing Minecraft by writing plans in English is doing world modeling — just in language instead of pixels.
+**Intuition:** An LLM that browses the web and clicks buttons is doing world modeling — just in language instead of pixels.
 
-Early systems like Voyager (Wang et al., 2023) used LLMs as planners in game environments. The LLM writes a plan ("craft wooden pickaxe → mine stone → build furnace"), executes it, and receives text feedback. It maintains explicit skill and state libraries — essentially a world model at the linguistic level.
+In 2025, a new category of AI product emerged: **LLM agents that operate in real digital environments**.
 
-**Since then, LLM agents have moved far beyond Minecraft.** In 2025, the focus shifted from game worlds to the real digital world:
-
-- **OpenAI's Operator** (January 2025) and **ChatGPT Agent** (July 2025) can browse the web, click buttons, fill forms, and complete real-world tasks. The agent observes a webpage screenshot, decides what to click, and iterates — treating the browser as its "environment." On WebArena, it achieved 58.1% success; on WebVoyager, 87%.
+- **OpenAI's Operator** (January 2025) and **ChatGPT Agent** (July 2025) can browse the web, click buttons, fill forms, and complete real-world tasks. The agent observes a webpage screenshot, decides what to click, and iterates. On WebArena, it achieved 58.1% success; on WebVoyager, 87%.
 - **Anthropic's Computer Use** (Claude) takes a similar approach for desktop applications.
 - **Google DeepMind's Mariner** (Gemini 2.0) operates as a web-browsing agent.
 
-These agents maintain an implicit world model of the digital environment — understanding that "clicking this button submits the form" or "scrolling reveals more results." They plan, act, observe feedback, and replan, just like Voyager did in Minecraft but now in real web/desktop interfaces.
+These agents maintain an implicit world model of the digital environment — understanding that "clicking this button submits the form" or "scrolling reveals more results." They plan, act, observe feedback, and replan.
 
-**The tradeoff:**
+**Why this is fundamentally different from latent world models like Dreamer:**
 
-| Aspect | Linguistic world model (LLM agent) | Latent world model (Dreamer) |
+These are not two competing approaches to the same problem. They operate in different domains with different requirements:
+
+| Aspect | LLM agents (digital domain) | Latent world models (physical domain) |
 |---|---|---|
-| **Planning granularity** | High-level ("book a flight") | Low-level (joint angles, pixel movements) |
-| **Robustness** | Brittle — language plans can be vague or wrong | Precise — learned from actual interaction data |
-| **Generalization** | Broad — works across many tasks via language | Narrow — trained per-environment |
-| **Speed** | Slow — requires multiple LLM calls per step | Fast — single forward pass |
-| **Domain** | Digital (web, apps, code) | Physical (robots, games) |
+| **Environment** | Web pages, apps, desktop — structured text and UI | Physical world — continuous pixels, joint angles |
+| **What the model needs to predict** | "What happens when I click this button" (discrete, symbolic) | "What happens when I apply this torque" (continuous, physical) |
+| **How it plans** | In language: "navigate to booking page → select date → confirm" | In latent space: imagine trajectory, evaluate reward, backprop |
+| **Why it works** | Websites are structured text — LLMs already understand language | Physical dynamics need to be learned from sensorimotor data |
+| **Examples** | Operator, Computer Use, Mariner | DreamerV3, Cosmos, π₀ |
 
-The emerging vision: combine both. An LLM handles high-level planning ("go to the village"), and a latent world model handles low-level control (move joints, avoid obstacles). In the digital domain, LLM agents are *already* the dominant approach — they don't need pixel-level dynamics because websites are structured text. In the physical domain, latent world models still reign.
+The key insight: **digital environments are made of language, so language models are already world models for them.** Physical environments are made of physics, so you need to learn the physics. Neither is "better" — they're solving different problems.
+
+The frontier question is whether these two worlds will converge: can a single system handle both digital planning ("book my flight") and physical control ("pick up the cup")? Current systems are specialized for one or the other.
 
 ### 6.4 Multimodal foundation models + dynamics heads
 
