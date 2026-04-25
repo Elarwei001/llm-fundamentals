@@ -469,7 +469,7 @@ The field is converging. Three major research threads are pushing world models f
 
 **Intuition:** If you can generate a realistic video of what happens next, you must understand something about physics.
 
-Sora (OpenAI, 2024), Genie (Bruce et al., 2024), and similar systems generate video conditioned on initial frames and (optionally) actions. To produce coherent multi-frame video, the model must learn object persistence, occlusion, gravity, and collision — essentially, a physics engine learned from data.
+Sora (OpenAI, 2024) demonstrated that large-scale video generation models learn implicit physics — object persistence, occlusion, gravity, collision. Sora 2 (September 2025) added synchronized audio, better physical accuracy, and an iOS/Android app. These are world models trained on passive data, with the decoder being a video generator.
 
 Think of it this way: a child who can draw a convincing animation of a ball bouncing has implicitly learned gravity, elasticity, and friction. These video models are doing the same thing, just at pixel level.
 
@@ -484,7 +484,28 @@ Think of it this way: a child who can draw a convincing animation of a ball boun
 
 The convergence direction is clear: video generators are learning world dynamics. The gap is making those dynamics *action-controllable* and *planning-ready*.
 
-### 6.2 LLM agents as (linguistic) world models
+### 6.2 Spatial intelligence: World Labs and the 3D world model frontier
+
+**Intuition:** Before you can predict what happens next, you need to understand the 3D structure of the scene.
+
+Fei-Fei Li's company **World Labs** released **Marble** (November 2025), a world model that generates explorable 3D environments from text, images, or video. Marble doesn't just generate pixels — it builds a full spatial structure with persistent geometry, lighting, and object relationships. Filmmakers, game designers, and architects can walk through the generated worlds in real time.
+
+This is a fundamentally different approach from 2D video generation: instead of predicting pixel sequences, Marble builds an explicit 3D representation — closer to how humans understand space. It's world modeling at the *geometric level*.
+
+Meanwhile, Google DeepMind released **Genie 3** (January 2026), their most capable world model to date. Genie 1 (March 2024) generated 2D interactive environments; Genie 2 (December 2024) expanded to 3D; Genie 3 offers real-time interaction, environmental consistency, and dynamic scene modification — users can move through AI-generated scenes and regenerate variations on the fly.
+
+**The emerging landscape:**
+
+| System | What it generates | Key innovation | Planning-ready? |
+|---|---|---|---|
+| Sora 2 (OpenAI) | 2D video with audio | Photorealistic physics, social integration | Not yet — no action control or rewards |
+| Marble (World Labs) | Explorable 3D worlds | Spatial intelligence, persistent geometry | Partially — 3D structure enables planning |
+| Genie 3 (DeepMind) | Interactive 3D environments | Real-time interaction, dynamic modification | Closest — supports user interaction |
+| Cosmos (NVIDIA) | Physics-aware video for robotics | Open platform for physical AI training | Yes — designed for robot/AV training |
+
+NVIDIA's **Cosmos** platform (January 2025, updated September 2025) takes yet another approach: open-source world foundation models specifically designed for physical AI — robots and autonomous vehicles. Cosmos generates physics-aware synthetic video for training, with post-training scripts for customizing the models. It's the most "planning-ready" of the current generation.
+
+### 6.3 LLM agents as (linguistic) world models
 
 **Intuition:** An LLM playing Minecraft by writing plans in English is doing world modeling — just in language instead of pixels.
 
@@ -501,21 +522,21 @@ Systems like Voyager (Wang et al., 2023) use LLMs as planners in game environmen
 
 The emerging vision: combine both. An LLM handles high-level planning ("go to the village"), and a latent world model handles low-level control (move joints, avoid obstacles). Each does what it's best at.
 
-### 6.3 Multimodal foundation models + dynamics heads
+### 6.4 Multimodal foundation models + dynamics heads
 
 **Intuition:** Take the best language model you have, give it eyes (vision), and then teach it to predict what happens next.
 
 An emerging architecture combines a large pretrained vision-language model (VLM) with a dynamics prediction head. The VLM provides rich semantic understanding ("this is a kitchen, that's a stove"); the dynamics head learns to predict future states conditioned on actions ("if I turn the knob, the flame will grow").
 
-This hybrid sidesteps the "is text enough?" debate by simply giving the model access to richer modalities. It's the most likely architecture for general-purpose world models in the near term.
+This hybrid sidesteps the "is text enough?" debate by simply giving the model access to richer modalities. Danijar Hafner (Dreamer's creator) and Wilson Yan's latest work on **scalable world models** (September 2025) explores training agents inside large-scale world models — moving beyond single-environment DreamerV3 toward internet-scale generalization.
 
-### 6.4 Open problems
+### 6.5 Open problems
 
 The four big unsolved questions:
 
 | Problem | What it means | Why it's hard |
 |---|---|---|
-| **Scaling** | Can Dreamer-style models scale from single games to internet-scale diverse data? | Single-environment training is precise but narrow; internet data is broad but noisy. Bridging the two without losing control precision is unsolved. |
+| **Scaling** | Can Dreamer-style models scale from single games to internet-scale diverse data? | Single-environment training is precise but narrow; internet data is broad but noisy. Hafner & Yan's 2025 work is the first serious attempt at this. |
 | **Grounding** | Can a world model trained on passive YouTube videos be used for planning? | Video has no action labels. You see what happened, not *why* or *what else could have happened*. |
 | **Long-horizon reliability** | Can world models stay coherent over thousands of imagined steps? | Compounding error is the fundamental bottleneck. Hierarchical or compositional models may help, but no current solution works reliably. |
 | **Unified architecture** | Can one Transformer serve as both language model and world model? | Language modeling optimizes for text distribution; dynamics modeling optimizes for physical consistency. These may conflict — or they may be two sides of the same coin. We don't know yet. |
