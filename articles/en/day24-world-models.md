@@ -463,28 +463,65 @@ The strongest counterarguments:
 ![Figure: Planning in latent space](./images/day24/planning-in-latent-space.png)
 *Agents plan by imagining trajectories through learned latent dynamics before committing to actions in the real world.*
 
+The field is converging. Three major research threads are pushing world models from single-environment tools toward general-purpose intelligence:
+
 ### 6.1 Video generation as world modeling
 
-Sora (OpenAI, 2024), Genie (Bruce et al., 2024), and similar systems generate video conditioned on initial frames and (optionally) actions. To generate coherent video over many frames, the model must learn something about physical dynamics — object persistence, occlusion, gravity, collision. These systems can be seen as world models trained on passive (non-interactive) data, with the decoder being a video generator rather than a single-frame reconstructor.
+**Intuition:** If you can generate a realistic video of what happens next, you must understand something about physics.
 
-The gap: these models are not yet action-conditioned at the granularity needed for control, and they lack the reward/value structure needed for planning. But the convergence direction is clear.
+Sora (OpenAI, 2024), Genie (Bruce et al., 2024), and similar systems generate video conditioned on initial frames and (optionally) actions. To produce coherent multi-frame video, the model must learn object persistence, occlusion, gravity, and collision — essentially, a physics engine learned from data.
 
-### 6.2 World models for LLM agents
+Think of it this way: a child who can draw a convincing animation of a ball bouncing has implicitly learned gravity, elasticity, and friction. These video models are doing the same thing, just at pixel level.
 
-Systems like Voyager (Wang et al., 2023) and DEPS (Wang et al., 2023) use LLMs as planners in Minecraft-like environments, maintaining explicit state libraries and skill libraries. The LLM generates plans in natural language, executes them, and receives text-based feedback from the environment. This is world modeling at the *linguistic level* — effective for high-level planning but brittle for fine-grained control.
+**What's missing:**
 
-More recent work explores training world models on *internet-scale data* (video, text, action logs) to create general-purpose simulators that LLM agents can query during planning. The vision: an LLM that can "imagine" physical outcomes before acting, using a learned world model as a mental simulator.
+| Capability | Current video models | What planning needs |
+|---|---|---|
+| Action conditioning | Optional or coarse-grained | Fine-grained, per-step control |
+| Reward/value signals | None | Must know which futures are desirable |
+| Interactive use | Generate and observe | Must plan, act, observe, replan |
+| Latent state structure | Implicit (inside the model) | Explicit (for planning and reasoning) |
 
-### 6.3 Multimodal foundation models with dynamics heads
+The convergence direction is clear: video generators are learning world dynamics. The gap is making those dynamics *action-controllable* and *planning-ready*.
 
-An emerging architecture combines a large pretrained vision-language model with a dynamics prediction head. The VLM provides semantic understanding; the dynamics head learns to predict future states conditioned on actions. This hybrid approach sidesteps the question of whether text alone is sufficient by simply giving the model access to richer modalities.
+### 6.2 LLM agents as (linguistic) world models
+
+**Intuition:** An LLM playing Minecraft by writing plans in English is doing world modeling — just in language instead of pixels.
+
+Systems like Voyager (Wang et al., 2023) use LLMs as planners in game environments. The LLM writes a plan ("craft wooden pickaxe → mine stone → build furnace"), executes it, and receives text feedback. It maintains explicit skill and state libraries — essentially a world model at the linguistic level.
+
+**The tradeoff:**
+
+| Aspect | Linguistic world model (LLM agent) | Latent world model (Dreamer) |
+|---|---|---|
+| **Planning granularity** | High-level ("build a house") | Low-level (joint angles, pixel movements) |
+| **Robustness** | Brittle — language plans can be vague or wrong | Precise — learned from actual interaction data |
+| **Generalization** | Broad — works across many tasks via language | Narrow — trained per-environment |
+| **Speed** | Slow — requires multiple LLM calls per step | Fast — single forward pass |
+
+The emerging vision: combine both. An LLM handles high-level planning ("go to the village"), and a latent world model handles low-level control (move joints, avoid obstacles). Each does what it's best at.
+
+### 6.3 Multimodal foundation models + dynamics heads
+
+**Intuition:** Take the best language model you have, give it eyes (vision), and then teach it to predict what happens next.
+
+An emerging architecture combines a large pretrained vision-language model (VLM) with a dynamics prediction head. The VLM provides rich semantic understanding ("this is a kitchen, that's a stove"); the dynamics head learns to predict future states conditioned on actions ("if I turn the knob, the flame will grow").
+
+This hybrid sidesteps the "is text enough?" debate by simply giving the model access to richer modalities. It's the most likely architecture for general-purpose world models in the near term.
 
 ### 6.4 Open problems
 
-- **Scaling latent world models**: Current world models (DreamerV3) are trained from scratch on single environments. Scaling to internet-scale diverse data without losing the precision needed for control is an open challenge.
-- **Grounding**: How do you ground a world model trained on passive video data so that it can be used for planning? Action labels are scarce.
-- **Long-horizon reliability**: Compounding error in latent space remains the fundamental bottleneck. Can hierarchical or compositional world models maintain coherence over thousands of steps?
-- **The architecture question**: Can a single architecture — presumably a large transformer — serve both as a language model and a world model, or are there fundamental tradeoffs between the distribution modeling required for language and the dynamics modeling required for planning?
+The four big unsolved questions:
+
+| Problem | What it means | Why it's hard |
+|---|---|---|
+| **Scaling** | Can Dreamer-style models scale from single games to internet-scale diverse data? | Single-environment training is precise but narrow; internet data is broad but noisy. Bridging the two without losing control precision is unsolved. |
+| **Grounding** | Can a world model trained on passive YouTube videos be used for planning? | Video has no action labels. You see what happened, not *why* or *what else could have happened*. |
+| **Long-horizon reliability** | Can world models stay coherent over thousands of imagined steps? | Compounding error is the fundamental bottleneck. Hierarchical or compositional models may help, but no current solution works reliably. |
+| **Unified architecture** | Can one Transformer serve as both language model and world model? | Language modeling optimizes for text distribution; dynamics modeling optimizes for physical consistency. These may conflict — or they may be two sides of the same coin. We don't know yet. |
+
+![Figure: World model limitations](./images/day24/world-model-limitations-radar.png)
+*Radar chart of current world model limitations across key dimensions.*
 
 ![Figure: World model limitations](./images/day24/world-model-limitations-radar.png)
 *Radar chart of current world model limitations across key dimensions.*
