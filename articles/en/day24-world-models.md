@@ -160,6 +160,24 @@ $$z_{t+1} = P_\theta(z_t, a_t)$$
 
 where $z_t = \text{Enc}(o_t)$ and the predictor $P_\theta$ operates in embedding space. A critic network enforces that predicted embeddings lie on the manifold of valid representations, replacing reconstruction with a consistency constraint. The motivation is clear: much of what we perceive is irrelevant to planning, and forcing a model to reconstruct pixels wastes capacity on details that do not matter for decision-making.
 
+#### Intuition: how JEPA differs from Ha & Schmidhuber's M
+
+Both Ha & Schmidhuber's M (MDN-RNN) and JEPA learn and predict in latent space. The key difference is **what they predict and whether they reconstruct observations**.
+
+**Ha & Schmidhuber's M:** Given the current latent state z and action a, predict the next latent state z'. Then **reconstruct the pixel frame** from z' — the model must learn to "paint" what the next frame looks like, including road texture, sky color, grass shading, everything.
+
+**JEPA:** Given the current embedding z and action a, predict the next embedding z'. **Never go back to pixels.** The model only needs to know where the next state sits in abstract representation space — not what it looks like.
+
+The driving analogy: imagine you're driving and need to predict the road ahead.
+- **Ha's M** is like closing your eyes and **fully visualizing** the next second — the blue sky, the gray road, a tree on the left, a car on the right. Every frame is a complete "painting" in your mind.
+- **JEPA** is like just judging "the road ahead is safe" or "the road ahead is dangerous" — you don't need to visualize the sky color or what the trees look like. Those details are irrelevant to your decision.
+
+LeCun argues JEPA is better for two reasons:
+1. **Efficiency**: forcing the model to reconstruct pixels wastes massive computation on details that don't affect decisions. Like forcing a chess player to visualize the wood grain of the board before every move — the grain doesn't matter.
+2. **Better abstractions**: when you only require the model to "paint" the next frame, it can take shortcuts — memorizing surface patterns instead of understanding underlying structure. When you require prediction in abstract space, the model is forced to learn representations that actually matter.
+
+**In one sentence:** Ha's M predicts in latent space but must reconstruct pixels ("paint the picture"); JEPA predicts in latent space and never goes back to pixels ("understand, don't paint"). LeCun believes forcing observation reconstruction wastes computation and hinders learning truly useful abstractions.
+
 The trajectory is clear: **hand-crafted simulators → learned dynamics with fixed representations → end-to-end learned latent simulators → prediction in abstract embedding spaces**. Each step trades generality for efficiency, and the current frontier asks whether this progression can merge with the capabilities of large-scale foundation models.
 
 ---
