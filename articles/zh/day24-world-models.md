@@ -286,7 +286,7 @@ $$\mathcal{L}_{\text{world}} = \mathbb{E}_q \left[ \sum_t \underbrace{\beta_o \l
 
 ## 3. 架构深入
 
-![图:世界模型架构栈](./images/day24/world-model-stack.png)
+![图:世界模型架构栈](./images/day24/world-model-stack-v2.png)
 *世界模型架构:编码器将观测映射到潜在状态;RSSM 维护确定性和随机性状态路径;奖励和继续头预测任务信号;解码器可选地重构观测。*
 
 ### 3.1 编码器

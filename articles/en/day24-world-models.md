@@ -286,7 +286,7 @@ Each $\beta$ is a **volume knob** controlling how much that term matters:
 
 ## 3. Architecture Deep Dive
 
-![Figure: World model architecture stack](./images/day24/world-model-stack.png)
+![Figure: World model architecture stack](./images/day24/world-model-stack-v2.png)
 *A world model architecture: encoder maps observations to latent states; the RSSM maintains deterministic and stochastic state paths; reward and continuation heads predict task signals; a decoder optionally reconstructs observations.*
 
 ### 3.1 Encoder
