@@ -92,7 +92,7 @@ Instead of listing benchmarks one by one, it is clearer to group them by **what 
 
 MMLU is like a giant university final exam. It asks: across many subjects, can the model choose the right answer?
 
-MMLU (Massive Multitask Language Understanding) became famous because it covered 57 subjects, from law to biology to math. For years, it was the default benchmark people quoted.
+MMLU (Massive Multitask Language Understanding), introduced by Dan Hendrycks and collaborators in 2021, became famous because it covered 57 subjects, from law to biology to math. For years, it was the default benchmark people quoted.
 
 **Why it mattered:** it was broad, easy to run, and gave one clean number.
 
@@ -120,9 +120,9 @@ This simplicity is exactly why people loved MMLU, and exactly why it became easy
 
 Some benchmarks try to test whether the model can actually reason, not just recognize a memorized answer.
 
-- **GPQA** asks graduate-level science questions that even domain experts find hard.
-- **AIME** tests olympiad-style mathematical reasoning.
-- **ARC-AGI** tests pattern abstraction and generalization from tiny examples.
+- **GPQA**, introduced by Rein et al. in 2023, asks graduate-level science questions that even domain experts find hard.
+- **AIME**, a long-running mathematics competition benchmark adapted from the American Invitational Mathematics Examination, tests olympiad-style mathematical reasoning.
+- **ARC-AGI**, derived from François Chollet's ARC benchmark (2019) and strengthened in ARC-AGI 2 (2025), tests pattern abstraction and generalization from tiny examples.
 
 These are closer to asking:
 
@@ -142,9 +142,9 @@ These are much harder to saturate because they reward structured reasoning rathe
 
 This distinction matters a lot.
 
-**HumanEval** is like giving a student a small homework problem: here is a function signature, here is a docstring, now write the function.
+**HumanEval**, introduced by OpenAI in 2021, is like giving a student a small homework problem: here is a function signature, here is a docstring, now write the function.
 
-**SWE-bench** is like giving an engineer a real GitHub issue inside a messy codebase and asking them to actually fix it.
+**SWE-bench**, introduced by researchers at Princeton in 2024, is like giving an engineer a real GitHub issue inside a messy codebase and asking them to actually fix it.
 
 That is why HumanEval was a great early coding benchmark, but is no longer enough.
 
@@ -179,7 +179,9 @@ A benchmark score is like a food critic rating a restaurant by a checklist.
 
 Chatbot Arena is like asking thousands of real customers, "which restaurant would you actually go back to?"
 
-Instead of fixed exam questions, users compare two anonymous models and vote for the better response. The results are aggregated into an **Elo rating**, borrowed from chess.
+Instead of fixed exam questions, users compare two anonymous models and vote for the better response. Chatbot Arena was launched by LMSYS in 2023, and its results are aggregated into an **Elo rating**, borrowed from chess.
+
+So yes: **this is not a static benchmark running on a fixed test set. It requires real users to participate and vote.** That is exactly why it measures human preference better than ordinary multiple-choice benchmarks.
 
 $$
 R_{\text{new}} = R_{\text{old}} + K(S - E)
@@ -213,9 +215,26 @@ Why it is still imperfect:
 
 Once old benchmarks saturate, the community builds a harder one.
 
-That is what **Humanity's Last Exam (HLE)** tried to be: a giant, expert-written benchmark designed so that even frontier models would still struggle.
+That is what **Humanity's Last Exam (HLE)** tried to be. Released in early 2025 by the Center for AI Safety together with Scale AI, HLE was designed as a giant, expert-written benchmark that even frontier models would still struggle with.
 
-The point of HLE is not that it is literally the "last" exam. The point is that it resets differentiation. It creates a test where score gaps matter again.
+Its backstory is simple:
+- **Before HLE**, the field relied heavily on benchmarks like MMLU and HumanEval.
+- **Then those benchmarks started saturating**. Top models were separated by only a few points, so leaderboard movement stopped meaning much.
+- **At the same time, contamination worries grew**. If models had already seen benchmark-style questions during training, high scores became harder to trust.
+- **So HLE was created as a reset**: a much larger, harder, more expert-driven test meant to restore real separation between frontier systems.
+
+In that sense, HLE is not important because of its dramatic name. It is important because it represents a new phase in benchmarking: from tidy classroom-style tests toward deliberately difficult frontier exams.
+
+What makes HLE different:
+
+| Aspect | Older classic benchmarks | HLE |
+|---|---|---|
+| Scale | Usually hundreds to a few thousand items | Over 12,000 expert-written questions |
+| Difficulty | Many are already near saturation | Intentionally built to remain hard |
+| Goal | General comparison | Re-establish frontier differentiation |
+| Failure mode it targets | Weak coverage, saturation | Saturation + leaderboard inflation |
+
+So the point of HLE is not that it is literally the "last" exam. The point is that it resets differentiation. It creates a test where score gaps matter again.
 
 ---
 
