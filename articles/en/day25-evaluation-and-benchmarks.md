@@ -503,9 +503,120 @@ That pushed evaluation toward:
 
 This is a big shift. The field is moving from **"Can the model answer test questions?"** to **"Can the model actually do useful work?"**
 
-### 5.2 Agents changed what "evaluation" means
+### 5.2 Post-training evaluation became a field of its own
 
-Once models became agents, evaluation had to change too.
+Once frontier labs shifted serious effort into supervised fine-tuning, preference tuning, RLHF, and agent post-training, evaluation stopped being just "run MMLU and HumanEval." Post-training changes behavior, style, refusal policy, usefulness, and robustness, so it needs its own measurement toolbox.
+
+#### Intuition: pretraining gives knowledge, post-training shapes behavior
+
+A useful mental model is this:
+- **pretraining evals** ask: what does the model know or infer?
+- **post-training evals** ask: how does the model behave when interacting with people or tools?
+
+That is why a model can have nearly the same MMLU score before and after post-training, yet feel dramatically different in real use.
+
+#### The main post-training eval families
+
+| Eval family | Example benchmark | Introduced by | Year | Best for validating |
+|---|---|---|---|---|
+| **Human preference battle** | Chatbot Arena | LMSYS Org | 2023 | Overall user preference in open-ended chat |
+| **Judge-model scoring** | MT-Bench | LMSYS Org | 2023 | Multi-turn instruction following and response quality |
+| **Instruction-following eval** | IFEval | Google / Google DeepMind ecosystem | 2024 | Whether the model obeys explicit constraints and formatting requirements |
+| **Preference win-rate eval** | AlpacaEval | Tatsu Lab | 2023 | Fast pairwise comparison against a reference model |
+| **Reward-model eval** | RewardBench | Allen Institute for AI and collaborators | 2024 | Whether reward models and preference models align with human judgments |
+| **Safety refusal eval** | HarmBench | Center for AI Safety and collaborators | 2024 | Whether the model resists harmful requests after post-training |
+| **Agent workflow eval** | WebArena / WebVoyager | Carnegie Mellon, Meta, and collaborators / HKU and collaborators | 2024 | Multi-step tool use, navigation, recovery, execution |
+
+Each of these measures a different thing. That is the key point.
+
+#### 1. Human preference evals
+
+These are the closest to the question: **"which model do humans actually prefer using?"**
+
+- **Chatbot Arena** (LMSYS, 2023) uses anonymous side-by-side comparison with real users.
+- **AlpacaEval** (Tatsu Lab, 2023) uses pairwise preference comparisons at lower cost.
+
+Best for:
+- tone,
+- helpfulness,
+- general usefulness,
+- overall product feel.
+
+Weakness:
+- users may prefer longer or more confident answers even when they are not more correct.
+
+#### 2. Judge-model evals
+
+As human evaluation became too expensive, labs increasingly used strong LLMs to judge outputs from weaker or candidate models.
+
+A classic example is **MT-Bench** (LMSYS, 2023), which evaluates multi-turn chat quality using an LLM judge.
+
+Best for:
+- scalable iteration during post-training,
+- comparing many prompt / policy variants quickly,
+- tracking broad response quality.
+
+Weakness:
+- judge bias,
+- verbosity bias,
+- susceptibility to style over substance.
+
+#### 3. Instruction-following evals
+
+These ask a sharper question than "was the answer good?"
+They ask:
+
+> Did the model do exactly what it was told to do?
+
+**IFEval** (2024) is a good example. It checks whether the model obeys explicit constraints such as:
+- answer in bullet points,
+- include exactly three items,
+- avoid certain phrases,
+- follow formatting requirements.
+
+Best for:
+- assistants that must follow product constraints,
+- structured outputs,
+- enterprise workflows.
+
+Weakness:
+- a model can follow instructions perfectly while still being shallow or unhelpful.
+
+#### 4. Reward-model and preference-model evals
+
+Once labs started training explicit reward models, they also needed to evaluate the reward models themselves.
+
+That is where things like **RewardBench** (2024) became important. Instead of directly asking whether a generation looks good, these benchmarks ask whether the learned reward signal agrees with human preference in the first place.
+
+Best for:
+- RLHF pipelines,
+- direct preference optimization variants,
+- diagnosing whether the reward model is the bottleneck.
+
+Weakness:
+- very meta: now you are evaluating the evaluator.
+
+#### 5. Safety and refusal evals
+
+Post-training is where a large amount of safety behavior is actually injected.
+So post-training evaluation must also ask:
+- does the model refuse harmful requests?
+- does it over-refuse harmless ones?
+- can it be jailbroken after alignment training?
+
+**HarmBench** (2024) is one representative example in this family.
+
+Best for:
+- red-teaming,
+- safety tuning,
+- refusal-policy evaluation.
+
+Weakness:
+- a model can look safer simply because it refuses too much.
+
+#### 6. Agent and tool-use evals
+
+Once models became agents, evaluation had to change again.
 
 A chatbot benchmark is not enough for a web-browsing agent.
 Now you also need to ask:
@@ -513,7 +624,22 @@ Now you also need to ask:
 - can it navigate multi-step workflows?
 - can it act safely in open-ended environments?
 
-That is why benchmarks like **WebArena**, **WebVoyager**, and agentic evaluations matter more in 2026 than they did two years earlier.
+That is why benchmarks like **WebArena** (2024), **WebVoyager** (2024), and related agent evaluations matter much more in 2026 than they did two years earlier.
+
+#### The big takeaway
+
+Post-training evaluation is now its own layer in the stack.
+
+| If you want to validate... | Best eval family |
+|---|---|
+| Raw knowledge / reasoning | Pretraining-style benchmarks like GPQA, AIME, MMLU-Pro |
+| User preference | Arena / AlpacaEval |
+| Instruction obedience | IFEval |
+| Reward-model quality | RewardBench |
+| Safety behavior | HarmBench |
+| Tool use / agent behavior | WebArena, WebVoyager |
+
+That is why modern labs do not rely on one evaluation suite. They run a **portfolio** of evals, because post-training changes many different behaviors at once.
 
 ### 5.3 LLM-as-judge became mainstream, but still controversial
 

@@ -498,16 +498,144 @@ Eval 不是一次性活动。模型会 drift，用户行为会变，prompt templ
 
 > “模型到底能不能真的完成工作？”
 
-### 5.2 agent 时代改变了“评估”的定义
+### 5.2 post-train 评估已经变成一个独立领域
 
-一旦模型从 chatbot 变成 agent，评估方式也必须跟着变。
+当前沿实验室把大量精力投入到 supervised fine-tuning、preference tuning、RLHF 和 agent post-training 之后，评估就不再只是“跑一遍 MMLU 和 HumanEval”了。因为 post-train 改变的是模型的行为、风格、拒答策略、帮助性和稳健性，所以它需要自己的一整套评测工具。
 
-对网页智能体来说，普通聊天 benchmark 根本不够。你还得测：
+#### 直觉：pretraining 给模型知识，post-training 塑造模型行为
+
+一个很有用的理解框架是：
+- **pretraining eval** 问的是：这个模型知道什么、会推什么？
+- **post-training eval** 问的是：这个模型在和人、和工具交互时，表现成什么样？
+
+这也是为什么一个模型在 post-train 前后，MMLU 分数几乎不变，但真实使用体验却可能天差地别。
+
+#### 主流的 post-train eval 家族
+
+| 评测家族 | 代表 benchmark | 提出方 | 年份 | 最适合验证什么能力 |
+|---|---|---|---|---|
+| **人类偏好对战** | Chatbot Arena | LMSYS Org | 2023 | 开放式聊天中的整体用户偏好 |
+| **LLM judge 打分** | MT-Bench | LMSYS Org | 2023 | 多轮对话质量、指令完成度 |
+| **指令遵循评测** | IFEval | Google / Google DeepMind 研究脉络 | 2024 | 是否严格遵守显式约束和格式要求 |
+| **偏好胜率评测** | AlpacaEval | Tatsu Lab | 2023 | 低成本地比较两个模型谁更受偏好 |
+| **奖励模型评测** | RewardBench | Allen Institute for AI 及合作者 | 2024 | reward model / preference model 是否和人类判断一致 |
+| **安全拒答评测** | HarmBench | Center for AI Safety 及合作者 | 2024 | post-train 之后是否能抵抗有害请求 |
+| **agent 工作流评测** | WebArena / WebVoyager | CMU、Meta 及合作者 / 港大等合作者 | 2024 | 多步工具使用、导航、恢复和执行 |
+
+重点是：这些 benchmark 测的根本不是同一种东西。
+
+#### 1. 人类偏好评测
+
+这一类最接近的问题是：**“真实用户到底更喜欢用哪个模型？”**
+
+- **Chatbot Arena**（LMSYS, 2023）用真人 side-by-side 投票。
+- **AlpacaEval**（Tatsu Lab, 2023）用更低成本的成对比较方式加速偏好评估。
+
+最适合验证：
+- 语气，
+- 帮助感，
+- 总体可用性，
+- 产品体验。
+
+弱点：
+- 用户可能偏爱更长、更自信的回答，即使它不一定更正确。
+
+#### 2. LLM judge 评测
+
+人工评估太贵之后，实验室越来越多地用更强的模型来评估候选模型。
+
+经典代表是 **MT-Bench**（LMSYS, 2023），它用 LLM judge 来评估多轮聊天质量。
+
+最适合验证：
+- post-train 过程中的快速迭代，
+- 大量 prompt / policy 版本比较，
+- 宽泛的回答质量跟踪。
+
+弱点：
+- judge 偏见，
+- 偏爱啰嗦风格，
+- 容易把“写得像样”误判成“真正更好”。
+
+#### 3. 指令遵循评测
+
+这一类问的问题比“回答好不好”更尖锐：
+
+> 模型有没有严格按要求做事？
+
+**IFEval**（2024）就是典型例子。它会检查模型是否遵守显式约束，比如：
+- 用 bullet point 回答，
+- 必须刚好列 3 条，
+- 不能出现某个短语，
+- 输出格式必须符合要求。
+
+最适合验证：
+- 受约束的 assistant，
+- 结构化输出任务，
+- 企业工作流中的格式合规性。
+
+弱点：
+- 一个模型可以非常“听话”，但依然浅薄、没帮助。
+
+#### 4. reward model / preference model 评测
+
+当实验室开始显式训练 reward model 后，就必须评估 reward model 本身好不好。
+
+这就是 **RewardBench**（2024）变重要的原因。它不是直接看生成结果，而是看：
+
+> 这个 reward signal 本身，是不是和人类偏好对齐的？
+
+最适合验证：
+- RLHF pipeline，
+- 各种 preference optimization 变体，
+- 诊断瓶颈到底是在 policy 还是 reward model。
+
+弱点：
+- 这是一层“评估评估器”的问题，本身就更绕。
+
+#### 5. 安全与拒答评测
+
+很多安全行为，其实是在 post-train 阶段被注入进去的。
+
+所以 post-train eval 还必须问：
+- 模型会不会拒绝有害请求？
+- 它会不会过度拒绝无害请求？
+- 在 alignment 之后，它还容易不容易被 jailbreak？
+
+**HarmBench**（2024）是这一类中的代表之一。
+
+最适合验证：
+- red-teaming，
+- 安全对齐训练，
+- refusal policy 效果。
+
+弱点：
+- 一个模型看起来更安全，可能只是因为它拒答太多。
+
+#### 6. agent 和工具使用评测
+
+一旦模型变成 agent，评估方式还要再变一次。
+
+普通聊天 benchmark 对网页智能体根本不够。你还得测：
 - 出错后能不能恢复，
 - 多步流程能不能走通，
 - 在开放环境里能不能安全行动。
 
-这也是为什么 WebArena、WebVoyager 这类 benchmark 在 2026 比两年前重要得多。
+这也是为什么 **WebArena**（2024）、**WebVoyager**（2024）以及相关 agent 评测，在 2026 比两年前重要得多。
+
+#### 核心结论
+
+post-train 评估已经变成模型评估栈里独立的一层。
+
+| 如果你要验证... | 最适合的评测家族 |
+|---|---|
+| 原始知识 / 推理能力 | GPQA、AIME、MMLU-Pro 这类 pretraining 风格 benchmark |
+| 用户偏好 | Arena / AlpacaEval |
+| 指令服从 | IFEval |
+| 奖励模型质量 | RewardBench |
+| 安全行为 | HarmBench |
+| 工具使用 / agent 行为 | WebArena、WebVoyager |
+
+这也是为什么现在的顶级实验室不会只跑一套 eval，而是会跑一个 **portfolio**——因为 post-train 一次会同时改变很多种行为。
 
 ### 5.3 LLM-as-judge 变主流了，但仍然有争议
 
