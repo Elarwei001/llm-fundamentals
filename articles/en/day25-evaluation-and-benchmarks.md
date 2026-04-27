@@ -343,8 +343,8 @@ One of the biggest mistakes is to treat evaluation as a single scalar ranking pr
 
 A better mental model is a **profile**.
 
-![Figure 3b: Radar chart comparing real frontier models in 2026](./images/day25/real-model-radar-2026-v2.png)
-*Figure 3b: A compiled 2026 benchmark profile comparison for several closed-source and open-weight frontier models. The point is not that one polygon "wins" absolutely, but that different models have different shapes across MMLU-Pro, GPQA Diamond, SWE-bench Verified, Arena Elo, and AIME 2025. Note: Arena Elo is approximately rescaled to 0-100 for visual comparability, and the values are compiled from public 2026 leaderboard/report summaries rather than a single official source.*
+![Figure 3b: How to read a benchmark profile](./images/day25/benchmark-profile-illustration-v2.png)
+*Figure 3b: An illustrative benchmark-profile example. The point is not to crown one universal winner, but to show how two models can have very different capability shapes. One may be stronger on knowledge and reasoning, while another may be stronger on usability and real-world task execution.*
 
 Look at the **shape**, not just the headline number.
 

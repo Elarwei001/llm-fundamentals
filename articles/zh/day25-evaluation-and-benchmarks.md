@@ -339,8 +339,8 @@ LLM benchmark 也是同样道理。
 
 更好的方式是看一个**能力画像（profile）**。
 
-![Figure 3b: Radar chart comparing real frontier models in 2026](./images/day25/real-model-radar-2026-v2.png)
-*图 3b：基于 2026 年公开 leaderboard / benchmark 报告整理的真实前沿模型能力画像，对比了几种闭源和开源/开放权重模型在 MMLU-Pro、GPQA Diamond、SWE-bench Verified、Arena Elo 和 AIME 2025 上的表现。重点不是看谁的多边形“绝对最大”，而是看不同模型的能力形状。注：为了便于同图展示，Arena Elo 做了近似缩放；数值来自公开汇总，不代表单一官方统一口径。*
+![Figure 3b: How to read a benchmark profile](./images/day25/benchmark-profile-illustration-v2.png)
+*图 3b：一个示意性的 benchmark 能力画像。重点不是找出“唯一赢家”，而是理解两个模型可能呈现出完全不同的能力形状：一个更强于知识和推理，另一个更强于可用性和真实任务执行。*
 
 看的是**形状**，不是单个 headline number。
 
