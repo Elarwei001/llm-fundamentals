@@ -109,7 +109,7 @@ That is why people moved to stronger variants like **MMLU-Pro** and **MMLU-CF**.
 The scoring formula is simple:
 
 $$
-	ext{Accuracy} = rac{	ext{number of correct answers}}{	ext{total number of questions}}
+\text{Accuracy} = \frac{\text{number of correct answers}}{\text{total number of questions}}
 $$
 
 This simplicity is exactly why people loved MMLU, and exactly why it became easy to over-optimize for it.
@@ -156,8 +156,13 @@ That is why HumanEval was a great early coding benchmark, but is no longer enoug
 HumanEval often uses **pass@k**, the probability that at least one of k generated solutions is correct:
 
 $$
-	ext{pass@k} = 1 - rac{inom{n-c}{k}}{inom{n}{k}}
+\text{pass@k} = 1 - \frac{\binom{n-c}{k}}{\binom{n}{k}}
 $$
+
+Here is the plain-English meaning:
+- **pass@k** means the model is allowed to generate **k different attempts**
+- if **at least one** of those attempts is correct, we count it as a success
+- so this metric answers: "if I let the model try a few times, how likely is it to get one working solution?"
 
 where:
 - $n$ = total sampled solutions,
@@ -177,8 +182,14 @@ Chatbot Arena is like asking thousands of real customers, "which restaurant woul
 Instead of fixed exam questions, users compare two anonymous models and vote for the better response. The results are aggregated into an **Elo rating**, borrowed from chess.
 
 $$
-R_{	ext{new}} = R_{	ext{old}} + K(S - E)
+R_{\text{new}} = R_{\text{old}} + K(S - E)
 $$
+
+Plain English:
+- **Elo** is a relative ranking score, like in chess
+- two models are compared side by side, and humans vote for which answer they prefer
+- if a weaker-rated model beats a stronger-rated model, it gains more points
+- so Elo measures: "when humans compare this model against others, how often do they prefer it?"
 
 Where:
 - $R$ is the rating,
