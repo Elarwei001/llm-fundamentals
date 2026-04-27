@@ -343,8 +343,8 @@ One of the biggest mistakes is to treat evaluation as a single scalar ranking pr
 
 A better mental model is a **profile**.
 
-![Figure 3b: Radar chart comparing two models across seven benchmarks](../zh/images/day25/benchmark-radar-comparison.png)
-*Figure 3b: Two hypothetical models compared across seven benchmarks. Model A dominates MMLU and HumanEval (saturated), but the gap on SWE-bench and HLE reveals more meaningful differences.*
+![Figure 3b: Radar chart comparing real frontier models in 2026](./images/day25/real-model-radar-2026-v2.png)
+*Figure 3b: A compiled 2026 benchmark profile comparison for several closed-source and open-weight frontier models. The point is not that one polygon "wins" absolutely, but that different models have different shapes across MMLU-Pro, GPQA Diamond, SWE-bench Verified, Arena Elo, and AIME 2025. Note: Arena Elo is approximately rescaled to 0-100 for visual comparability, and the values are compiled from public 2026 leaderboard/report summaries rather than a single official source.*
 
 Look at the **shape**, not just the headline number.
 
