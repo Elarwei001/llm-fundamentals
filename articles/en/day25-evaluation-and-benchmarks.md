@@ -104,7 +104,7 @@ That is why people moved to stronger variants like **MMLU-Pro** and **MMLU-CF**.
 |---|---|---|---|
 | MMLU | Broad factual/academic knowledge | Simple, broad, standard | Saturated, contamination concerns |
 | MMLU-Pro | Harder expert-style questions | Better differentiation | Still exam-style multiple choice |
-| MMLU-CF | Contamination-resistant version | Cleaner signal | Still inherits MMLU's basic limits |
+| MMLU-CF | Contamination-resistant version (tries to exclude questions the model may have effectively seen during training) | Cleaner signal | Still inherits MMLU's basic limits |
 
 The scoring formula is simple:
 
