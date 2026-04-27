@@ -357,14 +357,129 @@ A model with:
 
 This is the most practical takeaway in the whole chapter.
 
-If you are deploying an LLM system, public benchmarks are only the starting point.
+If you are deploying an LLM system, public benchmarks are only the starting point. What really matters is whether the model works on **your users, your tasks, and your failure modes**.
 
-You should also build:
+#### Intuition: move from school exams to a driving test on your own roads
 
-1. **your own task set** from real user queries,
-2. **your own grading rubric** based on what success means in your product,
-3. **A/B tests with real users**,
-4. **drift monitoring over time**.
+Public benchmarks are like standardized school exams. They tell you whether a driver knows traffic rules in general.
+
+But if you are running a taxi company, you care about something else:
+- Can the driver handle Singapore rain?
+- Can they navigate airport pickup lanes?
+- Do they stay calm with difficult passengers?
+- Do they avoid expensive mistakes?
+
+That is exactly how product evals work. You do not just want "a smart model." You want **a model that succeeds under the actual conditions your product faces**.
+
+#### A practical eval framework
+
+A simple product-eval stack usually has four layers:
+
+| Layer | What you build | What it answers |
+|---|---|---|
+| **Offline task set** | A fixed set of representative examples from real usage | "Can the model handle our core tasks at all?" |
+| **Rubric / judge** | Clear scoring rules, human or LLM judge | "What counts as good, acceptable, or bad?" |
+| **Online experiment** | A/B test or shadow deployment with real users | "Does this improve real user outcomes?" |
+| **Monitoring** | Ongoing dashboards and alerts | "Is quality drifting over time?" |
+
+Let us make that concrete.
+
+#### Step 1: Build your own task set
+
+Start by collecting **real user queries**, not imagined textbook prompts.
+
+For example:
+- If you are building a customer-support bot, collect real support tickets.
+- If you are building a code assistant, collect actual internal coding tasks.
+- If you are building a legal assistant, collect real document-review workflows.
+
+Then organize them by scenario:
+
+| Scenario type | Example |
+|---|---|
+| Happy path | Straightforward user asks a normal question |
+| Edge case | Missing context, ambiguous wording, unusual format |
+| High-risk case | Legal, medical, financial, or safety-sensitive request |
+| Failure probe | Adversarial prompt, jailbreak attempt, misleading context |
+
+A good task set is not just "100 random prompts." It is a **map of your product's real operating conditions**.
+
+#### Step 2: Define the scoring rubric
+
+This is where many teams fail. They collect examples, but they do not define what success actually means.
+
+A useful rubric usually includes 3-5 dimensions such as:
+
+| Dimension | What to ask |
+|---|---|
+| Correctness | Is the answer factually or logically correct? |
+| Helpfulness | Does it solve the user's problem? |
+| Instruction following | Did it do what was asked, no more and no less? |
+| Safety | Did it avoid harmful or risky behavior? |
+| Format compliance | Did it return the output in the required structure? |
+
+In practice, teams often use one of three scoring setups:
+- **binary**: pass / fail,
+- **ordinal**: 1-5 rating,
+- **pairwise**: compare model A vs model B.
+
+Binary scoring is best when there is a hard requirement, like JSON format validity. Pairwise scoring is often better when style and usefulness matter more than exact wording.
+
+#### Step 3: Decide who judges
+
+There are three common choices:
+
+| Judge type | Best for | Weakness |
+|---|---|---|
+| **Human judge** | High-stakes or nuanced tasks | Expensive and slow |
+| **Rule-based checker** | Exact format, exact match, unit tests | Too brittle for open-ended tasks |
+| **LLM-as-judge** | Scalable qualitative scoring | Can inherit bias from the judge model |
+
+In real systems, the best setup is usually **hybrid**:
+- rules for objective checks,
+- LLM judge for broad quality,
+- humans for spot checks and high-risk slices.
+
+#### Step 4: Run online experiments
+
+Offline evals tell you whether the model *can* perform. Online evals tell you whether users actually benefit.
+
+Typical online metrics include:
+- task completion rate,
+- user satisfaction,
+- escalation rate to humans,
+- time saved,
+- refund / complaint / error rate.
+
+This is important because a model can look stronger offline but still perform worse in production. For example, a model may generate more detailed answers that judges like, but real users may find them too long and slow.
+
+#### Step 5: Monitor drift after launch
+
+Evaluation is not a one-time event. Models drift. User behavior changes. Prompt templates evolve. Upstream APIs change.
+
+So after launch, you should keep tracking:
+
+| What to monitor | Why it matters |
+|---|---|
+| Quality score by task type | Detect regression in a specific workflow |
+| Safety failures | Catch rare but serious issues early |
+| Refusal rate | Spot when the model becomes too defensive |
+| Latency / cost | A "better" model may be too slow or too expensive |
+| New user intents | Your eval set may become outdated |
+
+#### A minimal playbook a product team can actually use
+
+If a small team asked, "What is the minimum viable eval process?", I would suggest this:
+
+1. collect 100-300 real queries,
+2. split them into normal / edge / high-risk buckets,
+3. define a 4-dimension rubric,
+4. use a hybrid judge setup,
+5. compare two candidate models offline,
+6. run a small A/B test online,
+7. keep a weekly regression dashboard.
+
+That is already far better than picking a model just because it scored 2 points higher on MMLU.
 
 Public benchmarks tell you how a model behaves in the lab.
 Your own evals tell you whether it works in your business.
