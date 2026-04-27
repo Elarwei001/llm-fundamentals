@@ -92,7 +92,7 @@ Instead of listing benchmarks one by one, it is clearer to group them by **what 
 
 MMLU is like a giant university final exam. It asks: across many subjects, can the model choose the right answer?
 
-MMLU (Massive Multitask Language Understanding), introduced by Dan Hendrycks and collaborators in 2021, became famous because it covered 57 subjects, from law to biology to math. For years, it was the default benchmark people quoted.
+MMLU (Massive Multitask Language Understanding) was introduced by Dan Hendrycks and collaborators in 2021, in work closely associated with the Center for AI Safety ecosystem. It became famous because it covered 57 subjects, from law to biology to math. For years, it was the default benchmark people quoted.
 
 **Why it mattered:** it was broad, easy to run, and gave one clean number.
 
@@ -120,7 +120,7 @@ This simplicity is exactly why people loved MMLU, and exactly why it became easy
 
 Some benchmarks try to test whether the model can actually reason, not just recognize a memorized answer.
 
-- **GPQA**, introduced by Rein et al. in 2023, asks graduate-level science questions that even domain experts find hard.
+- **GPQA**, introduced by David Rein, Betty Li Hou, Samuel Bowman, and collaborators in 2023, asks graduate-level science questions that even domain experts find hard. This one is better thought of as an academic benchmark proposed by a research team, rather than a product launched by a single institution.
 - **AIME**, a long-running mathematics competition benchmark adapted from the American Invitational Mathematics Examination, tests olympiad-style mathematical reasoning.
 - **ARC-AGI**, derived from François Chollet's ARC benchmark (2019) and strengthened in ARC-AGI 2 (2025), tests pattern abstraction and generalization from tiny examples.
 
@@ -179,7 +179,7 @@ A benchmark score is like a food critic rating a restaurant by a checklist.
 
 Chatbot Arena is like asking thousands of real customers, "which restaurant would you actually go back to?"
 
-Instead of fixed exam questions, users compare two anonymous models and vote for the better response. Chatbot Arena was launched by LMSYS in 2023, and its results are aggregated into an **Elo rating**, borrowed from chess.
+Instead of fixed exam questions, users compare two anonymous models and vote for the better response. Chatbot Arena was launched by **LMSYS Org** in 2023, and its results are aggregated into an **Elo rating**, borrowed from chess.
 
 So yes: **this is not a static benchmark running on a fixed test set. It requires real users to participate and vote.** That is exactly why it measures human preference better than ordinary multiple-choice benchmarks.
 
@@ -215,7 +215,7 @@ Why it is still imperfect:
 
 Once old benchmarks saturate, the community builds a harder one.
 
-That is what **Humanity's Last Exam (HLE)** tried to be. Released in early 2025 by the Center for AI Safety together with Scale AI, HLE was designed as a giant, expert-written benchmark that even frontier models would still struggle with.
+That is what **Humanity's Last Exam (HLE)** tried to be. Released in early 2025 by the **Center for AI Safety** together with **Scale AI**, HLE was designed as a giant, expert-written benchmark that even frontier models would still struggle with.
 
 Its backstory is simple:
 - **Before HLE**, the field relied heavily on benchmarks like MMLU and HumanEval.
