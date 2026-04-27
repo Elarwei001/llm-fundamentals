@@ -19,241 +19,399 @@ This article is about how we measure LLMs, why measurement is harder than it loo
 
 ## 1. Why Evaluation Matters (and Why It's Hard)
 
-#### Intuition: The Report Card Problem
+#### Intuition: the exam problem
 
-Think of LLM evaluation like grading students. A multiple-choice test tells you if a student memorized facts, but not if they can think. An essay test reveals thinking, but grading is subjective. A group project shows collaboration, but one person might carry the team.
+Evaluating LLMs is like evaluating students, except worse.
 
-LLMs face the same problem: no single test captures everything that matters.
+- A multiple-choice exam tells you whether the student can recognize the right answer.
+- A take-home essay tells you whether they can write something convincing, but maybe they got outside help.
+- A live interview tells you how they think under pressure, but the interviewer may be biased.
+- A real internship tells you whether they can actually do the job, but it's expensive and hard to standardize.
 
-### 1.1 What We Want to Measure
+LLMs have exactly the same problem. No single benchmark captures "intelligence". Each benchmark measures one narrow slice.
 
-At a high level, we evaluate LLMs along several axes:
+### 1.1 What are we actually trying to measure?
 
-| Axis | What It Measures | Example Benchmark |
-|------|-----------------|-------------------|
-| Knowledge | Facts and world knowledge | MMLU, TriviaQA |
-| Reasoning | Logical and mathematical thinking | GSM8K, AIME, ARC-AGI |
-| Coding | Writing and understanding code | HumanEval, SWE-bench |
-| Instruction Following | Doing what the user asked | IFEval |
-| Safety | Avoiding harmful outputs | TruthfulQA, ToxiGen |
-| Human Preference | What people actually prefer | Chatbot Arena |
+Before talking about benchmarks, we should ask a simpler question: **what does "good" even mean?**
 
-The problem? These axes aren't independent. A model that's great at coding might be mediocre at following instructions. A model that's safe might refuse too many reasonable requests. There's no single number that tells you "this model is better."
+| If you care about... | What you actually want to measure | Typical benchmark |
+|---|---|---|
+| Factual knowledge | Can the model recall correct information? | MMLU, TriviaQA |
+| Reasoning | Can it chain steps and solve hard problems? | GSM8K, GPQA, AIME |
+| Coding | Can it write code that works in real repositories? | HumanEval, SWE-bench |
+| Instruction following | Does it do what the user asked, no more and no less? | IFEval |
+| Safety / truthfulness | Does it avoid harmful or false outputs? | TruthfulQA, ToxiGen |
+| Human preference | Do people actually like using it? | Chatbot Arena |
 
-### 1.2 The Evaluation Pipeline
+The catch is that these goals often conflict.
 
-How does evaluation actually work in practice?
+A model can be:
+- great at coding, but weak at following vague human instructions,
+- very safe, but overly refusal-prone,
+- charming in chat, but shallow in reasoning,
+- strong on exams, but brittle in real products.
+
+So benchmarking is not really about finding **the** best model. It is about finding the right model **for a specific kind of work**.
+
+### 1.2 The evaluation pipeline
+
+How does evaluation work in practice?
 
 ![Figure 2: The evaluation pipeline from benchmark selection to scoring](../zh/images/day25/evaluation-pipeline.png)
 *Figure 2: The standard evaluation pipeline — from selecting a benchmark through running inference to scoring results.*
 
-The basic process is:
+The basic pipeline looks simple:
 
-1. **Select a benchmark** — choose tasks that reflect what you care about
-2. **Prepare prompts** — format questions into the model's expected input
-3. **Run inference** — generate model outputs (often at temperature 0 for determinism)
-4. **Collect outputs** — gather all responses
-5. **Score and compare** — compute metrics and rank models
+1. pick a benchmark,
+2. format prompts,
+3. run the model,
+4. collect outputs,
+5. score the results.
 
-Sounds simple. But each step hides complexity — especially the scoring.
+But each step hides a trap:
 
----
+| Step | Looks simple | What can go wrong |
+|---|---|---|
+| Choose benchmark | "Let's use MMLU" | Maybe MMLU is already saturated |
+| Format prompts | "Just ask the question" | Prompt wording can change scores a lot |
+| Run inference | "Just use temperature 0" | Decoding settings still matter |
+| Score outputs | "Just compare answers" | Ambiguous outputs, formatting mismatches, judge bias |
+| Compare models | "Higher number wins" | Different benchmarks reward different skills |
 
-## 2. The Major Benchmarks
-
-### 2.1 MMLU — The Knowledge Standard (Now Saturated)
-
-MMLU (Massive Multitask Language Understanding), introduced in 2021 by Hendrycks et al., tests knowledge across 57 subjects — from abstract algebra to veterinary medicine. It's multiple-choice with four options.
-
-**Why it matters**: MMLU was the first comprehensive, multi-domain knowledge test. For years, it was *the* number everyone quoted.
-
-**Why it's fading**: By 2025-2026, frontier models all score 88-94%. When the gap between the #1 and #5 model is 3 percentage points, MMLU stops being useful for comparing them.
-
-The response has been **MMLU-Pro** (harder questions, 10 options instead of 4) and **MMLU-CF** (contamination-free version with rephrased questions). MMLU-Pro causes a 16-33% accuracy drop compared to original MMLU, which tells you how much of the original scores were inflated.
-
-$$
-\begin{aligned}
-\text{MMLU Accuracy} &= \frac{\text{Correct answers}}{\text{Total questions}} \\
-\text{MMLU-Pro Accuracy} &\approx \text{MMLU Accuracy} - 0.20 \text{ to } 0.30
-\end{aligned}
-$$
-
-### 2.2 GPQA — Graduate-Level Science
-
-GPQA (Google-Proof Question Answering), introduced by Rein et al. in 2023, contains questions so hard that even PhD-level humans with Google access struggle. The "Diamond" subset is the hardest.
-
-**Why it matters**: This is one of the few benchmarks that still clearly differentiates models. As of April 2026, top scores are around 65-75% — far from saturated. If you want to know which model reasons deepest about science, use GPQA Diamond.
-
-### 2.3 HumanEval — Coding Benchmark (Approaching Saturation)
-
-HumanEval, from Chen et al. (2021), gives models function signatures and docstrings, then checks if the generated code passes unit tests. The metric is **pass@k** — the probability that at least one of k generated solutions is correct.
-
-$$
-\text{pass@k} = 1 - \frac{\binom{n-c}{k}}{\binom{n}{k}}
-$$
-
-Where n is the total number of samples and c is the number of correct ones.
-
-**Why it matters**: It's simple, objective, and automatable. Code either runs or it doesn't.
-
-**Why it's fading**: The tasks are small standalone functions. Real-world coding involves understanding large codebases, debugging, and multi-file changes. That's where **SWE-bench** comes in — it asks models to resolve real GitHub issues from popular repositories. As of 2026, SWE-bench Verified is the preferred coding benchmark for frontier models.
-
-### 2.4 ARC-AGI — Abstract Reasoning
-
-ARC-AGI (Abstraction and Reasoning Corpus), created by François Chollet, tests fluid intelligence through visual pattern puzzles. Models must infer transformation rules from a few examples and apply them to new inputs.
-
-ARC-AGI 2, released in 2025, made the benchmark harder after the original was partially solved. It's specifically designed to test *generalization*, not memorization — the puzzles are procedurally generated and can't be memorized.
-
-### 2.5 Humanity's Last Exam (HLE)
-
-Released in early 2025, HLE is a collaboration between the Center for AI Safety and Scale AI. It contains over 12,000 expert-crafted questions across 14 domains. The name is provocative but the benchmark is real — it was designed to be the "final exam" that even frontier models struggle with. As of 2026, top models score well below 50%, making it one of the best differentiating benchmarks.
-
-### 2.6 Chatbot Arena — Human Preference at Scale
-
-Chatbot Arena, run by LMSYS, takes a completely different approach: real humans have conversations with two anonymous models side-by-side and vote for which response they prefer. The results are aggregated into **Elo ratings**, the same system used in chess.
-
-**Why it matters**: It's the closest thing to "which model do people actually prefer?" — not "which model scores higher on a specific test?" As of 2026, the Arena has collected over 6 million votes and is widely considered the most reliable overall quality signal.
-
-**How Elo works**: Each "battle" between two models is a user vote. If a lower-rated model beats a higher-rated one, it gains more points than if it beats an equal-rated model — exactly like chess. The update rule is:
-
-$$
-R_{\text{new}} = R_{\text{old}} + K \cdot (S - E)
-$$
-
-Where R is the rating, K is a sensitivity constant (typically 32), S is the actual outcome (1 for win, 0 for loss, 0.5 for tie), and E is the expected score based on current ratings:
-
-$$
-E = \frac{1}{1 + 10^{(R_{\text{opponent}} - R_{\text{model}}) / 400}}
-$$
-
-As of April 2026, top Arena Elo scores exceed 1400. Claude Opus 4.6 broke 1560 on the coding-specific leaderboard, the first model to surpass 1500.
-
-**Limitations**: Human preferences can be noisy. Users may prefer longer, more confident responses even when they're wrong. The user base may not represent your specific use case.
+That is why evaluation feels objective on the surface, but is often messy underneath.
 
 ---
 
-## 3. The Benchmark Saturation Problem
+## 2. The major benchmarks, organized by what they test
+
+Instead of listing benchmarks one by one, it is clearer to group them by **what job they are trying to do**.
+
+### 2.1 Knowledge exams: MMLU and friends
+
+#### Intuition: textbook exams
+
+MMLU is like a giant university final exam. It asks: across many subjects, can the model choose the right answer?
+
+MMLU (Massive Multitask Language Understanding) became famous because it covered 57 subjects, from law to biology to math. For years, it was the default benchmark people quoted.
+
+**Why it mattered:** it was broad, easy to run, and gave one clean number.
+
+**Why it is less useful now:** by 2025-2026, frontier models all got very high scores. Once everyone scores around 90%+, small differences stop telling you much.
+
+That is why people moved to stronger variants like **MMLU-Pro** and **MMLU-CF**.
+
+| Benchmark | What it tests | Why people used it | Why it is weakening |
+|---|---|---|---|
+| MMLU | Broad factual/academic knowledge | Simple, broad, standard | Saturated, contamination concerns |
+| MMLU-Pro | Harder expert-style questions | Better differentiation | Still exam-style multiple choice |
+| MMLU-CF | Contamination-resistant version | Cleaner signal | Still inherits MMLU's basic limits |
+
+The scoring formula is simple:
+
+$$
+	ext{Accuracy} = rac{	ext{number of correct answers}}{	ext{total number of questions}}
+$$
+
+This simplicity is exactly why people loved MMLU, and exactly why it became easy to over-optimize for it.
+
+### 2.2 Deep reasoning: GPQA, AIME, ARC-AGI
+
+#### Intuition: not "did you study", but "can you think?"
+
+Some benchmarks try to test whether the model can actually reason, not just recognize a memorized answer.
+
+- **GPQA** asks graduate-level science questions that even domain experts find hard.
+- **AIME** tests olympiad-style mathematical reasoning.
+- **ARC-AGI** tests pattern abstraction and generalization from tiny examples.
+
+These are closer to asking:
+
+> Can the model think through something genuinely difficult when the answer is not obvious from surface familiarity?
+
+| Benchmark | Best mental model | Why it matters in 2026 |
+|---|---|---|
+| GPQA Diamond | PhD oral exam | Still differentiates frontier models clearly |
+| AIME 2025 | Olympiad math contest | Strong test of multi-step symbolic reasoning |
+| ARC-AGI 2 | IQ-style abstraction puzzle | Tests generalization, not textbook recall |
+
+These are much harder to saturate because they reward structured reasoning rather than broad familiarity.
+
+### 2.3 Coding: HumanEval vs SWE-bench
+
+#### Intuition: toy homework vs real job ticket
+
+This distinction matters a lot.
+
+**HumanEval** is like giving a student a small homework problem: here is a function signature, here is a docstring, now write the function.
+
+**SWE-bench** is like giving an engineer a real GitHub issue inside a messy codebase and asking them to actually fix it.
+
+That is why HumanEval was a great early coding benchmark, but is no longer enough.
+
+| Benchmark | What the task feels like | Main weakness |
+|---|---|---|
+| HumanEval | Write a short standalone function | Too small, too clean, too isolated |
+| SWE-bench Verified | Fix a real issue in a real repo | Expensive and harder to run |
+
+HumanEval often uses **pass@k**, the probability that at least one of k generated solutions is correct:
+
+$$
+	ext{pass@k} = 1 - rac{inom{n-c}{k}}{inom{n}{k}}
+$$
+
+where:
+- $n$ = total sampled solutions,
+- $c$ = number of correct ones,
+- $k$ = how many attempts you are allowed to try.
+
+Big picture: **HumanEval asks "can you write a correct little snippet?" SWE-bench asks "can you function like a software engineer?"**
+
+### 2.4 Human preference: Chatbot Arena
+
+#### Intuition: the restaurant test
+
+A benchmark score is like a food critic rating a restaurant by a checklist.
+
+Chatbot Arena is like asking thousands of real customers, "which restaurant would you actually go back to?"
+
+Instead of fixed exam questions, users compare two anonymous models and vote for the better response. The results are aggregated into an **Elo rating**, borrowed from chess.
+
+$$
+R_{	ext{new}} = R_{	ext{old}} + K(S - E)
+$$
+
+Where:
+- $R$ is the rating,
+- $K$ controls how fast ratings move,
+- $S$ is the actual result (win/loss/tie),
+- $E$ is the expected result from prior ratings.
+
+Why Arena matters:
+- it reflects real human usage,
+- it is harder to overfit than a static exam,
+- it captures style, helpfulness, and preference, not just correctness.
+
+Why it is still imperfect:
+- users may prefer long confident answers,
+- preferences vary by task,
+- consumer chat quality is not the same thing as scientific reasoning.
+
+### 2.5 Frontier mega-benchmarks: HLE
+
+#### Intuition: the benchmark built to stop leaderboard inflation
+
+Once old benchmarks saturate, the community builds a harder one.
+
+That is what **Humanity's Last Exam (HLE)** tried to be: a giant, expert-written benchmark designed so that even frontier models would still struggle.
+
+The point of HLE is not that it is literally the "last" exam. The point is that it resets differentiation. It creates a test where score gaps matter again.
+
+---
+
+## 3. The three big problems with modern benchmarks
+
+This is the real heart of the chapter. Benchmarks are useful, but they keep failing in three recurring ways.
+
+### 3.1 Problem 1: saturation
+
+#### Intuition: once everyone gets an A, the exam stops ranking students
+
+When a benchmark is new, score gaps are meaningful.
+When the top five models all score between 90 and 94, the benchmark becomes much less informative.
+
+That is what happened to MMLU and, to a large extent, HumanEval.
 
 ![Figure 3: How benchmarks saturate over time as models improve](../zh/images/day25/benchmark-saturation-timeline.png)
 *Figure 3: Benchmark saturation timeline — MMLU and HumanEval are effectively saturated, while GPQA Diamond still differentiates models.*
 
-This is one of the most important dynamics in LLM evaluation. Here's the pattern:
+The usual lifecycle is:
 
-1. A new benchmark is introduced → models perform poorly
-2. Model builders optimize for it → scores rise rapidly
-3. Scores plateau near ceiling → benchmark no longer differentiates
-4. A harder benchmark is created → the cycle repeats
+1. benchmark appears,
+2. models perform badly,
+3. labs optimize for it,
+4. scores climb,
+5. the benchmark loses discrimination,
+6. the community invents a harder benchmark.
 
-**MMLU** went from ~25% (random chance on 4 options is 25%) for GPT-2 to 90%+ for frontier models. **HumanEval** went from ~10% for early Codex to 95%+. Each time, the benchmark became less useful for ranking models.
+So if a lab advertises "state of the art on MMLU," the right question is:
 
-#### What This Means in Practice
+> Does this still tell me anything important in 2026?
 
-When you see a model claiming "state-of-the-art on MMLU," ask:
-- *What about MMLU-Pro?* (probably much lower)
-- *What about contaminated vs. clean splits?* (some questions may be in training data)
-- *What does Chatbot Arena say?* (human preference is harder to game)
+Often the answer is: not much.
 
-### 2.7 Why No Single Benchmark Suffices
+### 3.2 Problem 2: contamination
 
-Different benchmarks test different things. A model can dominate MMLU while struggling with ARC-AGI. This is why practitioners increasingly use **benchmark profiles** — radar charts showing performance across multiple benchmarks simultaneously.
+#### Intuition: the student saw the exam in advance
 
-![Figure 3b: Radar chart comparing two models across seven benchmarks](../zh/images/day25/benchmark-radar-comparison.png)
-*Figure 3b: Two hypothetical models compared across seven benchmarks. Model A dominates MMLU and HumanEval (saturated), but the gap on SWE-bench and HLE reveals real differences.*
+A benchmark is only meaningful if the model did not already memorize the answers from training data.
 
-The key insight: **look at the shape, not any single number**. A model with high MMLU but low SWE-bench is a knowledge engine that can't code. A model with high Arena Elo but low GPQA is probably likable but shallow on reasoning.
-
----
-
-## 4. Data Contamination — The Elephant in the Room
+But LLMs are trained on giant internet corpora, and many benchmarks live on the internet. That creates **data contamination**.
 
 ![Figure 4: How benchmark data leaks into training sets](../zh/images/day25/contamination-problem.png)
 *Figure 4: Data contamination occurs when benchmark questions appear in the training corpus, inflating scores through memorization rather than genuine capability.*
 
-This is the most serious threat to benchmark validity. Here's how it happens:
+Contamination can happen in several ways:
+- exact benchmark questions are in the training set,
+- paraphrased versions appear in blogs or forums,
+- answer discussions leak into tutorials and repos.
 
-### 4.1 How Contamination Occurs
+The nasty part is that contamination is hard to prove and hard to fully remove.
 
-LLMs are trained on massive web scrapes. Benchmarks like MMLU and HumanEval are publicly available on the internet. If benchmark questions (or very similar content) appears in the training data, the model can memorize answers rather than reasoning about them.
+| Mitigation strategy | Idea | Limitation |
+|---|---|---|
+| Private holdout sets | Hide the benchmark | Hard for open research |
+| Rephrasing | Rewrite questions | May change difficulty |
+| Dynamic benchmarks | Constantly generate new items | Expensive |
+| Detection tools | Search for overlap | Misses subtle paraphrases |
 
-A 2025 survey by Gema et al. found that contamination detection methods consistently find overlap between popular benchmarks and common pre-training datasets. The paper "Are We Done with MMLU?" documented significant test-set leakage across multiple commercial models.
+So benchmark numbers are never just capability numbers. They are capability **plus** possible exposure effects.
 
-### 4.2 Why It's Hard to Detect
+### 3.3 Problem 3: benchmark-task mismatch
 
-Contamination isn't always exact matching. The training data might contain:
-- **Paraphrased versions** of benchmark questions
-- **Discussion of benchmark answers** in forums and tutorials
-- **Similar but not identical** questions from the same source material
+#### Intuition: a driving test is not a guarantee of being a good taxi driver
 
-Modern contamination detection uses LLMs themselves to check if a model "recognizes" test questions it shouldn't have seen, but this is an arms race.
+Even a clean, unsaturated benchmark may still fail to predict real-world usefulness.
 
-### 4.3 Mitigation Strategies
+Why? Because real work is messy.
 
-| Strategy | How It Works | Trade-off |
-|----------|-------------|-----------|
-| Hold-out benchmarks | Keep some benchmarks private | Limits community access |
-| Dynamic benchmarks | Generate new questions regularly | Expensive to maintain |
-| Rephrased versions | Rewrite existing questions | May change difficulty |
-| Contamination detection | Check training data for overlap | Can't catch paraphrases |
-| Live benchmarks | Use real-time tasks (SWE-bench) | Harder to standardize |
+- Real users give ambiguous instructions.
+- Real coding happens in large codebases.
+- Real customer support involves long conversations.
+- Real scientific work involves uncertainty and missing context.
 
-### 4.4 Key Papers
+A model can dominate benchmarks and still disappoint in production.
 
-- ["Are We Done with MMLU?"](https://arxiv.org/abs/2406.04127) — documents MMLU contamination issues
-- ["A Survey on Data Contamination for Large Language Models"](https://arxiv.org/abs/2502.14425) — comprehensive 2025 survey
-- ["When Benchmarks Leak: Inference-Time Decontamination for LLMs"](https://arxiv.org/abs/2601.19334) — January 2026, proposes real-time decontamination
-
----
-
-## 5. Modern Evaluation: What to Use in 2026
-
-Given saturation and contamination, what should you actually use? Here's a practical guide:
-
-### 5.1 Benchmark Selection Guide
-
-| Your Question | Best Benchmark | Why |
-|---------------|---------------|-----|
-| Which model is best overall? | Chatbot Arena Elo | Human preference, hard to game |
-| Which reasons best about science? | GPQA Diamond | Still unsaturated, expert-level |
-| Which is best at real coding? | SWE-bench Verified | Real GitHub issues, not toy functions |
-| Which handles hard math? | AIME 2025 | Olympiad-level, no memorization |
-| Which is smartest generally? | ARC-AGI 2 | Tests fluid intelligence |
-| Which follows instructions? | IFEval | Direct instruction-following test |
-| What's the hardest frontier? | HLE | Expert-level, very low scores |
-
-### 5.2 The AAII Index
-
-The Artificial Analysis Intelligence Index (AAII) v3 aggregates 10 challenging evaluations: MMLU-Pro, HLE, GPQA Diamond, AIME, and others into a single composite score. While no single number captures everything, AAII provides a reasonable summary of frontier model capability.
-
-### 5.3 Domain-Specific Evaluation
-
-General benchmarks don't tell you how a model performs on *your* task. For production use:
-
-1. **Build your own eval set** — collect real user queries with gold answers
-2. **Use LLM-as-judge** — have a strong model rate outputs on your criteria
-3. **A/B test with real users** — the ultimate evaluation
-4. **Track drift over time** — models can get worse on your specific use case even as benchmarks improve
+That is why production teams increasingly rely on **domain-specific evaluation**, not just public leaderboards.
 
 ---
 
-## 6. Common Misconceptions
+## 4. So what should you actually use in 2026?
 
-### ❌ "A model that scores higher on MMLU is smarter"
+#### Intuition: pick the exam that matches the job
 
-Not necessarily. MMLU is saturated and potentially contaminated. A 2% difference on MMLU is noise, not signal. Look at GPQA, ARC-AGI, or Arena Elo instead.
+If you are hiring:
+- you do not use a poetry contest to hire an accountant,
+- you do not use a spelling bee to hire a physicist.
 
-### ❌ "Benchmark scores predict real-world performance"
+Same logic here.
 
-The gap between benchmark performance and production performance is well-documented. Models that dominate leaderboards often underperform in real deployments because benchmarks test narrow, well-defined tasks while real usage is messy and open-ended.
+### 4.1 Practical benchmark selection guide
+
+| Your real question | Best benchmark to start with | Why |
+|---|---|---|
+| Which model do users generally like? | Chatbot Arena Elo | Broad human preference signal |
+| Which model reasons best about science? | GPQA Diamond | Still hard, still unsaturated |
+| Which model handles real coding? | SWE-bench Verified | Real repositories, real issues |
+| Which handles hard math? | AIME 2025 | Strong multi-step mathematical reasoning |
+| Which generalizes abstractly? | ARC-AGI 2 | Hard to fake with memorization |
+| Which follows instructions best? | IFEval | Directly tests instruction fidelity |
+| Which is currently the hardest general frontier exam? | HLE | Very low scores, still differentiating |
+
+### 4.2 Use benchmark profiles, not one magic number
+
+One of the biggest mistakes is to treat evaluation as a single scalar ranking problem.
+
+A better mental model is a **profile**.
+
+![Figure 3b: Radar chart comparing two models across seven benchmarks](../zh/images/day25/benchmark-radar-comparison.png)
+*Figure 3b: Two hypothetical models compared across seven benchmarks. Model A dominates MMLU and HumanEval (saturated), but the gap on SWE-bench and HLE reveals more meaningful differences.*
+
+Look at the **shape**, not just the headline number.
+
+A model with:
+- high Arena Elo but weak GPQA may be great for consumer chat, but weak for expert reasoning,
+- high MMLU but weak SWE-bench may know a lot, but fail at actual software work,
+- high AIME and GPQA but weak instruction following may be brilliant but hard to use.
+
+### 4.3 For real products, build your own evals
+
+This is the most practical takeaway in the whole chapter.
+
+If you are deploying an LLM system, public benchmarks are only the starting point.
+
+You should also build:
+
+1. **your own task set** from real user queries,
+2. **your own grading rubric** based on what success means in your product,
+3. **A/B tests with real users**,
+4. **drift monitoring over time**.
+
+Public benchmarks tell you how a model behaves in the lab.
+Your own evals tell you whether it works in your business.
+
+---
+
+## 5. What changed in 2025-2026?
+
+This is where the story gets more interesting.
+
+### 5.1 The benchmark wars moved from static exams to dynamic evaluation
+
+By 2025-2026, the community realized that static multiple-choice benchmarks are too easy to contaminate and too easy to saturate.
+
+That pushed evaluation toward:
+- harder expert-written benchmarks like HLE,
+- dynamic and contamination-resistant variants like MMLU-CF,
+- real-world engineering tasks like SWE-bench Verified,
+- live human preference systems like Arena,
+- agent benchmarks such as WebArena and WebVoyager for digital action.
+
+This is a big shift. The field is moving from **"Can the model answer test questions?"** to **"Can the model actually do useful work?"**
+
+### 5.2 Agents changed what "evaluation" means
+
+Once models became agents, evaluation had to change too.
+
+A chatbot benchmark is not enough for a web-browsing agent.
+Now you also need to ask:
+- can it recover from errors?
+- can it navigate multi-step workflows?
+- can it act safely in open-ended environments?
+
+That is why benchmarks like **WebArena**, **WebVoyager**, and agentic evaluations matter more in 2026 than they did two years earlier.
+
+### 5.3 LLM-as-judge became mainstream, but still controversial
+
+Labs increasingly use stronger models to evaluate weaker models.
+
+Why?
+Because human evaluation is expensive, slow, and inconsistent.
+
+Why is it controversial?
+Because now the judge is itself a model, with its own biases and blind spots.
+
+So LLM-as-judge is useful, but it is not the same thing as objective truth.
+
+---
+
+## 6. Common misconceptions
+
+### ❌ "Higher benchmark score means smarter model"
+
+Not always. It may mean:
+- the benchmark is saturated,
+- the model was optimized for that benchmark,
+- the benchmark matches only one skill,
+- contamination inflated the score.
 
 ### ❌ "We just need harder benchmarks"
 
-Harder benchmarks help temporarily, but the saturation cycle repeats. The real solution is **evaluating on your actual use case** rather than relying on any universal benchmark.
+Harder helps, but only temporarily. Saturation eventually catches up again.
 
-### ❌ "Chatbot Arena is perfect because it uses real humans"
+### ❌ "Chatbot Arena solves everything because humans vote"
 
-Human preference is noisy, biased toward verbosity and confidence, and may not reflect your specific needs. Arena Elo is the best general signal we have, but it's still imperfect.
+Arena is valuable, but human preference is noisy, style-sensitive, and task-dependent.
 
----
+### ❌ "Benchmarking is objective"
+
+Benchmarking always contains design choices:
+- which tasks,
+- which prompts,
+- which metrics,
+- which judges,
+- which distribution.
+
+So evaluation is more like measurement engineering than pure truth-finding.
 
 ## 7. Code Example: Running a Simple Evaluation
 
