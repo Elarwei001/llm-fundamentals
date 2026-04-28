@@ -272,6 +272,24 @@ MoE models introduce unique training difficulties:
 3. **Training instability**: Sparse gradients from MoE can make training less stable than dense models.
 4. **Expert underutilization**: Some experts may not receive enough training signal to learn useful functions.
 
+#### Why are MoE gradients sparse?
+
+In a dense model, every token flows through the same FFN, so almost every parameter in that layer receives gradient signal on every step.
+
+In an MoE layer, each token activates only a small number of experts, such as top-2 out of 128. That means:
+- only the selected experts receive gradient from that token,
+- the unselected experts receive essentially nothing from it,
+- and the distribution of updates depends on a router that is itself still learning.
+
+So the sparsity comes from **conditional activation**: most expert parameters are simply not on the computation path for a given token.
+
+This makes optimization harder because updates become:
+- **uneven**: some experts see far more data than others,
+- **high-variance**: one expert may receive many tokens in one batch and very few in the next,
+- **self-reinforcing**: experts selected early get more gradient, improve faster, and become even more likely to be selected again.
+
+That is one reason MoE training can be less stable than dense training, especially early on before routing has settled.
+
 #### How do we know whether an expert is undertrained?
 
 This is an important practical question. In a large MoE system, some experts may see huge numbers of tokens and become highly refined, while others may see too few examples and remain undertrained.
