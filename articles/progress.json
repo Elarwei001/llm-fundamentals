@@ -1,6 +1,6 @@
 {
-  "current_day": 24,
-  "last_generated": "2026-04-24",
+  "current_day": 26,
+  "last_generated": "2026-04-28",
   "total_days": 60,
   "status": "active",
   "history": [
@@ -375,6 +375,38 @@
         "zh/images/day24/next-token-vs-world-dynamics.png",
         "zh/images/day24/planning-in-latent-space.png",
         "zh/images/day24/world-model-limitations-radar.png"
+      ]
+    },
+    {
+      "day": 25,
+      "date": "2026-04-27",
+      "topic": "Evaluation & Benchmarks",
+      "en_path": "en/day25-evaluation-and-benchmarks.md",
+      "zh_path": "zh/day25-evaluation-and-benchmarks.md",
+      "qa_score": 91.6,
+      "qa_rounds": 1,
+      "images": [
+        "zh/images/day25/benchmark-landscape.png",
+        "zh/images/day25/benchmark-saturation-timeline.png",
+        "zh/images/day25/evaluation-pipeline.png",
+        "zh/images/day25/contamination-problem.png",
+        "zh/images/day25/benchmark-radar-comparison.png"
+      ]
+    },
+    {
+      "day": 26,
+      "date": "2026-04-28",
+      "topic": "Mixture of Experts (MoE)",
+      "en_path": "en/day26-mixture-of-experts.md",
+      "zh_path": "zh/day26-mixture-of-experts.md",
+      "qa_score": 0,
+      "qa_rounds": 0,
+      "images": [
+        "zh/images/day26/moe-architecture-overview.png",
+        "zh/images/day26/expert-routing-mechanism.png",
+        "zh/images/day26/moe-vs-dense-comparison.png",
+        "zh/images/day26/moe-model-evolution.png",
+        "zh/images/day26/load-balancing-problem.png"
       ]
     }
   ]

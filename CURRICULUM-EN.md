@@ -81,7 +81,7 @@
 |-----|-------|---------------|--------------|
 | D21 | **Hallucination Problem** | Why LLMs confidently make things up | [EN](articles/en/day21-hallucination-problem.md) / [中文](articles/zh/day21-hallucination-problem.md) |
 | D22 | Reasoning Ability | Can LLMs really reason? The nature of Chain-of-Thought | [EN](articles/en/day22-reasoning-ability.md) / [中文](articles/zh/day22-reasoning-ability.md) |
-| D23 | Math and Logic | Why LLMs struggle with math, return of Symbolic AI | Known limitations |
+| D23 | Math and Logic | Why LLMs struggle with math, return of Symbolic AI | [EN](articles/en/day23-math-and-logic.md) / [中文](articles/zh/day23-math-and-logic.md) |
 | D24 | World Models | Do LLMs have world models? Yann LeCun vs Ilya | [EN](articles/en/day24-world-models.md) / [中文](articles/zh/day24-world-models.md) |
 | D25 | Evaluation & Benchmarks | MMLU, HumanEval, ARC — What are we measuring? | Evaluation methods |
 
@@ -89,7 +89,7 @@
 
 | Day | Topic | Core Question | Trend Source |
 |-----|-------|---------------|--------------|
-| D26 | **Mixture of Experts (MoE)** | Sparse activation, more model with less compute | Architecture innovation |
+| D26 | **Mixture of Experts (MoE)** | Sparse activation, more model with less compute | [EN](articles/en/day26-mixture-of-experts.md) / [中文](articles/zh/day26-mixture-of-experts.md) |
 | D27 | Knowledge Distillation | Large to small model, how knowledge transfers | Model compression |
 | D28 | **FlashAttention & Sparse Attention** | Memory bandwidth bottleneck, making Transformer faster | 🔥 sparse attention +30% |
 | D29 | **Attention-Free Architectures** | Mamba, RWKV, State Space Models | 🔥🔥🔥 +350% rising |
