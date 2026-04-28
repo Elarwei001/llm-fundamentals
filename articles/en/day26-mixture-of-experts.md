@@ -96,6 +96,14 @@ MoE creates an unusual trade-off profile:
 
 A dense model is like having a small bookshelf — every book is right there, cheap to access, but you're limited to what fits. An MoE model is like having access to a vast library — enormous knowledge, but you need to walk to the right section (routing) and the library needs floor space (memory) for all those books.
 
+The three most confusing phrases here are usually: **"higher model quality per FLOP,"** **"lower model quality per byte,"** and **"less active compute but more communication."** Here is the intuition:
+
+- **Model quality per FLOP** means: if you spend the same amount of computation, which model gives you better performance? MoE often wins here because each token activates only a small subset of experts, yet benefits from a much larger total parameter pool.
+- **Model quality per byte** means: if you spend the same amount of memory, which model gives you more capability? Dense models often win here because almost every stored parameter gets used every time, while MoE must store many experts that are only occasionally activated.
+- **Why communication is higher**: lower active compute does not mean lower data movement. The router must decide where each token goes, and if the selected experts live on different GPUs, tokens must be shuffled across devices and then gathered back afterward. That all-to-all movement can become a major systems cost.
+
+So the bottleneck often shifts: dense models are more dominated by **raw compute**, while MoE systems are more likely to be dominated by **routing, scheduling, and cross-GPU communication**.
+
 The key insight: **if compute is your bottleneck (which it usually is during training), MoE gives you more quality per training dollar.** If memory is your bottleneck (which it often is during deployment), MoE can be harder to serve.
 
 ![Dense vs MoE Comparison](../zh/images/day26/moe-vs-dense-comparison.png)
