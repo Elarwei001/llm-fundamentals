@@ -272,6 +272,28 @@ MoE models introduce unique training difficulties:
 3. **Training instability**: Sparse gradients from MoE can make training less stable than dense models.
 4. **Expert underutilization**: Some experts may not receive enough training signal to learn useful functions.
 
+#### How do we know whether an expert is undertrained?
+
+This is an important practical question. In a large MoE system, some experts may see huge numbers of tokens and become highly refined, while others may see too few examples and remain undertrained.
+
+There is no single universally accepted "expert saturation" metric, but practitioners usually monitor a bundle of proxies:
+
+| Signal | What it tells you |
+|---|---|
+| **Token load / routing frequency** | Whether an expert actually sees enough training data |
+| **Gradient norm / update activity** | Whether its parameters are receiving meaningful learning signal |
+| **Per-expert loss or perplexity** | Whether it performs well on the tokens it is assigned |
+| **Routing stability** | Whether it has developed a consistent specialization over time |
+| **Ablation impact** | Whether disabling that expert causes measurable degradation |
+
+The key subtlety is that **low usage does not automatically mean low value**. Some experts may serve rare but difficult or high-value cases. So in practice, researchers look for a combination of:
+- enough exposure,
+- enough parameter updates,
+- stable specialization,
+- and evidence that the expert matters when removed.
+
+That is why MoE monitoring is not just about balancing load. It is also about asking whether each expert is actually learning a useful role.
+
 ### 5.2 Serving Considerations
 
 Serving MoE models requires careful engineering:
