@@ -208,6 +208,7 @@ Han et al. (2025) proposed a theoretical framework for auxiliary-loss-free load 
 | Mixtral 8x7B | Dec 2023 | 47B | 13B | 8 | 2 | First competitive open MoE LLM |
 | DeepSeek-V2 | May 2024 | 236B | 21B | 160 | 6 | Shared + routed experts |
 | DeepSeek-V3 | Dec 2024 | 671B | 37B | 256 | 8 | Auxiliary-loss-free routing |
+| Gemma 4 26B A4B | Apr 2025 | 26B | 4B | — | — | Small, efficient MoE from Google |
 | Llama 4 Maverick | Apr 2025 | 400B | 17B | 128 | — | Multimodal MoE |
 | Qwen3-235B | Apr 2025 | 235B | 22B | 128 | 8 | No shared experts |
 | DeepSeek-V4 Pro | Apr 2026 | 1.6T | 49B | — | — | Hybrid attention + MoE |
