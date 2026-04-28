@@ -59,6 +59,18 @@ $$
 y = \sum_{i \in \text{TopK}} G(h)_i \cdot E_i(h)
 $$
 
+Here, the $E$ stands for **Expert**. So $E_i(h)$ means: **the output produced by the $i$-th expert network for input $h$**.
+
+You can read the formula piece by piece:
+- $G(h)_i$ = the weight assigned by the router to the $i$-th expert
+- $E_i(h)$ = the actual output computed by the $i$-th expert
+
+So the whole equation means:
+
+> the final output $y$ is the sum of each selected expert's output, weighted by its gate score.
+
+In other words, the router decides *who gets activated and how much they matter*, while the experts actually do the work.
+
 Only the selected experts perform computation. The rest sit idle.
 
 ![Expert Routing Mechanism](../zh/images/day26/expert-routing-mechanism.png)

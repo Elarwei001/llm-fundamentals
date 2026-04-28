@@ -59,6 +59,18 @@ $$
 y = \sum_{i \in \text{TopK}} G(h)_i \cdot E_i(h)
 $$
 
+这里的 $E$ 指的是 **Expert**。所以 $E_i(h)$ 的意思是：**第 $i$ 个 expert 网络对输入 $h$ 给出的输出**。
+
+可以把这个公式拆开理解：
+- $G(h)_i$ = 路由器分配给第 $i$ 个 expert 的权重
+- $E_i(h)$ = 第 $i$ 个 expert 实际算出来的结果
+
+所以整条式子的含义是：
+
+> 最终输出 $y$，等于“每个被选中的 expert 的输出”乘上对应的 gate 权重，再把它们加起来。
+
+也就是说，router 决定“谁上场、各占多大比重”，expert 负责“各自给出处理结果”。
+
 只有被选中的专家执行计算，其余的闲置。
 
 ![专家路由机制](./images/day26/expert-routing-mechanism.png)
