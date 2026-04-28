@@ -148,7 +148,7 @@ If you want the practical takeaway, it is this: modern MoE research is shifting 
 
 ---
 
-## 3. The Routing Problem: MoE's Central Challenge
+## 3. The Routing Problem, and MoE's Other Practical Challenges
 
 ### 3.1 Load Balancing
 
@@ -174,6 +174,34 @@ Where:
 - $P_i$ = mean router probability for expert $i$
 - $N$ = number of experts
 - $\alpha$ = small coefficient (typically 0.01)
+
+### 3.3 MoE has more challenges than load balancing
+
+Load balancing is the most famous problem, but it is not the only one. In practice, MoE systems face a whole cluster of challenges:
+
+| Challenge family | What can go wrong |
+|---|---|
+| **Routing dynamics** | Routing collapse, expert under-utilization, unstable early training, token dropping |
+| **Systems cost** | Expensive all-to-all communication, cross-GPU scheduling complexity, variable latency |
+| **Optimization** | Sparse routing is harder to train, auxiliary losses are sensitive, some experts learn too slowly |
+| **Specialization** | Experts may specialize in shallow statistical patterns rather than robust task-level skills |
+| **Serving cost** | Total parameters must still live in memory, so deployment can remain expensive |
+| **Safety / control** | Different experts may not align equally well, and behavior can shift when routing changes |
+| **Evaluation** | It is harder to tell whether gains come from true capability, routing quirks, or benchmark-specific effects |
+
+#### Intuition: MoE saves compute, not complexity
+
+A good mental model is this:
+- Dense models are often bottlenecked by **raw computation**.
+- MoE models reduce part of that compute.
+- But in exchange, they introduce a bigger **coordination problem**.
+
+So MoE is not just "a cheaper dense model." It is more like a distributed organization that needs routing, balancing, synchronization, and monitoring to function well.
+
+That is why modern MoE research is split across three fronts at once:
+1. **algorithmic**: better routing and better expert specialization,
+2. **systems**: lower communication and smoother deployment,
+3. **scientific**: understanding what experts actually learn.
 
 This penalizes imbalance — when some experts get too many tokens (high $f_i$) and the router strongly prefers them (high $P_i$), the loss increases.
 
