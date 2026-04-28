@@ -119,6 +119,33 @@ The deep reason MoE works is *conditional computation* — different inputs get 
 
 Research from DeepSeek-V3 showed that experts don't always cleanly specialize by topic. Instead, they often specialize by *token frequency and position* — some experts handle common tokens, others handle rare ones. The model discovers useful divisions on its own.
 
+#### Recent research: what do experts actually specialize in?
+
+This question has become an active research topic, and a useful answer is: **experts are often real, but their specialization is usually messier and more statistical than the human-friendly story of "math expert" or "history expert."**
+
+A few representative findings:
+
+| Paper / project | Institution(s) | Year | What it found |
+|---|---|---|---|
+| **OpenMoE** | Colossal-AI / National University of Singapore collaborators | 2024 | Reported **context-independent specialization**, early routing learning, and a late-layer drop in routing diversity, suggesting experts often lock onto stable token-level patterns early in training. |
+| **DeepSeekMoE** | DeepSeek-AI | 2024 | Argued for finer-grained expert specialization and introduced **shared experts**, partly because some knowledge appears too general to be cleanly partitioned into routed experts. |
+| **OLMoE** | Allen Institute for AI and collaborators | 2024/2025 | Measured routing properties directly and found high specialization, low co-activation, and signs of **domain and vocabulary specialization** rather than neat textbook-style subject partitions. |
+| **Soft MoE** | Google DeepMind | 2024 | Showed that softer assignment can reduce some hard-routing pathologies such as token dropping and unstable balancing, reframing specialization as a continuum rather than a strict winner-take-all assignment. |
+| **Expert Choice Routing** | Google Research | 2022 | Showed that routing design itself changes which experts get used and how balanced they are, meaning observed "specialization" is partly a property of the routing rule, not just the data. |
+
+Researchers have also started doing **expert ablation / lesion studies**: disable one expert, a group of experts, or reroute certain token families, then measure what breaks. The emerging picture is nuanced:
+
+- Some experts really are more important than others.
+- Some experts look tied to vocabulary frequency, formatting, or positional patterns.
+- Some deeper experts appear more correlated with semantic or task-level behavior.
+- But many functions are still distributed, so "remove one expert = remove one concept" is usually too simple.
+
+So the current frontier view is not that MoE contains a tidy panel of human-readable specialists. It is closer to this:
+
+> MoE learns a sparse division of labor, but that division is shaped by optimization pressure, routing design, load balancing, and data statistics, not just by human-interpretable topics.
+
+If you want the practical takeaway, it is this: modern MoE research is shifting from merely asking **"Does sparse routing work?"** to asking **"What kind of specialization emerges, how stable is it, and can we control or interpret it?"**
+
 ---
 
 ## 3. The Routing Problem: MoE's Central Challenge

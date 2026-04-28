@@ -119,6 +119,33 @@ MoE 有效的深层原因是 *条件计算（Conditional Computation）* —— 
 
 DeepSeek-V3 的研究表明，专家并不总是按主题清晰地专业化。相反，它们往往按 *token 频率和位置* 专业化 —— 有些专家处理常见 token，有些处理罕见 token。模型在训练过程中自行发现有意义的分工。
 
+#### 最新研究在追问什么：expert 到底在专门化什么？
+
+这个问题现在已经变成 MoE 研究里的一个活跃方向。一个比较准确的总结是：**expert 的确会形成分工，但这种分工通常比“数学专家”“历史专家”这种人类直觉更混杂、更统计化。**
+
+下面是几项比较有代表性的进展：
+
+| 论文 / 项目 | 机构 | 年份 | 主要发现 |
+|---|---|---|---|
+| **OpenMoE** | Colossal-AI / 新加坡国立大学等合作者 | 2024 | 报告了 **context-independent specialization**、早期路由快速成形，以及后期层路由多样性下降，说明 expert 往往很早就锁定在某些稳定的 token 模式上。 |
+| **DeepSeekMoE** | DeepSeek-AI | 2024 | 强调更细粒度的 expert specialization，并引入 **shared experts**，因为有些知识过于通用，不适合被硬切分到某一个 routed expert。 |
+| **OLMoE** | Allen Institute for AI 及合作者 | 2024/2025 | 直接定义并测量 routing properties，发现 expert 的高专业化、低共激活，以及更像 **domain / vocabulary specialization** 的现象，而不是整齐的学科式分工。 |
+| **Soft MoE** | Google DeepMind | 2024 | 说明更软的分配方式可以缓解硬路由带来的 token dropping、负载不稳等问题，也提醒我们：specialization 有时更像连续谱，而不是非黑即白的 top-k 指派。 |
+| **Expert Choice Routing** | Google Research | 2022 | 表明 routing 规则本身会显著改变哪些 expert 被使用、负载是否均衡，所以我们观察到的“expert specialization”有一部分其实也是路由设计的产物。 |
+
+研究者也开始做更直接的 **expert ablation / lesion study**：关掉某个 expert、关掉一组 expert，或者把某些 token 强制改送到别的 expert，再看模型在哪些地方退化。当前形成的认识比较一致：
+
+- 有些 expert 的确比别的更关键；
+- 有些 expert 更像在处理词频、格式、位置模式；
+- 更深层的 expert 有时更接近语义层面或任务层面的行为；
+- 但很多功能仍然是分布式的，所以“去掉一个 expert = 去掉一个明确概念”通常过于简单。
+
+所以，当前前沿研究更接近这样一种看法：
+
+> MoE 学到的确实是一种稀疏分工，但这种分工是由优化压力、路由规则、负载均衡约束和数据统计结构共同塑造的，而不只是由人类容易命名的主题决定。
+
+如果把它翻成一句更实用的话，那就是：MoE 研究的重点，正在从 **“稀疏路由能不能 work”**，转向 **“形成了什么样的 specialization，它稳不稳定，能不能被解释和控制”**。
+
 ---
 
 ## 3. 路由问题：MoE 的核心挑战
