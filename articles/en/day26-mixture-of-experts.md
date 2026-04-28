@@ -146,6 +146,12 @@ So the current frontier view is not that MoE contains a tidy panel of human-read
 
 If you want the practical takeaway, it is this: modern MoE research is shifting from merely asking **"Does sparse routing work?"** to asking **"What kind of specialization emerges, how stable is it, and can we control or interpret it?"**
 
+> #### Research note: is MoE an engineering approximation to manifold-like structure?
+>
+> One useful high-level intuition is that MoE does not explicitly learn a continuous manifold, but it does seem to approximate something manifold-like in an engineering, discrete way: **different inputs occupy different local regions of representation space, so they may benefit from different local computation paths.**
+>
+> That resonates with the core intuition of manifold learning, because both perspectives emphasize **locality**. If the input distribution really does have local structure, then expert specialization can be viewed as a form of **piecewise, conditional function approximation** over those regions. That said, it would be too strong to call MoE a true manifold model. Its routing is discrete, system-constrained, and optimization-driven. But thinking of it as a mechanism for assigning different computational experts to different local regions is often a very productive way to understand why sparse routing works.
+
 ---
 
 ## 3. The Routing Problem, and MoE's Other Practical Challenges
