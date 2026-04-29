@@ -39,6 +39,22 @@ To make the picture easier to read, it helps to compare the three styles side by
 | **Logit-based** | The teacher's probability distribution over outputs | logits / soft targets | Transfers dark knowledge and remains the canonical KD form | Often impossible with closed models because logits are unavailable | Hinton-style distillation |
 | **Feature-based** | Intermediate hidden states, representations, or attention patterns | internal features from intermediate layers | Lets the student imitate the teacher's internal representations | Harder to align when teacher and student architectures differ | FitNets, representation matching |
 
+The temperature softmax shown in the figure can be written as:
+
+$$
+P_i = \frac{\exp(z_i / T)}{\sum_j \exp(z_j / T)}
+$$
+
+Where:
+- $z_i$ is the logit for class $i$;
+- $T$ is the temperature;
+- $P_i$ is the resulting softmax probability.
+
+Intuitively:
+- **$T=1$** gives the ordinary softmax;
+- **$T>1$** makes the distribution smoother, so the teacher's view of near-miss answers becomes more visible;
+- **$T<1$** makes the distribution sharper, putting more emphasis on the top class.
+
 ### 1.2 Why Not Just Train a Small Model Directly?
 
 You might wonder: if we need a small model, why not just train it on the data? Three reasons:

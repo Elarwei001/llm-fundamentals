@@ -39,6 +39,22 @@
 | **Logit-based** | 老师对所有候选输出的概率分布 | logits / soft targets | 能传递暗知识，是最经典的现代 KD 形式 | 闭源模型往往拿不到 logits | Hinton-style distillation |
 | **Feature-based** | 老师中间层表示、hidden states、attention 等 | 中间层特征 | 可以让学生学习老师内部表示方式 | 对齐复杂，teacher/student 结构差异大时更难做 | FitNets、representation matching |
 
+图里提到的 temperature softmax，可以先写成这个公式：
+
+$$
+P_i = \frac{\exp(z_i / T)}{\sum_j \exp(z_j / T)}
+$$
+
+其中：
+- $z_i$ 是第 $i$ 个类别的 logit；
+- $T$ 是温度；
+- $P_i$ 是 softmax 后的概率。
+
+直觉上：
+- **$T=1$** 时，就是普通 softmax；
+- **$T>1$** 时，分布会更平滑，老师对“次优答案”的看法会更明显；
+- **$T<1$** 时，分布会更尖锐，更接近只强调最高概率类别。
+
 ### 1.2 为什么不直接训练小模型？
 
 你可能会问：如果需要小模型，为什么不直接在小模型上训练？三个原因：
