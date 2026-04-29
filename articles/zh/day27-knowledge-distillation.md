@@ -240,10 +240,81 @@ $$
 
 传统（离线策略）蒸馏就像看大厨做菜，然后试图复制。在线策略蒸馏就像你自己下厨，然后让大厨品尝并点评**你做的菜**。反馈更有针对性，因为它针对的是**你特有的错误**。
 
-DeepSeek-R1 用了这个方法：蒸馏模型（基于 Qwen2.5 和 Llama3）的训练方式是让学生生成推理链，然后用老师的反馈来改进。结果令人印象深刻：
+![On-Policy 蒸馏流程图](./images/day27/on-policy-distillation-loop-v2.png)
+*图5：On-policy distillation 的核心循环。学生先自己生成推理轨迹，老师或评估器再对这些轨迹给出反馈，学生据此更新策略。*
+
+#### 它的工作原理到底是什么？
+
+最核心的区别在于：**训练数据是从谁的策略里采样出来的。**
+
+- **Off-policy / 传统蒸馏**：学生主要学习老师已经生成好的 demonstrations。
+- **On-policy 蒸馏**：学生先按自己的当前能力去作答，然后老师再针对学生这次真的做出来的轨迹给反馈。
+
+这件事为什么重要？因为小模型最容易犯的错，往往并不出现在老师原本的完美示范里。只有当学生真正自己去尝试，系统才能看到：
+- 它会在哪一步走歪，
+- 它会产生什么错误推理链，
+- 它的局部策略哪里最薄弱。
+
+所以 on-policy distillation 学到的不是“怎么模仿老师最漂亮的一次作答”，而是：
+
+> **当我自己真的去解题时，怎样逐步把我当前这套策略修正得更像一个强老师。**
+
+#### 一个抽象的训练架构
+
+你可以把它理解成 5 步循环：
+
+1. **给 student 一个 prompt**
+2. **student 自己生成 reasoning trace 和答案**
+3. **teacher / evaluator 对 student 的输出进行打分、比较或批改**
+4. **把这些反馈转成 distillation / policy learning 信号**
+5. **更新 student，再让它继续生成新的轨迹**
+
+这和传统 KD 的最大差异是：
+
+- 传统 KD 更像“老师先写标准答案，学生照着学”；
+- on-policy distillation 更像“学生先自己做，老师再批改学生这次真实暴露出来的错误”。
+
+#### 它和 RL 是什么关系？
+
+On-policy distillation 常常和 RL 很接近，甚至直接嵌在 RL 或 post-training pipeline 里。因为 teacher 提供的可能不只是单一标签，而是：
+
+- reward，
+- preference，
+- critique，
+- corrected reasoning trajectory，
+- 或者对 student 多个候选解的排序。
+
+所以很多时候，它看起来像是 **distillation + RL + preference optimization** 的混合体，而不是老式分类任务里那种单纯的 logit matching。
+
+#### 为什么它特别适合推理模型？
+
+因为推理任务的关键，不只是最后答案对不对，而是：
+
+- 过程有没有偏，
+- 中间步骤哪里错了，
+- 哪种错误是 student 特有的系统性错误。
+
+如果 student 只看老师的完美示范，它可能学会“看起来像”，但不一定学会“在自己犯错时怎么纠正”。
+
+On-policy distillation 更强的一点就在这里：
+
+> 它让 teacher 的监督直接作用在 **student 自己当前会犯的错误分布** 上。
+
+这也是为什么它特别适合 reasoning model、tool-use model、agent model 这类会暴露出长轨迹错误的系统。
+
+#### 代价是什么？
+
+它也更贵、更复杂：
+- student 必须先自己生成大量轨迹；
+- teacher / evaluator 要逐条看、逐条给反馈；
+- 训练管线更像一个在线闭环，而不是一次性准备好数据离线训练。
+
+所以它的优势是**反馈更贴着 student 当前能力边界**，但代价是工程复杂度和训练成本都会更高。
+
+DeepSeek-R1 用了这种思路：蒸馏模型（基于 Qwen2.5 和 Llama3）的训练方式是让学生生成推理链，然后用老师的反馈来改进。结果令人印象深刻：
 
 ![DeepSeek-R1 蒸馏性能](./images/day27/deepseek-r1-distill-performance.png)
-*图5：DeepSeek-R1 蒸馏模型表明，即使是小模型（7B-70B）也能保留大量推理能力。*
+*图6：DeepSeek-R1 蒸馏模型表明，即使是小模型（7B-70B）也能保留大量推理能力。*
 
 ### 3.4 DeepSeek-R1 蒸馏案例：跨不同 student 基座的能力迁移（2025年1月）
 

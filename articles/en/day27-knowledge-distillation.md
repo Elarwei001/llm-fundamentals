@@ -240,10 +240,78 @@ A major evolution in 2025-2026 is **on-policy distillation**, where the student 
 
 Traditional (off-policy) distillation is like watching a master chef cook and trying to replicate their dishes. On-policy distillation is like cooking yourself, then having the master taste and critique *your* dish. The feedback is more targeted because it addresses *your specific mistakes*.
 
+![On-Policy Distillation Loop](./images/day27/on-policy-distillation-loop-v2.png)
+*Figure 5: The core on-policy distillation loop. The student first generates its own reasoning trajectory, then the teacher or evaluator provides feedback, and the student updates its policy accordingly.*
+
+#### What is the actual mechanism?
+
+The most important difference is: **whose policy generates the training trajectories?**
+
+- **Off-policy / traditional distillation**: the student mostly learns from demonstrations already produced by the teacher.
+- **On-policy distillation**: the student acts first under its current policy, and the teacher then evaluates the student's actual trajectory.
+
+Why does this matter? Because the mistakes made by a small model often do not appear in the teacher's polished demonstrations. Only when the student truly attempts the task do we get to see:
+- where its reasoning goes off track,
+- what kinds of flawed chains it tends to produce,
+- and which parts of its current policy are weakest.
+
+So on-policy distillation is not just about imitating the teacher's best answer. It is about:
+
+> **iteratively correcting the student's own current reasoning policy based on feedback from a stronger teacher.**
+
+#### A simple training architecture
+
+You can think of it as a 5-step loop:
+
+1. **Give the student a prompt**
+2. **Let the student generate its own reasoning trace and answer**
+3. **Have the teacher or evaluator score, rank, critique, or correct that output**
+4. **Convert that feedback into a distillation or policy-learning signal**
+5. **Update the student and repeat on new trajectories**
+
+That is the core contrast with traditional KD:
+- traditional KD is closer to "the teacher writes the solution, the student imitates it,"
+- on-policy distillation is closer to "the student solves first, then gets corrected on its actual mistakes."
+
+#### How does this relate to RL?
+
+On-policy distillation often sits very close to RL, and sometimes directly inside an RL-style post-training pipeline. The teacher may provide not just a label, but:
+- a reward,
+- a preference signal,
+- a critique,
+- a corrected reasoning trace,
+- or a ranking over multiple student attempts.
+
+So in modern reasoning systems, it often looks less like old-fashioned logit matching and more like a hybrid of **distillation + RL + preference optimization**.
+
+#### Why is it especially useful for reasoning models?
+
+Because in reasoning tasks, the important question is not only whether the final answer is right, but also:
+- where the process drifted,
+- which intermediate step was wrong,
+- and what systematic mistakes are specific to the student.
+
+If the student only sees polished teacher demonstrations, it may learn to look fluent without learning how to recover from its own reasoning failures.
+
+On-policy distillation is powerful precisely because:
+
+> it lets the teacher supervise the **student's own error distribution**, not just the teacher's ideal demonstrations.
+
+That is why it is especially attractive for reasoning models, tool-use models, and agent-like systems that expose long trajectories of mistakes.
+
+#### What is the cost?
+
+It is also more expensive and more complex:
+- the student must generate many trajectories first,
+- the teacher or evaluator must score or critique them,
+- the pipeline becomes an online feedback loop rather than a static offline dataset.
+
+So the advantage is **more targeted feedback at the student's actual capability boundary**, but the cost is higher engineering complexity and training expense.
+
 DeepSeek-R1 used this approach: their distilled models (based on Qwen2.5 and Llama3) were trained by having the student generate reasoning chains, then using the teacher's feedback to improve. The results were remarkable:
 
 ![DeepSeek-R1 Distill Performance](../zh/images/day27/deepseek-r1-distill-performance.png)
-*Figure 5: DeepSeek-R1 distilled models show that even small models (7B-70B) can retain significant reasoning ability when distilled from a 671B teacher.*
+*Figure 6: DeepSeek-R1 distilled models show that even small models (7B-70B) can retain significant reasoning ability when distilled from a 671B teacher.*
 
 ### 3.4 DeepSeek-R1 as a Distillation Case Study Across Multiple Student Backbones (January 2025)
 
