@@ -245,7 +245,7 @@ DeepSeek-R1 used this approach: their distilled models (based on Qwen2.5 and Lla
 ![DeepSeek-R1 Distill Performance](../zh/images/day27/deepseek-r1-distill-performance.png)
 *Figure 5: DeepSeek-R1 distilled models show that even small models (7B-70B) can retain significant reasoning ability when distilled from a 671B teacher.*
 
-### 3.4 The DeepSeek-R1 Distill Family (January 2025)
+### 3.4 DeepSeek-R1 as a Distillation Case Study Across Multiple Student Backbones (January 2025)
 
 DeepSeek open-sourced a family of distilled models ranging from 1.5B to 70B parameters, all distilled from the 671B-parameter DeepSeek-R1 teacher. Key results:
 
