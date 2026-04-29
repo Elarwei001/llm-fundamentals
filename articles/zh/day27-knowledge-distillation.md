@@ -273,7 +273,7 @@ DeepSeek 开源了一系列蒸馏模型，从 1.5B 到 70B 参数，全部从 67
 - **很难检测。** 除非蒸馏模型复现了显著特征模式，否则证明蒸馏很困难。
 - **DeepSeek 的案例更复杂。** V3/R1 主要通过创新技术（MoE、MLA、GRPO）从头训练，但有证据表明 GPT-4 的输出可能被混入了训练数据。
 
-这场争论在 2026 年仍在继续。DeepSeek V4（2026年4月发布）使用多阶段在线策略蒸馏，从自己的领域专家模型蒸馏，减少了对外部老师的依赖。
+这场争论在 2026 年仍在继续。根据 DeepSeek V4 官方技术报告 / Hugging Face 模型卡原文，其 post-training 采用的是一个 **two-stage paradigm**：先“**independent cultivation of domain-specific experts (through SFT and RL with GRPO)**”，再“**unified model consolidation via on-policy distillation**”。也就是说，官方原文确实强调了“领域专家 + 统一蒸馏”的两阶段路线，但这里的 **domain-specific experts** 更稳妥的表述应该保持为官方措辞本身，而不要擅自把它解释成某种特定的 MoE 内部 expert 节点或公司组织结构。为了避免误导，本文把它理解为：**先分别强化不同领域的专长能力，再通过 on-policy distillation 整合进统一模型。**
 
 ---
 

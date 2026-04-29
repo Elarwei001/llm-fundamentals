@@ -273,7 +273,7 @@ In early 2025, a major controversy erupted. OpenAI and Anthropic accused several
 - **It's hard to detect.** Unless the distilled model reproduces distinctive patterns, proving distillation is difficult.
 - **The DeepSeek case is complex.** DeepSeek V3/R1 were primarily trained from scratch with innovative techniques (MoE, MLA, GRPO), but some evidence suggested GPT-4 outputs may have been used in data mixing.
 
-This debate continues into 2026. DeepSeek V4 (released April 2026) uses multi-stage on-policy distillation from their own domain-specific expert models, reducing dependence on external teachers.
+This debate continues into 2026. According to the official DeepSeek V4 technical report / Hugging Face model card, its post-training follows a **two-stage paradigm**: first, the "**independent cultivation of domain-specific experts (through SFT and RL with GRPO)**," followed by "**unified model consolidation via on-policy distillation**." So the official wording does support a two-stage story of domain specialists plus unified distillation, but the safest interpretation is to keep the official phrasing rather than over-guess whether these experts are MoE-internal units, separate teacher models, or some broader internal training construct. To avoid misleading the reader, this article treats it conservatively as: **first strengthen domain-specific proficiencies, then consolidate them into a unified model through on-policy distillation.**
 
 ---
 
