@@ -39,6 +39,79 @@
 2. **暗知识（Dark Knowledge）**：老师对**错误答案**的概率分布也包含有用信息。如果老师认为答案 B 有 70% 概率、答案 C 有 20%、答案 D 有 10%，这告诉学生"C 比 D 更接近正确答案"。
 3. **正则化**：用平滑的老师分布训练，本身就是一种正则化，帮助学生比硬标签训练泛化得更好。
 
+### 1.3 从模型压缩到大模型蒸馏，这条技术线是怎么演化来的？
+
+如果直接看到今天的 response-based、logit-based、feature-based 蒸馏，读者很容易觉得这些分类是突然出现的。其实不是。**知识蒸馏本身经历了一条很清楚的技术演化线。**
+
+#### 直觉：先是“压缩模型”，后来才变成“传递知识”
+
+最早的出发点并不是“让学生学老师的推理过程”，而是一个更工程的问题：
+
+> 大模型太大、太慢、太贵，能不能把它的能力压缩到一个更小、更便宜的模型里？
+
+后来研究者逐渐发现，小模型不只是可以学老师的**最终答案**，还可以学：
+- 老师的**软概率分布**，
+- 老师的**中间表示**，
+- 甚至在大模型时代，直接学老师生成出来的**回答与推理轨迹**。
+
+#### 四个关键阶段
+
+| 阶段 | 核心思想 | 代表提出者 / 机构 | 年份 | 代表论文 |
+|---|---|---|---|---|
+| **阶段 1：Model Compression** | 用大模型生成更丰富的监督信号，再训练小模型逼近它 | **Cristian Buciluǎ、Rich Caruana、Alexandru Niculescu-Mizil**，IBM Research / Cornell 等 | 2006 | [Model Compression](https://dl.acm.org/doi/10.1145/1150402.1150464) |
+| **阶段 2：现代 KD 成型** | 用 temperature-softened logits 把“暗知识”传给学生 | **Geoffrey Hinton、Oriol Vinyals、Jeff Dean**，Google | 2015 | [Distilling the Knowledge in a Neural Network](https://arxiv.org/abs/1503.02531) |
+| **阶段 3：学习中间层表示** | 不只学输出，还学 hidden states / intermediate features | **Adriana Romero 等**，Université de Montréal / MILA | 2014 | [FitNets: Hints for Thin Deep Nets](https://arxiv.org/abs/1412.6550) |
+| **阶段 4：LLM 时代的 response distillation** | 在拿不到 logits / hidden states 时，直接用 teacher outputs 做监督 | OpenAI、Google、Anthropic、Meta、DeepSeek 等大模型实践路线 | 2022-2025 | 不是单一奠基论文，更像 instruction distillation / synthetic data / teacher-output supervision 的工程汇流 |
+
+#### 阶段 1：蒸馏的前身，其实是模型压缩
+
+在 **Buciluǎ、Caruana、Niculescu-Mizil** 2006 年的 **Model Compression** 里，核心问题是：
+
+> 能不能让一个小模型去模仿一个大型集成模型或复杂模型的行为？
+
+这时“蒸馏”这个术语还没有成为今天的标准表达，但思想已经非常接近了：**让大模型产生更细腻的监督信号，让小模型去逼近它。**
+
+#### 阶段 2：Hinton 把现代知识蒸馏真正讲清楚了
+
+到了 **Hinton、Vinyals、Dean（Google, 2015）**，知识蒸馏才真正形成今天大家熟悉的标准表述。最核心的贡献有两个：
+
+1. 明确提出用 **soft targets** 来训练 student；
+2. 用 **temperature softmax** 揭示老师分布中的 **dark knowledge**。
+
+这也是为什么今天一说到 KD，大家首先想到的就是 logits、temperature 和 KL divergence。
+
+#### 阶段 3：研究者发现，只学输出还不够
+
+之后大家意识到：
+
+> 学生不一定只需要学老师“最后怎么答”，也可以学老师“中间是怎么表示输入的”。
+
+这条线的代表是 **FitNets（Romero et al., 2014）**。它提出用老师中间层作为 **hint** 去指导学生中间层学习。再往后，attention transfer、representation matching 等方法都属于这条思路的延展。
+
+#### 阶段 4：大模型时代，response-based distillation 变得更主流
+
+到了 LLM 时代，情况发生了很大变化。
+
+很多时候 teacher 是：
+- 超大闭源模型，
+- API 形式提供，
+- 拿不到 logits，
+- 更拿不到 hidden states。
+
+于是最现实的做法就变成：
+
+> 直接让老师生成答案、解释、推理轨迹，再用这些输出去训练学生。
+
+这就是为什么今天在大模型工程实践里，**response-based distillation** 会显得特别常见。它不一定信息密度最高，但通常是**最容易落地**的一种方式。
+
+#### 这条演化线告诉我们什么？
+
+最重要的一点是：
+
+> 今天看到的三种蒸馏方式，并不是平地冒出来的三类标签，而是从“压缩模型”到“传递 soft distribution”，再到“对齐中间表示”，最后到“大模型 teacher 输出监督”逐步长出来的。
+
+所以，如果你把知识蒸馏看成一条演化中的技术路线，而不是一个静态概念，后面的各种变体就会容易理解得多。
+
 ---
 
 ## 2. 机制：蒸馏是怎么工作的？
