@@ -31,6 +31,14 @@ Think of the teacher model as a master craftsman and the student as an apprentic
 ![Knowledge Distillation Architecture](../zh/images/day27/kd-architecture-overview.png)
 *Figure 1: Knowledge distillation architecture showing three types of knowledge transfer from teacher to student.*
 
+To make the picture easier to read, it helps to compare the three styles side by side:
+
+| Distillation type | What the student learns | What access you need to the teacher | Strength | Limitation | Representative lineage |
+|---|---|---|---|---|---|
+| **Response-based** | The teacher's final answers, explanations, or reasoning traces | Final output text or labels | Easiest to deploy, especially with API-based or closed teachers | Lower information density, does not expose the full internal distribution | instruction distillation, synthetic supervision |
+| **Logit-based** | The teacher's probability distribution over outputs | logits / soft targets | Transfers dark knowledge and remains the canonical KD form | Often impossible with closed models because logits are unavailable | Hinton-style distillation |
+| **Feature-based** | Intermediate hidden states, representations, or attention patterns | internal features from intermediate layers | Lets the student imitate the teacher's internal representations | Harder to align when teacher and student architectures differ | FitNets, representation matching |
+
 ### 1.2 Why Not Just Train a Small Model Directly?
 
 You might wonder: if we need a small model, why not just train it on the data? Three reasons:

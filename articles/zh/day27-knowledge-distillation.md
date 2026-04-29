@@ -31,6 +31,14 @@
 ![知识蒸馏架构](./images/day27/kd-architecture-overview.png)
 *图1：知识蒸馏架构，展示从老师到学生的三种知识传递方式。*
 
+为了帮助你快速区分这三种方式，可以先看下面这张对比表：
+
+| 蒸馏方式 | 学的是什么 | 需要拿到老师的什么信息 | 优点 | 局限 | 代表脉络 |
+|---|---|---|---|---|---|
+| **Response-based** | 老师最终生成的答案 / 解释 / 推理轨迹 | 最终输出文本或标签 | 最容易落地，特别适合 API teacher 或闭源大模型 | 信息密度较低，学不到完整内部概率结构 | instruction distillation、synthetic data supervision |
+| **Logit-based** | 老师对所有候选输出的概率分布 | logits / soft targets | 能传递暗知识，是最经典的现代 KD 形式 | 闭源模型往往拿不到 logits | Hinton-style distillation |
+| **Feature-based** | 老师中间层表示、hidden states、attention 等 | 中间层特征 | 可以让学生学习老师内部表示方式 | 对齐复杂，teacher/student 结构差异大时更难做 | FitNets、representation matching |
+
 ### 1.2 为什么不直接训练小模型？
 
 你可能会问：如果需要小模型，为什么不直接在小模型上训练？三个原因：
