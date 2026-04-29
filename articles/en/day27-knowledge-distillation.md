@@ -104,6 +104,17 @@ With **Hinton, Vinyals, and Dean (Google, 2015)**, knowledge distillation took t
 1. use **soft targets** instead of only hard labels,
 2. use **temperature scaling** to reveal **dark knowledge** in the teacher's distribution.
 
+Both ideas are worth unpacking briefly:
+
+- **soft targets**: in ordinary supervised learning, labels are usually hard targets, such as a one-hot vector like `[1, 0, 0, 0]` for "cat." Soft targets go further. They tell the student not only which answer is correct, but also how the teacher ranks the alternatives. For example, the teacher might assign cat 0.62, dog 0.25, fox 0.10, and car 0.03. This lets the student learn similarity structure between classes, not just the final answer.
+- **temperature softmax**: the formula is
+
+$$
+P_i = \frac{\exp(z_i / T)}{\sum_j \exp(z_j / T)}
+$$
+
+where $z_i$ is the logit for class $i$ and $T$ is the temperature. Intuitively, **$T=1$** is the ordinary softmax, **$T>1$** makes the distribution smoother and exposes more of the teacher's view of near-miss answers, while **$T<1$** makes the distribution sharper and more dominated by the top class. Distillation usually cares about the first case, because it makes the teacher's hidden structure easier for the student to observe.
+
 That is why logits, temperature, and KL divergence are still the canonical language of distillation today.
 
 #### Thread 3: researchers realized outputs were not the whole story
