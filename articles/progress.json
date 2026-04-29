@@ -1,6 +1,6 @@
 {
-  "current_day": 26,
-  "last_generated": "2026-04-28",
+  "current_day": 27,
+  "last_generated": "2026-04-29",
   "total_days": 60,
   "status": "active",
   "history": [
@@ -407,6 +407,22 @@
         "zh/images/day26/moe-vs-dense-comparison.png",
         "zh/images/day26/moe-model-evolution.png",
         "zh/images/day26/load-balancing-problem.png"
+      ]
+    },
+    {
+      "day": 27,
+      "date": "2026-04-29",
+      "topic": "Knowledge Distillation",
+      "en_path": "en/day27-knowledge-distillation.md",
+      "zh_path": "zh/day27-knowledge-distillation.md",
+      "qa_score": 0,
+      "qa_rounds": 0,
+      "images": [
+        "zh/images/day27/kd-architecture-overview.png",
+        "zh/images/day27/temperature-dark-knowledge.png",
+        "zh/images/day27/kd-methods-comparison.png",
+        "zh/images/day27/deepseek-r1-distill-performance.png",
+        "zh/images/day27/kd-loss-function.png"
       ]
     }
   ]

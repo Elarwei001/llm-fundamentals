@@ -90,7 +90,7 @@
 | Day | Topic | Core Question | Trend Source |
 |-----|-------|---------------|--------------|
 | D26 | **Mixture of Experts (MoE)** | Sparse activation, more model with less compute | [EN](articles/en/day26-mixture-of-experts.md) / [中文](articles/zh/day26-mixture-of-experts.md) |
-| D27 | Knowledge Distillation | Large to small model, how knowledge transfers | Model compression |
+| D27 | Knowledge Distillation | Large to small model, how knowledge transfers | [EN](articles/en/day27-knowledge-distillation.md) / [中文](articles/zh/day27-knowledge-distillation.md) |
 | D28 | **FlashAttention & Sparse Attention** | Memory bandwidth bottleneck, making Transformer faster | 🔥 sparse attention +30% |
 | D29 | **Attention-Free Architectures** | Mamba, RWKV, State Space Models | 🔥🔥🔥 +350% rising |
 | D30 | Multimodal Basics | CLIP, Vision Transformer, GPT-4V | Multimodal intro |

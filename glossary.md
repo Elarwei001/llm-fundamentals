@@ -48,6 +48,8 @@
 | Dense Embedding | 稠密嵌入 | 低维连续向量表示，每个维度都有值，与稀疏的 one-hot 相对 |
 | Distributional Hypothesis | 分布式假设 | 语言学假说：出现在相似上下文中的词具有相似含义 |
 | Distillation | 知识蒸馏 | 用大模型训练小模型 |
+| Dark Knowledge | 暗知识 | 老师模型对错误答案的概率分布中隐藏的有用信息 |
+| On-Policy Distillation | 在线策略蒸馏 | 学生自己生成输出，老师对学生输出提供反馈的蒸馏方法 |
 | Dropout | Dropout | 随机丢弃神经元的正则化技术 |
 
 ## E
