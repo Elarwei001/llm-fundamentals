@@ -80,14 +80,16 @@ $$
 
 #### 四个关键阶段
 
-| 阶段 | 核心思想 | 代表提出者 / 机构 | 年份 | 代表论文 |
-|---|---|---|---|---|
-| **阶段 1：Model Compression** | 用大模型生成更丰富的监督信号，再训练小模型逼近它 | **Cristian Buciluǎ、Rich Caruana、Alexandru Niculescu-Mizil**，IBM Research / Cornell 等 | 2006 | [Model Compression](https://dl.acm.org/doi/10.1145/1150402.1150464) |
-| **阶段 2：现代 KD 成型** | 用 temperature-softened logits 把“暗知识”传给学生 | **Geoffrey Hinton、Oriol Vinyals、Jeff Dean**，Google | 2015 | [Distilling the Knowledge in a Neural Network](https://arxiv.org/abs/1503.02531) |
-| **阶段 3：学习中间层表示** | 不只学输出，还学 hidden states / intermediate features | **Adriana Romero 等**，Université de Montréal / MILA | 2014 | [FitNets: Hints for Thin Deep Nets](https://arxiv.org/abs/1412.6550) |
-| **阶段 4：LLM 时代的 response distillation** | 在拿不到 logits / hidden states 时，直接用 teacher outputs 做监督 | OpenAI、Google、Anthropic、Meta、DeepSeek 等大模型实践路线 | 2022-2025 | 不是单一奠基论文，更像 instruction distillation / synthetic data / teacher-output supervision 的工程汇流 |
+这里的“阶段”更准确说是**四条关键演化线索**，不是严格按年份完全线性展开的流水线。尤其是 **FitNets（2014）** 虽然早于 **Hinton 的 2015 distillation 论文**，但它代表的是“学习中间层表示”这条路线的成熟化，而 Hinton 那篇则奠定了后来最经典、最标准的 **logit-based KD** 表述。
 
-#### 阶段 1：蒸馏的前身，其实是模型压缩
+| 线索 | 核心思想 | 代表提出者 / 机构 | 年份 | 代表论文 |
+|---|---|---|---|---|
+| **线索 1：Model Compression** | 用大模型生成更丰富的监督信号，再训练小模型逼近它 | **Cristian Buciluǎ、Rich Caruana、Alexandru Niculescu-Mizil**，IBM Research / Cornell 等 | 2006 | [Model Compression](https://dl.acm.org/doi/10.1145/1150402.1150464) |
+| **线索 2：现代 logit-based KD 成型** | 用 temperature-softened logits 把“暗知识”传给学生 | **Geoffrey Hinton、Oriol Vinyals、Jeff Dean**，Google | 2015 | [Distilling the Knowledge in a Neural Network](https://arxiv.org/abs/1503.02531) |
+| **线索 3：学习中间层表示** | 不只学输出，还学 hidden states / intermediate features | **Adriana Romero 等**，Université de Montréal / MILA | 2014 | [FitNets: Hints for Thin Deep Nets](https://arxiv.org/abs/1412.6550) |
+| **线索 4：LLM 时代的 response distillation** | 在拿不到 logits / hidden states 时，直接用 teacher outputs 做监督 | OpenAI、Google、Anthropic、Meta、DeepSeek 等大模型实践路线 | 2022-2025 | 不是单一奠基论文，更像 instruction distillation / synthetic data / teacher-output supervision 的工程汇流 |
+
+#### 线索 1：蒸馏的前身，其实是模型压缩
 
 在 **Buciluǎ、Caruana、Niculescu-Mizil** 2006 年的 **Model Compression** 里，核心问题是：
 
@@ -95,7 +97,7 @@ $$
 
 这时“蒸馏”这个术语还没有成为今天的标准表达，但思想已经非常接近了：**让大模型产生更细腻的监督信号，让小模型去逼近它。**
 
-#### 阶段 2：Hinton 把现代知识蒸馏真正讲清楚了
+#### 线索 2：Hinton 把现代知识蒸馏真正讲清楚了
 
 到了 **Hinton、Vinyals、Dean（Google, 2015）**，知识蒸馏才真正形成今天大家熟悉的标准表述。最核心的贡献有两个：
 
@@ -104,7 +106,7 @@ $$
 
 这也是为什么今天一说到 KD，大家首先想到的就是 logits、temperature 和 KL divergence。
 
-#### 阶段 3：研究者发现，只学输出还不够
+#### 线索 3：研究者发现，只学输出还不够
 
 之后大家意识到：
 
@@ -112,7 +114,7 @@ $$
 
 这条线的代表是 **FitNets（Romero et al., 2014）**。它提出用老师中间层作为 **hint** 去指导学生中间层学习。再往后，attention transfer、representation matching 等方法都属于这条思路的延展。
 
-#### 阶段 4：大模型时代，response-based distillation 变得更主流
+#### 线索 4：大模型时代，response-based distillation 变得更主流
 
 到了 LLM 时代，情况发生了很大变化。
 
