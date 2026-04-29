@@ -219,10 +219,12 @@ The simplest form of distillation: use the teacher model (via API) to generate r
 
 **Notable examples:**
 - **Alpaca** (Stanford, March 2023): Fine-tuned Llama 7B on 52K GPT-3.5-generated instructions. Cost ~$600 to train, achieved near-GPT-3.5 quality.
-- **Vicuna** (LMSYS, March 2023): Trained on 70K ChatGPT conversations from ShareGPT.
+- **Vicuna** (LMSYS, March 2023): Trained on 70K ChatGPT conversations from **ShareGPT**. ShareGPT was a community source where users voluntarily shared ChatGPT conversation transcripts, which LMSYS used as a practical dataset for instruction-tuning and chat distillation.
 - **OpenHermes**: Distilled from GPT-4 outputs across diverse tasks.
 
-The limitation? The student only learns the teacher's *final answers*, not its reasoning process. It's like copying the master's paintings without watching them paint.
+The limitation needs to be stated more carefully. In **early or weaker forms of response-based distillation**, the student often sees only the teacher's final answer, without access to logits, hidden states, or a full reasoning trace. In that sense, the information density is usually lower than in logit-based or feature-based distillation.
+
+But in the **stronger LLM-era form of response-based distillation**, if the teacher provides not only answers but also explanations, chain-of-thought-style outputs, or other process traces, the student can in fact learn substantial reasoning behavior. DeepSeek-R1-style distillation is an important example. So the real limitation is not that response-based distillation can never teach reasoning. It is that **the quality of reasoning transfer depends on how much high-quality process information the teacher exposes in its outputs.**
 
 ### 3.2 Logit-Based Distillation: Capturing Reasoning
 

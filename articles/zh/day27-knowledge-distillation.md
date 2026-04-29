@@ -219,10 +219,12 @@ $$
 
 **著名案例：**
 - **Alpaca**（斯坦福，2023年3月）：用 GPT-3.5 生成的 5.2 万条指令微调 Llama 7B。训练成本约 600 美元，达到接近 GPT-3.5 的质量。
-- **Vicuna**（LMSYS，2023年3月）：在 7 万条 ShareGPT 的 ChatGPT 对话上训练。
+- **Vicuna**（LMSYS，2023年3月）：在 7 万条 **ShareGPT** 对话上训练。这里的 **ShareGPT** 是一个用户自发分享 ChatGPT 对话记录的社区 / 数据来源，LMSYS 从中整理出高质量多轮对话，作为 Vicuna 的训练语料。
 - **OpenHermes**：从 GPT-4 的多任务输出中蒸馏。
 
-局限？学生只学到了老师的**最终答案**，而不是推理过程。就像临摹大师的画作，却没有看过大师作画。
+它的局限需要说得更准确一些。**早期或较弱形式的 response-based distillation**，学生往往只能看到老师的最终回答，看不到内部 logits、hidden states，也不一定能看到完整推理过程。所以它传递的信息密度通常低于 logit-based 或 feature-based 蒸馏。
+
+但在 **LLM 时代更强的 response-based distillation** 里，如果老师不仅给出最终答案，还给出**解释、分步推理、思维链式输出或带反馈的推理轨迹**，那学生其实也能学到相当强的推理能力。DeepSeek-R1 系列就是很重要的例子。换句话说，response-based distillation 的关键限制不是“永远学不到推理”，而是：**它能学到多少推理过程，取决于老师愿意暴露多少高质量过程性输出。**
 
 ### 3.2 基于 Logit 的蒸馏：捕捉推理
 
