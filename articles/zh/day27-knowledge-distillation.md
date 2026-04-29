@@ -106,11 +106,11 @@ $$
 
 这里两个概念值得展开一下：
 
-- **soft targets**：传统监督学习里的标签通常是 hard targets，比如“猫”就是 one-hot 的 `[1, 0, 0, 0]`。而 soft targets 则不是只告诉 student “正确答案是谁”，还告诉它 teacher 认为其他候选答案分别有多接近正确答案。比如 teacher 可能认为猫是 0.62、狗是 0.25、狐狸是 0.10、车是 0.03。这样 student 学到的不只是最后答案，还学到类别之间的相似性结构。
+- **soft targets**：你可以把它理解成 **经过 softmax（通常还是 temperature softmax）之后得到的软概率标签**。也就是说，soft target 不是另外一种完全独立的东西，它本质上就是 teacher 的 logits 经过 softmax 后形成的概率分布。只是这里强调的重点不是“softmax 这个操作”，而是“student 最终拿来学习的目标是一个软分布，而不是 one-hot 硬标签”。比如 teacher 可能认为猫是 0.62、狗是 0.25、狐狸是 0.10、车是 0.03。这样 student 学到的不只是最后答案，还学到类别之间的相似性结构。
 - **temperature softmax**：它的公式是
 
 $$
-P_i = \frac{\exp(z_i / T)}{\sum_j \exp(z_j / T)}
+P_i = \frac{\exp\left(z_i / T\right)}{\sum_{j} \exp\left(z_j / T\right)}
 $$
 
 其中 $z_i$ 是第 $i$ 个类别的 logit，$T$ 是温度。直觉上，**$T=1$** 是普通 softmax，**$T>1$** 会让分布更平滑，从而把 teacher 对“次优答案”的看法放大出来；而 **$T<1$** 则会让分布更尖锐，更接近只强调最高概率类别。蒸馏里通常关心的是前者，因为它能把隐藏在老师输出里的“暗知识”暴露得更清楚。
