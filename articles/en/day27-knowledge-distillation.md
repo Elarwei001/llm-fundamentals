@@ -175,22 +175,32 @@ At temperature T=1, the distribution is dominated by "Cat" — you'd think the m
 The student is trained with a combination of two losses:
 
 $$
-\begin{aligned}
-p_t &= \sigma\left(z_t / T\right) \\
-p_s &= \sigma\left(z_s / T\right) \\
-L_{\text{total}} &= \alpha \cdot L_{\text{soft}} + (1 - \alpha) \cdot L_{\text{hard}} \\
-L_{\text{soft}} &= T^2 \cdot \operatorname{KL}\left(p_t \parallel p_s\right) \\
-L_{\text{hard}} &= CE\left(\sigma\left(z_s\right), y_{\text{true}}\right)
-\end{aligned}
+p_t = \sigma(z_t / T)
+$$
+
+$$
+p_s = \sigma(z_s / T)
+$$
+
+$$
+L_{total} = \alpha L_{soft} + (1-\alpha)L_{hard}
+$$
+
+$$
+L_{soft} = T^2 KL(p_t \parallel p_s)
+$$
+
+$$
+L_{hard} = CE(\sigma(z_s), y_{true})
 $$
 
 Where:
-- $z_t$ = teacher logits, $z_s$ = student logits
-- $T$ = temperature (typically 2-20)
-- $\sigma$ = softmax function
-- $\alpha$ = weighting factor between soft and hard losses
-- KL = Kullback-Leibler divergence
-- CE = Cross-entropy loss
+- `z_t` = teacher logits, `z_s` = student logits
+- `T` = temperature (typically 2-20)
+- `σ` = softmax function
+- `α` = weighting factor between soft and hard losses
+- `KL` = Kullback-Leibler divergence
+- `CE` = Cross-entropy loss
 
 #### Intuition: Why Multiply by T²?
 
