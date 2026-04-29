@@ -176,8 +176,10 @@ The student is trained with a combination of two losses:
 
 $$
 \begin{aligned}
+p_t &= \sigma\left(z_t / T\right) \\
+p_s &= \sigma\left(z_s / T\right) \\
 L_{\text{total}} &= \alpha \cdot L_{\text{soft}} + (1 - \alpha) \cdot L_{\text{hard}} \\
-L_{\text{soft}} &= T^2 \cdot KL\left(\sigma\left(z_t / T\right) \;\middle\|\middle\|\; \sigma\left(z_s / T\right)\right) \\
+L_{\text{soft}} &= T^2 \cdot \operatorname{KL}\left(p_t \parallel p_s\right) \\
 L_{\text{hard}} &= CE\left(\sigma\left(z_s\right), y_{\text{true}}\right)
 \end{aligned}
 $$
