@@ -176,9 +176,9 @@ The student is trained with a combination of two losses:
 
 $$
 \begin{aligned}
-L_{total} &= \alpha \cdot L_{soft} + (1 - \alpha) \cdot L_{hard} \\
-L_{soft} &= T^2 \cdot KL\bigl(\sigma(z_t / T) \;\mid\mid\; \sigma(z_s / T)\bigr) \\
-L_{hard} &= CE\bigl(\sigma(z_s), y_{true}\bigr)
+L_{\text{total}} &= \alpha \cdot L_{\text{soft}} + (1 - \alpha) \cdot L_{\text{hard}} \\
+L_{\text{soft}} &= T^2 \cdot KL\left(\sigma\left(z_t / T\right) \;\middle\|\middle\|\; \sigma\left(z_s / T\right)\right) \\
+L_{\text{hard}} &= CE\left(\sigma\left(z_s\right), y_{\text{true}}\right)
 \end{aligned}
 $$
 
