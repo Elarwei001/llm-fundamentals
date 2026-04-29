@@ -403,13 +403,21 @@ print(f"Distillation loss: {loss.item():.4f}")
 
 The standard cross-entropy loss with hard labels provides $-\log(p_{true})$ — information only about the correct class. But the soft target distribution $q$ from the teacher provides information about *all* classes.
 
-Consider the gradient of the KL divergence with respect to a student logit $z_s^{(k)}$:
+To keep the notation readable, define:
 
 $$
-\begin{aligned}
-\frac{\partial}{\partial z_s^{(k)}} KL\bigl(\sigma(z_t / T) \;\mid\mid\; \sigma(z_s / T)\bigr) 
-&= \frac{1}{T}\bigl(\sigma(z_s / T)^{(k)} - \sigma(z_t / T)^{(k)}\bigr)
-\end{aligned}
+q_t = \sigma(z_t / T)
+$$
+
+$$
+q_s = \sigma(z_s / T)
+$$
+
+Then the gradient of the KL divergence with respect to a student logit $z_s^{(k)}$ can be written as:
+
+$$
+\frac{\partial}{\partial z_s^{(k)}} KL(q_t \parallel q_s)
+= \frac{1}{T} \left(q_s^{(k)} - q_t^{(k)}\right)
 $$
 
 This means **every class contributes to the gradient proportionally to the difference between student and teacher probabilities**. For hard labels, only the true class contributes. For soft targets, even unlikely classes (where the teacher assigns 1-5% probability) push the student in informative directions.
@@ -417,9 +425,7 @@ This means **every class contributes to the gradient proportionally to the diffe
 In the high-temperature limit ($T \to \infty$), the distillation loss becomes equivalent to minimizing the mean squared error between teacher and student logits directly:
 
 $$
-\begin{aligned}
 L_{distill} \approx \frac{1}{2} \sum_k (z_t^{(k)} - z_s^{(k)})^2
-\end{aligned}
 $$
 
 This is why temperature is the critical hyperparameter: low T focuses on the most likely classes, high T spreads attention across all classes.

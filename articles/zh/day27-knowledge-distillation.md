@@ -403,13 +403,21 @@ print(f"蒸馏损失: {loss.item():.4f}")
 
 标准交叉熵损失用硬标签只提供 $-\log(p_{true})$——只有正确类的信息。但老师的软目标分布 $q$ 提供了**所有**类的信息。
 
-考虑 KL 散度对某个学生 logit $z_s^{(k)}$ 的梯度：
+为了避免公式太拥挤，我们先记：
 
 $$
-\begin{aligned}
-\frac{\partial}{\partial z_s^{(k)}} KL\bigl(\sigma(z_t / T) \;\mid\mid\; \sigma(z_s / T)\bigr) 
-&= \frac{1}{T}\bigl(\sigma(z_s / T)^{(k)} - \sigma(z_t / T)^{(k)}\bigr)
-\end{aligned}
+q_t = \sigma(z_t / T)
+$$
+
+$$
+q_s = \sigma(z_s / T)
+$$
+
+那么，KL 散度对某个学生 logit $z_s^{(k)}$ 的梯度可以写成：
+
+$$
+\frac{\partial}{\partial z_s^{(k)}} KL(q_t \parallel q_s)
+= \frac{1}{T} \left(q_s^{(k)} - q_t^{(k)}\right)
 $$
 
 这意味着**每个类对梯度的贡献与学生和老师概率之差成正比**。硬标签只有正确类贡献。软目标下，即使不太可能的类（老师分配了 1-5% 概率）也会把学生推向有信息量的方向。
@@ -417,9 +425,7 @@ $$
 在高温极限（$T \to \infty$）下，蒸馏损失等价于最小化老师和学生 logits 之间的均方误差：
 
 $$
-\begin{aligned}
 L_{distill} \approx \frac{1}{2} \sum_k (z_t^{(k)} - z_s^{(k)})^2
-\end{aligned}
 $$
 
 这就是为什么温度是关键超参数：低 T 聚焦于最可能的类，高 T 将注意力分散到所有类。
