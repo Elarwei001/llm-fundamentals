@@ -209,19 +209,6 @@ When we divide logits by temperature T, the gradients become $1/T$ times smaller
 ![KD Loss Function](../zh/images/day27/kd-loss-function.png)
 *Figure 3: The knowledge distillation loss function combines soft distillation loss with hard label loss.*
 
-### 2.3 Three Levels of Distillation
-
-Not all distillation is the same. Depending on how much access you have to the teacher model, different approaches are available:
-
-| Method | Access Required | What Is Transferred | Example |
-|--------|----------------|--------------------| -------|
-| Response-based | Black-box (API only) | Teacher's final outputs/predictions | Alpaca, Vicuna |
-| Logit-based | White-box (logits) | Softened probability distributions | DistilBERT |
-| Feature-based | White-box (internals) | Hidden states, attention maps | TinyBERT |
-
-![KD Methods Comparison](../zh/images/day27/kd-methods-comparison.png)
-*Figure 4: Comparison of four distillation methods, their access requirements, and real-world examples.*
-
 ---
 
 ## 3. Distillation in the LLM Era
