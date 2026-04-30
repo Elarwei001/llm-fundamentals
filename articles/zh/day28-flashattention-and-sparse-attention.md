@@ -174,21 +174,138 @@ def flash_attention_forward(Q, K, V, block_size=64):
 | FlashAttention-3 | 2024.08 | H100 (Hopper) | 异步执行、warp 专门化 | 比 FA-2 快 1.5-2x |
 | FlashAttention-4 | 2026.03 | B200 (Blackwell) | 非对称扩展、CuTe-DSL | 比 cuDNN 快 1.3x |
 
-**FlashAttention-2**（Dao，2023）通过沿序列长度维度并行化并将每个线程块分配给一个注意力头来减少非矩阵乘法 FLOPs。关键洞察：矩阵乘法应该使用 GPU 的张量核心，其他一切操作都应该最小化。
+这一段其实很关键。上表里的“核心创新”如果只写成几个名词，读者很容易记不住，也不明白它们到底解决了什么问题。下面把每一代的关键点拆开讲。
 
-**FlashAttention-3**（Dao 等人，2024）专为 NVIDIA Hopper H100 GPU 设计，利用了三个硬件特性：
-- **异步执行**：重叠 softmax 计算和数据加载
-- **Warp 专门化**：将一些 warp 专门用于数据加载，另一些用于计算
-- **张量核心优化**：使用寄存器内转置避免共享内存 bank 冲突
+### 3.1 FlashAttention-1（Dao et al., Tri Dao / Princeton & Stanford 相关研究线，2022）
 
-**FlashAttention-4**（Zadouri 等人，2026 年 3 月）面对一个新挑战：NVIDIA Blackwell B200 GPU 上的**非对称硬件扩展**。在 Blackwell 上，张量核心吞吐量翻倍了（BF16 从 1 到 2.25 PFLOPs），但共享内存带宽和指数函数单元等其他组件保持不变。这意味着 FA-3 的旧技巧不再适用——瓶颈从张量核心转移到了非矩阵乘法操作。
+FlashAttention-1 的两大关键创新是：
 
-FA-4 的三个关键技术：
-1. **软件模拟指数函数**：用多项式近似替代硬件 `exp()`，因为 SFU（特殊函数单元）数量没有随张量核心扩展
-2. **条件 softmax 重缩放**：减少 online softmax 中的重缩放操作次数
-3. **张量内存 + 2-CTA MMA 模式**：利用 Blackwell 新的张量内存特性减少共享内存流量
+#### 创新 1：IO-aware tiling（IO 感知分块）
+
+**原理**：不是一次构造完整的 `S = QK^T` 和 `P = softmax(S)`，而是把 Q、K、V 切成适合 SRAM 容量的小块，按块读入、按块计算。
+
+**它解决什么问题？**
+- 避免在 HBM 中实例化完整的 `N × N` 注意力矩阵
+- 大幅减少中间矩阵的回写与重读
+- 让更多计算在更快的 SRAM 中闭环完成
+
+#### 创新 2：online softmax
+
+**原理**：softmax 本来需要看完整行才能归一化，但 FlashAttention 用 rolling max 和 rolling sum 的方式，一边处理 tile，一边维护数值稳定的累计统计。
+
+**它解决什么问题？**
+- 让“分块算 attention”在数学上仍然成立
+- 不必先把完整分数矩阵存下来再做 softmax
+- 既保留精确结果，又避免巨大的中间存储
+
+所以 FlashAttention-1 的真正突破可以总结成一句：
+
+> **它没有改 attention 的定义，而是第一次把“精确 attention 的高 IO 成本”系统性地打了下来。**
+
+### 3.2 FlashAttention-2（Dao，2023）
+
+FA-2 的重点不是重新发明算法，而是进一步榨干 GPU 的并行度。它的两类关键创新可以理解成：
+
+#### 创新 3：更好的工作划分（better work partitioning）
+
+**原理**：沿序列长度维度更细地并行化，把工作更均匀地摊给线程块，而不是让一些线程块闲着、另一些过载。
+
+**它解决什么问题？**
+- 提高 GPU occupancy
+- 让更多 SM 同时有活干
+- 减少因为分工不均导致的吞吐浪费
+
+#### 创新 4：减少非矩阵乘法操作
+
+**原理**：GPU 最擅长的是张量核心上的矩阵乘法，而 softmax、缩放、mask、归一化、索引搬运这些“非 matmul 操作”会拖后腿。FA-2 的思路是：
+
+> **尽量把时间花在 tensor core 最擅长的 matmul 上，把其他操作压到最低。**
+
+**它解决什么问题？**
+- 降低非 matmul FLOPs 比例
+- 让 GPU 更多时间停留在高吞吐计算路径上
+- 把理论优化真正变成端到端速度提升
+
+### 3.3 FlashAttention-3（Dao 等人，2024）
+
+**FlashAttention-3** 专为 NVIDIA Hopper H100 GPU 设计，重点是：**开始更强地贴着硬件特性写算法。** 这里有三个非常值得展开的创新点。
+
+#### 创新 5：异步执行（asynchronous execution）
+
+**原理**：把“加载下一批数据”和“计算当前这批数据”重叠起来，让数据搬运和计算并行进行。
+
+**它解决什么问题？**
+- 如果每次都“先等数据到，再开始算”，GPU 会空转
+- 异步执行可以隐藏一部分内存访问延迟
+- 让计算单元更少等数据，更多时间真正工作
+
+#### 创新 6：warp 专门化（warp specialization）
+
+**原理**：不是让所有 warp 都做同样的杂活，而是让：
+- 一部分 warp 专门负责数据加载
+- 另一部分 warp 专门负责计算
+
+**它解决什么问题？**
+- 减少不同任务在同一批 warp 里互相打架
+- 提升流水线化程度
+- 更好利用 Hopper 的并行执行特性
+
+#### 创新 7：张量核心路径优化 / 寄存器内转置
+
+**原理**：通过更适合 Hopper 的数据布局和寄存器内转置，减少共享内存 bank conflict，并让数据喂给 tensor core 的路径更顺。
+
+**它解决什么问题？**
+- 降低 shared memory 冲突
+- 提升 tensor core 饱和度
+- 让算力不被数据排布细节卡住
+
+所以 FA-3 的本质是：
+
+> **在算法思想不变的前提下，进一步把 FlashAttention 写成“更像 Hopper 原生想要的样子”。**
+
+### 3.4 FlashAttention-4（Zadouri 等人，2026 年 3 月）
+
+**FlashAttention-4** 面对一个新挑战：NVIDIA Blackwell B200 GPU 上的**非对称硬件扩展**。在 Blackwell 上，张量核心吞吐量翻倍了（BF16 从 1 到 2.25 PFLOPs），但共享内存带宽和指数函数单元等其他组件保持不变。这意味着 FA-3 的旧技巧不再适用——瓶颈从张量核心转移到了非矩阵乘法操作。
+
+这时最关键的三个创新点是：
+
+#### 创新 8：软件模拟指数函数
+
+**提出者 / 背景**：Zadouri 等人面向 Blackwell 的优化思路。
+
+**原理**：用多项式近似替代部分硬件 `exp()` 调用，因为 SFU（特殊函数单元）数量没有和 tensor core 一起线性扩张。
+
+**它解决什么问题？**
+- 避免 SFU 成为新的瓶颈
+- 让指数计算不再卡住整条 softmax 路径
+- 把 Blackwell 新增的 matmul 吞吐真正释放出来
+
+#### 创新 9：条件 softmax 重缩放
+
+**原理**：online softmax 里本来会有很多重缩放操作，FA-4 通过更精细的条件判断，减少不必要的 rescaling 次数。
+
+**它解决什么问题？**
+- 降低 softmax 路径中的额外标量操作
+- 减少“不是 matmul、但又必须做”的杂项开销
+- 让更多时间留给主算子
+
+#### 创新 10：张量内存 + 2-CTA MMA 模式
+
+**原理**：利用 Blackwell 新的 tensor memory 特性，以及 2-CTA（cooperative thread array）级别的矩阵乘法组织方式，减少 shared memory traffic。
+
+**它解决什么问题？**
+- 缓解 shared memory 带宽压力
+- 更好匹配 Blackwell 的新数据通路
+- 避免“算力翻倍了，但喂数还跟不上”
 
 FA-4 在 B200 上达到最高 1613 TFLOPs/s（71% 利用率）——比 Triton 快 2.7x，比 cuDNN 9.13 快 1.3x。
+
+如果把四代放在一起看，一个很好的总理解是：
+
+- **FA-1**：先解决“精确 attention 为什么这么费 IO”
+- **FA-2**：再解决“GPU 并行划分不够高效”
+- **FA-3**：开始强贴 Hopper 的硬件执行模型
+- **FA-4**：继续针对 Blackwell 的新瓶颈重新做系统协同设计
 
 ---
 
