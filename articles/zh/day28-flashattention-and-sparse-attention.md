@@ -221,7 +221,7 @@ def flash_attention_forward(Q, K, V, block_size=64):
 
 所以这里先补一个够用的 NVIDIA GPU 硬件速写。
 
-![图 3：NVIDIA GPU 硬件速写，展示 SM、warp、tensor core、shared memory 与 HBM 的关系](../zh/images/day28/nvidia-gpu-hardware-primer-v1.png)
+![图 3：NVIDIA GPU 硬件速写，展示 SM、warp、tensor core、shared memory 与 HBM 的关系](../zh/images/day28/nvidia-gpu-hardware-primer-v2.png)
 *图 3：可以把 NVIDIA GPU 理解成由多个 SM（计算车间）组成，每个 SM 内部有 tensor cores、CUDA cores、registers、shared memory、warp schedulers 等组件；数据从 HBM 进入 SM。FlashAttention 这类优化，核心就是尽量把中间结果留在 registers / shared memory 中，而不是把大型中间矩阵反复写回 HBM。*
 
 ### 3.1 GPU 是怎么组织的？
