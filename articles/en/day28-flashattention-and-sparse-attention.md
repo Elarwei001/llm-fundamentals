@@ -66,7 +66,7 @@ This requires knowing the denominator for all j — meaning you can't compute it
 
 ### 2.2 Tiling: Never Materialize the Full Matrix
 
-![Figure 2: FlashAttention loads tiles of Q, K, V from HBM into SRAM, computes partial attention in SRAM, and writes only the output back](../zh/images/day28/flashattention-tiling-memory.png)
+![Figure 2: FlashAttention loads tiles of Q, K, V from HBM into SRAM, computes partial attention in SRAM, and writes only the output back](../zh/images/day28/flashattention-tiling-memory-v2.png)
 *Figure 2: FlashAttention's tiling strategy. Instead of materializing the full N×N attention matrix in HBM, tiles of Q, K, V are loaded into fast SRAM, partial attention is computed, and results are accumulated using online softmax.*
 
 The algorithm works as follows:
