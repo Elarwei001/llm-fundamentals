@@ -220,7 +220,7 @@ def flash_attention_forward(Q, K, V, block_size=64):
 | FlashAttention-3 | 2024.08 | H100 (Hopper) | 异步执行、warp 专门化 | 比 FA-2 快 1.5-2x |
 | FlashAttention-4 | 2026.03 | B200 (Blackwell) | 非对称扩展、CuTe-DSL | 比 cuDNN 快 1.3x |
 
-这一段其实很关键。上表里的“核心创新”如果只写成几个名词，读者很容易记不住，也不明白它们到底解决了什么问题。下面把每一代的关键点拆开讲。
+下面按版本把每一代 FlashAttention 的关键创新拆开讲。
 
 ### 3.1 FlashAttention-1（Dao et al., Tri Dao / Princeton & Stanford 相关研究线，2022）
 
