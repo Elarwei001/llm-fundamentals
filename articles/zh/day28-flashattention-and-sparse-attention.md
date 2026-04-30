@@ -111,7 +111,42 @@ $$
 
 所以它真正节省的，是**中间结果的 materialization、回写和重读**，而不仅仅是“把读取改成分块读取”。
 
-### 2.3 代码：最小 FlashAttention 前向传播
+### 2.3 代码对比：标准注意力为什么会回写 HBM，FlashAttention 又省在什么地方？
+
+先看一个“更接近标准注意力思路”的伪代码。它的问题不是数学错了，而是**会显式 materialize 中间矩阵**：
+
+```python
+import torch
+
+def standard_attention_forward(Q, K, V):
+    """
+    标准注意力的直观写法。
+    重点不是工程最优，而是帮助你看清：
+    哪些中间结果会被显式保存下来。
+    """
+    d = Q.shape[-1]
+
+    S = torch.matmul(Q, K.transpose(-2, -1)) / (d ** 0.5)
+    # ↑ 这里显式得到完整的分数矩阵 S = QK^T
+    # 在真实 GPU 执行里，这类大中间结果通常需要落到 HBM
+
+    P = torch.softmax(S, dim=-1)
+    # ↑ 这里又显式得到完整的概率矩阵 P = softmax(S)
+    # 这意味着 S 和 P 都可能成为需要回写 / 重读的大块中间状态
+
+    O = torch.matmul(P, V)
+    # ↑ 最后再用 P 去乘 V 得到输出
+
+    return O
+```
+
+这段代码最该盯住的不是公式本身，而是两次“完整中间矩阵显式存在”：
+- `S = QK^T`
+- `P = softmax(S)`
+
+也正因为这两个矩阵是 `N × N`，所以当序列很长时，**真正炸掉带宽和显存的，不只是输入 Q/K/V，而是这些中间结果的 materialization、回写和重读。**
+
+再看 FlashAttention 的简化版：
 
 ```python
 import torch
@@ -138,6 +173,8 @@ def flash_attention_forward(Q, K, V, block_size=64):
             
             # 计算该块的局部注意力分数
             S_block = torch.matmul(Q_block, K_block.transpose(-2, -1)) / (d ** 0.5)
+            # ↑ 这里只有一个局部 S_block，而且它是“当前块的临时结果”
+            # 关键点：不会把所有块拼成完整的 N×N 矩阵再写回 HBM
             
             # Online softmax：更新滚动最大值并重缩放
             m_new = torch.max(m[:, :, i_start:i_end, :], 
@@ -146,10 +183,14 @@ def flash_attention_forward(Q, K, V, block_size=64):
             # 重缩放之前的累积值
             exp_diff = torch.exp(m[:, :, i_start:i_end, :] - m_new)
             exp_S = torch.exp(S_block - m_new)
+            # ↑ 这里也不会显式保存完整 P = softmax(S)
+            # 只对当前块算 exp_S，并立刻消费掉
             
             # 更新滚动求和与输出
             l[:, :, i_start:i_end, :] = l[:, :, i_start:i_end, :] * exp_diff + exp_S.sum(dim=-1, keepdim=True)
             O[:, :, i_start:i_end, :] = O[:, :, i_start:i_end, :] * exp_diff + torch.matmul(exp_S, V_block)
+            # ↑ 这里是最核心的“不再回写”优化点：
+            # 不是把完整 S / P 存起来，而是立刻把局部结果并入 rolling statistics 和输出 O
             
             m[:, :, i_start:i_end, :] = m_new
     
@@ -158,7 +199,12 @@ def flash_attention_forward(Q, K, V, block_size=64):
     return O
 ```
 
-这个简化版本展示了核心思想。真实的 FlashAttention 实现还添加了 GPU 特定优化，如 warp 级并行和异步内存操作。
+如果把两段代码放在一起看，最关键的对比就是：
+
+- **标准注意力**：先得到完整 `S`，再得到完整 `P`，所以中间状态很大；
+- **FlashAttention**：只保留局部 `S_block` 和少量滚动统计，算完当前块就立刻并入输出，不再把完整 `S`、`P` 回写出去。
+
+这就是“IO 省在哪里”的代码级直观答案。
 
 ---
 
