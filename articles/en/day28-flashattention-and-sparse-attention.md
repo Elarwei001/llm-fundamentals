@@ -305,8 +305,8 @@ The later FlashAttention generations are best understood as repeated attempts to
 
 ## 4. FlashAttention Evolution: From v1 to v4
 
-![Figure 3: Timeline of FlashAttention versions, each targeting a new GPU generation](../zh/images/day28/flashattention-evolution-timeline.png)
-*Figure 3: FlashAttention has evolved through four generations, each co-designed with the target GPU architecture.*
+![Figure 4: Timeline of FlashAttention versions, each targeting a new GPU generation](../zh/images/day28/flashattention-evolution-timeline.png)
+*Figure 4: FlashAttention has evolved through four generations, each co-designed with the target GPU architecture.*
 
 | Version | Date | Target GPU | Key Innovation | Speedup |
 |---------|------|-----------|----------------|---------|
@@ -315,25 +315,174 @@ The later FlashAttention generations are best understood as repeated attempts to
 | FlashAttention-3 | Aug 2024 | H100 (Hopper) | Async execution, warp specialization | 1.5-2x over FA-2 |
 | FlashAttention-4 | Mar 2026 | B200 (Blackwell) | Asymmetric scaling, CuTe-DSL | 1.3x over cuDNN |
 
-**FlashAttention-2** (Dao, 2023) reduced non-matmul FLOPs by parallelizing across the sequence length dimension and assigning each thread block to a single attention head. The key insight: matmul operations should use the GPU's tensor cores, and everything else should be minimized.
+Below, each generation is unpacked in more detail.
 
-**FlashAttention-3** (Dao et al., 2024) was specifically designed for NVIDIA's Hopper H100 GPUs. It exploited three hardware features:
-- **Asynchronous execution**: overlap softmax computation with data loading
-- **Warp specialization**: dedicate some warps to data loading, others to computation
-- **Tensor core optimizations**: use in-register transpose to avoid shared memory bank conflicts
+### 4.1 FlashAttention-1 (Tri Dao and collaborators, 2022)
 
-**FlashAttention-4** (Zadouri et al., March 2026) tackles a new challenge: **asymmetric hardware scaling** on NVIDIA's Blackwell B200 GPUs. On Blackwell, tensor core throughput doubled (1 → 2.25 PFLOPs for BF16), but other components like shared memory bandwidth and exponential function units stayed the same. This means the old tricks from FA-3 don't work — the bottleneck shifted from tensor cores to non-matmul operations.
+FlashAttention-1 introduced two key ideas.
 
-FA-4's three key techniques:
-1. **Software-emulated exponential**: Replace hardware `exp()` with polynomial approximation, because SFU (Special Function Unit) count didn't scale with tensor cores
-2. **Conditional softmax rescaling**: Reduce the number of rescaling operations in the online softmax
-3. **Tensor Memory + 2-CTA MMA mode**: Use Blackwell's new tensor memory feature to reduce shared memory traffic
+#### Innovation 1: IO-aware tiling
 
-FA-4 achieves up to 1613 TFLOPs/s on B200 (71% utilization) — a 2.7x speedup over Triton and 1.3x over cuDNN 9.13.
+**Principle**: do not construct the full `S = QK^T` and `P = softmax(S)` matrices at once. Instead, slice Q, K, and V into SRAM-sized blocks and compute block by block.
+
+**What problem does it solve?**
+- avoids materializing the full `N × N` attention matrix in HBM
+- greatly reduces intermediate writeback and rereads
+- keeps more work inside fast on-chip SRAM
+
+#### Innovation 2: online softmax
+
+**Principle**: standard softmax wants to see the full row before normalization, but FlashAttention maintains a rolling max and rolling sum so it can process one tile at a time while staying numerically stable.
+
+**What problem does it solve?**
+- makes blockwise exact attention mathematically valid
+- avoids storing the full score matrix before normalization
+- preserves exact attention while removing huge intermediate storage costs
+
+A good summary of FA-1 is:
+
+> **It did not change the definition of attention. It attacked the IO cost of exact attention.**
+
+### 4.2 FlashAttention-2 (a follow-up iteration on the same Tri Dao research line, 2023)
+
+FA-2 did not reinvent the algorithm. It pushed GPU utilization further.
+
+#### Innovation 3: better work partitioning
+
+**Principle**: parallelize more effectively across sequence length and distribute work more evenly across thread blocks.
+
+**What problem does it solve?**
+- improves occupancy
+- keeps more SMs busy at once
+- reduces throughput loss caused by uneven work allocation
+
+#### Innovation 4: reduce the overhead of non-matmul operations
+
+**Principle**: GPUs are best at tensor-core matrix multiplication. Softmax, scaling, masking, indexing, and synchronization are necessary, but they should contribute as little overhead as possible.
+
+**What problem does it solve?**
+- reduces the engineering overhead around non-matmul work
+- keeps more time on the high-throughput matmul path
+- turns theoretical optimization into real end-to-end speedup
+
+### 4.3 FlashAttention-3 (the same research line, optimized for Hopper, 2024)
+
+FlashAttention-3 was designed specifically for NVIDIA Hopper H100 GPUs.
+
+**Hopper** is the GPU architecture generation after Ampere. Its importance here is not just that it is newer. It provides stronger support for async data movement, execution organization, and tensor-core-friendly data paths. In other words, Hopper is not a mysterious new concept, but it is a generation that is especially friendly to high-performance attention kernels.
+
+#### Innovation 5: asynchronous execution
+
+**Principle**: overlap loading the next chunk of data with computing the current chunk.
+
+If this sounds like a classic pipeline idea, that intuition is correct. It belongs to the same family as prefetching, double buffering, and latency hiding.
+
+> **Do not make loading and compute wait in a strict sequence. Overlap them whenever possible.**
+
+What is new here is not the existence of pipelining as an idea, but how that idea is realized inside Hopper-style tile-level FlashAttention execution.
+
+**What problem does it solve?**
+- reduces idle time while waiting for data
+- hides part of memory latency
+- keeps compute units working more continuously
+
+#### Innovation 6: warp specialization
+
+**Principle**: let different warps play different roles instead of making every warp do the same mix of work.
+
+A **warp** is a hardware-scheduled group of 32 threads on NVIDIA GPUs. So warp specialization means, for example:
+- some warps focus on data movement
+- others focus on computation
+
+**What problem does it solve?**
+- reduces role interference inside the kernel
+- improves pipelining
+- makes better use of Hopper execution behavior
+
+#### Innovation 7: tensor-core path optimization / in-register transpose
+
+**Principle**: use data layouts and in-register transforms that feed Hopper tensor cores more efficiently while avoiding shared-memory bank conflicts.
+
+**What problem does it solve?**
+- reduces shared-memory conflicts
+- improves tensor-core utilization
+- prevents layout inefficiencies from starving the main compute path
+
+### 4.4 FlashAttention-4 (Zadouri et al., March 2026)
+
+FlashAttention-4 faces a new challenge: **asymmetric hardware scaling** on NVIDIA Blackwell B200.
+
+This means the hardware did not scale uniformly.
+- **What improved a lot**: tensor-core / matmul throughput. For BF16, peak throughput increased from roughly 1 PFLOPs to about 2.25 PFLOPs.
+- **What did not scale nearly as much**: shared-memory bandwidth, SFU throughput for functions like `exp()`, and other supporting components on the non-matmul path.
+
+So Blackwell is not a case where every part of the GPU got proportionally stronger. It is more like the main engine got much faster while some supporting pipelines did not keep up. As a result, bottlenecks shifted away from tensor cores toward non-matmul work and data pathways.
+
+#### Innovation 8: software-emulated exponential
+
+**Principle**: replace some hardware `exp()` calls with polynomial approximation because SFUs did not scale with tensor-core throughput.
+
+**What problem does it solve?**
+- prevents SFUs from becoming the new bottleneck
+- keeps exponentials from stalling the softmax path
+- helps expose the added tensor-core throughput in real workloads
+
+#### Innovation 9: conditional softmax rescaling
+
+**Principle**: online softmax involves many rescaling steps. FA-4 reduces unnecessary rescaling through more selective conditions.
+
+A simple intuition: earlier tiles may have been accumulated under an old maximum value. If a later tile reveals a larger maximum, the old accumulated values must be converted to the new scale before the results can be merged correctly. FA-4 does not eliminate rescaling. It tries to do it only when it is actually needed.
+
+A tiny example helps. Suppose one attention row is seen in two tiles:
+- tile 1: `[2, 1]`
+- tile 2: `[5, 4]`
+
+When you first see tile 1, the current max is `2`, so you accumulate under the scale "subtract 2":
+- `2 -> e^(2-2) = 1`
+- `1 -> e^(1-2) = e^(-1)`
+
+So the running sum is `1 + e^(-1)`.
+
+Later, tile 2 reveals that the true max is actually `5`. Now the earlier accumulated values must be converted to the new scale "subtract 5":
+- what used to be `1` becomes `e^(2-5) = e^(-3)`
+- what used to be `e^(-1)` becomes `e^(1-5) = e^(-4)`
+
+So the previous accumulation must be multiplied by a correction factor `e^(2-5) = e^(-3)`. That conversion step is the rescaling.
+
+**What problem does it solve?**
+- reduces extra scalar work in the softmax path
+- cuts overhead from necessary but non-matmul operations
+- leaves more time for the main operator, namely the tensor-core-dominated matrix multiplication path such as `QK^T` and `PV`
+
+#### Innovation 10: Tensor Memory + 2-CTA MMA mode
+
+**Principle**: use Blackwell's tensor memory features together with a 2-CTA (cooperative thread array) matrix multiplication organization to reduce shared-memory traffic.
+
+> **Terminology box**
+>
+> - **tensor memory (TMEM)**: according to NVIDIA's official documentation, Blackwell exposes this as a new **`tmem` first-class data locale**. That means it is not just a software reuse of registers or shared memory. A safer interpretation is that it is a new, Tensor-Core / MMA-oriented data locale and hardware support mechanism. NVIDIA's tooling explicitly checks for invalid tensor-memory access, misaligned tensor-memory access, and allocation / relinquish semantics. So TMEM should not be described as just "one more generic cache." It is better understood as part of the data-feeding infrastructure for the main tensor-core path.
+> - **CTA (Cooperative Thread Array)**: in CUDA terms, this is very close to a **thread block**, a group of threads that can synchronize and share shared memory.
+> - **MMA (Matrix Multiply-Accumulate)**: matrix multiplication plus accumulation, e.g. `C = A × B + C`, the core job tensor cores are built for.
+> - **2-CTA MMA**: instead of letting one CTA handle a matrix multiplication block alone, two CTAs cooperate on one MMA pathway, improving data delivery and reducing shared-memory traffic.
+> - **Triton**: a system / compiler framework for writing high-performance GPU kernels. "2.7x faster than Triton" means faster than a Triton-based baseline implementation.
+> - **cuDNN**: NVIDIA's official deep-learning systems library. "1.3x faster than cuDNN 9.13" means FA-4 outperformed even NVIDIA's own official implementation in that comparison.
+
+**What problem does it solve?**
+- relieves shared-memory bandwidth pressure
+- better matches Blackwell's new data pathways
+- avoids the situation where compute throughput doubles but data feeding still lags behind
+
+FA-4 achieves up to 1613 TFLOPs/s on B200 (71% utilization), 2.7x faster than Triton and 1.3x faster than cuDNN 9.13.
+
+Across all four generations, a helpful summary is:
+- **FA-1**: attack the IO cost of exact attention
+- **FA-2**: improve GPU parallelism and work partitioning
+- **FA-3**: align the kernel more tightly with Hopper execution behavior
+- **FA-4**: redesign again for Blackwell's new bottlenecks
 
 ---
 
-## 4. Sparse Attention: Skip What Doesn't Matter
+## 5. Sparse Attention: Skip What Doesn't Matter
 
 FlashAttention computes *exact* attention more efficiently. But what if we don't need to attend to *every* token? Sparse attention takes a different approach: **don't compute attention scores that are zero or negligible anyway**.
 
@@ -341,10 +490,12 @@ FlashAttention computes *exact* attention more efficiently. But what if we don't
 
 When you read a long document, you don't pay equal attention to every word. You focus on the current paragraph, occasionally glance at section headers, and rarely jump to distant pages. Sparse attention mimics this: most tokens only attend to nearby tokens (local window), with a few special tokens (global) that connect everything.
 
-![Figure 4: Six sparse attention patterns showing different sparsity structures](../zh/images/day28/sparse-attention-patterns.png)
-*Figure 4: Different sparse attention patterns. Blue cells indicate computed attention; white cells are skipped. Each pattern captures different structural assumptions about which tokens need to interact.*
+![Figure 5: Six sparse attention patterns showing different sparsity structures](../zh/images/day28/sparse-attention-patterns.png)
+*Figure 5: Different sparse attention patterns. Blue cells indicate computed attention; white cells are skipped. Each pattern captures different structural assumptions about which tokens need to interact. Local-window and strided / dilated sparse patterns often look structurally similar to convolutional or dilated-convolution receptive fields. But attention weights are still input-dependent and dynamically computed, unlike the fixed shared weights of a convolution kernel.*
 
-### 4.1 Common Sparse Patterns
+### 5.1 Common Sparse Patterns
+
+First, here is the overview table. Then we unpack each pattern.
 
 | Pattern | Complexity | Best For | Example |
 |---------|-----------|----------|---------|
@@ -354,9 +505,111 @@ When you read a long document, you don't pay equal attention to every word. You 
 | Block Sparse | O(N²/b²) | Structured data | Block-Sparse Transformer |
 | Random Sparse | O(N × r) | Approximate full attention | Sparse Transformer |
 
-Where w = window size, g = number of global tokens, b = block size, r = random sample count.
+Where `w` = window size, `g` = number of global tokens, `b` = block size, and `r` = number of random sampled connections.
 
-### 4.2 The Sliding Window in Practice
+#### 5.1.1 Local (sliding-window) attention
+
+**Representative authors / works**: the general idea appeared early in long-sequence Transformers, but in modern LLM practice the most visible deployment is **Sliding Window Attention in Mistral AI (2023)** and later adoption by models such as **Gemma**.
+
+**How it works**: each token attends only to a fixed local neighborhood instead of the full sequence.
+
+**What problem does it solve?**
+- reduces cost from `O(N²)` to `O(N × w)`
+- preserves the most important short-range dependencies when locality dominates
+- works well with KV cache and long-context inference
+
+**Best for**:
+- language modeling where local context dominates
+- code modeling, where nearby tokens matter a lot
+- long-context inference where bounded compute is important
+
+**Limitation**: a single layer cannot directly see faraway tokens. Long-range influence must propagate across multiple layers.
+
+#### 5.1.2 Strided / dilated sparse attention
+
+**Representative authors / works**: this idea is closely related to dilated convolutions and often appears in long-sequence Transformer variants rather than as one universally named flagship model.
+
+**How it works**: instead of looking at a fully contiguous local window, each token samples positions at a fixed stride.
+
+**What problem does it solve?**
+- reaches farther distances with fewer edges
+- expands the effective receptive field without returning to full attention
+- can fit periodic or repeating structures better than a pure contiguous window
+
+**Best for**:
+- music, periodic signals, or structured time series
+- settings where fixed-interval relationships matter
+
+**Limitation**: if the real dependency pattern is not periodic or regular, a fixed stride may miss important interactions.
+
+#### 5.1.3 Global + local attention
+
+**Representative authors / works**:
+- **Longformer** (Iz Beltagy, Matthew E. Peters, Arman Cohan, Allen Institute for AI, 2020)
+- **BigBird** (Manzil Zaheer et al., Google Research, 2020)
+
+The shared insight is that not every token needs global visibility, but a small number of important tokens probably should have it.
+
+**How it works**:
+- most tokens use local attention
+- a few special tokens get global access
+- BigBird additionally mixes in random connections
+
+**What problem does it solve?**
+- preserves cross-document aggregation while controlling cost
+- works better than purely local windows for document-scale understanding
+- allows a few global nodes to act as long-range routers
+
+**Best for**:
+- long-document classification
+- document QA
+- multi-paragraph summarization
+- NLP tasks that require cross-section integration
+
+**Limitation**: which tokens should be global, and how many, is task-dependent.
+
+#### 5.1.4 Block-sparse attention
+
+**Representative authors / works**:
+- **Sparse Transformer** (Rewon Child et al., OpenAI, 2019) strongly emphasized structured sparsity
+- later system work often prefers block-sparse designs because hardware likes regularity
+
+**How it works**: instead of deciding sparsity token by token, partition the attention matrix into blocks and keep or drop whole blocks.
+
+**What problem does it solve?**
+- is easier to implement efficiently than highly irregular pointwise sparsity
+- aligns better with GPU / accelerator data movement patterns
+- keeps useful structure while remaining hardware-friendly
+
+**Best for**:
+- structured data
+- image patches or video patches
+- system designs that need sparsity to align with hardware execution patterns
+
+**Limitation**: the more regular the structure, the easier the implementation, but potentially the less expressive the pattern.
+
+#### 5.1.5 Random sparse attention
+
+**Representative authors / works**:
+- **Sparse Transformer** (Rewon Child, Scott Gray, Alec Radford, Ilya Sutskever, OpenAI, 2019)
+- **BigBird** also includes random edges as part of its sparse graph
+
+**How it works**: beyond local connections, each token gets a small number of random long-range links.
+
+From a graph-theoretic perspective, this resembles a **small-world network**: most edges are local, but a few long-range shortcuts dramatically reduce average path length. In attention terms, that means you do not necessarily need full all-to-all connectivity for information to travel efficiently across a long sequence.
+
+**What problem does it solve?**
+- retains some global communication ability at relatively low cost
+- reduces the bottleneck of purely local connectivity
+- improves connectivity through shortcut-like long-range edges
+
+**Best for**:
+- very long sequence modeling
+- settings where we want some global shortcuts without paying full-attention cost
+
+**Limitation**: random patterns can be theoretically attractive but are often less interpretable and less implementation-friendly than regular local or block-sparse schemes.
+
+### 5.2 The Sliding Window in Practice
 
 The most popular sparse pattern today is the **sliding window attention** used by models like Mistral and Gemma. Each token only attends to the previous w tokens (typically w = 4096 or 8192):
 
@@ -366,7 +619,7 @@ $$
 
 With multiple layers, information still propagates across the full sequence. A token at position 0 can influence position 1000 through L hops, where each hop extends the effective receptive field by w tokens. After L layers, the receptive field is L × w tokens.
 
-### 4.3 FlexAttention: Making Sparse Attention Easy
+### 5.3 FlexAttention: Making Sparse Attention Easy
 
 One challenge with sparse attention is that implementing custom patterns requires writing low-level CUDA kernels — extremely difficult and error-prone. **FlexAttention** (PyTorch team, 2024) solves this by letting users define arbitrary attention modifications in pure PyTorch, and it automatically compiles them to efficient kernels.
 
@@ -386,7 +639,7 @@ FlexAttention handles the block-sparse optimization automatically — if your ma
 
 ---
 
-## 5. Combining FlashAttention and Sparse Attention
+## 6. Combining FlashAttention and Sparse Attention
 
 These two approaches are complementary:
 
@@ -400,7 +653,7 @@ Modern LLMs typically use both: FlashAttention as the backend kernel, with spars
 
 ---
 
-## 6. Common Misconceptions
+## 7. Common Misconceptions
 
 ### ❌ "FlashAttention approximates attention for speed"
 
@@ -416,7 +669,7 @@ FlashAttention-4 speeds up *each attention computation*, but the overall cost is
 
 ---
 
-## 7. Frontier: What's New (2025-2026)
+## 8. Frontier: What's New (2025-2026)
 
 1. **FlashAttention-4** (Zadouri et al., March 2026) — Co-designed for NVIDIA Blackwell B200 with asymmetric hardware scaling. Achieves 71% utilization (1613 TFLOPs/s) by replacing hardware `exp()` with software emulation and leveraging new tensor memory features. ([Paper](https://arxiv.org/abs/2603.05451), [Together AI blog](https://www.together.ai/blog/flashattention-4))
 
@@ -424,11 +677,36 @@ FlashAttention-4 speeds up *each attention computation*, but the overall cost is
 
 3. **Long-Context Generalization with Sparse Attention** (Peters et al., accepted at ICLR 2026) — Uses α-entmax to produce *naturally sparse* attention distributions (exact zeros, not near-zeros), improving length generalization without hand-designed sparsity patterns. ([Paper](https://arxiv.org/abs/2506.16640))
 
+   This one is worth slowing down for, because it differs from Longformer, BigBird, and sliding-window designs. Those approaches mostly start by **hand-specifying a sparse topology**, such as "each token can only see its nearby 4096 tokens" or "a few special tokens are global." This paper instead explores a different idea:
+
+   > **Do not hand-design who can attend to whom. Let the attention distribution learn sparsity by itself.**
+
+   The main tool is **α-entmax**, which you can think of as a sparse alternative to softmax:
+   - **softmax** gives almost every position a positive weight, even if many are tiny
+   - **α-entmax** can push many positions to **exactly zero**
+
+   That difference matters in long-context settings. "Tiny but nonzero" still means the model is mathematically attending a little bit everywhere. "Exactly zero" means the model has learned that some positions should not be attended at all.
+
+   Why could this help long-context generalization? One intuition is that when context length grows from, say, 4K during training to 32K or 64K at test time, a model that keeps spreading some probability mass almost everywhere may become diffuse and lose focus. A model that learns to collapse most irrelevant positions to zero can keep a sharper, more selective attention pattern even as the sequence gets longer.
+
+   So the real question this line of work asks is not just:
+   - how do we manually design a good sparse graph?
+
+   but rather:
+   - **can the model itself learn to become sparse and selective in longer contexts?**
+
+   Put differently, the key idea is: **replace softmax with a sparse normalization function so the model learns during training which attention weights should truly become zero, instead of applying thresholding or pruning only after training.**
+
+   This is promising, but it also raises practical questions:
+   - how stable is training with sparse distributions?
+   - can the learned sparsity pattern actually be exploited efficiently by kernels?
+   - will content-adaptive sparsity translate into real inference speedups, or only into a nicer analytical story?
+
 4. **Efficient Attention Mechanisms Survey** (July 2025) — Comprehensive survey categorizing the explosion of attention variants: hardware-aware (FlashAttention), sparse, linear, and hybrid approaches. ([Paper](https://arxiv.org/abs/2507.19595))
 
 ---
 
-## 8. Further Reading
+## 9. Further Reading
 
 ### Foundational
 1. [FlashAttention: Fast and Memory-Efficient Exact Attention with IO-Awareness](https://arxiv.org/abs/2205.14135) — The original FlashAttention paper (Dao et al., 2022)
@@ -447,7 +725,7 @@ FlashAttention-4 speeds up *each attention computation*, but the overall cost is
 
 ---
 
-## Reflection Questions
+## 10. Reflection Questions
 
 1. Why is memory bandwidth (not compute) the bottleneck for attention? What does this tell us about where GPU hardware is heading?
 2. If FlashAttention gives exact results, what prevents us from just using it everywhere? (Hint: think about what FlashAttention *doesn't* optimize.)
@@ -455,7 +733,7 @@ FlashAttention-4 speeds up *each attention computation*, but the overall cost is
 
 ---
 
-## Summary
+## 11. Summary
 
 | Concept | One-line Explanation |
 |---------|---------------------|
@@ -473,4 +751,4 @@ FlashAttention-4 speeds up *each attention computation*, but the overall cost is
 ---
 
 *Day 28 of 60 | LLM Fundamentals*
-*Word count: ~4300 | Reading time: ~22-28 minutes*
+*Word count: ~6200 | Reading time: ~30-38 minutes*
