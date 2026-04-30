@@ -545,7 +545,7 @@ FA-2 的重点不是重新发明算法，而是进一步榨干 GPU 的并行度�
 
 > **小术语拆解**
 >
-> - **tensor memory**：这里可以先把它理解成 Blackwell 上更贴近 tensor core / MMA 主路径的一类数据暂存与搬运机制。它的目标不是单纯“多一块缓存”，而是让矩阵乘法所需数据更顺地流向主算子，减少 shared memory 压力。
+> - **tensor memory（TMEM）**：根据 NVIDIA 官方文档，Blackwell 把它作为新的 **`tmem` first-class data locale** 暴露出来，这说明它不是单纯对 register 或 shared memory 的软件复用。更稳妥的理解是：它是一种新的、面向 Tensor Core / MMA 主路径的专用数据 locale 与硬件支持机制。它有自己独立的访问规则；NVIDIA 的工具链还会检查 tensor memory 的非法访问、未对齐访问，以及分配 / 释放语义相关问题。这也说明它不适合被粗暴理解成“又多一块普通通用缓存”。它更像是专门为主算子供料的数据通路基础设施。
 > - **CTA（Cooperative Thread Array）**：在 CUDA 语境里，基本可以近似理解成一个 **thread block**，也就是一组可以同步、可以共享 shared memory 的线程。
 > - **MMA（Matrix Multiply-Accumulate）**：矩阵乘加操作，例如 `C = A × B + C`，这是 tensor core 最核心、最擅长的工作。
 > - **2-CTA MMA**：不是只让一个 CTA 独立完成某块矩阵乘法，而是让两个 CTA 协同组织一次 MMA 路径，以便更好利用 Blackwell 的新数据通路并减少 shared memory 流量。
