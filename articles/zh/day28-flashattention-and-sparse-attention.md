@@ -294,6 +294,7 @@ FlashAttention、Triton kernel、CUDA kernel 这些性能优化，很多时候�
 - 比 register 大，但仍然很小
 - 同一个线程块里的线程可以共享
 - 很适合放 tile、局部累计值、临时中间结果
+- 需要特别注意：它是 **SM 本地** 的，不是整个 GPU 上所有 SM 都能直接互通的全局共享池；如果不同 SM 之间要交换数据，通常还是要经过更高层的 cache 或 global memory
 
 #### HBM（High Bandwidth Memory，高带宽内存）
 - 容量大得多
