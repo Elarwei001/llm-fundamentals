@@ -103,6 +103,14 @@ $$
 
 结果：不用从 HBM 读写 N × N 矩阵，只需读 Q、K、V（各 N × d）并写 O（N × d）。内存使用从 O(N²) 降到 O(N)。这里所谓 tile-level computation，本质上就是“在这些小分块粒度上组织和执行计算”，而不是一次处理整个大矩阵。
 
+这里有一个非常关键、也最容易让读者误解的点：**FlashAttention 省掉的 IO，主要不是因为 Q、K、V 原始输入读取量突然少了很多，而是因为它不再把巨大的中间矩阵 `S = QK^T` 和 `P = softmax(S)` 回写到 HBM，再从 HBM 读回来继续算。**
+
+换句话说：
+- **标准注意力** 常常会显式 materialize 出 `S` 和 `P`，于是产生大量 HBM 写入与后续重读；
+- **FlashAttention** 则把这些中间计算尽量留在 SRAM 中就地完成，只维护 rolling max、rolling sum 和输出累计值，最后只把真正需要的输出写回 HBM。
+
+所以它真正节省的，是**中间结果的 materialization、回写和重读**，而不仅仅是“把读取改成分块读取”。
+
 ### 2.3 代码：最小 FlashAttention 前向传播
 
 ```python
