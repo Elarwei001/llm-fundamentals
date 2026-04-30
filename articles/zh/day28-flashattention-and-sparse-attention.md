@@ -543,6 +543,15 @@ FA-2 的重点不是重新发明算法，而是进一步榨干 GPU 的并行度�
 
 **原理**：利用 Blackwell 新的 tensor memory 特性，以及 2-CTA（cooperative thread array）级别的矩阵乘法组织方式，减少 shared memory traffic。
 
+> **小术语拆解**
+>
+> - **tensor memory**：这里可以先把它理解成 Blackwell 上更贴近 tensor core / MMA 主路径的一类数据暂存与搬运机制。它的目标不是单纯“多一块缓存”，而是让矩阵乘法所需数据更顺地流向主算子，减少 shared memory 压力。
+> - **CTA（Cooperative Thread Array）**：在 CUDA 语境里，基本可以近似理解成一个 **thread block**，也就是一组可以同步、可以共享 shared memory 的线程。
+> - **MMA（Matrix Multiply-Accumulate）**：矩阵乘加操作，例如 `C = A × B + C`，这是 tensor core 最核心、最擅长的工作。
+> - **2-CTA MMA**：不是只让一个 CTA 独立完成某块矩阵乘法，而是让两个 CTA 协同组织一次 MMA 路径，以便更好利用 Blackwell 的新数据通路并减少 shared memory 流量。
+> - **Triton**：一个用于编写高性能 GPU kernel 的系统 / 编译器框架。文里“比 Triton 快 2.7x”，指的是比某个 Triton 实现的基线 kernel 更快。
+> - **cuDNN**：NVIDIA 官方的深度学习底层库。文里“比 cuDNN 9.13 快 1.3x”，说明它甚至比 NVIDIA 官方库中的对应实现还快。
+
 **它解决什么问题？**
 - 缓解 shared memory 带宽压力
 - 更好匹配 Blackwell 的新数据通路
