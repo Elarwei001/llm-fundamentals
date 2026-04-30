@@ -208,7 +208,127 @@ def flash_attention_forward(Q, K, V, block_size=64):
 
 ---
 
-## 3. FlashAttention 的演进：从 v1 到 v4
+## 3. 先补硬件背景：理解 FlashAttention 为什么要“贴着 NVIDIA GPU 写”
+
+如果你对下面这些名词还不熟，后面 FA-2 / FA-3 / FA-4 的很多优化会显得像黑魔法：
+- SM
+- warp
+- tensor core
+- register
+- shared memory / SRAM
+- HBM
+- SFU
+
+所以这里先补一个够用的 NVIDIA GPU 硬件速写。
+
+### 3.1 GPU 是怎么组织的？
+
+可以先把一块 NVIDIA GPU 想成一个大工厂：
+
+- **GPU**：整座工厂
+- **SM（Streaming Multiprocessor）**：工厂里的一个个计算车间
+- **warp**：车间里 32 个线程组成、一起行动的小组
+- **thread**：单个工人
+
+FlashAttention、Triton kernel、CUDA kernel 这些性能优化，很多时候本质上都在回答两个问题：
+
+1. **怎么把工作分给更多 SM，让更多车间同时忙起来？**
+2. **怎么让每个 SM 里面的 warp 少等待、多计算？**
+
+### 3.2 SM：GPU 里的计算车间
+
+每个 **SM** 可以理解成 GPU 中一个相对独立的执行单元。它内部通常包含：
+
+- **CUDA cores**：做一般标量 / 向量运算
+- **tensor cores**：做高吞吐矩阵乘法的专用单元
+- **registers（寄存器）**：离计算单元最近、最快、最小的存储
+- **shared memory**：同一个线程块内部共享的片上高速存储
+- **warp schedulers**：安排哪些 warp 先执行、哪些等待
+- 某些代际里还会包含更强的异步搬运与调度支持
+
+理解 SM 的关键不是背组件名单，而是抓住一句：
+
+> **很多 GPU 性能优化，本质上都在争夺 SM 内部的算力、片上存储和调度机会。**
+
+### 3.3 warp：GPU 的基本调度小组
+
+在 NVIDIA GPU 里，通常：
+
+- **1 个 warp = 32 个线程**
+
+这 32 个线程会被硬件当作一个整体来调度。也就是说，GPU 不是一个线程一个线程地单独安排工作，而是按 warp 这个粒度派活。
+
+这就是为什么 **warp specialization** 会成立：
+- 有些 warp 负责搬数据
+- 有些 warp 负责做计算
+- 让不同 warp 像不同岗位一样协作
+
+### 3.4 tensor core vs CUDA core：为什么 matmul 那么重要？
+
+如果只看大方向，可以先这样理解：
+
+- **CUDA core**：更通用，适合一般算术和控制相关操作
+- **tensor core**：更专用，擅长矩阵乘法这类 AI 主算子
+
+这也是为什么 FlashAttention 系列一直强调：
+
+> **真正该尽量“喂饱”的，是 tensor core 上的矩阵乘法路径。**
+
+因为在现代训练 / 推理里，大规模 matmul 往往才是 GPU 最值钱、吞吐最高的部分。
+
+### 3.5 register、shared memory、HBM：三层速度完全不同的存储
+
+理解 FlashAttention，最重要的硬件背景其实是这三层存储。
+
+#### register（寄存器）
+- 最快
+- 最靠近计算单元
+- 容量极小
+- 通常只给当前线程保存最临时的数据
+
+#### shared memory / SRAM（片上共享高速存储）
+- 很快
+- 比 register 大，但仍然很小
+- 同一个线程块里的线程可以共享
+- 很适合放 tile、局部累计值、临时中间结果
+
+#### HBM（High Bandwidth Memory，高带宽内存）
+- 容量大得多
+- 带宽高，但相对片上存储仍然慢
+- 一旦反复读写巨大的中间矩阵，就会成为瓶颈
+
+FlashAttention 的很多优化，归根结底都在做这件事：
+
+> **尽量把中间工作留在 register / shared memory 里，少把中间结果送回 HBM。**
+
+### 3.6 SFU：为什么连 `exp()` 都可能成为瓶颈？
+
+**SFU（Special Function Unit）** 是 GPU 里负责一些特殊数学函数的单元，比如指数、对数、三角函数等。
+
+平时做普通深度学习时，大家不太会专门盯着它。但到了像 FlashAttention-4 这种把主 matmul 已经优化得非常极致的场景，连 `exp()` 这样的特殊函数吞吐都可能开始冒出来变成新瓶颈。
+
+这就是为什么到了 FA-4，作者会开始认真讨论：
+- 硬件 `exp()` 是否够快
+- 是否要用软件近似替代部分 `exp()`
+
+### 3.7 为什么说“贴着硬件特性优化”？
+
+现在你就能更自然地理解这个说法了。所谓“贴着硬件特性优化”，并不是一句空话，而是非常具体地在问：
+
+- 工作怎么分给更多 **SM**？
+- 不同 **warp** 怎么分工？
+- 如何让 **tensor core** 少空转？
+- 哪些中间结果应该留在 **register / shared memory**？
+- 哪些一旦回到 **HBM** 就会开始拖慢整个 kernel？
+- 哪些看似小的操作，比如 `exp()`，会不会卡在 **SFU** 上？
+
+后面你再看 FlashAttention 不同版本的演进，就可以把它们理解成：
+
+> **不断重写同一个 attention kernel，让它越来越像这代 GPU 最喜欢的工作方式。**
+
+---
+
+## 4. FlashAttention 的演进：从 v1 到 v4
 
 ![图 3：FlashAttention 各版本时间线，每个版本针对新的 GPU 架构设计](../zh/images/day28/flashattention-evolution-timeline.png)
 *图 3：FlashAttention 经历了四代演进，每代都与其目标 GPU 架构协同设计。*
