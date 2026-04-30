@@ -92,7 +92,7 @@ $$
 ### 2.2 分块计算：永远不实例化完整矩阵
 
 ![图 2：FlashAttention 从 HBM 将 Q、K、V 的 tile 加载到 SRAM，在 SRAM 中计算部分注意力，只将输出写回 HBM](../zh/images/day28/flashattention-tiling-memory-v2.png)
-*图 2：FlashAttention 的分块策略。不是在 HBM 中实例化完整的 N×N 注意力矩阵，而是将 Q、K、V 的 tile 加载到快速的 SRAM 中，计算部分注意力，用 online softmax 累积结果。*
+*图 2：FlashAttention 的分块策略。这里的 tile 可以理解成从大矩阵里切出来的一小块“分块 / 小块”。FlashAttention 不是在 HBM 中实例化完整的 N×N 注意力矩阵，而是将 Q、K、V 的 tile 加载到快速的 SRAM 中，计算部分注意力，用 online softmax 累积结果。*
 
 算法步骤如下：
 1. 将 Q 的一个 tile（第 i₁ 到 i₂ 行）和 K 的一个 tile（第 j₁ 到 j₂ 行）加载到 SRAM
@@ -101,7 +101,7 @@ $$
 4. 移动到下一个 K tile，重复直到所有 K tile 处理完毕
 5. 移动到下一个 Q tile，重复
 
-结果：不用从 HBM 读写 N × N 矩阵，只需读 Q、K、V（各 N × d）并写 O（N × d）。内存使用从 O(N²) 降到 O(N)。
+结果：不用从 HBM 读写 N × N 矩阵，只需读 Q、K、V（各 N × d）并写 O（N × d）。内存使用从 O(N²) 降到 O(N)。这里所谓 tile-level computation，本质上就是“在这些小分块粒度上组织和执行计算”，而不是一次处理整个大矩阵。
 
 ### 2.3 代码：最小 FlashAttention 前向传播
 
