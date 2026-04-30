@@ -222,7 +222,7 @@ def flash_attention_forward(Q, K, V, block_size=64):
 
 下面按版本把每一代 FlashAttention 的关键创新拆开讲。
 
-### 3.1 FlashAttention-1（Dao et al., Tri Dao / Princeton & Stanford 相关研究线，2022）
+### 3.1 FlashAttention-1（Tri Dao 及其合作者，2022）
 
 FlashAttention-1 的两大关键创新是：
 
@@ -248,7 +248,7 @@ FlashAttention-1 的两大关键创新是：
 
 > **它没有改 attention 的定义，而是第一次把“精确 attention 的高 IO 成本”系统性地打了下来。**
 
-### 3.2 FlashAttention-2（Dao，2023）
+### 3.2 FlashAttention-2（延续 Tri Dao 研究线的后续迭代，2023）
 
 FA-2 的重点不是重新发明算法，而是进一步榨干 GPU 的并行度。它的两类关键创新可以理解成：
 
@@ -286,7 +286,7 @@ FA-2 的重点不是重新发明算法，而是进一步榨干 GPU 的并行度�
 >
 > > **把这些必须存在的辅助操作继续留在 GPU 内部，但通过更紧凑的 kernel 组织、更少同步、更少重复和更好的流水线设计，尽量减少它们对主 matmul 路径的拖累。**
 
-### 3.3 FlashAttention-3（Dao 等人，2024）
+### 3.3 FlashAttention-3（同一研究线面向 Hopper 的进一步优化，2024）
 
 **FlashAttention-3** 专为 NVIDIA Hopper H100 GPU 设计，重点是：**开始更强地贴着硬件特性写算法。** 这里有三个非常值得展开的创新点。
 
