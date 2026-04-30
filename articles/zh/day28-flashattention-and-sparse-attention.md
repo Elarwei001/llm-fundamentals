@@ -221,6 +221,9 @@ def flash_attention_forward(Q, K, V, block_size=64):
 
 所以这里先补一个够用的 NVIDIA GPU 硬件速写。
 
+![图 3：NVIDIA GPU 硬件速写，展示 SM、warp、tensor core、shared memory 与 HBM 的关系](../zh/images/day28/nvidia-gpu-hardware-primer-v1.png)
+*图 3：可以把 NVIDIA GPU 理解成由多个 SM（计算车间）组成，每个 SM 内部有 tensor cores、CUDA cores、registers、shared memory、warp schedulers 等组件；数据从 HBM 进入 SM。FlashAttention 这类优化，核心就是尽量把中间结果留在 registers / shared memory 中，而不是把大型中间矩阵反复写回 HBM。*
+
 ### 3.1 GPU 是怎么组织的？
 
 可以先把一块 NVIDIA GPU 想成一个大工厂：
@@ -330,8 +333,8 @@ FlashAttention 的很多优化，归根结底都在做这件事：
 
 ## 4. FlashAttention 的演进：从 v1 到 v4
 
-![图 3：FlashAttention 各版本时间线，每个版本针对新的 GPU 架构设计](../zh/images/day28/flashattention-evolution-timeline.png)
-*图 3：FlashAttention 经历了四代演进，每代都与其目标 GPU 架构协同设计。*
+![图 4：FlashAttention 各版本时间线，每个版本针对新的 GPU 架构设计](../zh/images/day28/flashattention-evolution-timeline.png)
+*图 4：FlashAttention 经历了四代演进，每代都与其目标 GPU 架构协同设计。*
 
 | 版本 | 时间 | 目标 GPU | 核心创新 | 加速比 |
 |------|------|---------|---------|--------|
@@ -509,8 +512,8 @@ FlashAttention 更高效地计算*精确*注意力。但如果我们不需要关
 
 读一篇长文章时，你不会对每个字投入同等注意力。你聚焦于当前段落，偶尔看一眼章节标题，很少跳到远处翻看。稀疏注意力模拟了这种行为：大多数 token 只关注附近 token（局部窗口），少数特殊 token（全局 token）连接所有内容。
 
-![图 4：六种稀疏注意力模式，展示不同的稀疏结构](../zh/images/day28/sparse-attention-patterns.png)
-*图 4：不同的稀疏注意力模式。蓝色单元表示计算的注意力；白色单元被跳过。每种模式捕捉关于哪些 token 需要交互的不同结构假设。*
+![图 5：六种稀疏注意力模式，展示不同的稀疏结构](../zh/images/day28/sparse-attention-patterns.png)
+*图 5：不同的稀疏注意力模式。蓝色单元表示计算的注意力；白色单元被跳过。每种模式捕捉关于哪些 token 需要交互的不同结构假设。*
 
 ### 4.1 常见稀疏模式
 
