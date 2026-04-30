@@ -1,6 +1,6 @@
 {
-  "current_day": 27,
-  "last_generated": "2026-04-29",
+  "current_day": 28,
+  "last_generated": "2026-04-30",
   "total_days": 60,
   "status": "active",
   "history": [
@@ -423,6 +423,21 @@
         "zh/images/day27/kd-methods-comparison.png",
         "zh/images/day27/deepseek-r1-distill-performance.png",
         "zh/images/day27/kd-loss-function.png"
+      ]
+    },
+    {
+      "day": 28,
+      "date": "2026-04-30",
+      "topic": "FlashAttention & Sparse Attention",
+      "en_path": "en/day28-flashattention-and-sparse-attention.md",
+      "zh_path": "zh/day28-flashattention-and-sparse-attention.md",
+      "qa_score": 0,
+      "qa_rounds": 0,
+      "images": [
+        "zh/images/day28/flashattention-tiling-memory.png",
+        "zh/images/day28/flashattention-evolution-timeline.png",
+        "zh/images/day28/sparse-attention-patterns.png",
+        "zh/images/day28/attention-memory-bottleneck.png"
       ]
     }
   ]
