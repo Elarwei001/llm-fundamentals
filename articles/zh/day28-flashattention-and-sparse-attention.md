@@ -266,7 +266,53 @@ FlashAttention、Triton kernel、CUDA kernel 这些性能优化，很多时候�
 - 有些 warp 负责做计算
 - 让不同 warp 像不同岗位一样协作
 
-### 3.4 tensor core vs CUDA core：为什么 matmul 那么重要？
+### 3.4 一个 SM 和多个 warp 的关系：为什么 GPU 能靠调度隐藏延迟？
+
+这里有一个很容易误解的点：**一个 SM 不是只对应一个 warp，而是通常会同时驻留多个 warp。** 更准确地说，关系更接近：
+
+> **1 个 SM : 多个 warps**
+
+为什么要这样设计？因为 GPU 的基本策略不是“等”，而是“切换到别的 ready warp 继续干活”。
+
+例如，某个 warp 如果正在等待：
+- 数据从 HBM 返回
+- 某个依赖完成
+- 某个执行槽位空出来
+
+那 SM 不会像串行程序那样停住，而是会让 **warp scheduler** 去挑选另一个已经 ready 的 warp 来执行。
+
+这就是 GPU 隐藏延迟（latency hiding）的核心直觉：
+
+> **谁在等，就先晾着；谁 ready，就先上。**
+
+#### warp 的上下文放在哪里？
+
+没被当前调度到的 warp，通常并不会被“换出到很远的地方”，而是仍然驻留在该 SM 上。它们的上下文主要包括：
+
+- **寄存器状态**：保存在该 SM 的 register file 中
+- **程序计数器和执行状态**：由硬件维护
+- **共享数据**：放在该 block 可访问的 shared memory 中
+
+也正因为这些上下文大多常驻在 SM 本地，GPU 才能非常快地在 warp 之间切换，而不需要像 CPU 那样做昂贵的上下文保存与恢复。
+
+#### 一个 SM 能驻留多少个 warp？
+
+这不是无限的，而是受资源限制：
+- register 数量
+- shared memory 大小
+- block 配置
+- GPU 架构本身的上限
+
+如果一个 kernel 每线程吃太多 register，或者每个 block 占太多 shared memory，那么一个 SM 能同时驻留的 warp 数就会下降。这也就是为什么大家常说 **occupancy** 很重要。
+
+从 FlashAttention 的角度看，这一点非常关键，因为很多优化本质上都在平衡：
+- tile 大小
+- register pressure
+- shared memory 占用
+- 一个 SM 上能驻留多少个 warp
+- 是否还有足够多 ready warp 来隐藏延迟
+
+### 3.5 tensor core vs CUDA core：为什么 matmul 那么重要？
 
 如果只看大方向，可以先这样理解：
 
@@ -279,7 +325,7 @@ FlashAttention、Triton kernel、CUDA kernel 这些性能优化，很多时候�
 
 因为在现代训练 / 推理里，大规模 matmul 往往才是 GPU 最值钱、吞吐最高的部分。
 
-### 3.5 register、shared memory、HBM：三层速度完全不同的存储
+### 3.6 register、shared memory、HBM：三层速度完全不同的存储
 
 理解 FlashAttention，最重要的硬件背景其实是这三层存储。
 
@@ -305,7 +351,7 @@ FlashAttention 的很多优化，归根结底都在做这件事：
 
 > **尽量把中间工作留在 register / shared memory 里，少把中间结果送回 HBM。**
 
-### 3.6 SFU：为什么连 `exp()` 都可能成为瓶颈？
+### 3.7 SFU：为什么连 `exp()` 都可能成为瓶颈？
 
 **SFU（Special Function Unit）** 是 GPU 里负责一些特殊数学函数的单元，比如指数、对数、三角函数等。
 
@@ -315,7 +361,7 @@ FlashAttention 的很多优化，归根结底都在做这件事：
 - 硬件 `exp()` 是否够快
 - 是否要用软件近似替代部分 `exp()`
 
-### 3.7 为什么说“贴着硬件特性优化”？
+### 3.8 为什么说“贴着硬件特性优化”？
 
 现在你就能更自然地理解这个说法了。所谓“贴着硬件特性优化”，并不是一句空话，而是非常具体地在问：
 
