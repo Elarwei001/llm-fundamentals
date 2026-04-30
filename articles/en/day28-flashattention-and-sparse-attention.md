@@ -6,7 +6,7 @@
 
 ## Opening
 
-Imagine you're a chef preparing a banquet for 10,000 guests. You have a massive pantry (HBM) with tons of ingredients, but a tiny kitchen counter (SRAM) where you can only work with a few items at a time. The naive approach would be to bring *all 10,000 plates' worth of ingredients* to your counter at once — impossible. Instead, you work in batches: prepare 50 plates at a time, keep running totals, and never try to hold everything simultaneously.
+Imagine you're a chef preparing a banquet for 10,000 guests. You have a massive pantry (HBM, High Bandwidth Memory) with tons of ingredients, but a tiny kitchen counter (SRAM) where you can only work with a few items at a time. The naive approach would be to bring *all 10,000 plates' worth of ingredients* to your counter at once — impossible. Instead, you work in batches: prepare 50 plates at a time, keep running totals, and never try to hold everything simultaneously.
 
 This is exactly the problem attention faces in modern LLMs. The attention matrix grows as N² for a sequence of N tokens. For a 128K-token context, that's a 128K × 128K matrix — roughly 64 GB of memory just for one attention layer. FlashAttention and sparse attention are two complementary strategies that tackle this problem from different angles: FlashAttention computes *exact* attention more efficiently, while sparse attention computes *approximate* attention with fewer operations.
 
@@ -18,7 +18,7 @@ Today we'll understand both — and why they matter for every LLM you use.
 
 #### Intuition: The Data Moving Problem
 
-Think of attention like a factory floor. The workers (compute units) are fast — they can multiply matrices all day. But the supplies (data) come from a warehouse across town (HBM), and loading/unloading is the real bottleneck. It doesn't matter how fast your workers are if they spend most of their time waiting for materials to arrive.
+Think of attention like a factory floor. The workers (compute units) are fast — they can multiply matrices all day. But the supplies (data) come from a warehouse across town (HBM, High Bandwidth Memory), and loading/unloading is the real bottleneck. It doesn't matter how fast your workers are if they spend most of their time waiting for materials to arrive.
 
 ![Figure 1: GPU memory hierarchy showing the bandwidth vs capacity gap](../zh/images/day28/attention-memory-bottleneck.png)
 *Figure 1: GPU memory has a fundamental tension — HBM is large but slow, SRAM is fast but tiny. Attention is bottlenecked by the data movement between them.*
