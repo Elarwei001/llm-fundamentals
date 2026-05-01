@@ -1,6 +1,6 @@
 {
-  "current_day": 28,
-  "last_generated": "2026-04-30",
+  "current_day": 29,
+  "last_generated": "2026-05-01",
   "total_days": 60,
   "status": "active",
   "history": [
@@ -438,6 +438,22 @@
         "zh/images/day28/flashattention-evolution-timeline.png",
         "zh/images/day28/sparse-attention-patterns.png",
         "zh/images/day28/attention-memory-bottleneck.png"
+      ]
+    },
+    {
+      "day": 29,
+      "date": "2026-05-01",
+      "topic": "Attention-Free Architectures",
+      "en_path": "en/day29-attention-free-architectures.md",
+      "zh_path": "zh/day29-attention-free-architectures.md",
+      "qa_score": 0,
+      "qa_rounds": 0,
+      "images": [
+        "zh/images/day29/architecture-comparison.png",
+        "zh/images/day29/compute-memory-comparison.png",
+        "zh/images/day29/mamba-selective-mechanism.png",
+        "zh/images/day29/ssm-recurrence-intuition.png",
+        "zh/images/day29/hybrid-architecture-timeline.png"
       ]
     }
   ]
