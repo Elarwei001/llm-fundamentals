@@ -93,7 +93,7 @@
 | D27 | Knowledge Distillation | Large to small model, how knowledge transfers | [EN](articles/en/day27-knowledge-distillation.md) / [中文](articles/zh/day27-knowledge-distillation.md) |
 | D28 | **FlashAttention & Sparse Attention** | Memory bandwidth bottleneck, making Transformer faster | [EN](articles/en/day28-flashattention-and-sparse-attention.md) / [中文](articles/zh/day28-flashattention-and-sparse-attention.md) |
 | D29 | **Attention-Free Architectures** | Mamba, RWKV, State Space Models | 🔥🔥🔥 +350% rising · [EN](articles/en/day29-attention-free-architectures.md) / [中文](articles/zh/day29-attention-free-architectures.md) |
-| D30 | Multimodal Basics | CLIP, Vision Transformer, GPT-4V | Multimodal intro |
+| D30 | Multimodal Basics | CLIP, Vision Transformer, GPT-4V | [EN](articles/en/day30-multimodal-basics.md) / [中文](articles/zh/day30-multimodal-basics.md) |
 
 ---
 
