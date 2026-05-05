@@ -1,6 +1,6 @@
 {
-  "current_day": 29,
-  "last_generated": "2026-05-01",
+  "current_day": 31,
+  "last_generated": "2026-05-05",
   "total_days": 60,
   "status": "active",
   "history": [
@@ -454,6 +454,36 @@
         "zh/images/day29/mamba-selective-mechanism.png",
         "zh/images/day29/ssm-recurrence-intuition.png",
         "zh/images/day29/hybrid-architecture-timeline.png"
+      ]
+    },
+    {
+      "day": 31,
+      "date": "2026-05-05",
+      "topic": "What is an AI Agent",
+      "en_path": "en/day31-what-is-an-ai-agent.md",
+      "zh_path": "zh/day31-what-is-an-ai-agent.md",
+      "qa_score": 0,
+      "qa_rounds": 0,
+      "images": [
+        "zh/images/day31/chatbot-vs-agent.png",
+        "zh/images/day31/agent-loop-react.png",
+        "zh/images/day31/agent-autonomy-spectrum.png",
+        "zh/images/day31/agent-timeline.png"
+      ]
+    },
+    {
+      "day": 30,
+      "date": "2026-05-04",
+      "topic": "Multimodal Basics",
+      "en_path": "en/day30-multimodal-basics.md",
+      "zh_path": "zh/day30-multimodal-basics.md",
+      "qa_score": 0,
+      "qa_rounds": 0,
+      "images": [
+        "zh/images/day30/multimodal-evolution-eras.png",
+        "zh/images/day30/clip-training-process.png",
+        "zh/images/day30/vit-patch-embedding.png",
+        "zh/images/day30/cross-attention-fusion.png"
       ]
     }
   ]
