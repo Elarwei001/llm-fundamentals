@@ -1,6 +1,6 @@
 {
-  "current_day": 31,
-  "last_generated": "2026-05-05",
+  "current_day": 32,
+  "last_generated": "2026-05-06",
   "total_days": 60,
   "status": "active",
   "history": [
@@ -484,6 +484,21 @@
         "zh/images/day30/clip-training-process.png",
         "zh/images/day30/vit-patch-embedding.png",
         "zh/images/day30/cross-attention-fusion.png"
+      ]
+    },
+    {
+      "day": 32,
+      "date": "2026-05-06",
+      "topic": "Agent Architecture Patterns",
+      "en_path": "en/day32-agent-architecture-patterns.md",
+      "zh_path": "zh/day32-agent-architecture-patterns.md",
+      "qa_score": 0,
+      "qa_rounds": 0,
+      "images": [
+        "zh/images/day32/architecture-patterns-comparison.png",
+        "zh/images/day32/react-trace-example.png",
+        "zh/images/day32/pattern-decision-tree.png",
+        "zh/images/day32/framework-timeline.png"
       ]
     }
   ]

@@ -104,7 +104,7 @@
 | Day | Topic | Core Question | Trend Source |
 |-----|-------|---------------|--------------|
 | D31 | **What is an AI Agent** | From LLM to Agent, what's the core difference? | [EN](articles/en/day31-what-is-an-ai-agent.md) / [中文](articles/zh/day31-what-is-an-ai-agent.md) |
-| D32 | Agent Architecture Patterns | ReAct, Plan-and-Execute, autonomous loops | Design patterns |
+| D32 | Agent Architecture Patterns | ReAct, Plan-and-Execute, autonomous loops | [EN](articles/en/day32-agent-architecture-patterns.md) / [中文](articles/zh/day32-agent-architecture-patterns.md) |
 | D33 | **Tool Use** | Function Calling, letting LLMs interact with the real world | Core capability |
 | D34 | Memory Systems | Short-term, long-term memory, vector databases | Memory design |
 | D35 | **RAG Explained** | Retrieval-Augmented Generation, combining knowledge with reasoning | 🔥 what is rag +70% |
