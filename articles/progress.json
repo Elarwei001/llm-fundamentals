@@ -1,6 +1,6 @@
 {
-  "current_day": 32,
-  "last_generated": "2026-05-06",
+  "current_day": 33,
+  "last_generated": "2026-05-16",
   "total_days": 60,
   "status": "active",
   "history": [
@@ -499,6 +499,21 @@
         "zh/images/day32/react-trace-example.png",
         "zh/images/day32/pattern-decision-tree.png",
         "zh/images/day32/framework-timeline.png"
+      ]
+    },
+    {
+      "day": 33,
+      "date": "2026-05-16",
+      "topic": "Tool Use",
+      "en_path": "en/day33-tool-use.md",
+      "zh_path": "zh/day33-tool-use.md",
+      "qa_score": 0,
+      "qa_rounds": 0,
+      "images": [
+        "zh/images/day33/tool-use-loop.png",
+        "zh/images/day33/function-calling-flow.png",
+        "zh/images/day33/tool-use-timeline.png",
+        "zh/images/day33/tool-training-approaches.png"
       ]
     }
   ]
