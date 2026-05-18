@@ -56,11 +56,11 @@ SSMs were originally developed in control theory (1960s) to model continuous dyn
 >  
 > The story of State Space Models begins in 1960s aerospace engineering. R. E. Kalman — the inventor of the Kalman filter — proposed a mathematical framework for describing dynamic systems using "state variables." This was the seed of modern SSMs. The original application was hardcore: the Apollo lunar module's navigation system used a Kalman filter to estimate spacecraft position in real time, taking noisy sensor readings as input and producing refined state estimates as output.
 >  
-> In control theory, SSMs describe physical systems: in $h'(t) = Ah(t) + Bx(t)$, $x(t)$ is the external input (e.g., thrust), $h(t)$ is the system's internal state (e.g., position and velocity), and $y(t)$ is the observed output. The $A$ matrix encodes the physics of the system — a spring's $A$ looks nothing like a circuit's $A$.
+> In control theory, SSMs describe physical systems: in **h'(t) = Ah(t) + Bx(t)**, **x(t)** is the external input (e.g., thrust), **h(t)** is the system's internal state (e.g., position and velocity), and **y(t)** is the observed output. The **A** matrix encodes the physics of the system — a spring's A looks nothing like a circuit's A.
 >  
 > Half a century later, in the 2020s, Albert Gu (then a PhD student at Stanford) spotted a brilliant connection: **if you replace "physical system state" with "sequence context representation," the entire mathematical toolkit transfers directly to deep learning.** The perennial problems of traditional RNNs — vanishing gradients, inability to parallelize — happen to be solvable by SSMs' linear structure and convolution equivalence.
 >  
-> Gu's key innovations were HiPPO initialization (giving $A$ a natural memory-decay property) and Structured State Spaces (S4, 2021), which made SSMs competitive with Transformers on long sequences for the first time. In late 2023, Mamba added a "selective" mechanism, propelling SSMs to truly rival Transformers on language tasks. From Apollo to potential Transformer replacement, this mathematics took 60 years.
+> Gu's key innovations were HiPPO initialization (giving **A** a natural memory-decay property) and Structured State Spaces (S4, 2021), which made SSMs competitive with Transformers on long sequences for the first time. In late 2023, Mamba added a "selective" mechanism, propelling SSMs to truly rival Transformers on language tasks. From Apollo to potential Transformer replacement, this mathematics took 60 years.
 >  
 > If you're curious about this history:
 > - Kalman's original paper: [A New Approach to Linear Filtering and Prediction Problems](https://courses.engr.illinois.edu/ece420/sp2017/kalman.pdf) (1960)
@@ -88,7 +88,7 @@ Where:
 - $D$ is a skip connection (often omitted)
 
 ![Figure 3: Continuous SSM data flow](../en/images/day29/ssm-dataflow.png)
-*Figure 3: Input x(t) is written into hidden state h(t) through B, h(t) self-evolves through A, and is read out as y(t) through C. D provides a direct skip connection. The equation $h'(t) = Ah(t) + Bx(t)$ describes the state update process.*
+*Figure 3: Input x(t) is written into hidden state h(t) through B, h(t) self-evolves through A, and is read out as y(t) through C. D provides a direct skip connection. The equation h'(t) = Ah(t) + Bx(t) describes the state update process.*
 
 #### Intuition: What A, B, C Really Do
 
