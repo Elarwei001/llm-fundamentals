@@ -6,7 +6,7 @@
 
 ## Opening
 
-The Transformer's self-attention mechanism is beautiful: every token can look at every other token in a single step. But this beauty has a cost — the quadratic complexity. When your sequence doubles in length, attention computation quadruples. At 100K tokens, you're spending more time computing attention than actually thinking.
+The Transformer's self-attention mechanism is beautiful: every token can look at every other token in a single step. But this beauty has a cost — the quadratic complexity. When your sequence doubles in length, attention computation quadruples. At 100K tokens, you're spending more time computing attention than actually doing useful reasoning and generating meaningful output (let's call this "thinking").
 
 What if we could build models that process sequences in *linear* time, use *constant* memory during inference, and still match Transformer quality? That's exactly the promise of attention-free architectures: State Space Models (SSMs) like Mamba, and linear RNNs like RWKV.
 
@@ -20,7 +20,7 @@ The question is no longer "can attention-free models work?" — it's "when shoul
 
 ### Intuition: The Dinner Party Analogy
 
-Imagine you're at a dinner party. Self-attention is like having a separate conversation with *every single guest* to decide what's important. If there are 10 guests, that's 45 pairwise conversations. With 100 guests, it's 4,950. The conversation count grows quadratically — and at some point, you're spending all your time talking and none of it thinking.
+Imagine you're at a dinner party. Self-attention is like having a separate conversation with *every single guest* to decide what's important. If there are 10 guests, that's 45 pairwise conversations. With 100 guests, it's 4,950. The conversation count grows quadratically — and at some point, you're spending all your time talking (pairwise communication) and none of it thinking (understanding, digesting, reasoning).
 
 An attention-free architecture is like having a *notepad*: you maintain a running summary of what matters. Each new guest speaks, you update your notes, and you move on. The effort per guest stays constant.
 
@@ -75,6 +75,14 @@ Where:
 #### Intuition: What A, B, C Really Do
 
 Think of $h(t)$ as a notebook. $A$ determines how your notes age — do they stay fresh or fade? $B$ is your pen — how strongly does new information get written down? $C$ is your reading glasses — which parts of your notes do you focus on when generating output?
+
+### 2.1.1 HiPPO Initialization: Why the Starting Point of $A$ Matters
+
+The $A$ matrix controls the "memory dynamics" of the hidden state — how long information persists and how quickly it decays. If $A$ starts from random initialization, the model wastes a lot of training time just learning the basic question of "what to remember and what to forget."
+
+S4 uses the HiPPO (High-order Polynomial Projection Operator) framework to initialize $A$, giving the hidden state a built-in decay property: recent information stays sharp, while older signals gradually blur — much like human memory, where recent events are vivid and distant ones grow hazy. This mathematical prior gives the model a sensible memory structure from the very first training step, rather than having to discover it from scratch.
+
+It's worth noting that HiPPO is only an initialization strategy. During training, $A$ continues to be optimized, and the model can learn memory patterns far more flexible than the HiPPO prior. Mamba goes further by making $B$, $C$, and $\Delta$ all input-dependent functions (detailed in Section 3), making the memory behavior fully data-driven.
 
 ### 2.2 Discretization: From Continuous to Discrete
 
