@@ -172,17 +172,13 @@ Mamba 模块用以下结构替代 Transformer 中的多头注意力 + MLP 组合
 4. **选择性 SSM**（核心创新）
 5. 输出投影
 
-选择性 SSM 通过线性投影从输入计算 $B$、$C$ 和 $\Delta$：
+选择性 SSM 通过线性投影从输入计算 B、C 和 Δ：
 
-$$
-\begin{aligned}
-B_t &= \text{Linear}_B(x_t) \\
-C_t &= \text{Linear}_C(x_t) \\
-\Delta_t &= \text{softplus}(\text{Linear}_\Delta(x_t))
-\end{aligned}
-$$
+- **B** = Linear_B(x_t) — 写入门，从输入计算
+- **C** = Linear_C(x_t) — 读出门，从输入计算
+- **Δ** = softplus(Linear_Δ(x_t)) — 步长，从输入计算
 
-然后用依赖于输入的 $\Delta_t$ 离散化并运行递推。硬件感知实现使用内核融合和重计算来避免物化完整状态，实际效率接近优化的注意力内核。
+然后用依赖于输入的 Δ 离散化并运行递推。硬件感知实现使用内核融合和重计算来避免物化完整状态，实际效率接近优化的注意力内核。
 
 </td>
 <td width="45%" valign="top">

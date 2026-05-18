@@ -172,17 +172,13 @@ A Mamba block replaces the Multi-Head Attention + MLP combo in a Transformer wit
 4. **Selective SSM** (the core innovation)
 5. Output projection
 
-The selective SSM computes $B$, $C$, and $\Delta$ from the input via linear projections:
+The selective SSM computes B, C, and Δ from the input via linear projections:
 
-$$
-\begin{aligned}
-B_t &= \text{Linear}_B(x_t) \\
-C_t &= \text{Linear}_C(x_t) \\
-\Delta_t &= \text{softplus}(\text{Linear}_\Delta(x_t))
-\end{aligned}
-$$
+- **B** = Linear_B(x_t) — write gate, computed from input
+- **C** = Linear_C(x_t) — read gate, computed from input
+- **Δ** = softplus(Linear_Δ(x_t)) — step size, computed from input
 
-Then discretizes with input-dependent $\Delta_t$ and runs the recurrence. The hardware-aware implementation uses kernel fusion and recomputation to avoid materializing the full state, achieving real-world efficiency close to optimized attention kernels.
+Then discretizes with input-dependent Δ and runs the recurrence. The hardware-aware implementation uses kernel fusion and recomputation to avoid materializing the full state, achieving real-world efficiency close to optimized attention kernels.
 
 </td>
 <td width="45%" valign="top">
