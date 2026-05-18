@@ -87,6 +87,9 @@ Where:
 - $C$ controls how the state produces output (read gate)
 - $D$ is a skip connection (often omitted)
 
+![Figure 3: Continuous SSM data flow](../en/images/day29/ssm-dataflow.png)
+*Figure 3: Input x(t) is written into hidden state h(t) through B, h(t) self-evolves through A, and is read out as y(t) through C. D provides a direct skip connection. The equation $h'(t) = Ah(t) + Bx(t)$ describes the state update process.*
+
 #### Intuition: What A, B, C Really Do
 
 Think of $h(t)$ as a notebook. $A$ determines how your notes age — do they stay fresh or fade? $B$ is your pen — how strongly does new information get written down? $C$ is your reading glasses — which parts of your notes do you focus on when generating output?
@@ -139,8 +142,8 @@ The original SSM (S4, proposed by [Gu et al., 2021](https://arxiv.org/abs/2111.0
 
 [Mamba](https://arxiv.org/abs/2312.00752) (Gu & Dao, December 2023) introduced the key innovation: **selective state spaces**, where $B$, $C$, and $\Delta$ are *input-dependent* functions.
 
-![Figure 3: Mamba's selective mechanism](../zh/images/day29/mamba-selective-mechanism.png)
-*Figure 3: Standard SSMs use fixed parameters (same for all inputs), while Mamba makes B, C, and Δ input-dependent, allowing the model to selectively remember or forget based on content.*
+![Figure 4: Mamba's selective mechanism](../zh/images/day29/mamba-selective-mechanism.png)
+*Figure 4: Standard SSMs use fixed parameters (same for all inputs), while Mamba makes B, C, and Δ input-dependent, allowing the model to selectively remember or forget based on content.*
 
 ### 3.1 Why Selection Matters
 
@@ -263,8 +266,8 @@ It depends on the task. For tasks requiring precise token-level recall (e.g., "w
 - **IBM Granite 4.0** (November 2025): Enterprise-grade hybrid Mamba-2 models for cost-efficient deployment. ([InfoQ](https://www.infoq.com/news/2025/11/ibm-granite-mamba2-enterprise/))
 - **SSM-Transformer Hybrid Analysis** (October 2025): Research systematically studying design axes for hybrids — SSM layer type, layer ratio, mixing patterns. ([arXiv](https://arxiv.org/abs/2510.26912))
 
-![Figure 4: Timeline of attention-free and hybrid architecture evolution](../zh/images/day29/hybrid-architecture-timeline.png)
-*Figure 4: The rapid evolution from pure SSMs (2021-2023) through early hybrids (2024) to production-grade systems (2025-2026).*
+![Figure 5: Timeline of attention-free and hybrid architecture evolution](../zh/images/day29/hybrid-architecture-timeline.png)
+*Figure 5: The rapid evolution from pure SSMs (2021-2023) through early hybrids (2024) to production-grade systems (2025-2026).*
 
 ---
 

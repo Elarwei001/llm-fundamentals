@@ -87,6 +87,9 @@ $$
 - $C$ 控制状态如何产生输出（读取门）
 - $D$ 是跳跃连接（通常省略）
 
+![图 3：连续 SSM 数据流图](../zh/images/day29/ssm-dataflow.png)
+*图 3：输入 x(t) 通过 B 写入隐藏状态 h(t)，h(t) 通过 A 自演化，通过 C 读出为 y(t)，D 是直接跳连。公式 $h'(t) = Ah(t) + Bx(t)$ 描述了状态更新过程。*
+
 #### 直觉：A、B、C 到底在做什么
 
 把 $h(t)$ 想象成一本笔记本。$A$ 决定笔记如何老化——保持新鲜还是逐渐褪色？$B$ 是你的笔——新信息被写得多深？$C$ 是你的放大镜——生成输出时聚焦笔记的哪些部分？
@@ -139,8 +142,8 @@ $$
 
 [Mamba](https://arxiv.org/abs/2312.00752)（Gu & Dao，2023 年 12 月）引入了关键创新：**选择性状态空间**，其中 $B$、$C$ 和 $\Delta$ 是*依赖于输入*的函数。
 
-![图 3：Mamba 的选择性机制](../zh/images/day29/mamba-selective-mechanism.png)
-*图 3：标准 SSM 使用固定参数（对所有输入相同），而 Mamba 使 B、C、Δ 依赖于输入，允许模型根据内容选择性地记忆或遗忘。*
+![图 4：Mamba 的选择性机制](../zh/images/day29/mamba-selective-mechanism.png)
+*图 4：标准 SSM 使用固定参数（对所有输入相同），而 Mamba 使 B、C、Δ 依赖于输入，允许模型根据内容选择性地记忆或遗忘。*
 
 ### 3.1 为什么选择性很重要
 
@@ -263,8 +266,8 @@ $$
 - **IBM Granite 4.0**（2025 年 11 月）：企业级混合 Mamba-2 模型，面向成本高效的部署。([InfoQ](https://www.infoq.com/news/2025/11/ibm-granite-mamba2-enterprise/))
 - **SSM-Transformer 混合分析**（2025 年 10 月）：系统性研究混合架构的设计轴——SSM 层类型、层比例、混合模式。([arXiv](https://arxiv.org/abs/2510.26912))
 
-![图 4：无注意力和混合架构的演化时间线](../zh/images/day29/hybrid-architecture-timeline.png)
-*图 4：从纯 SSM（2021-2023）到早期混合（2024）再到生产级系统（2025-2026）的快速演进。*
+![图 5：无注意力和混合架构的演化时间线](../zh/images/day29/hybrid-architecture-timeline.png)
+*图 5：从纯 SSM（2021-2023）到早期混合（2024）再到生产级系统（2025-2026）的快速演进。*
 
 ---
 
