@@ -52,6 +52,21 @@ $$
 
 SSM 最初起源于控制理论（1960 年代），用于建模连续动态系统。核心思想：系统通过一个总结历史的隐藏状态演化，并基于该状态产生输出。
 
+> **🔍 扩展阅读：SSM 的前世今生**  
+>  
+> 状态空间模型的故事要从 1960 年代的航空航天说起。当时 R. E. Kalman（卡尔曼滤波器的发明者）提出了一套用"状态变量"描述动态系统的数学框架——这就是 SSM 的雏形。最初的应用场景非常硬核：Apollo 登月飞船的导航系统就用卡尔曼滤波器实时估计飞船位置，输入是噪声传感器的读数，输出是飞船的状态估计。
+>  
+> 在控制理论里，SSM 描述的是物理系统：$h'(t) = Ah(t) + Bx(t)$ 中的 $x(t)$ 是外部输入（比如推力），$h(t)$ 是系统的内部状态（比如位置和速度），$y(t)$ 是观测输出。$A$ 矩阵编码了系统的物理特性——一个弹簧的 $A$ 和一个电路的 $A$ 完全不同。
+>  
+> 半个世纪后的 2020 年代，Albert Gu（当时在斯坦福读 PhD）发现了一个绝妙的联系：**如果把"物理系统的状态"换成"序列的上下文表示"，整套数学工具可以直接搬到深度学习里**。传统 RNN 的困境——梯度消失、难以并行训练——恰好可以被 SSM 的线性结构和卷积等价性解决。
+>  
+> Gu 的关键创新是 HiPPO 初始化（让 $A$ 天然具有记忆衰减特性）和结构化状态空间（S4，2021 年），让 SSM 第一次在长序列建模上匹敌 Transformer。2023 年底的 Mamba 又加入了"选择性"机制，让 SSM 在语言任务上真正起飞。从 Apollo 到 ChatGPT 的替代架构，这套数学走了 60 年。
+>  
+> 如果你对这段历史感兴趣，推荐阅读：
+> - Kalman 的原始论文：[A New Approach to Linear Filtering and Prediction Problems](https://courses.engr.illinois.edu/ece420/sp2017/kalman.pdf)（1960）
+> - Albert Gu 的博士论文：[Modeling Sequences with Structured State Spaces](https://searchworks.stanford.edu/view/14689893)（2022）
+> - S4 论文：[Efficiently Modeling Long Sequences with Structured State Spaces](https://arxiv.org/abs/2111.00396)（2021）
+
 ### 2.1 连续 SSM
 
 连续时间状态空间模型由两个线性方程定义：
