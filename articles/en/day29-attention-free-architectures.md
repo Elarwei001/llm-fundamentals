@@ -221,7 +221,7 @@ Where **w** is a learnable decay factor, **k_i** is the key, and **v_i** is the 
 
 - Constant memory usage and constant inference time per token
 - No KV cache needed (unlike Transformers)
-- Their 2.9B parameter model achieves new 3B state-of-the-art on multilingual tasks despite being trained on dramatically fewer tokens than competitors
+- Their 2.9B parameter model achieves the highest scores among 3B-class models on multilingual benchmarks (e.g., MMLU, multilingual understanding), despite being trained on dramatically fewer tokens than competitors — evidence that the architecture itself is more efficient rather than relying on brute-force data scaling
 - Fully parallelizable during training (like a Transformer), fully recurrent during inference (like an RNN)
 
 ---
