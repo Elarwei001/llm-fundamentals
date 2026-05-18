@@ -106,7 +106,7 @@
 | D31 | **What is an AI Agent** | From LLM to Agent, what's the core difference? | [EN](articles/en/day31-what-is-an-ai-agent.md) / [中文](articles/zh/day31-what-is-an-ai-agent.md) |
 | D32 | Agent Architecture Patterns | ReAct, Plan-and-Execute, autonomous loops | [EN](articles/en/day32-agent-architecture-patterns.md) / [中文](articles/zh/day32-agent-architecture-patterns.md) |
 | D33 | **Tool Use** | Function Calling, letting LLMs interact with the real world | [EN](articles/en/day33-tool-use.md) / [中文](articles/zh/day33-tool-use.md) |
-| D34 | Memory Systems | Short-term, long-term memory, vector databases | Memory design |
+| D34 | Memory Systems | Short-term, long-term memory, vector databases | [EN](articles/en/day34-memory-systems.md) / [中文](articles/zh/day34-memory-systems.md) |
 | D35 | **RAG Explained** | Retrieval-Augmented Generation, combining knowledge with reasoning | 🔥 what is rag +70% |
 
 ### Week 8: Advanced Agents 🔥🔥 (New Hot Topics)

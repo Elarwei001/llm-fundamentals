@@ -7,6 +7,8 @@
 | English | 中文 | 简要说明 |
 |---------|------|----------|
 | Activation Function | 激活函数 | 引入非线性的函数，如 ReLU、Sigmoid |
+| ANN (Approximate Nearest Neighbor) | 近似最近邻 | 在高维空间中快速找到近似最近邻的算法，如 HNSW |
+| Agentic Memory (AgeMem) | 智能体记忆 | 统一长短期记忆管理的框架，让智能体学习何时存取和遗忘 |
 | ALiBi | ALiBi / 线性偏置注意力 | Attention with Linear Biases，通过距离相关的线性偏置帮助模型外推到更长输入长度 |
 | Attention | 注意力机制 | 让模型关注输入的不同部分 |
 | Autoregressive | 自回归 | 根据前面的 token 预测下一个 token |
@@ -87,6 +89,7 @@
 | English | 中文 | 简要说明 |
 |---------|------|----------|
 | Hallucination | 幻觉 | LLM 生成虚假但看起来合理的内容 |
+| HNSW (Hierarchical Navigable Small World) | 分层可导航小世界图 | 向量数据库中主流的 ANN 索引算法 |
 | Hidden Layer | 隐藏层 | 神经网络的中间层 |
 
 ## I
@@ -103,6 +106,7 @@
 | English | 中文 | 简要说明 |
 |---------|------|----------|
 | KV Cache | KV 缓存 | 在推理时缓存历史 token 的 key/value 张量，避免重复计算 |
+| Knowledge Graph | 知识图谱 | 存储实体和关系的图结构数据库，用于关系推理和时间感知记忆 |
 
 ## L
 
@@ -124,6 +128,8 @@
 | Model-Predictive Control (MPC) | 模型预测控制 | 先用模型评估多条未来动作序列，只执行当前最优方案的前几步，再重新规划 |
 | MoE | 混合专家 | Mixture of Experts，稀疏激活架构 |
 | Multi-head Attention | 多头注意力 | 并行计算多组注意力 |
+| MRL (Matryoshka Representation Learning) | 套娃表示学习 | 可截断嵌入维度的训练方法，降低存储成本 |
+| Memory System | 记忆系统 | 智能体的信息持久化与检索机制，包括工作记忆、短期记忆和长期记忆 |
 | Multi-Query Attention (MQA) | 多查询注意力 | 多个 query 头共享同一组 key/value 的注意力变体，降低解码内存带宽压力 |
 
 ## N
@@ -217,6 +223,7 @@
 | English | 中文 | 简要说明 |
 |---------|------|----------|
 | Vanishing Gradient | 梯度消失 | 深层网络中梯度趋近于零的问题 |
+| Vector Database | 向量数据库 | 存储和检索高维嵌入向量的专用数据库，如 Pinecone、Milvus、pgvector |
 
 ## V
 

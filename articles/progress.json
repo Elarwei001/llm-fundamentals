@@ -1,6 +1,6 @@
 {
-  "current_day": 33,
-  "last_generated": "2026-05-16",
+  "current_day": 34,
+  "last_generated": "2026-05-18",
   "total_days": 60,
   "status": "active",
   "history": [
@@ -514,6 +514,21 @@
         "zh/images/day33/function-calling-flow.png",
         "zh/images/day33/tool-use-timeline.png",
         "zh/images/day33/tool-training-approaches.png"
+      ]
+    },
+    {
+      "day": 34,
+      "date": "2026-05-18",
+      "topic": "Memory Systems",
+      "en_path": "en/day34-memory-systems.md",
+      "zh_path": "zh/day34-memory-systems.md",
+      "qa_score": 0,
+      "qa_rounds": 0,
+      "images": [
+        "zh/images/day34/memory-hierarchy-tiers.png",
+        "zh/images/day34/vector-database-architecture.png",
+        "zh/images/day34/memory-systems-comparison.png",
+        "zh/images/day34/memory-retrieval-tradeoffs.png"
       ]
     }
   ]
