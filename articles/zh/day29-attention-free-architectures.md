@@ -106,6 +106,9 @@ S4 使用了 HiPPO（High-order Polynomial Projection Operator）框架来初始
 
 因为我们处理的是离散 token（不是连续信号），需要将系统离散化。使用零阶保持（Zero-Order Hold, ZOH），步长为 $\Delta$：
 
+![图 5：SSM 离散化过程](../zh/images/day29/discretization.png)
+*图 5：左侧是连续时间的 SSM，信号和状态都是平滑曲线；右侧是离散化后，信号变为阶梯状（零阶保持），状态变为离散点之间的递推。核心变换：连续微分方程变成离散递推。*
+
 $$
 \begin{aligned}
 \bar{A} &= \exp(\Delta A) \\
@@ -127,6 +130,9 @@ $$
 ### 2.3 双模式：递推与卷积
 
 线性递推的美妙之处在于训练时可以当作卷积来计算：
+
+![图 6：SSM 双模式计算](../zh/images/day29/dual-mode.png)
+*图 6：同一个线性递推可以用两种方式计算。推理时用递推模式：逐步更新状态，每个 token 只需 O(1) 时间和常量内存。训练时用卷积模式：所有输出可以并行计算，通过 FFT 实现 O(N log N)。*
 
 **递推模式**（推理）：逐 token 处理，更新状态。每 token $O(1)$，常量内存。
 
