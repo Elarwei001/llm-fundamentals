@@ -132,7 +132,7 @@ This looks exactly like an RNN! But the key difference: these are *linear* recur
 The beauty of linear recurrences is that they can also be computed as convolutions during training:
 
 ![Figure 6: SSM dual computation modes](../en/images/day29/dual-mode.png)
-*Figure 6: The same linear recurrence can be computed two ways. At inference: recurrent mode updates state step by step, O(1) per token with constant memory. At training: convolution mode computes all outputs in parallel via FFT, O(N log N).*
+*Figure 6: The same linear recurrence can be computed two ways. At inference: recurrent mode updates state step by step, O(1) per token with constant memory. At training: convolution mode computes all outputs in parallel via FFT, O(N log N). Note: the outputs y come from a separate equation y_t = C·h_t (reading from the hidden state via matrix C). This diagram focuses on the two ways to compute h_t.*
 
 **Recurrent mode** (inference): Process one token at a time, updating state. $O(1)$ per token, constant memory.
 
