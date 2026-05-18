@@ -213,7 +213,7 @@ $$
 wkv_t = \frac{\sum_{i=1}^{t-1} e^{-(t-1-i) \cdot w + k_i} \cdot v_i}{\sum_{i=1}^{t-1} e^{-(t-1-i) \cdot w + k_i}}
 $$
 
-Where $w$ is a learnable decay factor, $k_i$ is the key, and $v_i$ is the value. The key insight: this can be computed as a *recurrence* (constant time per step) rather than a full pairwise attention matrix.
+Where **w** is a learnable decay factor, **k_i** is the key, and **v_i** is the value. The key insight: this can be computed as a recurrence (constant time per step) rather than a full pairwise attention matrix.
 
 ### 4.2 RWKV-7 "Goose"
 
