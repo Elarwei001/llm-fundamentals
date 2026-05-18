@@ -163,6 +163,9 @@ $$
 
 Mamba 模块用以下结构替代 Transformer 中的多头注意力 + MLP 组合：
 
+![图 7：Mamba 模块架构](../zh/images/day29/mamba-module.png)
+*图 7：Mamba 模块的五步流水线。输入经过投影扩展、因果卷积、SiLU 激活后，进入核心的选择性 SSM——其中 B、C、Δ 由输入动态生成（而非固定参数），最后通过输出投影产生结果。整个模块替代了 Transformer 中的注意力 + MLP。*
+
 1. 输入投影 → 维度扩展 2 倍
 2. 因果卷积（1D）
 3. SiLU 激活

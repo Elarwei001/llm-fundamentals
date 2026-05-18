@@ -163,6 +163,9 @@ When you see the word "however" in text, you know something important is about t
 
 A Mamba block replaces the Multi-Head Attention + MLP combo in a Transformer with:
 
+![Figure 7: Mamba block architecture](../en/images/day29/mamba-module.png)
+*Figure 7: The Mamba block's five-step pipeline. Input passes through projection expansion, causal convolution, SiLU activation, then enters the core Selective SSM — where B, C, and Δ are dynamically generated from the input (not fixed parameters). Finally, output projection produces the result. The entire block replaces Attention + MLP in a Transformer.*
+
 1. Input projection → expand dimension by 2×
 2. Causal convolution (1D)
 3. SiLU activation
