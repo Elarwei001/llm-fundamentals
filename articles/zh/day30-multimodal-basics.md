@@ -136,6 +136,16 @@ CLIP 成了几乎所有多模态应用的默认视觉编码器：
 
 **SigLIP 2**（Google, 2025 年 2 月, ["Multilingual Vision-Language Encoders with Improved Semantic Understanding"](https://arxiv.org/abs/2502.14786)）进一步加入自监督学习目标和在线数据筛选，在定位、密集预测和多语言检索上大幅提升。
 
+> **💡 扩展：CLIP 没有解码器，那谁来解码？**
+>
+> CLIP 本身是一个**纯编码器系统**——它的工作到生成 embedding 就结束了，不生成图像也不生成文字。它只做一件事：把图像和文字映射到同一个向量空间，然后比较相似度。
+>
+> 解码工作交给下游模型：
+> - **Stable Diffusion** 用 CLIP 文本编码器引导 U-Net + VAE 解码器生成图像
+> - **LLaVA** 用 CLIP 视觉编码器把图像喂给 LLaMA（语言模型本身就是解码器）
+>
+> 那编码器和解码器不是一起训练的，embedding 能复用吗？**能，但需要翻译。** LLaVA 就是在冻住的 CLIP 和冻住的 LLaMA 之间加了一个可训练的投影层，学习把 CLIP 的向量“翻译”成 LLaMA 能理解的格式。这也正是原生多模态模型（如 Gemini）更强的原因——它从头联合训练，不需要这种“打补丁”式的翻译。
+
 ---
 
 ## 3. 桥接架构 — LLaVA 和 GPT-4V

@@ -136,6 +136,16 @@ CLIP became the default vision encoder for nearly everything:
 
 **SigLIP 2** (Google, February 2025, ["Multilingual Vision-Language Encoders with Improved Semantic Understanding"](https://arxiv.org/abs/2502.14786)) further advanced this line with self-supervised learning objectives and online data curation, delivering major gains in localization, dense prediction, and multilingual retrieval.
 
+> **💡 Deep Dive: CLIP Has No Decoder — So Who Decodes?**
+>
+> CLIP is a **pure encoder system** — its job ends at producing embeddings. It doesn't generate images or text. It does exactly one thing: map images and text into the same vector space, then compare their similarity.
+>
+> Decoding is left to downstream models:
+> - **Stable Diffusion** uses CLIP's text encoder to guide a U-Net + VAE decoder for image generation
+> - **LLaVA** uses CLIP's vision encoder to feed image features into LLaMA (the language model itself acts as the decoder)
+>
+> Can embeddings be reused when the encoder and decoder weren't trained together? **Yes, but you need a translator.** LLaVA adds a trainable projection layer between a frozen CLIP and a frozen LLaMA, learning to "translate" CLIP's vectors into a format LLaMA can understand. This is exactly why native multimodal models (like Gemini) are theoretically stronger — they train everything jointly from scratch, no "patch" needed.
+
 ---
 
 ## 3. The Bridging Architecture — LLaVA and GPT-4V
