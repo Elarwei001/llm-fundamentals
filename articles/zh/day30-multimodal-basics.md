@@ -328,6 +328,34 @@ ViT 在大规模下确实优于 CNN，但在数据稀缺和计算受限的场景
 7. ["SigLIP 2: Multilingual Vision-Language Encoders"](https://arxiv.org/abs/2502.14786) — 下一代视觉编码器（Google, 2025 年 2 月）
 8. ["Multimodal learning with next-token prediction"](https://www.nature.com/articles/s41586-025-10041-x) — 统一多模态目标（Nature, 2026 年 1 月）
 
+### 延展：\[CLS\] Token 深度解析
+
+在 ViT（以及 BERT）中，序列最前面插入了一个特殊的 `[CLS]` token：
+
+```
+[CLS]  patch_1  patch_2  patch_3  ...  patch_N
+```
+
+它**不对应图像中的任何一块区域**，而是一个从零开始的可学习嵌入。经过 Transformer 多层自注意力之后，`[CLS]` token 通过与所有 patch 的交互，**聚合了整张图的全局信息**，最终用于分类等全局任务。
+
+直觉上，可以把它想象成一场会议：所有 patch token 是各部门的汇报人，`[CLS]` 是 CEO。CEO 不代表任何部门，但他在会上听取了所有部门的信息，最后由他给出一个综合判断。
+
+#### 为什么 `[CLS]` 比 GAP 更好？
+
+如果只需要整张图的特征，为什么不直接对所有 patch token 求平均（GAP，Global Average Pooling）？
+
+- **GAP 是固定的操作**——所有 patch 一视同仁，模型没法学习"该怎么聚合"。如果图里有大量背景噪声 patch，它们也会被平等地混进最终表示里。
+- **`[CLS]` 是通过注意力学习怎么聚合的**——它可以学会忽略无关 patch、关注重要 patch，本质上是一种可学习的加权聚合。
+
+#### 不用 `[CLS]` 会怎样？
+
+完全可行！替代方案包括：
+
+- **GAP（Global Average Pooling）**：直接求平均，简单但无法区分 patch 重要性。Swin Transformer（微软，2021）就用了 GAP。
+- **注意力池化（Attention Pooling）**：用一个可学习的查询向量做注意力，让模型自己决定每个 patch 该给多少权重。这其实就是 `[CLS]` 的变体。
+
+实际上，很多现代模型已经不用 `[CLS]` 了。ViT 原论文沿用 BERT 的设计更多是**历史惯性**——作者想证明"把图像当句子、用 NLP 的架构就能做视觉"，保持和 BERT 尽可能一致让论证更有说服力。严格来说 `[CLS]` 不是最优解，但也不是个差的选择。
+
 ---
 
 ## 思考题

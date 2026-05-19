@@ -328,6 +328,34 @@ The multimodal landscape is moving fast:
 7. ["SigLIP 2: Multilingual Vision-Language Encoders"](https://arxiv.org/abs/2502.14786) — Next-gen vision encoder (Google, February 2025)
 8. ["Multimodal learning with next-token prediction"](https://www.nature.com/articles/s41586-025-10041-x) — Unified multimodal objective (Nature, January 2026)
 
+### Deep Dive: The `[CLS]` Token
+
+In ViT (and BERT), a special `[CLS]` token is prepended to the sequence:
+
+```
+[CLS]  patch_1  patch_2  patch_3  ...  patch_N
+```
+
+It **doesn't correspond to any patch** in the image — it's a learned embedding that starts from scratch. After multiple layers of self-attention, the `[CLS]` token interacts with all patches and **aggregates global information** about the entire image, which is then used for classification and other global tasks.
+
+Intuitively, think of it as a meeting: all patch tokens are department heads giving reports, and `[CLS]` is the CEO. The CEO doesn't represent any department, but listens to all of them and delivers a final synthesized judgment.
+
+#### Why is `[CLS]` better than GAP?
+
+If you just need a whole-image representation, why not simply average all patch tokens (GAP, Global Average Pooling)?
+
+- **GAP is a fixed operation** — all patches are treated equally. If the image has many background noise patches, they all contribute equally to the final representation.
+- **`[CLS]` learns how to aggregate through attention** — it can learn to ignore irrelevant patches and focus on important ones, essentially performing a learnable weighted aggregation.
+
+#### What happens if you don't use `[CLS]`?
+
+It works fine! Alternatives include:
+
+- **GAP (Global Average Pooling)**: Simply average all patch vectors. Simple but can't distinguish patch importance. Swin Transformer (Microsoft, 2021) uses GAP instead of `[CLS]`.
+- **Attention Pooling**: Use a learned query vector to attend over patches, letting the model decide how much weight each patch should get. This is essentially a variant of `[CLS]`.
+
+In practice, many modern models no longer use `[CLS]`. The original ViT paper adopted BERT's design largely for **historical inertia** — the authors wanted to prove that "treating images as sentences with NLP architecture works for vision," so keeping the architecture as close to BERT as possible made the argument more convincing. Strictly speaking, `[CLS]` isn't optimal, but it's not a bad choice either.
+
 ---
 
 ## Reflection Questions
