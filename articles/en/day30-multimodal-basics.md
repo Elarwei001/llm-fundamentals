@@ -251,6 +251,9 @@ Different architectures place cross-attention at different depths:
 
 The trend is clear: earlier architectures added cross-attention as an afterthought; modern architectures bake it into every layer.
 
+![Where Does Cross-Attention Happen? A Layer-by-Layer Comparison](../zh/images/day30/cross-attention-placement-comparison.png)
+*Figure 5: Layer-level architecture comparison of LLaVA, Flamingo, and Gemini. LLaVA projects vision features once then uses self-attention only; Flamingo inserts cross-attention every N layers; Gemini uses joint attention at every layer.*
+
 > **💡 Deep Dive: Self-Attention vs Cross-Attention**
 >
 > The key difference is where Q, K, and V come from:

@@ -251,6 +251,9 @@ OpenAI 没有公开 GPT-4V 的架构细节，但研究界普遍认为它遵循"�
 
 趋势很清楚：早期架构把交叉注意力当作事后补充；现代架构把它写进每一层。
 
+![三种架构的交叉注意力位置对比](./images/day30/cross-attention-placement-comparison.png)
+*图 5：LLaVA、Flamingo 和 Gemini 的层级别架构对比。LLaVA 只做一次投影后全部用 self-attention；Flamingo 每隔 N 层插入 cross-attention；Gemini 每一层都进行联合注意力。*
+
 > **💡 延展：Self-Attention vs Cross-Attention**
 >
 > 核心区别在于 Q、K、V 的来源：
