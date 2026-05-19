@@ -251,6 +251,24 @@ Different architectures place cross-attention at different depths:
 
 The trend is clear: earlier architectures added cross-attention as an afterthought; modern architectures bake it into every layer.
 
+> **💡 Deep Dive: Self-Attention vs Cross-Attention**
+>
+> The key difference is where Q, K, and V come from:
+>
+> - **Self-Attention**: Q, K, V all come from the same sequence. Tokens within a sequence understand each other's relationships.
+> - **Cross-Attention**: Q comes from sequence A, K/V from sequence B. One sequence "queries" information from another.
+>
+> | | Self-Attention | Cross-Attention |
+> |---|---|---|
+> | Q source | Same sequence | Sequence A |
+> | K,V source | Same sequence | Sequence B |
+> | What it does | Internal understanding within a sequence | Cross-sequence information lookup |
+> | Analogy | Team members discussing internally | Going to another department to look up information |
+>
+> Cross-attention first appeared in the original Transformer paper (2017) for **machine translation** in an encoder-decoder architecture: Q came from the decoder (generated target-language words), K/V from the encoder (source-language representations). It wasn't invented for multimodal — the essence is simply "one sequence queries another," whether the sequences contain text, images, or audio.
+>
+> Later, decoder-only models like GPT removed the separate encoder, processing everything in a single sequence via self-attention. Cross-attention seemed to "disappear." But really it just changed contexts — from "English→French in translation" to "text→image in multimodal." The mechanism is identical.
+
 ### 5.3 The Math Behind CLIP's Contrastive Loss
 
 CLIP's contrastive objective is the InfoNCE loss. For a batch of N image-text pairs:
