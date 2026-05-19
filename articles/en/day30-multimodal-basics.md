@@ -261,7 +261,7 @@ L &= -\frac{1}{N} \sum_{i=1}^{N} \log \frac{\exp(\text{sim}(I_i, T_i) / \tau)}{\
 \end{aligned}
 $$
 
-Where sim(I, T) is the cosine similarity between image and text embeddings, and $\tau$ is a learned temperature parameter. This is essentially a softmax classifier where each image must find its matching text among N candidates (and vice versa).
+Where sim(I, T) is the cosine similarity between image and text embeddings, and τ is a learned temperature parameter. This is essentially a softmax classifier where each image must find its matching text among N candidates (and vice versa).
 
 ---
 
