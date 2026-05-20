@@ -149,16 +149,27 @@ Anthropic 的 Computer Use（2024 年 10 月）和 OpenAI 的 Operator（2025 �
 
 Agent 生态已经快速成熟。以下是主要框架概览：
 
-| 框架 | 提供方 | 核心特点 | 状态（2026 年 5 月） |
+### 框架与协议
+
+| 名称 | 提供方 | 核心特点 | 状态（2026 年 5 月） |
 |------|--------|---------|---------------------|
 | [Google ADK](https://google.github.io/adk-docs/) | Google | 代码优先、多 Agent、A2A 协议 | 2026 年 4 月发布 |
 | [MCP](https://modelcontextprotocol.io/) | Anthropic | 通用工具接口标准 | 广泛采用 |
 | [LangGraph](https://github.com/langchain-ai/langgraph) | LangChain | 有状态的图式 Agent 工作流 | 生产就绪 |
-| [CrewAI](https://github.com/crewAIInc/crewAI) | CrewAI | 基于角色的多 Agent 协作 | 活跃开发 |
-| [AutoGen](https://github.com/microsoft/autogen) | Microsoft | 多 Agent 对话框架 | v0.4 已发布 |
-| [OpenAI Agents SDK](https://github.com/openai/openai-agents-python) | OpenAI | OpenAI 官方 Agent 工具包 | 2025 年发布 |
 
-**Google ADK**（2026 年 4 月）作为最新入局者值得关注。它提供了代码优先的 Python/TypeScript 框架，原生支持多 Agent 编排、托管工具集成，以及部署到 Google Cloud 的 Agent Platform。关键是，它集成了 **A2A（Agent-to-Agent）协议**——一种新标准，让用不同框架构建的 Agent 能相互通信。
+### 著名 Agent 产品
+
+| 产品 | 类型 | 核心特点 | 状态（2026 年 5 月） |
+|------|------|---------|---------------------|
+| [Claude Code](https://www.anthropic.com/product/claude-code) | 编程 Agent | 终端原生、自主代码编辑、多 Agent 编排 | Anthropic 旗舰开发工具 |
+| [Codex](https://developers.openai.com/codex) | 编程 Agent | 云端沙箱、Computer Use、多日自动化任务 | OpenAI 桌面编程 Agent |
+| [OpenClaw](https://openclaw.ai/) | 个人 Agent | 开源、自托管、持久记忆、多平台支持 | 48 小时内 GitHub 10 万+ Star |
+| [Hermes Agent](https://hermes-agent.org/) | 个人 Agent | 自进化技能、跨会话学习、模型无关 | Nous Research，2026 年 2 月 |
+| [Cursor](https://cursor.com/) | AI IDE | Agent 模式、代码库索引、自主长时任务 | 领先的 AI 原生编辑器 |
+
+**Google ADK**（2026 年 4 月）作为最新入局框架值得关注。它提供了代码优先的 Python/TypeScript 框架，原生支持多 Agent 编排、托管工具集成，以及部署到 Google Cloud 的 Agent Platform。关键是，它集成了 **A2A（Agent-to-Agent）协议**——一种新标准，让用不同框架构建的 Agent 能相互通信。
+
+在产品端，**Claude Code** 和 **Codex** 代表了编程 Agent 的最前沿——能自主编辑文件、运行测试、管理多步骤开发流程。**OpenClaw** 和 **Hermes** 则走了一条不同的路线：它们是驻留在本地机器上的持久化个人 Agent，维护长期记忆，能跨平台运行（Telegram、Slack、Discord、终端）。**Cursor** 将 IDE 和 Agent 范式融合，提供了带 Agent 模式的 AI 原生编程环境，支持自主执行长时间任务。
 
 ---
 

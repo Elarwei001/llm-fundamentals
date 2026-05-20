@@ -149,16 +149,27 @@ Most production agents in 2026 sit at L2–L3. True L4 autonomy — where you ca
 
 The agent ecosystem has matured rapidly. Here's a snapshot of the major frameworks:
 
-| Framework | Provider | Key Feature | Status (May 2026) |
-|-----------|----------|-------------|-------------------|
+### Frameworks & Protocols
+
+| Name | Provider | Key Feature | Status (May 2026) |
+|------|----------|-------------|-------------------|
 | [Google ADK](https://google.github.io/adk-docs/) | Google | Code-first, multi-agent, A2A protocol | Launched April 2026 |
 | [MCP](https://modelcontextprotocol.io/) | Anthropic | Universal tool interface standard | Widely adopted |
 | [LangGraph](https://github.com/langchain-ai/langgraph) | LangChain | Stateful graph-based agent workflows | Production-ready |
-| [CrewAI](https://github.com/crewAIInc/crewAI) | CrewAI | Role-based multi-agent collaboration | Active development |
-| [AutoGen](https://github.com/microsoft/autogen) | Microsoft | Multi-agent conversation framework | v0.4 released |
-| [OpenAI Agents SDK](https://github.com/openai/openai-agents-python) | OpenAI | Official OpenAI agent toolkit | Launched 2025 |
 
-The **Google ADK** (April 2026) deserves special attention as the newest major entrant. It provides a code-first Python/TypeScript framework that natively supports multi-agent orchestration, managed tool integration, and deployment to Google Cloud's Agent Platform. Crucially, it integrates with the **A2A (Agent-to-Agent) protocol** — a new standard enabling agents built with different frameworks to communicate with each other.
+### Notable Agent Products
+
+| Product | Type | Key Feature | Status (May 2026) |
+|---------|------|-------------|-------------------|
+| [Claude Code](https://www.anthropic.com/product/claude-code) | Coding Agent | Terminal-native, autonomous code editing, multi-agent orchestration | Anthropic's flagship developer tool |
+| [Codex](https://developers.openai.com/codex) | Coding Agent | Cloud-based sandbox, computer use, multi-day automations | OpenAI's desktop coding agent |
+| [OpenClaw](https://openclaw.ai/) | Personal Agent | Open-source, self-hosted, persistent memory, multi-platform | 100K+ GitHub stars in 48h |
+| [Hermes Agent](https://hermes-agent.org/) | Personal Agent | Self-evolving skills, cross-session learning, model-agnostic | Nous Research, Feb 2026 |
+| [Cursor](https://cursor.com/) | AI IDE | Agent mode, codebase indexing, autonomous long-running tasks | Leading AI-native editor |
+
+The **Google ADK** (April 2026) deserves special attention as the newest major framework. It provides a code-first Python/TypeScript framework that natively supports multi-agent orchestration, managed tool integration, and deployment to Google Cloud's Agent Platform. Crucially, it integrates with the **A2A (Agent-to-Agent) protocol** — a new standard enabling agents built with different frameworks to communicate with each other.
+
+On the product side, **Claude Code** and **Codex** represent the cutting edge of coding agents — capable of autonomously editing files, running tests, and managing multi-step development workflows. **OpenClaw** and **Hermes** take a different approach: they are persistent personal agents that live on your machine, maintain long-term memory, and can operate across platforms (Telegram, Slack, Discord, terminal). **Cursor** blends the IDE and agent paradigms, offering an AI-native coding environment with agent mode for autonomous task execution.
 
 ---
 
