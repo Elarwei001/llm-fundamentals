@@ -20,7 +20,7 @@ This article breaks down the anatomy of an AI agent, explains why chatbots are n
 
 Think of a chatbot as an intern who only answers questions. You ask, they respond. They never leave their desk. An agent is a full employee — they have a desk (LLM), but they also have a phone (tools), a notebook (memory), a project plan (planning), and the authority to execute decisions (actions). When you give them a task, they figure out the steps, use the phone to call people, write notes for next time, and come back with results.
 
-![Figure 1: Chatbot vs Agent Architecture](../en/images/day31/chatbot-vs-agent.png?v=2)
+![Figure 1: Chatbot vs Agent Architecture](../en/images/day31/chatbot-vs-agent-v2.png)
 *Figure 1: A chatbot is a request-response loop. An agent wraps an LLM with Memory, Tools, Planning, and Actions — enabling autonomous interaction with the external world.*
 
 The table below captures the key distinctions:
@@ -46,7 +46,7 @@ A detective doesn't just hear a case and shout "the butler did it!" They observe
 
 The ReAct pattern (short for **Re**asoning + **Act**ing), introduced by Yao et al. in late 2023, formalized this into a clear cycle:
 
-![Figure 2: The Agent Loop (ReAct Pattern)](../en/images/day31/agent-loop-react.png?v=2)
+![Figure 2: The Agent Loop (ReAct Pattern)](../en/images/day31/agent-loop-react-v2.png)
 *Figure 2: The four phases of the agent loop — Observe, Plan, Act, Reflect — with the LLM as the central reasoning engine.*
 
 The cycle works like this:
@@ -138,7 +138,7 @@ Not all agents are equally autonomous. Think of it like driving:
 - **L4 (Autonomous)**: A self-driving taxi — you give a destination, it handles everything.
 - **L5 (Multi-Agent)**: A fleet of taxis coordinating to pick up everyone in the city.
 
-![Figure 3: AI Agent Autonomy Spectrum](../en/images/day31/agent-autonomy-spectrum.png?v=2)
+![Figure 3: AI Agent Autonomy Spectrum](../en/images/day31/agent-autonomy-spectrum-v2.png)
 *Figure 3: The five levels of AI agent autonomy, from simple Q&A to collaborative multi-agent systems.*
 
 Most production agents in 2026 sit at L2–L3. True L4 autonomy — where you can trust an agent to complete complex tasks without supervision — remains aspirational for most use cases. The industry is actively working on reliability, safety, and evaluation to bridge this gap.
@@ -253,7 +253,7 @@ This minimal example shows the core loop: the LLM thinks, chooses a tool, execut
 
 ## 8. Historical Timeline
 
-![Figure 4: AI Agent Timeline](../en/images/day31/agent-timeline.png?v=2)
+![Figure 4: AI Agent Timeline](../en/images/day31/agent-timeline-v2.png)
 *Figure 4: Key milestones in the evolution of AI agents, from the ReAct paper (2023) to the Google ADK and A2A protocol (2026).*
 
 The concept of "agents" in AI predates LLMs — going back to classic AI research in the 1990s. But the modern LLM-based agent era began in earnest with the ReAct paper (Yao et al., ICLR 2023), which showed that interleaving reasoning and acting dramatically improves task completion. The AutoGPT phenomenon (March 2023) demonstrated massive public interest, even if early versions were unreliable. By 2024-2025, Anthropic's Computer Use and OpenAI's Operator showed that agents could interact with real computer interfaces. And by 2026, standardized protocols (MCP, A2A) and mature frameworks (Google ADK, LangGraph) have made agent development accessible to mainstream developers.

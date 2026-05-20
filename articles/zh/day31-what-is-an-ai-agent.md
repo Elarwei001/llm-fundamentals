@@ -20,7 +20,7 @@
 
 把聊天机器人想象成一个只回答问题的实习生。你问，他答。他从不离开自己的工位。Agent 是一个正式员工——他有工位（LLM），但也有电话（工具）、笔记本（记忆）、项目计划（规划），以及执行决策的权限（行动）。你交给他一个任务，他会自己拆解步骤，打电话联系相关人员，做笔记以备下次使用，然后带着结果回来汇报。
 
-![图 1：聊天机器人 vs Agent 架构](./images/day31/chatbot-vs-agent.png?v=2)
+![图 1：聊天机器人 vs Agent 架构](./images/day31/chatbot-vs-agent-v2.png)
 *图 1：聊天机器人是请求-响应循环。Agent 在 LLM 外围包裹了记忆、工具、规划和行动模块，使其能够自主与外部世界交互。*
 
 下面的表格概括了关键区别：
@@ -46,7 +46,7 @@ Agent **不仅仅是加了额外功能的 LLM**。架构上的转变更深层：
 
 ReAct 模式（**Re**asoning + **Act**ing 的缩写），由 Yao 等人在 2023 年底提出，将这个过程形式化为清晰的循环：
 
-![图 2：Agent Loop（ReAct 模式）](./images/day31/agent-loop-react.png?v=2)
+![图 2：Agent Loop（ReAct 模式）](./images/day31/agent-loop-react-v2.png)
 *图 2：Agent 循环的四个阶段——观察、规划、行动、反思——以 LLM 为中心推理引擎。*
 
 循环的工作方式如下：
@@ -138,7 +138,7 @@ Anthropic 的 Computer Use（2024 年 10 月）和 OpenAI 的 Operator（2025 �
 - **L4（自主）**：无人驾驶出租车——你给目的地，它处理一切。
 - **L5（多 Agent）**：一队出租车协调接送城市里的所有人。
 
-![图 3：AI Agent 自治度谱系](./images/day31/agent-autonomy-spectrum.png?v=2)
+![图 3：AI Agent 自治度谱系](./images/day31/agent-autonomy-spectrum-v2.png)
 *图 3：AI Agent 自治度的五个级别，从简单问答到协作式多 Agent 系统。*
 
 2026 年大多数生产环境的 Agent 处于 L2–L3。真正的 L4 自治——你可以信任 Agent 在没有监督的情况下完成复杂任务——对大多数场景来说仍然是目标。行业正在积极解决可靠性、安全和评估问题来弥合这个差距。
@@ -254,7 +254,7 @@ def agent_loop(task: str, llm_client, tools: dict, max_steps: int = 10):
 
 ## 8. 历史时间线
 
-![图 4：AI Agent 时间线](./images/day31/agent-timeline.png?v=2)
+![图 4：AI Agent 时间线](./images/day31/agent-timeline-v2.png)
 *图 4：AI Agent 演进的关键里程碑，从 ReAct 论文（2023）到 Google ADK 和 A2A 协议（2026）。*
 
 AI 中"Agent"的概念比 LLM 更早——可以追溯到 1990 年代的经典 AI 研究。但现代基于 LLM 的 Agent 时代真正始于 ReAct 论文（Yao 等人，ICLR 2023），它证明了交替推理和行动能显著提高任务完成率。AutoGPT 现象（2023 年 3 月）展示了巨大的公众兴趣，即使早期版本并不可靠。到 2024-2025 年，Anthropic 的 Computer Use 和 OpenAI 的 Operator 证明 Agent 可以与真实计算机界面交互。到 2026 年，标准化协议（MCP、A2A）和成熟框架（Google ADK、LangGraph）使 Agent 开发对主流开发者来说变得触手可及。
