@@ -167,6 +167,18 @@ The agent ecosystem has matured rapidly. Here's a snapshot of the major framewor
 | [Hermes Agent](https://hermes-agent.org/) | Personal Agent | Self-evolving skills, cross-session learning, model-agnostic | Nous Research, Feb 2026 |
 | [Cursor](https://cursor.com/) | AI IDE | Agent mode, codebase indexing, autonomous long-running tasks | Leading AI-native editor |
 
+### Multi-Agent Collaboration: Two Approaches
+
+As agents grow more capable, a new challenge emerges: how do *multiple agents* work together? Two notable platforms represent different philosophies:
+
+**[CrewAI](https://github.com/crewAIInc/crewAI)** takes a *role-based, top-down* approach. You define a team of agents — a Researcher, a Writer, a Reviewer — each with a specific role, goal, and set of tools. A crew orchestrator assigns tasks and routes information between agents. This works well for structured, repeatable pipelines like "research → analyze → report."
+
+**[Slock](https://slock.ai/)**, created by the developer behind Kimi CLI, takes a *human-in-the-loop, bottom-up* approach. Humans and AI agents coexist in a Slack-like workspace as equal teammates — not as tools, but as collaborators. Agents can claim tasks autonomously (task claiming), maintain persistent memory across sessions, and coordinate in real-time via channels and DMs. This is ideal for small teams and solo founders who want agents as true coworkers, not just automated workers.
+
+The contrast is instructive: CrewAI optimizes for **pure agent-to-agent automation**, while Slock optimizes for **human-agent hybrid collaboration**. Both are valid — the choice depends on whether your workflow needs full autonomy or a human partner in the loop.
+
+---
+
 The **Google ADK** (April 2026) deserves special attention as the newest major framework. It provides a code-first Python/TypeScript framework that natively supports multi-agent orchestration, managed tool integration, and deployment to Google Cloud's Agent Platform. Crucially, it integrates with the **A2A (Agent-to-Agent) protocol** — a new standard enabling agents built with different frameworks to communicate with each other.
 
 On the product side, **Claude Code** and **Codex** represent the cutting edge of coding agents — capable of autonomously editing files, running tests, and managing multi-step development workflows. **OpenClaw** and **Hermes** take a different approach: they are persistent personal agents that live on your machine, maintain long-term memory, and can operate across platforms (Telegram, Slack, Discord, terminal). **Cursor** blends the IDE and agent paradigms, offering an AI-native coding environment with agent mode for autonomous task execution.
@@ -262,12 +274,29 @@ This minimal example shows the core loop: the LLM thinks, chooses a tool, execut
 
 ---
 
-## 8. Historical Timeline
+## 8. Key Milestones: The Agent Revolution
 
-![Figure 4: AI Agent Timeline](../en/images/day31/agent-timeline-v2.png)
-*Figure 4: Key milestones in the evolution of AI agents, from the ReAct paper (2023) to the Google ADK and A2A protocol (2026).*
+The concept of "agents" in AI predates LLMs — going back to classic AI research in the 1990s. But the modern LLM-based agent era has moved fast. Here are the milestones that mattered:
 
-The concept of "agents" in AI predates LLMs — going back to classic AI research in the 1990s. But the modern LLM-based agent era began in earnest with the ReAct paper (Yao et al., ICLR 2023), which showed that interleaving reasoning and acting dramatically improves task completion. The AutoGPT phenomenon (March 2023) demonstrated massive public interest, even if early versions were unreliable. By 2024-2025, Anthropic's Computer Use and OpenAI's Operator showed that agents could interact with real computer interfaces. And by 2026, standardized protocols (MCP, A2A) and mature frameworks (Google ADK, LangGraph) have made agent development accessible to mainstream developers.
+**2023 — The Foundation**
+- **ReAct Paper** (Yao et al., ICLR 2023) — Proved that interleaving reasoning and acting dramatically improves task completion. The foundation of modern agent architecture.
+- **AutoGPT Goes Viral** (March 2023) — First public agent hype wave. Demonstrated massive demand for autonomous AI, even if early versions were unreliable.
+
+**2024 — Agents Meet the Real World**
+- **Anthropic Computer Use** (October 2024) — Agents could now look at screens and click buttons like humans. A new paradigm beyond API-only interaction.
+- **OpenAI Operator** (January 2025) — Brought autonomous web browsing and task execution to mainstream users.
+
+**2025 — The Infrastructure Layer**
+- **MCP Protocol** (Anthropic) — Standardized how tools connect to agents. Like USB for AI — one universal interface instead of custom integrations for every tool.
+- **Claude Code** (Anthropic) — Terminal-native coding agent that became the industry's go-to developer tool.
+- **Codex** (OpenAI) — Cloud-based coding agent with sandboxed execution and multi-day automations.
+
+**2026 — Agents Go Mainstream**
+- **OpenClaw** (January 2026) — Open-source personal agent. 100K+ GitHub stars in 48 hours. Persistent memory, multi-platform, self-hosted.
+- **Hermes Agent** (Nous Research, February 2026) — Self-evolving personal agent that builds reusable skills over time.
+- **Slock** (2026) — Agent-human collaboration platform from the creator of Kimi CLI. Agents as teammates, not tools.
+- **Google ADK** (April 2026) — Code-first multi-agent framework with A2A protocol support.
+- **A2A Protocol** — New standard enabling agents built with different frameworks to communicate, like HTTP for web servers.
 
 ---
 

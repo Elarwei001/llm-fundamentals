@@ -167,6 +167,18 @@ Agent 生态已经快速成熟。以下是主要框架概览：
 | [Hermes Agent](https://hermes-agent.org/) | 个人 Agent | 自进化技能、跨会话学习、模型无关 | Nous Research，2026 年 2 月 |
 | [Cursor](https://cursor.com/) | AI IDE | Agent 模式、代码库索引、自主长时任务 | 领先的 AI 原生编辑器 |
 
+### 多 Agent 协作：两种路线
+
+随着 Agent 能力增强，一个新挑战浮现：*多个 Agent* 之间如何协作？两个有代表性的平台展示了不同的哲学：
+
+**[CrewAI](https://github.com/crewAIInc/crewAI)** 采用*基于角色的自上而下*模式。你定义一组 Agent——研究员、写手、审阅者——每个角色有明确的职责、目标和工具集。编排器负责任务分配和信息路由。这种模式适合结构化的重复流程，比如"调研 → 分析 → 报告"。
+
+**[Slock](https://slock.ai/)**，由 Kimi CLI 的开发者创建，采用*人类参与的自下而上*模式。人类和 AI Agent 以平等队友的身份共存于一个类 Slack 的工作空间中——不是工具，而是协作伙伴。Agent 可以自主认领任务（task claiming），维护跨会话的持久记忆，并通过 channel 和 DM 实时协调。这非常适合小团队和独立开发者，他们需要的是真正的 AI 同事，而不仅仅是自动化工人。
+
+两者的对比很有启发：CrewAI 优化的是**纯 Agent-to-Agent 自动化**，而 Slock 优化的是**人机混合协作**。两者都合理——选择取决于你的工作流需要完全自治，还是需要人类在环。
+
+---
+
 **Google ADK**（2026 年 4 月）作为最新入局框架值得关注。它提供了代码优先的 Python/TypeScript 框架，原生支持多 Agent 编排、托管工具集成，以及部署到 Google Cloud 的 Agent Platform。关键是，它集成了 **A2A（Agent-to-Agent）协议**——一种新标准，让用不同框架构建的 Agent 能相互通信。
 
 在产品端，**Claude Code** 和 **Codex** 代表了编程 Agent 的最前沿——能自主编辑文件、运行测试、管理多步骤开发流程。**OpenClaw** 和 **Hermes** 则走了一条不同的路线：它们是驻留在本地机器上的持久化个人 Agent，维护长期记忆，能跨平台运行（Telegram、Slack、Discord、终端）。**Cursor** 将 IDE 和 Agent 范式融合，提供了带 Agent 模式的 AI 原生编程环境，支持自主执行长时间任务。
@@ -263,12 +275,29 @@ def agent_loop(task: str, llm_client, tools: dict, max_steps: int = 10):
 
 ---
 
-## 8. 历史时间线
+## 8. 关键里程碑：Agent 革命
 
-![图 4：AI Agent 时间线](./images/day31/agent-timeline-v2.png)
-*图 4：AI Agent 演进的关键里程碑，从 ReAct 论文（2023）到 Google ADK 和 A2A 协议（2026）。*
+AI 中"Agent"的概念比 LLM 更早——可以追溯到 1990 年代的经典 AI 研究。但现代基于 LLM 的 Agent 时代发展极快。以下是真正有影响力的里程碑：
 
-AI 中"Agent"的概念比 LLM 更早——可以追溯到 1990 年代的经典 AI 研究。但现代基于 LLM 的 Agent 时代真正始于 ReAct 论文（Yao 等人，ICLR 2023），它证明了交替推理和行动能显著提高任务完成率。AutoGPT 现象（2023 年 3 月）展示了巨大的公众兴趣，即使早期版本并不可靠。到 2024-2025 年，Anthropic 的 Computer Use 和 OpenAI 的 Operator 证明 Agent 可以与真实计算机界面交互。到 2026 年，标准化协议（MCP、A2A）和成熟框架（Google ADK、LangGraph）使 Agent 开发对主流开发者来说变得触手可及。
+**2023 — 基础奠定**
+- **ReAct 论文**（Yao 等人，ICLR 2023）——证明了交替推理和行动能显著提高任务完成率。现代 Agent 架构的基石。
+- **AutoGPT 爆火**（2023 年 3 月）——第一波 Agent 热潮。展示了公众对自主 AI 的巨大需求，即使早期版本并不可靠。
+
+**2024 — Agent 走向真实世界**
+- **Anthropic Computer Use**（2024 年 10 月）——Agent 能像人类一样看屏幕、点按钮。超越了纯 API 交互的新范式。
+- **OpenAI Operator**（2025 年 1 月）——将自主网页浏览和任务执行带给了主流用户。
+
+**2025 — 基础设施层**
+- **MCP 协议**（Anthropic）——标准化了工具如何连接到 Agent。就像 AI 的 USB 接口——一个通用接口代替每个工具的定制集成。
+- **Claude Code**（Anthropic）——终端原生编程 Agent，成为行业首选开发工具。
+- **Codex**（OpenAI）——基于云端的编程 Agent，支持沙箱执行和多日自动化任务。
+
+**2026 — Agent 走向主流**
+- **OpenClaw**（2026 年 1 月）——开源个人 Agent，48 小时内 GitHub 10 万+ Star。持久记忆、多平台、自托管。
+- **Hermes Agent**（Nous Research，2026 年 2 月）——自进化个人 Agent，随使用积累可复用技能。
+- **Slock**（2026）——Kimi CLI 开发者打造的 Agent-Human 协作平台。Agent 是队友，不是工具。
+- **Google ADK**（2026 年 4 月）——代码优先的多 Agent 框架，支持 A2A 协议。
+- **A2A 协议**——新标准，让不同框架构建的 Agent 能互相通信，类似 HTTP 之于 Web 服务器。
 
 ---
 
