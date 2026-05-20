@@ -107,7 +107,7 @@
 | D32 | Agent Architecture Patterns | ReAct, Plan-and-Execute, autonomous loops | [EN](articles/en/day32-agent-architecture-patterns.md) / [中文](articles/zh/day32-agent-architecture-patterns.md) |
 | D33 | **Tool Use** | Function Calling, letting LLMs interact with the real world | [EN](articles/en/day33-tool-use.md) / [中文](articles/zh/day33-tool-use.md) |
 | D34 | Memory Systems | Short-term, long-term memory, vector databases | [EN](articles/en/day34-memory-systems.md) / [中文](articles/zh/day34-memory-systems.md) |
-| D35 | **RAG Explained** | Retrieval-Augmented Generation, combining knowledge with reasoning | 🔥 what is rag +70% |
+| D35 | **RAG Explained** | Retrieval-Augmented Generation, combining knowledge with reasoning | [EN](articles/en/day35-rag-explained.md) / [中文](articles/zh/day35-rag-explained.md) |
 
 ### Week 8: Advanced Agents 🔥🔥 (New Hot Topics)
 

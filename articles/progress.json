@@ -1,6 +1,6 @@
 {
-  "current_day": 34,
-  "last_generated": "2026-05-18",
+  "current_day": 35,
+  "last_generated": "2026-05-20",
   "total_days": 60,
   "status": "active",
   "history": [
@@ -529,6 +529,22 @@
         "zh/images/day34/vector-database-architecture.png",
         "zh/images/day34/memory-systems-comparison.png",
         "zh/images/day34/memory-retrieval-tradeoffs.png"
+      ]
+    },
+    {
+      "day": 35,
+      "date": "2026-05-20",
+      "topic": "RAG Explained",
+      "en_path": "en/day35-rag-explained.md",
+      "zh_path": "zh/day35-rag-explained.md",
+      "qa_score": 0,
+      "qa_rounds": 0,
+      "images": [
+        "zh/images/day35/rag-pipeline-architecture.png",
+        "zh/images/day35/chunking-and-embedding-process.png",
+        "zh/images/day35/rag-variants-comparison.png",
+        "zh/images/day35/rag-performance-charts.png",
+        "zh/images/day35/rag-evolution-timeline.png"
       ]
     }
   ]

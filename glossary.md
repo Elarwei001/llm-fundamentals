@@ -174,7 +174,17 @@
 
 | English | 中文 | 简要说明 |
 |---------|------|----------|
-| RAG | 检索增强生成 | Retrieval-Augmented Generation |
+| RAG | 检索增强生成 | Retrieval-Augmented Generation，先从外部知识库检索相关文档，再结合 LLM 生成回答的架构 |
+| RAGAS | RAGAS 评估框架 | Retrieval Augmented Generation Assessment，评估 RAG 系统忠实度、相关性、召回率等指标的框架 |
+| Re-ranking | 重排 | 对初筛结果用更精细的模型（如交叉编码器）重新排序，提升检索质量 |
+| Reciprocal Rank Fusion (RRF) | 倒数排名融合 | 将多个检索系统的排名结果融合为统一排序的方法 |
+| CRAG | 纠正性 RAG | Corrective RAG，添加评估器判断检索质量，失败时触发后备搜索 |
+| Chunking | 分块 | 将长文档切分为较短的文本段落，用于检索和嵌入 |
+| ColPali | ColPali | 用视觉 Transformer 直接处理页面图像进行文档检索的方法 |
+| Contextual Retrieval | 上下文检索 | Anthropic 提出的在嵌入前为每个文本块添加 LLM 生成上下文的技术 |
+| Late Chunking | Late Chunking | 先嵌入整篇文档再分块的技术，保留跨块语义连贯性 |
+| GraphRAG | GraphRAG | 微软提出的基于知识图谱的检索增强生成方法 |
+| Self-RAG | Self-RAG | 让模型学习自我反思 token，自适应决定是否检索和验证的 RAG 变体 |
 | ReLU | ReLU | Rectified Linear Unit，常用激活函数 |
 | RLHF | 人类反馈强化学习 | Reinforcement Learning from Human Feedback |
 | RNN | 循环神经网络 | Recurrent Neural Network |
