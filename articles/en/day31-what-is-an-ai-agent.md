@@ -82,7 +82,7 @@ Every serious agent framework in 2026 — whether it's Google ADK, LangChain, Cr
 
 ### 3.1 LLM Core (The Brain)
 
-The LLM is the reasoning engine. It reads observations, decides what to do, and generates action plans. In 2026, most agents use models like GPT-4o, Claude 3.5/4, or Gemini 2.5 as their core. The choice of model matters enormously — better reasoning models produce more reliable agents.
+The LLM is the reasoning engine. It reads observations, decides what to do, and generates action plans. In 2026, most agents use models like GPT-5.5, Claude 4, or Gemini 3.5 as their core. The choice of model matters enormously — better reasoning models produce more reliable agents.
 
 ### 3.2 Memory (The Notebook)
 
