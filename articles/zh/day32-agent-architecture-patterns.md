@@ -37,7 +37,7 @@ $$
 
 区别在于每一步*怎么*组织、规划在*什么时候*发生、以及 Agent *是否*能反思自己的失败。
 
-![四种核心 Agent 架构模式对比](../zh/images/day32/architecture-patterns-comparison.png)
+![四种核心 Agent 架构模式对比](../zh/images/day32/architecture-patterns-comparison-v2.png)
 *图 1：四种经典 Agent 架构模式。每种对"观察-思考-行动"循环的组织方式不同。*
 
 ---
@@ -67,7 +67,7 @@ ReAct（**Re**asoning + **Act**ing 的缩写），由 Yao 等人于 2023 年提�
 7. **Thought**："信息够了。"
 8. **Answer**："法国首都巴黎约有 210 万居民。"
 
-![ReAct 执行轨迹示例](../zh/images/day32/react-trace-example.png)
+![ReAct 执行轨迹示例](../zh/images/day32/react-trace-example-v2.png)
 *图 2：一个完整的 ReAct 轨迹。注意推理和行动交替进行——Agent 每次只提前想一步。*
 
 > **深入理解：Thought 是怎么产生的？**
@@ -275,7 +275,7 @@ Reflexion 被称为"语言强化学习"，因为它镜像了传统 RL——但�
 - **更结构化**（Plan-and-Execute）→ 高效但计划断裂时脆弱
 - **更反思**（Reflexion、自主循环）→ 从失败中学习，但消耗更多 token
 
-![Agent 模式选择决策树](../zh/images/day32/pattern-decision-tree.png)
+![Agent 模式选择决策树](../zh/images/day32/pattern-decision-tree-v2.png)
 *图 3：根据任务特征选择正确 Agent 架构模式的决策指南。*
 
 ---
@@ -321,7 +321,7 @@ Agent 架构领域正在快速演进：
 
 6. **"Agentic AI: Architectures, Taxonomies, and Evaluation" 综述（2026 年 1 月）**——覆盖单 Agent 和多 Agent 模式的综合分类法，正式化了这一领域。([arXiv:2601.01743](https://arxiv.org/abs/2601.01743))
 
-![Agent 框架时间线](../zh/images/day32/framework-timeline.png)
+![Agent 框架时间线](../zh/images/day32/framework-timeline-v2.png)
 *图 4：2023 年至 2026 年中的关键 Agent 框架和论文时间线。*
 
 ---

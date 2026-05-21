@@ -37,7 +37,7 @@ $$
 
 The differences lie in *how* each step is structured, *when* planning happens, and *whether* the agent can reflect on its own failures.
 
-![Four core agent architecture patterns compared](../zh/images/day32/architecture-patterns-comparison.png)
+![Four core agent architecture patterns compared](../zh/images/day32/architecture-patterns-comparison-v2.png)
 *Figure 1: The four canonical agent architecture patterns. Each structures the observe-think-act loop differently.*
 
 ---
@@ -67,7 +67,7 @@ A ReAct trace looks like this:
 7. **Thought**: "I have enough information."
 8. **Answer**: "Paris, the capital of France, has ~2.1 million residents."
 
-![ReAct trace example showing interleaved thoughts and actions](../zh/images/day32/react-trace-example.png)
+![ReAct trace example showing interleaved thoughts and actions](../zh/images/day32/react-trace-example-v2.png)
 *Figure 2: A complete ReAct trace. Notice how reasoning and action alternate — the agent never plans more than one step ahead.*
 
 > **Deep Dive: How Do Thoughts Arise?**
@@ -275,7 +275,7 @@ The biggest risk of full autonomous loops is the agent getting stuck — re-plan
 - **More structured** (Plan-and-Execute) → efficient but brittle when plans break
 - **More reflective** (Reflexion, Autonomous) → learns from failure but burns tokens
 
-![Decision tree for choosing agent patterns](../zh/images/day32/pattern-decision-tree.png)
+![Decision tree for choosing agent patterns](../zh/images/day32/pattern-decision-tree-v2.png)
 *Figure 3: A decision guide for choosing the right agent architecture pattern based on task characteristics.*
 
 ---
@@ -321,7 +321,7 @@ The agent architecture landscape is evolving rapidly:
 
 6. **"Agentic AI: Architectures, Taxonomies, and Evaluation" survey (January 2026)** — A comprehensive taxonomy covering single-agent and multi-agent patterns, formalizing the field. ([arXiv:2601.01743](https://arxiv.org/abs/2601.01743))
 
-![Agent framework timeline](../zh/images/day32/framework-timeline.png)
+![Agent framework timeline](../zh/images/day32/framework-timeline-v2.png)
 *Figure 4: Timeline of key agent frameworks and papers from 2023 to mid-2026.*
 
 ---
