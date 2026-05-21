@@ -58,6 +58,10 @@ Think of ReAct like exploring a new city without a map. You walk one block, look
 
 A ReAct trace looks like this:
 
+<table>
+<tr>
+<td valign="top" width="45%">
+
 1. **Thought**: "I need to find the capital of France."
 2. **Action**: `Search["capital of France"]`
 3. **Observation**: "Paris is the capital of France."
@@ -67,8 +71,16 @@ A ReAct trace looks like this:
 7. **Thought**: "I have enough information."
 8. **Answer**: "Paris, the capital of France, has ~2.1 million residents."
 
+</td>
+<td valign="top" width="55%">
+
 ![ReAct trace example showing interleaved thoughts and actions](../zh/images/day32/react-trace-example-v2.png)
+
 *Figure 2: A complete ReAct trace. Notice how reasoning and action alternate — the agent never plans more than one step ahead.*
+
+</td>
+</tr>
+</table>
 
 > **Deep Dive: How Do Thoughts Arise?**
 >

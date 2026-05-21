@@ -58,6 +58,10 @@ ReAct（**Re**asoning + **Act**ing 的缩写），由 Yao 等人于 2023 年提�
 
 一个 ReAct 执行轨迹如下：
 
+<table>
+<tr>
+<td valign="top" width="45%">
+
 1. **Thought**："我需要找到法国的首都。"
 2. **Action**：`Search["法国首都"]`
 3. **Observation**："巴黎是法国的首都。"
@@ -67,8 +71,16 @@ ReAct（**Re**asoning + **Act**ing 的缩写），由 Yao 等人于 2023 年提�
 7. **Thought**："信息够了。"
 8. **Answer**："法国首都巴黎约有 210 万居民。"
 
+</td>
+<td valign="top" width="55%">
+
 ![ReAct 执行轨迹示例](../zh/images/day32/react-trace-example-v2.png)
+
 *图 2：一个完整的 ReAct 轨迹。注意推理和行动交替进行——Agent 每次只提前想一步。*
+
+</td>
+</tr>
+</table>
 
 > **深入理解：Thought 是怎么产生的？**
 >
