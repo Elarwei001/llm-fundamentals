@@ -1,6 +1,6 @@
 {
-  "current_day": 35,
-  "last_generated": "2026-05-20",
+  "current_day": 36,
+  "last_generated": "2026-05-21",
   "total_days": 60,
   "status": "active",
   "history": [
@@ -545,6 +545,21 @@
         "zh/images/day35/rag-variants-comparison.png",
         "zh/images/day35/rag-performance-charts.png",
         "zh/images/day35/rag-evolution-timeline.png"
+      ]
+    },
+    {
+      "day": 36,
+      "date": "2026-05-21",
+      "topic": "Multi-Agent Systems",
+      "en_path": "en/day36-multi-agent-systems.md",
+      "zh_path": "zh/day36-multi-agent-systems.md",
+      "qa_score": 0,
+      "qa_rounds": 0,
+      "images": [
+        "zh/images/day36/multi-agent-topologies.png",
+        "zh/images/day36/multi-agent-lifecycle.png",
+        "zh/images/day36/multi-agent-failure-modes.png",
+        "zh/images/day36/agent-protocol-stack.png"
       ]
     }
   ]

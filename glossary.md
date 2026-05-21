@@ -13,6 +13,9 @@
 | Attention | 注意力机制 | 让模型关注输入的不同部分 |
 | Autoregressive | 自回归 | 根据前面的 token 预测下一个 token |
 | Abstention | 保留判断 / 拒答 | 在证据不足时选择明确表示不确定或拒绝给出结论 |
+| A2A (Agent-to-Agent Protocol) | Agent-to-Agent 协议 | Google 于 2025 年 4 月推出的开放标准，用于智能体间的发现、认证和通信 |
+| Agent Card | Agent 卡片 | A2A 协议中 JSON 格式的智能体能力描述文件 |
+| AutoGen (AG2) | AutoGen | Microsoft Research 的多智能体框架，支持对话式 GroupChat 和异步事件驱动 |
 
 ## B
 
@@ -41,6 +44,8 @@
 | Context Window | 上下文窗口 | 模型能处理的最大 token 数 |
 | Cosine Similarity | 余弦相似度 | 通过向量夹角的余弦值衡量相似度，常用于比较嵌入 |
 | Cross-Entropy Loss | 交叉熵损失 | 分类任务常用的损失函数 |
+| Coordination Drift | 协调漂移 | 多智能体系统中 agent 逐渐失去共同理解的现象 |
+| CrewAI | CrewAI | 基于角色的多智能体框架，以快速原型开发著称 |
 
 ## D
 
@@ -63,6 +68,7 @@
 | Emergence | 涌现 | 大模型展现出小模型没有的能力 |
 | Encoder | 编码器 | Transformer 的理解部分 |
 | Exposure Bias | 暴露偏差 | 训练时看真实前缀、推理时看模型自生成前缀所带来的分布差异 |
+| Error Cascade | 错误级联 | 多智能体系统中一个 agent 的错误向下游 agent 传播放大 |
 
 ## F
 
@@ -117,6 +123,7 @@
 | LoRA | LoRA | Low-Rank Adaptation，参数高效微调方法 |
 | Logits | Logits / 未归一化分数 | Softmax 之前的原始输出分数，用于计算概率分布 |
 | Loss Function | 损失函数 | 衡量预测与真实值差距的函数 |
+| LangGraph | LangGraph | LangChain 团队开发的有向图多智能体框架，以生产级可靠性著称 |
 
 ## M
 
@@ -131,6 +138,7 @@
 | MRL (Matryoshka Representation Learning) | 套娃表示学习 | 可截断嵌入维度的训练方法，降低存储成本 |
 | Memory System | 记忆系统 | 智能体的信息持久化与检索机制，包括工作记忆、短期记忆和长期记忆 |
 | Multi-Query Attention (MQA) | 多查询注意力 | 多个 query 头共享同一组 key/value 的注意力变体，降低解码内存带宽压力 |
+| MAST (Multi-Agent System Failure Taxonomy) | MAST 失败分类法 | NeurIPS 2025 提出的多智能体失败模式分类，含 14 种失败模式 |
 
 ## N
 
