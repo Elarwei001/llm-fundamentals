@@ -70,6 +70,19 @@ A ReAct trace looks like this:
 ![ReAct trace example showing interleaved thoughts and actions](../zh/images/day32/react-trace-example.png)
 *Figure 2: A complete ReAct trace. Notice how reasoning and action alternate — the agent never plans more than one step ahead.*
 
+> **Deep Dive: How Do Thoughts Arise?**
+>
+> In the trace above, Thought 2 and Thought 3 are *not* pre-planned — the LLM generates them **on the fly** after seeing the previous Observation.
+>
+> In each loop iteration, the LLM sees the full history so far (Question + all prior Thoughts/Actions/Observations), then produces a new Thought + Action based on that context. The tool executes and returns an Observation, which gets appended to the history for the next round.
+>
+> This means:
+> - The LLM only thinks **one step ahead** at a time — it doesn't pre-compute future Thoughts
+> - Each Thought is a **reaction to the latest Observation** (which is exactly where the name ReAct comes from — Reason + Act interleaved)
+> - If Observation 2 had returned "Population data unavailable for Paris," Thought 3 would have become "Try a different data source" instead of "I have enough information"
+>
+> This is precisely where ReAct's flexibility comes from — each step's reasoning depends on what was actually observed, not on a plan locked in at the start. Contrast this with Plan-and-Execute, which lists all steps upfront and then executes mechanically.
+
 ### Strengths and Weaknesses
 
 | Aspect | ReAct |

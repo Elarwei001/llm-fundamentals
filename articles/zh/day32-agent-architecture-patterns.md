@@ -70,6 +70,19 @@ ReAct（**Re**asoning + **Act**ing 的缩写），由 Yao 等人于 2023 年提�
 ![ReAct 执行轨迹示例](../zh/images/day32/react-trace-example.png)
 *图 2：一个完整的 ReAct 轨迹。注意推理和行动交替进行——Agent 每次只提前想一步。*
 
+> **深入理解：Thought 是怎么产生的？**
+>
+> 在上面的执行轨迹中，Thought 2 和 Thought 3 并非预先规划好的——它们是 LLM 在看到上一步的 Observation 之后**实时生成**的。
+>
+> 每一轮循环中，LLM 看到之前所有的历史（Question + 之前的 Thought/Action/Observation），然后基于这些上下文生成一个新的 Thought + Action。工具执行后返回 Observation，Observation 被追加到历史里，进入下一轮。
+>
+> 这意味着：
+> - LLM 每次只提前想**一步**，不会预想后续所有 Thought
+> - 每个 Thought 都是对**最新 Observation 的反应**（这也是 ReAct 名字的由来——Reason + Act 交织）
+> - 如果 Observation 2 返回的是"巴黎人口数据不可用"，Thought 3 就会变成"换个数据源再查"，而不是"信息够了"
+>
+> 这正是 ReAct 灵活性的来源——每一步的思考都取决于上一步实际看到了什么，而不是一开始就锁定的计划。与 Plan-and-Execute 对比就很明显：后者先列出全部步骤，然后机械执行。
+
 ### 优缺点
 
 | 方面 | ReAct |
