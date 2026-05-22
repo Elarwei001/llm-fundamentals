@@ -54,7 +54,7 @@ RAG 流水线包含两大阶段：**离线索引阶段**（做一次）和**在�
 3. **Prompt 构建** — 检索到的文本块被注入到 LLM 的 prompt 中，通常使用类似模板："根据以下上下文回答问题。上下文：[文本块]。问题：[查询]。"
 4. **生成** — LLM 读取包含检索上下文的 prompt，生成有据可依的答案。
 
-![RAG 流水线架构](../zh/images/day35/rag-pipeline-architecture.png)
+![RAG 流水线架构](./images/day35/rag-pipeline-architecture.png)
 *图 1：完整的 RAG 流水线——从用户查询，经过检索，到最终答案生成。*
 
 ---
@@ -83,7 +83,7 @@ RAG 流水线包含两大阶段：**离线索引阶段**（做一次）和**在�
 
 类似地，[Anthropic 的 Contextual Retrieval](https://www.anthropic.com/news/contextual-retrieval)（2024 年 9 月）在嵌入之前为每个文本块添加一段简短的、由 LLM 生成的上下文说明——解释这个块在父文档中的位置。Anthropic 报告称这项简单的技术将 top-20 检索失败率降低了 67%。
 
-![分块与嵌入流程](../zh/images/day35/chunking-and-embedding-process.png)
+![分块与嵌入流程](./images/day35/chunking-and-embedding-process.png)
 *图 2：离线索引流水线——从原始文档，经过分块和嵌入，到向量存储。*
 
 ---
@@ -121,7 +121,7 @@ RAG 流水线包含两大阶段：**离线索引阶段**（做一次）和**在�
 
 最初的 RAG 设计（检索 → 塞入 prompt → 生成）现在被称为**"Vanilla RAG"**或**"Naive RAG"**。随着领域的成熟，研究者们发现了系统性的弱点，并提出了越来越复杂的变体。
 
-![RAG 变体对比](../zh/images/day35/rag-variants-comparison.png)
+![RAG 变体对比](./images/day35/rag-variants-comparison.png)
 *图 3：四种主要 RAG 架构变体——每种针对 Vanilla RAG 的一个特定弱点。*
 
 ### 5.1 Self-RAG（Asai 等人，2023）
@@ -192,7 +192,7 @@ $$
 
 ## 7. RAG 性能：基准测试告诉我们什么
 
-![RAG 性能图表](../zh/images/day35/rag-performance-charts.png)
+![RAG 性能图表](./images/day35/rag-performance-charts.png)
 *图 4：不同分块策略的检索失败率（左）和不同 RAG 变体在复杂问答上的准确率（右）。数据来自 Meta CRAG Benchmark 和 Anthropic contextual retrieval 评估。*
 
 从数据中可以得出几个关键洞察：
@@ -313,7 +313,7 @@ RAG 领域发展迅速。以下是最重要的近期进展：
 
 微软的 GraphRAG 已经催生了一个完整的研究子领域。[ACM TOIS 上发表的图检索增强生成综述（2025）](https://dl.acm.org/doi/10.1145/3777378)收录了数十种图增强 RAG 方法。GraphRAG 在多跳推理和跨文档综合上始终优于 Vanilla RAG，尽管索引构建成本显著更高（贵 100–1000 倍）。
 
-![RAG 演进时间线](../zh/images/day35/rag-evolution-timeline.png)
+![RAG 演进时间线](./images/day35/rag-evolution-timeline.png)
 *图 5：RAG 从 2020 年的基础检索-生成到 2026 年的多模态智能体系统的演进——检索质量、系统自主性和模态覆盖都有了显著提升。*
 
 ---
