@@ -262,6 +262,9 @@ Analogy: GraphRAG is like building a library index — fast to query once built,
 
 ## 5. Memory Frameworks in Practice
 
+![Figure 4: Technical comparison of three memory architectures](../zh/images/day34/memory-architectures.png)
+*Figure 4: Technical comparison of three memory architectures — Letta's three-tier storage model, Mem0's extraction-injection pipeline, and Zep/Graphiti's temporal knowledge graph. Green arrows indicate write paths; orange arrows indicate read paths.*
+
 ### 5.1 Letta (formerly MemGPT)
 
 [Letta](https://www.letta.com/blog/agent-memory), originally published as the MemGPT paper at ICLR 2024 by researchers at UC Berkeley, takes an **operating system-inspired** approach to agent memory. The name is a nod to how operating systems manage memory through virtual memory, paging, and caching.
@@ -379,19 +382,6 @@ print(context)
 This is intentionally minimal — production systems add deduplication, fact extraction via LLM, entity resolution, and temporal metadata.
 
 ---
-
-## 7. The Retrieval Trade-off Landscape
-
-Not all memory types are created equal. The chart below shows how different memory approaches compare across key dimensions:
-
-![Figure 4: Memory Retrieval Trade-offs](../zh/images/day34/memory-retrieval-tradeoffs.png)
-*Figure 4: Left — Query latency vs. collection size for popular vector databases. Right — Characteristic profiles of different memory types across latency, capacity, persistence, precision, and cost efficiency. Note: latency numbers are illustrative p99 estimates; real-world performance varies by hardware, index configuration, and query complexity.*
-
-Key observations:
-- **Working memory** is fast and precise but tiny and volatile
-- **Vector databases** offer excellent capacity and persistence at moderate latency
-- **Knowledge graphs** add precision and relational reasoning at the cost of higher latency and complexity
-- No single approach dominates all dimensions — real systems combine multiple tiers
 
 ---
 
