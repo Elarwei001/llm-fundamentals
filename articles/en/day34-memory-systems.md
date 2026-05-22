@@ -133,7 +133,7 @@ $$
 \end{aligned}
 $$
 
-where $q$ is the query vector and $d$ is a document vector. The result ranges from -1 to 1, with 1 meaning identical direction.
+where **q** is the query vector and **d** is a document vector. The result ranges from -1 to 1, with 1 meaning identical direction.
 
 ### 3.3 Vector Database Landscape (2026)
 
