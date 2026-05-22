@@ -164,10 +164,53 @@ The quality of retrieval depends heavily on the embedding model. In 2026, the la
 |-------|-----------|---------|----------------------|----------|
 | OpenAI text-embedding-3-large | 3072 (MRL: 256–3072) | 8,192 | $0.13 | General English, MRL support |
 | Voyage AI voyage-4-large | 2048 (MRL: 256–2048) | 32,768 | ~$0.08 | MoE architecture, code retrieval |
-| Google Gemini Embedding | 3072 | 8,192 | Varies | First multimodal (text+image+video) |
-| Alibaba text-embedding-v4 | 2048 | 8,192 | Varies | Multilingual, recommendation tasks |
+| Google Gemini Embedding | 3072 | 8,192 | ~$0.05 | First multimodal (text+image+video) |
+| Alibaba text-embedding-v4 | 2048 | 8,192 | ~$0.07 | Multilingual, recommendation tasks |
 
-The **Matryoshka Representation Learning (MRL)** feature, first introduced by OpenAI in late 2023 and now widely adopted, lets you truncate embedding dimensions at query time (e.g., use only 256 of 3072 dimensions) with minimal quality loss. This dramatically reduces storage costs for large collections.
+### MRL: Russian Doll Embeddings
+
+What does "MRL: 256–3072" in the table above actually mean?
+
+**Matryoshka Representation Learning (MRL)** is named after the Russian Matryoshka doll — a large doll containing a smaller doll, which contains an even smaller one. MRL embeddings work the same way:
+
+**In a 3072-dimensional vector, the first 256 dimensions already contain the most important semantic information. The first 512 are more precise. The first 1024 even more so... up to the full 3072.**
+
+#### Why Does This Matter?
+
+Say you have 10 million documents, each storing a 3072-dim float vector:
+
+- **Without MRL**: Each vector = 3072 × 4 bytes ≈ 12 KB; 10M docs ≈ **120 GB**
+- **With MRL, truncated to 256 dims**: Each vector = 256 × 4 bytes ≈ 1 KB; 10M docs ≈ **10 GB** — a **92% reduction**
+
+The key insight: retrieval quality at 256 dimensions typically drops less than 5%. In most practical scenarios, that's perfectly acceptable.
+
+#### How Does It Work?
+
+During training, MRL doesn't just optimize the final output (e.g., 3072 dims). Instead, it computes loss at multiple intermediate dimension sizes (e.g., 256, 512, 1024, 2048, 3072). This forces the model to prioritize encoding the most important information in the leading dimensions, with later dimensions only adding detail.
+
+```
+Training one batch:
+  Generate 3072-dim vector
+  Compute loss(first 256 dims)  → ensure coarse semantics are correct
+  Compute loss(first 512 dims)  → ensure medium precision
+  Compute loss(first 1024 dims) → ensure finer granularity
+  ...
+  Compute loss(full 3072 dims)  → ensure full precision
+  Total loss = sum of losses at each scale
+```
+
+#### Practical Usage Patterns
+
+| Scenario | Recommended Dims | Reason |
+|----------|-----------------|--------|
+| Initial filtering (10M → Top 100) | 256 | Fastest, smallest storage |
+| Re-ranking (Top 100 → final results) | 1024–3072 | Higher precision needed |
+| Resource-constrained mobile devices | 256–512 | Limited memory and compute |
+| High-accuracy requirements | Full dims | No quality sacrifice |
+
+A common production pattern is the "coarse filter + fine re-rank" two-stage strategy: use 256 dims for fast initial retrieval, then full dimensions for precise ranking.
+
+MRL was introduced by OpenAI in late 2023 and has become the de facto standard for embedding models in 2025–2026. All major models (text-embedding-3-large, voyage-4-large, etc.) now support it.
 
 ---
 
