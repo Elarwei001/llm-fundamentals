@@ -114,7 +114,7 @@
 | Day | Topic | Core Question | Trend Source |
 |-----|-------|---------------|--------------|
 | D36 | Multi-Agent Systems | Multiple agents collaborating, emergence and chaos | [EN](articles/en/day36-multi-agent-systems.md) / [中文](articles/zh/day36-multi-agent-systems.md) |
-| D37 | **Agentic RAG** | RAG + Agent combination, dynamic retrieval | 🔥🔥 +300% rising |
+| D37 | **Agentic RAG** | RAG + Agent combination, dynamic retrieval | 🔥🔥 +300% rising · [EN](articles/en/day37-agentic-rag.md) / [中文](articles/zh/day37-agentic-rag.md) |
 | D38 | **MCP (Model Context Protocol)** | Anthropic's context protocol standard | 🔥🔥 rising new term |
 | D39 | **Google ADK** | Agent Development Kit introduction | 🔥🔥 rising new term |
 | D40 | Agent Tool Comparison | OpenClaw vs Codex vs ADK vs LangChain | 🔥 best ai agent +400% |
