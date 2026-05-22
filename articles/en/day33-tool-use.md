@@ -204,11 +204,12 @@ Key work: **"From Exploration to Mastery"** (October 2024, [arXiv:2410.08197](ht
 
 ### How Modern Frontier Models Do It
 
-In practice, all three approaches are combined. Models like GPT-4.1 and Claude 3.5 are:
+In practice, all three approaches are combined. Frontier models like GPT-5.5 and Claude Opus 4.7:
 
 1. **Pre-trained** on massive data that includes code, API documentation, and structured data
 2. **Fine-tuned** on curated tool-use examples (function calling datasets)
 3. **RLHF-trained** to prefer helpful tool use over hallucinated responses
+4. The latest frontier models (e.g., GPT-5.5) also incorporate **reinforcement learning** to optimize complex multi-step tool orchestration, with dedicated post-training for agentic tasks
 
 This layered approach is why modern models can reliably call tools they've never seen before — they've internalized the *pattern* of "read a schema, decide whether to call, structure the arguments correctly."
 
@@ -304,6 +305,36 @@ MCP provides:
 ### Security Concerns
 
 The rapid growth hasn't been without issues. In May 2026, researchers disclosed that 200,000 MCP servers exposed a command execution vulnerability (CVE-2026-30623), highlighting the risks of the protocol's permissive defaults. This is a reminder that standardizing tool access amplifies both capability *and* risk.
+
+### MCP vs. Traditional Integration Methods
+
+To understand why MCP matters, it helps to see how it differs fundamentally from existing interface standards:
+
+| Dimension | REST API | gRPC / RPC | MCP |
+|-----------|----------|------------|-----|
+| **Designed for** | Human developers (general-purpose) | High-performance microservice calls | **AI model consumption** |
+| **Discovery** | Requires reading docs | Requires reading .proto files | `tools/list` — dynamic discovery, models understand on their own |
+| **Description format** | OpenAPI/Swagger (optional) | Protocol Buffers (strongly typed) | JSON Schema + natural language descriptions |
+| **Protocol** | HTTP + JSON/XML | HTTP/2 + Protobuf | JSON-RPC 2.0 (stdio / SSE / Streamable HTTP) |
+| **Who "reads" the interface** | Human developers | Human developers | **AI models** |
+| **Tool granularity** | Coarse (resources + CRUD) | Fine (method calls) | Medium (organized by task capability) |
+
+The key difference is that last row — **MCP is the first protocol designed to be "read by models"**. The consumers of REST and RPC are human programmers: people read documentation, write glue code, and debug interfaces. The consumer of MCP is an AI model: the model discovers available tools via `tools/list`, understands parameter structures through JSON Schema, grasps tool semantics through natural-language description fields, and constructs calls directly.
+
+#### A Concrete Example
+
+Suppose you want an LLM to access a user's Google Drive files:
+
+**Traditional REST API approach**: Developer reads Google Drive API docs → writes authentication logic → wraps each operation in a function → registers those functions as LLM tools → maintains consistency on both sides
+
+**MCP approach**: Spin up a Google Drive MCP Server → the LLM discovers `list_files`, `read_file`, `search_files` via `tools/list` → calls them directly. No wrapper code needed.
+
+Beyond basic tool calling, MCP also provides capabilities that traditional APIs lack:
+- **Prompts**: MCP Servers can expose pre-written prompt templates that tell the model how to use tools effectively
+- **Resources**: Servers can provide contextual data (file contents, database schemas), not just callable functions
+- **Sampling**: Servers can make reverse requests to the LLM for subtasks, enabling bidirectional Server ↔ LLM collaboration
+
+These capabilities make MCP more than just a "remote procedure call" protocol — it's a **complete interaction framework between AI and the external world**.
 
 ---
 
