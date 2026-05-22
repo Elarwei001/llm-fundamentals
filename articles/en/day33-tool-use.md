@@ -332,9 +332,9 @@ Suppose you want an LLM to access a user's Google Drive files:
 Beyond basic tool calling, MCP also provides capabilities that traditional APIs lack:
 - **Prompts**: MCP Servers can expose pre-written prompt templates that tell the model how to use tools effectively
 - **Resources**: Servers can provide contextual data (file contents, database schemas), not just callable functions
-- **Sampling**: Servers can make reverse requests to the LLM for subtasks, enabling bidirectional Server ↔ LLM collaboration
+- **Sampling**: Servers can make reverse requests to the LLM for subtasks — though this feature is still in its early stages and not yet widely supported by mainstream MCP clients (Claude Desktop, Cursor, etc.)
 
-These capabilities make MCP more than just a "remote procedure call" protocol — it's a **complete interaction framework between AI and the external world**.
+These capabilities make MCP more than just a "remote procedure call" protocol — it's a **complete interaction framework between AI and the external world**. That said, while Prompts and Resources are widely adopted, Sampling remains largely experimental and is rarely used in production.
 
 ---
 

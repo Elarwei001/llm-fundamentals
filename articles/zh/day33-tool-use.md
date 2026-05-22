@@ -330,9 +330,9 @@ MCP 提供：
 此外，MCP 还提供了一些传统 API 没有的能力：
 - **Prompts（提示模板）**：MCP Server 可以暴露预写的提示模板，告诉模型如何更好地使用工具
 - **Resources（资源）**：Server 可以提供上下文数据（如文件内容、数据库 schema），而不仅是可调用的函数
-- **Sampling（采样请求）**：Server 可以反向请求 LLM 完成子任务，实现 Server ↔ LLM 的双向协作
+- **Sampling（采样请求）**：Server 可以反向请求 LLM 完成子任务——但这个特性目前仍处于早期阶段，主流 MCP 客户端（Claude Desktop、Cursor 等）尚未广泛支持
 
-这些能力让 MCP 不只是一个"远程过程调用"协议，而是一个 **AI 与外部世界的完整交互框架**。
+这些能力让 MCP 不只是一个"远程过程调用"协议，而是一个 **AI 与外部世界的完整交互框架**。不过要注意：除了 Prompts 和 Resources 已被广泛采用外，Sampling 目前仍以实验性为主，生产环境中较少使用。
 
 ---
 
