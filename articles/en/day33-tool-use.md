@@ -319,7 +319,7 @@ To understand why MCP matters, it helps to see how it differs fundamentally from
 | **Who "reads" the interface** | Human developers | Human developers | **AI models** |
 | **Tool granularity** | Coarse (resources + CRUD) | Fine (method calls) | Medium (organized by task capability) |
 
-The key difference is that last row — **MCP is the first protocol designed to be "read by models"**. The consumers of REST and RPC are human programmers: people read documentation, write glue code, and debug interfaces. The consumer of MCP is an AI model: the model discovers available tools via `tools/list`, understands parameter structures through JSON Schema, grasps tool semantics through natural-language description fields, and constructs calls directly.
+The key difference is the "Who 'reads' the interface" row — **MCP is the first protocol designed to be "read by models"**. The consumers of REST and RPC are human programmers: people read documentation, write glue code, and debug interfaces. The consumer of MCP is an AI model: the model discovers available tools via `tools/list`, understands parameter structures through JSON Schema, grasps tool semantics through natural-language description fields, and constructs calls directly.
 
 #### A Concrete Example
 
