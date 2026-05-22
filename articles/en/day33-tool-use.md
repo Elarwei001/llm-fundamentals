@@ -348,14 +348,6 @@ The latest frontier models (OpenAI o-series, Claude with extended thinking, Deep
 
 **ToolBench** (Qin et al., 2024, [arXiv:2307.16789](https://arxiv.org/abs/2307.16789)) from the Gorilla project created a benchmark with 16,464 real-world APIs spanning 49 categories, enabling systematic evaluation of tool-use capabilities.
 
-### Agentic Frameworks
-
-The tool-use ecosystem has spawned dozens of agent frameworks:
-- **LangChain** ([langchain.com](https://www.langchain.com/)): Popular framework for building tool-using agents
-- **CrewAI** ([crewai.com](https://www.crewai.com/)): Multi-agent orchestration with tool sharing
-- **Google ADK** ([google.github.io/adk-docs](https://google.github.io/adk-docs/)): Google's Agent Development Kit (covered in Day 39)
-- **OpenAI Agents SDK** ([openai.github.io/openai-agents-python](https://openai.github.io/openai-agents-python/)): OpenAI's official agent framework with built-in tool patterns
-
 ---
 
 ## 9. Code Example: Building a Tool-Using Agent

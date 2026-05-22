@@ -346,14 +346,6 @@ MCP 提供：
 
 **ToolBench**（Qin et al.，2024，[arXiv:2307.16789](https://arxiv.org/abs/2307.16789)）来自 Gorilla 项目，创建了一个包含 16,464 个真实世界 API、覆盖 49 个类别的基准测试，能够系统评估工具使用能力。
 
-### 智能体框架
-
-工具使用生态催生了数十个智能体框架：
-- **LangChain**（[langchain.com](https://www.langchain.com/)）：流行的工具使用智能体构建框架
-- **CrewAI**（[crewai.com](https://www.crewai.com/)）：多智能体编排与工具共享
-- **Google ADK**（[google.github.io/adk-docs](https://google.github.io/adk-docs/)）：Google 的智能体开发工具包（Day 39 详解）
-- **OpenAI Agents SDK**（[openai.github.io/openai-agents-python](https://openai.github.io/openai-agents-python/)）：OpenAI 官方智能体框架，内置工具模式
-
 ---
 
 ## 9. 代码示例：构建一个使用工具的智能体
