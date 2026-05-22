@@ -366,14 +366,14 @@ memory = AgentMemory()
 
 # Store facts extracted from conversations
 memory.store("User prefers dark mode in all applications")
-memory.store("User's timezone is Asia/Singapore (UTC+8)")
-memory.store("User is working on PhD applications in NLP")
+memory.store("User's timezone is US/Pacific (UTC-8)")
+memory.store("Alice prefers dark mode interface")
 
 # Later, in a new session, retrieve relevant context
 context = memory.get_context("What display settings should I use?")
 print(context)
 # Output: [2026-05-18T08:00:00] User prefers dark mode in all applications
-#         [2026-05-17T14:30:00] User's timezone is Asia/Singapore (UTC+8)
+#         [2026-05-17T14:30:00] User's timezone is US/Pacific (UTC-8)
 ```
 
 This is intentionally minimal — production systems add deduplication, fact extraction via LLM, entity resolution, and temporal metadata.

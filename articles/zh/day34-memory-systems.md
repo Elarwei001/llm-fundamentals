@@ -366,14 +366,14 @@ memory = AgentMemory()
 
 # 存储从对话中提取的事实
 memory.store("用户偏好所有应用使用暗色模式")
-memory.store("用户时区是 Asia/Singapore (UTC+8)")
-memory.store("用户正在准备 NLP 方向的博士申请")
+memory.store("用户时区是 US/Pacific (UTC-8)")
+memory.store("Alice 偏好深色模式界面")
 
 # 之后在新会话中检索相关上下文
 context = memory.get_context("我应该用什么显示设置？")
 print(context)
 # 输出: [2026-05-18T08:00:00] 用户偏好所有应用使用暗色模式
-#       [2026-05-17T14:30:00] 用户时区是 Asia/Singapore (UTC+8)
+#       [2026-05-17T14:30:00] 用户时区是 US/Pacific (UTC-8)
 ```
 
 这是有意保持简洁的——生产系统会加入去重、LLM 事实抽取、实体消歧和时间元数据。
