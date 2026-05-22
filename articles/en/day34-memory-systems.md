@@ -238,6 +238,23 @@ A vector database is like a contacts app — it stores information about each pe
 
 This means when Alice's preference changes from Python to Rust, the graph stores *both* facts with different time ranges, and queries can specify temporal context.
 
+#### Graphiti vs. Microsoft GraphRAG
+
+The names are confusingly similar, but they solve fundamentally different problems:
+
+| Dimension | Microsoft GraphRAG | Graphiti (Zep) |
+|-----------|-------------------|----------------|
+| **Purpose** | Static document knowledge graph retrieval | Real-time dynamic memory for agents |
+| **Data source** | Offline document collections (papers, reports) | Live conversation streams |
+| **Graph construction** | One-time offline build | Continuously evolving online |
+| **Temporal awareness** | None | Core feature — every fact carries a validity time range |
+| **Update method** | Rebuild the entire graph when documents change | Real-time incremental updates per conversation turn |
+| **Query latency** | Slower (multi-step summarization, often tens of seconds) | Faster (incremental updates, seconds) |
+| **Typical use case** | "Analyze method comparisons across 100 papers" | "Remember user preferences and project history" |
+| **Open-sourced** | Microsoft, 2024 | Zep, 2025 |
+
+Analogy: GraphRAG is like building a library index — fast to query once built, but the bookshelf doesn't auto-update. Graphiti is like giving an AI assistant a living notebook — every conversation adds new pages, crosses out outdated info, and annotates timestamps.
+
 ![Figure 3: Memory Systems Comparison](../zh/images/day34/memory-systems-comparison.png)
 *Figure 3: Three leading memory architectures — Letta's OS-inspired three-tier model, Mem0's extraction-and-injection pipeline, and Zep's temporal knowledge graph. Each makes different trade-offs between simplicity, structure, and temporal awareness.*
 
