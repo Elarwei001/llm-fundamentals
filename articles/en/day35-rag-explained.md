@@ -104,6 +104,43 @@ In a physical library, you search the card catalog by title or author — but wh
 | **Speed** | Very fast (inverted index) | Fast (approximate nearest neighbor) |
 | **Best for** | Legal docs, code, technical terms | FAQs, conversational queries |
 
+#### How Does BM25 Work?
+
+**BM25** (Best Matching 25) was developed by Stephen Robertson and Karen Spärck Jones in the 1990s and remains a classic in information retrieval. Its intuition: **the more a word appears in a document, the more relevant; but if it appears in almost every document, it's less discriminative.**
+
+The core formula can be simplified as:
+
+```
+BM25 score = Σ for each query term:
+    IDF(term) × freq(term, doc) × (k1 + 1)
+    ─────────────────────────────────────────
+    freq(term, doc) + k1 × (1 - b + b × doc_length / avg_doc_length)
+```
+
+Three key parameters:
+
+- **IDF (Inverse Document Frequency)**: Measures how rare a word is. "the" appears in nearly every document (IDF ≈ 0); "BM25" is rare (high IDF). Rare words contribute more to matching.
+- **Term frequency saturation (k1)**: A word appearing 10 times isn't necessarily 2× better than appearing 5 times. BM25 uses a saturation function for diminishing returns — the first occurrence contributes the most. Typically k1 = 1.2–2.0.
+- **Document length normalization (b)**: Longer documents naturally match more words. BM25 penalizes overly long documents via the b parameter. b = 0 means no normalization; b = 1 means full normalization. Typically b = 0.75.
+
+**Example:**
+
+Query: "application scenarios of BM25 algorithm"
+
+- Document A: "BM25 is a classic search algorithm widely applied in e-commerce search" (short, exact match of 2 keywords)
+- Document B: "Search engines use multiple algorithms including TF-IDF, BM25, BERT, covering various application scenarios..." (longer, also matches keywords, but penalized for length)
+
+BM25 gives Document A a higher score — keywords are more concentrated and the document is more concise.
+
+**Why is it still used in 2026?**
+
+Despite embedding models and semantic search, BM25 remains a standard component in production RAG systems:
+- More reliable for **exact matches** (names, product IDs, code variable names) than embedding models
+- **Zero latency overhead** — based on inverted indices, no GPU needed
+- **Complementary** to dense retrieval — BM25 catches exact matches, embeddings catch semantic similarity
+
+This is why hybrid retrieval (BM25 + dense retrieval) is the current production standard.
+
 Modern RAG systems typically use **hybrid retrieval** — combining BM25 (sparse) and dense retrieval — to get the best of both worlds. The results are merged using reciprocal rank fusion (RRF) or a learned re-ranker.
 
 ### 4.2 Re-ranking: The Quality Filter
