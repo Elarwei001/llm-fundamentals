@@ -145,10 +145,63 @@ Modern RAG systems typically use **hybrid retrieval** — combining BM25 (sparse
 
 ### 4.2 Re-ranking: The Quality Filter
 
-After initial retrieval, a **re-ranker** (often a cross-encoder model) scores each retrieved chunk more carefully by jointly processing the query and the chunk together. This two-stage approach (fast retrieval → expensive re-ranking) is standard in production RAG:
+Initial retrieval (whether BM25 or dense) has a fundamental problem: **it never looks at the query and document *together* when scoring.**
 
-1. **Stage 1**: Retrieve top-50 chunks using fast bi-encoder search
-2. **Stage 2**: Re-rank with a cross-encoder, keep top-5
+#### Why Isn't Initial Retrieval Enough?
+
+**Bi-encoders** — the models used for dense retrieval — encode the query and document *separately* into vectors, then compute cosine similarity between them. The problem:
+
+- Query and document are each compressed into a single vector, losing significant detail
+- "Apple" in the query might mean the fruit, but in the document it might mean the company — separately encoded, this distinction is lost
+- BM25 has a similar issue: it only checks whether keywords appear, without understanding context
+
+Analogy: A bi-encoder is like judging whether two people match by looking at their passport photos separately — fast but crude.
+
+A **re-ranker (Cross-Encoder)** puts both people in the same room and lets them interact before judging — slow but precise.
+
+#### How Does a Cross-Encoder Work?
+
+A cross-encoder concatenates the query and document *together* and feeds them as one input to a Transformer:
+
+```
+Input: [CLS] What new products did Apple release recently [SEP] Apple Inc. released the new MacBook Pro in May 2026 [SEP]
+                              ↕
+                Transformer joint encoding
+                              ↕
+              Relevance score: 0.94
+
+Input: [CLS] What new products did Apple release recently [SEP] Apples are rich in vitamin C and eating one daily promotes health [SEP]
+                              ↕
+                Transformer joint encoding
+                              ↕
+              Relevance score: 0.12
+```
+
+Key difference: every token can *attend* to all other tokens in both the query and the document. The model directly sees that "Apple" refers to a company in the query context but a fruit in the second document — no guessing required.
+
+#### Why Two Stages Are Necessary
+
+Why not just use a cross-encoder for everything? Because **it's too slow**.
+
+| | Bi-Encoder (Initial Retrieval) | Cross-Encoder (Re-ranking) |
+|---|---|---|
+| **Query vs. Document** | Encoded separately, compare vectors | Concatenated, joint understanding |
+| **Speed** | Very fast (pre-computed doc vectors) | Slow (run full Transformer per pair) |
+| **Suitable scale** | 1M+ documents | 50–100 candidates |
+| **Precision** | Medium | High |
+| **Compute cost** | Low | High |
+
+If you have 1M documents, running a cross-encoder on each one would take minutes per query — users won't wait. Hence the two-stage strategy:
+
+1. **Stage 1**: Use a fast bi-encoder to retrieve top-50 from 1M documents (milliseconds)
+2. **Stage 2**: Use a cross-encoder to precisely score those 50 and keep top-5 (seconds)
+
+#### What Problems Does Re-ranking Solve?
+
+- **Disambiguation**: Is "apple" the company or the fruit? The cross-encoder judges based on full query context
+- **Polysemy/Synonymy**: "Cheap" and "affordable" may not be close enough in vector space, but a cross-encoder understands they're synonymous in the current query context
+- **Long-tail queries**: Users ask very specific questions where bi-encoders match keywords but miss intent — re-rankers correct this
+- **Cross-lingual**: When the query is in Chinese but documents are in English, cross-encoders typically handle cross-lingual semantics better
 
 Popular re-rankers include [Cohere Rerank](https://cohere.com/rerank) and open-source models like [bge-reranker-large](https://huggingface.co/BAAI/bge-reranker-large).
 
