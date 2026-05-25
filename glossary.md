@@ -139,6 +139,16 @@
 | Memory System | 记忆系统 | 智能体的信息持久化与检索机制，包括工作记忆、短期记忆和长期记忆 |
 | Multi-Query Attention (MQA) | 多查询注意力 | 多个 query 头共享同一组 key/value 的注意力变体，降低解码内存带宽压力 |
 | MAST (Multi-Agent System Failure Taxonomy) | MAST 失败分类法 | NeurIPS 2025 提出的多智能体失败模式分类，含 14 种失败模式 |
+| MCP (Model Context Protocol) | 模型上下文协议 | Anthropic 于 2024 年 11 月推出的开放标准，定义 AI 应用连接外部工具和数据的统一协议 |
+| MCP Host | MCP 宿主 | 用户交互的 AI 应用，如 Claude Desktop、VS Code，内含 LLM 和 MCP Client |
+| MCP Client | MCP 客户端 | 宿主内部的协议处理器，管理与 MCP Server 的 JSON-RPC 通信 |
+| MCP Server | MCP 服务器 | 暴露 Tools、Resources、Prompts 三种原语给 AI 应用的外部服务 |
+| MCP Registry | MCP 注册中心 | 发现可用 MCP 服务器的中心索引，由社区维护 |
+| MCP Apps | MCP 应用 | MCP 的官方扩展，支持在聊天窗口内交付交互式 UI 组件 |
+| AAIF (Agentic AI Foundation) | 智能体 AI 基金会 | Linux Foundation 下管理 MCP 的机构，由 Anthropic、Block、OpenAI 共同发起 |
+| SEP (Specification Enhancement Proposal) | 规范增强提案 | 社区推动 MCP 协议演进的正式提案机制 |
+| Streamable HTTP | 可流式 HTTP | MCP 的远程传输方式，通过 HTTP POST + SSE 实现流式响应 |
+| JSON-RPC 2.0 | JSON-RPC 2.0 | MCP 所基于的 JSON 远程过程调用协议标准 |
 
 ## N
 
