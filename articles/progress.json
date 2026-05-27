@@ -1,6 +1,6 @@
 {
-  "current_day": 38,
-  "last_generated": "2026-05-25",
+  "current_day": 40,
+  "last_generated": "2026-05-27",
   "total_days": 60,
   "status": "active",
   "history": [
@@ -592,6 +592,38 @@
         "zh/images/day38/mcp-request-response-flow.png",
         "zh/images/day38/mcp-sdk-downloads-growth.png",
         "zh/images/day38/mcp-adoption-timeline.png"
+      ]
+    },
+    {
+      "day": 39,
+      "date": "2026-05-26",
+      "topic": "Google ADK (Agent Development Kit)",
+      "en_path": "en/day39-google-adk-agent-development-kit.md",
+      "zh_path": "zh/day39-google-adk-agent-development-kit.md",
+      "qa_score": 0,
+      "qa_rounds": 0,
+      "images": [
+        "zh/images/day39/adk-architecture-overview.png",
+        "zh/images/day39/adk-workflow-agent-types.png",
+        "zh/images/day39/adk-a2a-mcp-ecosystem.png",
+        "zh/images/day39/agent-framework-comparison.png",
+        "zh/images/day39/adk-evolution-timeline.png"
+      ]
+    },
+    {
+      "day": 40,
+      "date": "2026-05-27",
+      "topic": "Agent Tool Comparison",
+      "en_path": "en/day40-agent-tool-comparison.md",
+      "zh_path": "zh/day40-agent-tool-comparison.md",
+      "qa_score": 0,
+      "qa_rounds": 0,
+      "images": [
+        "zh/images/day40/framework-landscape-2026.png",
+        "zh/images/day40/architecture-comparison-v2.png",
+        "zh/images/day40/framework-decision-tree.png",
+        "zh/images/day40/framework-radar-comparison.png",
+        "zh/images/day40/framework-timeline.png"
       ]
     }
   ]

@@ -117,7 +117,7 @@
 | D37 | **Agentic RAG** | RAG + Agent combination, dynamic retrieval | 🔥🔥 +300% rising · [EN](articles/en/day37-agentic-rag.md) / [中文](articles/zh/day37-agentic-rag.md) |
 | D38 | **MCP (Model Context Protocol)** | Anthropic's context protocol standard | 🔥🔥 rising new term | [EN](articles/en/day38-mcp-model-context-protocol.md) / [中文](articles/zh/day38-mcp-model-context-protocol.md) |
 | D39 | **Google ADK** | Agent Development Kit introduction | 🔥🔥 rising new term | [EN](articles/en/day39-google-adk-agent-development-kit.md) / [中文](articles/zh/day39-google-adk-agent-development-kit.md) |
-| D40 | Agent Tool Comparison | OpenClaw vs Codex vs ADK vs LangChain | 🔥 best ai agent +400% |
+| D40 | **Agent Tool Comparison** | OpenClaw vs Codex vs ADK vs LangChain | 🔥 best ai agent +400% | [EN](articles/en/day40-agent-tool-comparison.md) / [中文](articles/zh/day40-agent-tool-comparison.md) |
 
 ### Week 9: Agent Bottlenecks and Frontiers
 
