@@ -102,7 +102,7 @@ This memory is what allows the agent to avoid repeating failed retrieval strateg
 
 To make the routing and feedback loops concrete, here is a detailed view of how data flows through an Agentic RAG system:
 
-![Query Routing Decision Logic](../en/images/day37/agentic-rag-routing-flow.png)
+![Query Routing Decision Logic](../en/images/day37/agentic-rag-routing-flow-v2.png)
 *Figure 3: Query routing decision logic — different question types are routed by the agent to different data sources, each with its use cases and typical query examples.*
 
 ---
