@@ -245,7 +245,7 @@ GraphRAG 擅长**全局性问题**——需要在大量文档间综合信息的�
 
 ## 6. RAG 背后的数学
 
-对于想了解形式化定义的读者，以下是 RAG 的原始数学表述：
+以下公式来自 RAG 的开山论文——Lewis 等人 2020 年发表于 NeurIPS 的 ["Retrieval-Augmented Generation for Knowledge-Intensive NLP Tasks"](https://arxiv.org/abs/2005.11401)。论文核心思想是将预训练的参数化模型（LLM）和非参数化记忆（检索索引）结合，下面的概率框架正是这一思想的数学表述。对于想了解形式化定义的读者，以下是 RAG 的原始数学表述：
 
 $$
 \begin{aligned}
@@ -419,6 +419,15 @@ RAG 领域发展迅速。以下是最重要的近期进展：
 1. [RAGAS 框架文档](https://docs.ragas.io/) — 系统化评估你的 RAG 流水线
 2. [微软 GraphRAG](https://microsoft.github.io/graphrag/) — 用于复杂推理的图增强检索
 3. [Anthropic Contextual Retrieval 博文](https://www.anthropic.com/news/contextual-retrieval) — 显著提升检索的简单技术
+
+### 重排与检索精排
+重排（Re-ranking）是 RAG 流水线中较少被公开讨论但对检索质量影响巨大的环节。以下资源帮助你深入理解：
+
+1. ["Dense Passage Retrieval for Open-Domain Question Answering"](https://arxiv.org/abs/2004.04906) — Karpukhin 等人，2020（双编码器检索的奠基工作，理解初始检索的第一步）
+2. ["ColBERT: Efficient and Effective Passage Search via Contextualized Late Interaction over BERT"](https://arxiv.org/abs/2004.12832) — Khattab 等人，2020（晚期交互模型，在速度和精度之间取平衡）
+3. [Cohere Rerank 文档](https://docs.cohere.com/docs/reranking) — 商业重排 API 的使用指南和原理说明
+4. [bge-reranker 系列](https://huggingface.co/BAAI/bge-reranker-v2-m3) — BAAI 开源重排模型，支持多语言
+5. ["A Gentle Introduction to Cross-Encoders for Sentence Pair Scoring"](https://www.sbert.net/examples/applications/cross-encoder/README.html) — Sentence-Transformers 官方文档，用直观的例子解释交叉编码器的工作方式
 
 ### 论文
 1. ["Retrieval-Augmented Generation for Knowledge-Intensive NLP Tasks"](https://arxiv.org/abs/2005.11401) — Lewis 等人，2020（RAG 开山之作）

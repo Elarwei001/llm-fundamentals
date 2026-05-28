@@ -245,7 +245,7 @@ GraphRAG excels at **global questions** that require synthesizing information ac
 
 ## 6. The Math Behind RAG
 
-For readers who want to understand the formal formulation, here's how RAG was originally defined:
+The following formulas come from the original RAG paper—["Retrieval-Augmented Generation for Knowledge-Intensive NLP Tasks"](https://arxiv.org/abs/2005.11401) by Lewis et al., published at NeurIPS 2020. The core idea is to combine a pre-trained parametric model (LLM) with non-parametric memory (a retrieval index), and the probabilistic framework below is the mathematical expression of that idea. For readers who want to understand the formal formulation, here's how RAG was originally defined:
 
 $$
 \begin{aligned}
@@ -419,6 +419,15 @@ Microsoft's GraphRAG has spawned an entire research sub-field. A [Graph Retrieva
 1. [RAGAS Framework Documentation](https://docs.ragas.io/) — Evaluate your RAG pipeline systematically
 2. [Microsoft GraphRAG](https://microsoft.github.io/graphrag/) — Graph-enhanced retrieval for complex reasoning
 3. [Anthropic Contextual Retrieval Blog Post](https://www.anthropic.com/news/contextual-retrieval) — Simple technique that dramatically improves retrieval
+
+### Re-ranking & Retrieval Refinement
+Re-ranking is one of the most impactful yet least discussed components of a RAG pipeline. These resources will help you go deeper:
+
+1. ["Dense Passage Retrieval for Open-Domain Question Answering"](https://arxiv.org/abs/2004.04906) — Karpukhin et al., 2020 (foundational work on bi-encoder retrieval)
+2. ["ColBERT: Efficient and Effective Passage Search via Contextualized Late Interaction over BERT"](https://arxiv.org/abs/2004.12832) — Khattab et al., 2020 (late interaction model that balances speed and precision)
+3. [Cohere Rerank Documentation](https://docs.cohere.com/docs/reranking) — Practical guide to using a commercial reranking API
+4. [bge-reranker Series](https://huggingface.co/BAAI/bge-reranker-v2-m3) — BAAI's open-source reranking models with multilingual support
+5. ["A Gentle Introduction to Cross-Encoders for Sentence Pair Scoring"](https://www.sbert.net/examples/applications/cross-encoder/README.html) — Sentence-Transformers docs explaining cross-encoders with intuitive examples
 
 ### Papers
 1. ["Retrieval-Augmented Generation for Knowledge-Intensive NLP Tasks"](https://arxiv.org/abs/2005.11401) — Lewis et al., 2020 (the original RAG paper)
