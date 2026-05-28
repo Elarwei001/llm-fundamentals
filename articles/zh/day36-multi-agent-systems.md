@@ -424,7 +424,7 @@ Google 的 Agent-to-Agent 协议达到 1.2 版本，增加了 agent 验证的加
 
 ---
 
-## 10. 延伸阅读
+## 10. 推荐资源
 
 ## 附录：MAST 失败分类法——14 种多智能体失败模式详解
 
@@ -510,6 +510,8 @@ Google 的 Agent-to-Agent 协议达到 1.2 版本，增加了 agent 验证的加
 ---
 
 ## 延伸阅读
+
+> 以下资源按难度分级，适合不同阶段的读者深入学习。
 
 ### 入门
 1. [OpenAI Agents SDK 文档](https://github.com/openai/openai-agents-python) — 使用 OpenAI SDK 构建多智能体系统的官方指南
