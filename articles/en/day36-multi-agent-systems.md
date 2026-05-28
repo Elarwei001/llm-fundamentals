@@ -424,7 +424,96 @@ Google's Agent-to-Agent protocol reached version 1.2, adding cryptographic signa
 
 ---
 
-## 10. Further Reading
+## 10. Recommended Resources
+
+## Appendix: The MAST Failure Taxonomy — 14 Multi-Agent Failure Modes Explained
+
+In 2025, Cemri et al. from UC Berkeley analyzed 200 conversation traces (each averaging over 15,000 lines of text) across 7 popular multi-agent frameworks (MetaGPT, ChatDev, HyperAgent, OpenManus, AppWorld, Magentic, AG2), using Grounded Theory for systematic annotation, ultimately identifying **14 unique failure modes** clustered into 3 major categories. The percentages below are based on analysis of 1,642 execution traces.
+
+> **What is Grounded Theory?** A qualitative research method introduced by Glaser and Strauss in 1967. The core idea is to **not presuppose answers, but build a classification system bottom-up from the data** — researchers read raw data line by line, label observed phenomena (open coding), constantly compare new observations with existing labels (constant comparison), and continue until no new categories emerge (theoretical saturation). For MAST, six experts used this approach to read agent conversation traces with "fresh eyes," marking failures as they found them and ultimately converging on 14 modes — rather than fitting data to a preconceived checklist. This method is particularly suited for "exploring unknown taxonomies."
+
+> **Paper**: Cemri, M., Pan, M.Z., Yang, S. et al. "Why Do Multi-Agent LLM Systems Fail?" NeurIPS 2025 Datasets and Benchmarks Track Spotlight. [arXiv:2503.13657](https://arxiv.org/abs/2503.13657)
+
+---
+
+### Category 1: System Design Issues (FC1)
+
+Accounting for **~44%** of failures — the most common and fundamental category. The problem isn't agent capability but flawed system specification: vague task definitions, unclear role boundaries, missing termination conditions. Agents don't know what to do or when they're done.
+
+| ID | Failure Mode | % | Description |
+|------|---------|------|------|
+| FM-1.1 | **Disobey task specification** | 11.8% | Agent fails to follow specified constraints or requirements, leading to suboptimal or incorrect outcomes. E.g., asked to generate Python 3 code but uses Python 2 syntax. |
+| FM-1.2 | **Disobey role specification** | 1.5% | Agent oversteps its assigned role and behaves like another agent. E.g., a tester starts writing code, or a CEO agent usurps the CTO's responsibilities. |
+| FM-1.3 | **Step repetition** | 15.7% | Agent unnecessarily repeats previously completed steps. This is the single most common failure mode — the agent "forgets" it already did something. |
+| FM-1.4 | **Loss of conversation history** | 2.8% | Context is unexpectedly truncated, causing the agent to disregard recent interaction history and revert to an earlier conversational state. Common with context window overflow. |
+| FM-1.5 | **Unaware of termination conditions** | 12.4% | Agent doesn't recognize that the task is complete and keeps running unnecessarily, or conversely, stops before conditions are met. |
+
+**Why:** The root cause is typically the MAS designer's responsibility — system prompts that are too vague, incomplete workflow definitions, or no clear completion/stop signals. The paper argues that a well-designed MAS should interpret high-level objectives with minimal but precise user input.
+
+---
+
+### Category 2: Inter-Agent Misalignment (FC2)
+
+Accounting for **~33%** of failures — even with perfect role definitions, communication and coordination between agents can still break down. Misread intentions, information gaps, and reasoning-action disconnects constitute the second largest failure category.
+
+| ID | Failure Mode | % | Description |
+|------|---------|------|------|
+| FM-2.1 | **Conversation reset** | 2.2% | Agent unexpectedly restarts a dialogue, losing all previous context and progress. Often co-occurs with FM-1.4 (history loss). |
+| FM-2.2 | **Fail to ask for clarification** | 6.8% | Agent proceeds based on wrong assumptions instead of requesting more information when faced with unclear or incomplete data. |
+| FM-2.3 | **Task derailment** | 7.4% | Agent deviates from the original objective and starts working on irrelevant content. E.g., a research agent gets sidetracked by tangential information during a search. |
+| FM-2.4 | **Information withholding** | 0.85% | Agent possesses critical information but fails to share it with other agents, causing uninformed decisions downstream. |
+| FM-2.5 | **Ignored other agent's input** | 1.9% | Agent disregards or inadequately considers input or recommendations from other agents. E.g., a writer agent skips the reviewer's suggested edits. |
+| FM-2.6 | **Reasoning-action mismatch** | 13.2% | Agent's reasoning process ("I should do X") diverges from its actual executed behavior (actually does Y). The agent "says one thing and does another." |
+
+**How:** The paper emphasizes that diagnosing these failures is more complex than FC1. Similar surface behaviors (e.g., missing information) can stem from different root causes — is it FM-2.4 (withholding), FM-2.5 (ignoring input), or FM-1.4 (history loss)? This is why MAST needs fine-grained modes rather than a blanket "communication failure" label.
+
+---
+
+### Category 3: Task Verification (FC3)
+
+Accounting for **~23%** of failures — even if the first two categories are solved, errors still slip through without effective verification mechanisms. The core question: **who checks the results, and how?**
+
+| ID | Failure Mode | % | Description |
+|------|---------|------|------|
+| FM-3.1 | **Premature termination** | 6.2% | Ending a task before all necessary information has been exchanged or objectives have been met. E.g., returning "task complete" before the code is finished. |
+| FM-3.2 | **No or incomplete verification** | 8.2% | System completely skips checking outputs, or performs only superficial validation. E.g., a ChatDev-generated chess program passes compilation but has severe runtime game-rule bugs. |
+| FM-3.3 | **Incorrect verification** | 9.1% | The verification process itself is flawed, judging incorrect results as correct. The verifier agent makes its own mistakes, giving a false "looks good" verdict. |
+
+**Why & How:** A key finding is that systems with explicit verifier agents (like MetaGPT, ChatDev) do have lower total failure rates — but verifier agents are no silver bullet. Existing verifiers often perform only superficial checks (does it compile? does it produce output?) despite being prompted to do thorough validation. This means verification itself needs to be designed more rigorously, not just "add a reviewer."
+
+---
+
+### Ranked by Frequency
+
+From most to least common:
+
+1. **FM-1.3 Step repetition** (15.7%) — most prevalent failure
+2. **FM-1.1 Disobey task specification** (11.8%)
+3. **FM-1.5 Unaware of termination conditions** (12.4%)
+4. **FM-2.6 Reasoning-action mismatch** (13.2%)
+5. **FM-3.3 Incorrect verification** (9.1%)
+6. **FM-3.2 No or incomplete verification** (8.2%)
+7. **FM-2.3 Task derailment** (7.4%)
+8. **FM-3.1 Premature termination** (6.2%)
+9. **FM-2.2 Fail to ask for clarification** (6.8%)
+10. **FM-1.4 Loss of conversation history** (2.8%)
+11. **FM-2.1 Conversation reset** (2.2%)
+12. **FM-2.5 Ignored other agent's input** (1.9%)
+13. **FM-1.2 Disobey role specification** (1.5%)
+14. **FM-2.4 Information withholding** (0.85%) — rarest but most insidious
+
+### Practical Implications
+
+- **The top 5 modes account for ~62% of failures** — solving these first yields the largest reliability improvement
+- **FC1 (system design) + FC2 (misalignment) combined = 79%** — meaning most failures are preventable through better specification engineering and coordination protocols
+- No one-size-fits-all solution — different frameworks show very different failure profiles (e.g., OpenManus tends toward step repetition, HyperAgent toward reasoning-action mismatch)
+- Fixes also vary: some require workflow redesign, others need stricter prompt engineering, some need independent verification mechanisms
+
+---
+
+## Further Reading
+
+> The following resources are tiered by difficulty for readers at different stages.
 
 ### Beginner
 1. [OpenAI Agents SDK Documentation](https://github.com/openai/openai-agents-python) — Official guide to building multi-agent systems with OpenAI's SDK
