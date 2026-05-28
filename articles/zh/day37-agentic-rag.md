@@ -102,8 +102,8 @@ Agentic RAG 用 **自主智能体循环（autonomous agent loop）** 替换了�
 
 为了让路由和反馈循环更直观，下面是 Agentic RAG 系统中数据流动的详细视图：
 
-![Agentic RAG 路由与反馈流程](../zh/images/day37/agentic-rag-routing-flow.png)
-*图 3：Agentic RAG 系统的详细数据流——注意两个反馈循环：相关性重试（红色，左侧）和反思优化（红色，右侧）。*
+![查询路由决策逻辑](../zh/images/day37/agentic-rag-routing-flow.png)
+*图 3：查询路由决策逻辑——不同类型的问题被智能体路由到不同的数据源，每个数据源有其适用场景和典型查询示例。*
 
 ---
 

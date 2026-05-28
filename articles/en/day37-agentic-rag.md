@@ -56,7 +56,7 @@ Agentic RAG replaces the fixed pipeline with an **autonomous agent loop**. Inste
 
 This loop continues until the agent is satisfied that it has enough high-quality evidence to produce a reliable answer.
 
-![Traditional RAG vs Agentic RAG Pipeline](../zh/images/day37/traditional-vs-agentic-rag-pipeline.png)
+![Traditional RAG vs Agentic RAG Pipeline](../en/images/day37/traditional-vs-agentic-rag-pipeline.png)
 *Figure 1: Traditional RAG follows a linear pipeline (left), while Agentic RAG wraps retrieval inside a planning-reflection loop (right).*
 
 ---
@@ -67,7 +67,7 @@ This loop continues until the agent is satisfied that it has enough high-quality
 
 Every Agentic RAG system, regardless of framework, implements some variant of this control loop:
 
-![Agentic RAG Control Loop Architecture](../zh/images/day37/agentic-rag-control-loop.png)
+![Agentic RAG Control Loop Architecture](../en/images/day37/agentic-rag-control-loop.png)
 *Figure 2: The Agentic RAG architecture — planning, routing, grading, and reflection form an iterative cycle around retrieval.*
 
 Let's walk through each component:
@@ -102,8 +102,8 @@ This memory is what allows the agent to avoid repeating failed retrieval strateg
 
 To make the routing and feedback loops concrete, here is a detailed view of how data flows through an Agentic RAG system:
 
-![Agentic RAG Routing and Feedback Flow](../zh/images/day37/agentic-rag-routing-flow.png)
-*Figure 3: Detailed data flow through an Agentic RAG system — note the two feedback loops: relevance retry (red, left) and reflection refinement (red, right).*
+![Query Routing Decision Logic](../en/images/day37/agentic-rag-routing-flow.png)
+*Figure 3: Query routing decision logic — different question types are routed by the agent to different data sources, each with its use cases and typical query examples.*
 
 ---
 
@@ -131,7 +131,7 @@ Traditional RAG is fast food: you order, you get what's on the menu, it's quick 
 
 The central promise of Agentic RAG is dramatically better accuracy on complex questions. Here is how the two approaches compare across task types:
 
-![Traditional RAG vs Agentic RAG Performance by Task Type](../zh/images/day37/rag-performance-comparison.png)
+![Traditional RAG vs Agentic RAG Performance by Task Type](../en/images/day37/rag-performance-comparison.png)
 *Figure 4: Accuracy comparison across task types. Agentic RAG's advantage grows with task complexity.*
 
 Notice the pattern: on simple factoid questions, the difference is negligible (82% vs 85%). But on multi-hop reasoning and multi-source synthesis — the tasks that actually matter in production — Agentic RAG jumps from the 30-40% range to 75-80%. The A-RAG paper ([February 2026](https://arxiv.org/abs/2602.03442)) reported 94.5% on HotpotQA and 89.7% on 2WikiMultiHop, two standard multi-hop benchmarks.
@@ -263,7 +263,7 @@ This is a simplified example — production systems add reranking, hybrid search
 
 ## 7. The Evolution of RAG: A Four-Stage Journey
 
-![RAG Evolution Timeline](../zh/images/day37/rag-evolution-timeline.png)
+![RAG Evolution Timeline](../en/images/day37/rag-evolution-timeline.png)
 *Figure 5: From Naive RAG (2020) to Agentic RAG (2025-2026) — each stage adds autonomy and intelligence to the retrieval process.*
 
 **Stage 1: Naive RAG (2020).** The original formulation from Facebook AI Research (now Meta FAIR): embed query, retrieve chunks, generate. Simple but brittle. No quality control on retrieval results.
