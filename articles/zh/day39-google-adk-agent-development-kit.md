@@ -393,6 +393,30 @@ ADK 是从头构建的框架，有自己的运行时、事件系统、会话管�
 
 你可以在本地用 `adk run` 运行 ADK Agent，部署到任何 Docker 兼容环境，或使用 Vertex AI 上的 Agent Engine。Google Cloud 是支持最好的部署目标，但不是唯一的。
 
+### ❌ "Workflow 编排跟把流程写进 Skills/Prompt 里没区别"
+
+表面上看起来相似——都是"给 agent 一套规则，让它照着执行"。但本质上有三个关键区别：
+
+**1. 控制权在运行时 vs 编译时。** Skills/Prompt 里的工作流是"编译时确定的"——agent 本质上在"读说明书"，执行深度取决于 LLM 的指令跟随能力。如果中间某步出了意外（API 挂了、返回格式变了），agent 只能靠自己的推理能力去应对。ADK 的 Workflow Agent（SequentialAgent、ParallelAgent、LoopAgent）是**运行时引擎**——不依赖 LLM "记住"该走哪一步，框架强制保证执行顺序。错误处理、超时、重试、状态持久化都是框架内建的。
+
+> 类比：Skills 像"给员工一本手册让他自己照着做"，Workflow 像"流水线上的传送带，到哪一站就做哪一步"。一个靠自觉，一个靠机制。
+
+**2. 状态管理和持久化。** Skills 的"记忆"就是上下文窗口——塞满了就丢，跨会话状态需要你自己想办法。ADK 有 Session Service 管理状态持久化、Event Bus 追踪每一步执行记录、LoopAgent 的迭代状态是框架维护的，工作流可以暂停、恢复、回滚。
+
+**3. 组合性和可扩展性。** 两个 skill 之间的协作靠 agent 自己判断"现在该用哪个 skill"，并行执行需要 agent 自己理解"我可以同时做这两件事"。ADK 的 ParallelAgent 天然支持并发，LoopAgent 支持条件循环，A2A 协议让不同框架构建的 agent 可以互相委托任务。
+
+| 场景 | Skills/Prompt | ADK Workflow |
+|------|-------------|-------------|
+| 简单单步任务 | ✅ 足够 | 杀鸡用牛刀 |
+| 固定 2-3 步流程 | ✅ 可以 | 也行，但可能过重 |
+| 多步推理+条件分支 | ⚠️ 靠 LLM 推理，不稳定 | ✅ 框架保证 |
+| 需要并行执行 | ❌ | ✅ ParallelAgent |
+| 需要迭代+自检 | ⚠️ 靠 prompt engineering | ✅ LoopAgent |
+| 需要持久化+可恢复 | ❌ | ✅ Session Service |
+| 跨框架/跨服务 agent 协作 | ❌ | ✅ A2A 原生支持 |
+
+**一句话总结**：Skills 是 agent 的"知识"，Workflow 是 agent 的"骨架"。Skills 告诉 agent *怎么想*，Workflow 告诉系统 *怎么执行*。前者依赖 LLM 的推理，后者依赖框架的机制。对简单任务两者看起来一样，但对复杂、多步、需要可靠性的生产场景，差距就从"暗示"变成了"保证"。
+
 ---
 
 ## 10. 前沿：最新动态与未来方向

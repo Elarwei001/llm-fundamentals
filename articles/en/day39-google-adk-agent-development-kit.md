@@ -394,6 +394,30 @@ ADK is a ground-up framework with its own runtime, event system, session managem
 
 You can run ADK agents locally with `adk run`, deploy to any Docker-compatible environment, or use the Agent Engine on Vertex AI. Google Cloud is the best-supported deployment target, but not the only one.
 
+### ❌ "Workflow orchestration is no different from writing the process into Skills/Prompts"
+
+They look similar on the surface — both are "giving the agent rules to follow." But there are three critical differences:
+
+**1. Control lives in the runtime, not the compile time.** Workflows in Skills/Prompts are "compile-time" — the agent is essentially "reading a manual," and execution depth depends on the LLM's instruction-following ability. If something goes wrong mid-step (API down, unexpected format), the agent can only rely on its own reasoning to cope. ADK's Workflow Agents (SequentialAgent, ParallelAgent, LoopAgent) are **runtime engines** — they don't depend on the LLM "remembering" what step comes next. The framework enforces execution order. Error handling, timeouts, retries, and state persistence are all built in.
+
+> Analogy: Skills are like "giving an employee a manual and hoping they follow it." Workflows are like "a conveyor belt on an assembly line — each station does its step automatically." One relies on discipline, the other on mechanism.
+
+**2. State management and persistence.** Skills' "memory" is the context window — when it fills up, it's gone. Cross-session state requires custom solutions. ADK has Session Service for state persistence, Event Bus for tracking every execution step, LoopAgent iteration state maintained by the framework, and workflows that can be paused, resumed, and rolled back.
+
+**3. Composition and extensibility.** Collaboration between skills relies on the agent judging "which skill should I use now." Parallel execution requires the agent to understand "I can do both things at once." ADK's ParallelAgent natively supports concurrency, LoopAgent supports conditional iteration, and the A2A protocol enables agents built with different frameworks to delegate tasks to each other.
+
+| Scenario | Skills/Prompt | ADK Workflow |
+|------|-------------|-------------|
+| Simple single-step task | ✅ Sufficient | Overkill |
+| Fixed 2-3 step flow | ✅ Works | Also fine, maybe heavier |
+| Multi-step reasoning + conditional branching | ⚠️ Depends on LLM reasoning, unstable | ✅ Framework guarantees |
+| Parallel execution needed | ❌ | ✅ ParallelAgent |
+| Iteration + self-check needed | ⚠️ Depends on prompt engineering | ✅ LoopAgent |
+| Persistence + resumability needed | ❌ | ✅ Session Service |
+| Cross-framework/cross-service agent collaboration | ❌ | ✅ A2A native support |
+
+**One-line summary**: Skills are the agent's "knowledge," Workflows are the agent's "skeleton." Skills tell the agent *how to think*, Workflows tell the system *how to execute*. The former depends on LLM reasoning, the latter on framework mechanisms. For simple tasks they look the same, but for complex, multi-step production scenarios requiring reliability, the gap goes from "hints" to "guarantees."
+
 ---
 
 ## 10. Frontier: What's New and What's Next
