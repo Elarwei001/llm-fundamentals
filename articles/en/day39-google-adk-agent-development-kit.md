@@ -358,44 +358,7 @@ This example shows:
 
 ---
 
-## 8. The Math Behind Agent Orchestration
-
-For readers who want to understand the formal model:
-
-An ADK agent can be viewed as a state machine. At each turn, the agent receives an observation and produces an action:
-
-$$
-\begin{aligned}
-a_t &= \pi_\theta(s_t, \text{instruction}, \text{tools}) \\
-s_{t+1} &= T(s_t, a_t, o_t)
-\end{aligned}
-$$
-
-Where:
-- **a_t** is the action at step t (tool call or final response)
-- **s_t** is the session state (conversation history + persistent state)
-- **instruction** is the system prompt
-- **tools** are the available tool definitions
-- **T** is the transition function (handled by the ADK runtime)
-- **o_t** is the observation (tool result or user input)
-
-For a **WorkflowAgent**, the orchestration is a directed graph:
-
-$$
-G = (V, E), \quad V = \{v_1, v_2, ..., v_n\}, \quad E \subseteq V \times V
-$$
-
-Each vertex **v_i** is an agent or Python function. Each edge **(v_i, v_j)** represents a dependency — **v_j** executes after **v_i** completes. Conditional edges add a predicate:
-
-$$
-(v_i, v_j, c) \in E_{\text{cond}} \implies \text{execute } v_j \text{ if } c(s) = \text{true}
-$$
-
-The runtime evaluates conditions against the shared workflow state, enabling branching, loops, and dynamic routing.
-
----
-
-## 9. Common Misconceptions
+## 8. Common Misconceptions
 
 ### ❌ "ADK only works with Gemini"
 
@@ -435,7 +398,7 @@ They look similar on the surface — both are "giving the agent rules to follow.
 
 ---
 
-## 10. Frontier: What's New and What's Next
+## 9. Frontier: What's New and What's Next
 
 ### Recent Developments (Last 6 Months)
 
@@ -457,7 +420,7 @@ They look similar on the surface — both are "giving the agent rules to follow.
 
 ---
 
-## 11. Further Reading
+## 10. Further Reading
 
 ### Beginner
 1. [ADK Official Documentation](https://google.github.io/adk-docs/) — The best starting point with tutorials and API reference
