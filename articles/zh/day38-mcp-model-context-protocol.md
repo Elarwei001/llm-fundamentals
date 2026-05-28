@@ -31,7 +31,7 @@ MCP 出现之前，AI 生态系统面临 **N × M 集成问题**：
 
 MCP 把这缩减为 **N + M**：每个 AI 助手实现一个 MCP 客户端，每个数据源实现一个 MCP 服务器。协议就是它们之间的标准化接口。
 
-![图 1：MCP 出现之前，每个 AI 需要为每个数据源写定制集成（N×M）。有了 MCP，每一边只需要实现一个标准接口（N+M）。](./images/day38/mcp-vs-traditional-api.png)
+![MCP vs Traditional API Integration](./images/day38/mcp-vs-traditional-api.png)
 *图 1：MCP 通过提供 AI 助手和数据源之间的标准协议，消除了 N×M 集成问题。*
 
 ### 为什么不直接用 REST API？
@@ -65,7 +65,7 @@ MCP 有四个核心组件：
 | **MCP Server（服务器）** | 向 AI 提供工具、资源和提示词 | GitHub MCP Server、文件系统 MCP Server |
 | **Transport（传输层）** | 客户端与服务器之间的通信层 | stdio（本地）或 Streamable HTTP（远程） |
 
-![图 2：MCP 架构——宿主包含 LLM 和 MCP 客户端，通过 JSON-RPC 经 stdio 或 Streamable HTTP 与 MCP 服务器通信。](./images/day38/mcp-architecture-overview.png)
+![MCP Architecture Overview](./images/day38/mcp-architecture-overview.png)
 *图 2：MCP 架构。宿主应用同时包含 LLM 和 MCP 客户端，后者通过标准传输层与一个或多个 MCP 服务器通信。*
 
 ### 三种原语
@@ -107,7 +107,7 @@ Streamable HTTP 更强大：服务器作为独立 HTTP 服务运行。客户端�
 
 让我们追踪用户问"我最新的 GitHub PR 是什么？"时发生的事情。
 
-![图 3：完整的 MCP 工具调用序列——从用户请求到 JSON-RPC 消息交换再到最终响应。](./images/day38/mcp-request-response-flow.png)
+![MCP Request Response Flow](./images/day38/mcp-request-response-flow.png)
 *图 3：MCP 工具调用的逐步流程，展示自然语言请求如何转化为结构化的 JSON-RPC 调用并返回。*
 
 底层发生了什么：
@@ -260,7 +260,7 @@ MCP 的快速普及超过了安全最佳实践的发展。2026 年 5 月，**NSA
 
 ### 从实验到行业标准
 
-![图 4：MCP SDK 月下载量增长，从发布到 2026 年 5 月，标注了关键里程碑。](./images/day38/mcp-sdk-downloads-growth.png)
+![MCP SDK Downloads Growth](./images/day38/mcp-sdk-downloads-growth.png)
 *图 4：MCP SDK 下载量从发布时的 10 万增长到 2026 年 5 月的月均 9700 万以上，受到所有主要 AI 提供商采用的推动。*
 
 增长曲线非常惊人：
