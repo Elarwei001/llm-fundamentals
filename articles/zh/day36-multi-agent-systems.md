@@ -430,6 +430,8 @@ Google 的 Agent-to-Agent 协议达到 1.2 版本，增加了 agent 验证的加
 
 2025 年，UC Berkeley 的 Cemri 等人分析了 7 个主流多智能体框架（MetaGPT、ChatDev、HyperAgent、OpenManus、AppWorld、Magentic、AG2）的 200 条对话轨迹（每条平均超过 15,000 行文本），通过扎根理论（Grounded Theory）方法进行系统标注，最终归纳出 **14 种独特的失败模式**，聚类为 3 大类别。以下比例基于对 1,642 条执行轨迹的分析。
 
+> **什么是扎根理论？** 这是一种由 Glaser 和 Strauss 于 1967 年提出的定性研究方法。核心思想是**不预设答案，从数据中自下而上地构建分类体系**——研究者逐行阅读原始数据，给观察到的现象贴标签（开放编码），不断把新现象和已有标签做比较（持续比较），持续到不再出现新类别为止（理论饱和）。在 MAST 的场景中，6 位专家用这种方法“裸眼”阅读 agent 对话轨迹，发现什么失败就标记什么，最终收敛为 14 种模式——而不是拿预先想好的清单去对号入座。这种方法特别适合“探索未知分类”的问题。
+
 > **论文出处**：Cemri, M., Pan, M.Z., Yang, S. et al. "Why Do Multi-Agent LLM Systems Fail?" NeurIPS 2025 Datasets and Benchmarks Track Spotlight. [arXiv:2503.13657](https://arxiv.org/abs/2503.13657)
 
 ---
