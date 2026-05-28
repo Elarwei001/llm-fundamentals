@@ -117,13 +117,13 @@
 | D37 | **Agentic RAG** | RAG + Agent combination, dynamic retrieval | 🔥🔥 +300% rising · [EN](articles/en/day37-agentic-rag.md) / [中文](articles/zh/day37-agentic-rag.md) |
 | D38 | **MCP (Model Context Protocol)** | Anthropic's context protocol standard | 🔥🔥 rising new term | [EN](articles/en/day38-mcp-model-context-protocol.md) / [中文](articles/zh/day38-mcp-model-context-protocol.md) |
 | D39 | **Google ADK** | Agent Development Kit introduction | 🔥🔥 rising new term | [EN](articles/en/day39-google-adk-agent-development-kit.md) / [中文](articles/zh/day39-google-adk-agent-development-kit.md) |
-| D40 | **Agent Tool Comparison** | OpenClaw vs Codex vs ADK vs LangChain | 🔥 best ai agent +400% | [EN](articles/en/day40-agent-tool-comparison.md) / [中文](articles/zh/day40-agent-tool-comparison.md) |
+| D40 | Agent Tool Comparison | OpenClaw vs Codex vs ADK vs LangChain | 🔥 best ai agent +400% |
 
 ### Week 9: Agent Bottlenecks and Frontiers
 
 | Day | Topic | Core Question | Trend Source |
 |-----|-------|---------------|--------------|
-| D41 | **Reliability Issues** | Why agents often fail, error accumulation | Core pain point |
+| D41 | **Reliability Issues** | Why agents often fail, error accumulation | Core pain point | [EN](articles/en/day41-reliability-issues.md) / [中文](articles/zh/day41-reliability-issues.md) |
 | D42 | Evaluation Challenges | How to evaluate agents? SWE-bench, WebArena | Evaluation methods |
 | D43 | Safety and Alignment | Agent security risks, Prompt Injection | Security issues |
 | D44 | Human-AI Collaboration | Human-in-the-loop, when to intervene | Interaction design |

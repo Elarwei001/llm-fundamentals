@@ -1,6 +1,6 @@
 {
-  "current_day": 40,
-  "last_generated": "2026-05-27",
+  "current_day": 41,
+  "last_generated": "2026-05-28",
   "total_days": 60,
   "status": "active",
   "history": [
@@ -276,7 +276,7 @@
       "day": 18,
       "date": "2026-04-16",
       "topic": "Speculative Decoding",
-      "en_path": "en/day18-speculative-decoding.md",
+      "en_path": "en/day18-speculative-deoding.md",
       "zh_path": "zh/day18-speculative-decoding.md",
       "qa_score": 92.4,
       "qa_rounds": 1,
@@ -457,21 +457,6 @@
       ]
     },
     {
-      "day": 31,
-      "date": "2026-05-05",
-      "topic": "What is an AI Agent",
-      "en_path": "en/day31-what-is-an-ai-agent.md",
-      "zh_path": "zh/day31-what-is-an-ai-agent.md",
-      "qa_score": 0,
-      "qa_rounds": 0,
-      "images": [
-        "zh/images/day31/chatbot-vs-agent.png",
-        "zh/images/day31/agent-loop-react.png",
-        "zh/images/day31/agent-autonomy-spectrum.png",
-        "zh/images/day31/agent-timeline.png"
-      ]
-    },
-    {
       "day": 30,
       "date": "2026-05-04",
       "topic": "Multimodal Basics",
@@ -484,6 +469,21 @@
         "zh/images/day30/clip-training-process.png",
         "zh/images/day30/vit-patch-embedding.png",
         "zh/images/day30/cross-attention-fusion.png"
+      ]
+    },
+    {
+      "day": 31,
+      "date": "2026-05-05",
+      "topic": "What is an AI Agent",
+      "en_path": "en/day31-what-is-an-ai-agent.md",
+      "zh_path": "zh/day31-what-is-an-ai-agent.md",
+      "qa_score": 0,
+      "qa_rounds": 0,
+      "images": [
+        "zh/images/day31/chatbot-vs-agent.png",
+        "zh/images/day31/agent-loop-react.png",
+        "zh/images/day31/agent-autonomy-spectrum.png",
+        "zh/images/day31/agent-timeline.png"
       ]
     },
     {
@@ -549,7 +549,7 @@
     },
     {
       "day": 36,
-      "date": "2026-05-21",
+      "date": "2026-05-22",
       "topic": "Multi-Agent Systems",
       "en_path": "en/day36-multi-agent-systems.md",
       "zh_path": "zh/day36-multi-agent-systems.md",
@@ -564,7 +564,7 @@
     },
     {
       "day": 37,
-      "date": "2026-05-22",
+      "date": "2026-05-23",
       "topic": "Agentic RAG",
       "en_path": "en/day37-agentic-rag.md",
       "zh_path": "zh/day37-agentic-rag.md",
@@ -624,6 +624,22 @@
         "zh/images/day40/framework-decision-tree.png",
         "zh/images/day40/framework-radar-comparison.png",
         "zh/images/day40/framework-timeline.png"
+      ]
+    },
+    {
+      "day": 41,
+      "date": "2026-05-28",
+      "topic": "Reliability Issues",
+      "en_path": "en/day41-reliability-issues.md",
+      "zh_path": "zh/day41-reliability-issues.md",
+      "qa_score": 0,
+      "qa_rounds": 0,
+      "images": [
+        "zh/images/day41/compound-accuracy-chart.png",
+        "zh/images/day41/day41-failure-mode-taxonomy.png",
+        "zh/images/day41/day41-error-cascade-pipeline.png",
+        "zh/images/day41/day41-reliability-patterns.png",
+        "zh/images/day41/day41-reliability-timeline.png"
       ]
     }
   ]

@@ -268,6 +268,14 @@
 | Word2Vec | Word2Vec | Google 2013 年提出的词嵌入学习算法 |
 | WordPiece | WordPiece | Google BERT 使用的子词分词算法 |
 | World Model | 世界模型 | 关于环境潜在状态、状态转移和动作后果的预测模型，常用于规划与控制 |
+| Compound Reliability | 复合可靠性 | 多步骤流水线中每步错误相乘导致的端到端成功率下降 |
+| Error Cascading | 错误级联 | 一步的失败传播并恶化所有后续步骤的现象 |
+| Context Drift | 上下文漂移 | Agent 在长时间运行中逐渐偏离原始指令或目标的现象 |
+| Guardrails | 护栏 | LLM 调用前后的输入/输出验证层，用于拦截不合规内容 |
+| Reflexion | 反思模式 | Agent 生成自我批评语言反馈并重试的自纠错模式（Shinn 等人，NeurIPS 2023） |
+| Process Reward Model (PRM) | 过程奖励模型 | 对 Agent 推理的每个中间步骤（而非仅最终输出）打分的专用模型 |
+| Checkpoint & Recovery | 检查点与恢复 | 在 Agent 执行过程中保存状态以便从已知好点恢复的工程模式 |
+| Rate Limit | 速率限制 | API 提供商对单位时间内请求数量的上限，是 Agent 生产环境首要失败原因 |
 
 ---
 
