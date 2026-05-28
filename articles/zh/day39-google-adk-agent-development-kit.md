@@ -218,10 +218,25 @@ ADK 的多语言策略就像 Web 框架存在于多种语言中一样。Express.
 **ADK for Android** 在 Google I/O 2026 上发布（[Google Developers Blog, 2026 年 5 月 21 日](https://developers.googleblog.com/adk-kotlin-android-building-ai-agents/)），特别值得关注。它实现了**混合编排**：一个云端的编排 Agent 可以把特定子任务委托给运行 Gemini Nano 的端侧 Agent。
 
 ```kotlin
+// 端侧子 Agent：使用 Gemini Nano 在设备本地运行，隐私敏感数据不出设备
+val onDeviceRetrievalAgent = LlmAgent(
+    name = "on_device_retrieval",
+    model = GeminiNano(),  // Gemini Nano — 端侧模型，无需网络
+    instruction = "在设备本地检索用户的预订确认邮件和个人文档。返回结构化的行程信息。",
+    tools = listOf(EmailRetrievalTool(), DocumentParserTool()),
+)
+
+val validationAgent = LlmAgent(
+    name = "on_device_validation",
+    model = GeminiNano(),  // 同样使用端侧模型
+    instruction = "验证提取的行程信息是否完整且一致。检查日期、航班号、酒店地址。",
+)
+
+// 云端编排 Agent：委托隐私敏感任务给端侧子 Agent
 val orchestrator = LlmAgent(
     name = "travel_assistant",
     model = Gemini(apiKey = apiKey, name = "gemini-2.5-flash"),
-    instruction = "你是一个旅行助手，帮助用户处理行程。",
+    instruction = "你是一个旅行助手，帮助用户处理行程。将隐私敏感的数据检索和验证任务委托给端侧 Agent。",
     tools = listOf(GetTripDetailsTool(tripId)),
     subAgents = listOf(onDeviceRetrievalAgent, validationAgent),
 )

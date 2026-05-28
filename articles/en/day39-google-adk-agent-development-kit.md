@@ -219,10 +219,25 @@ Think of ADK's multi-language approach like how web frameworks exist in many lan
 The **ADK for Android** announcement at Google I/O 2026 ([Google Developers Blog, May 21, 2026](https://developers.googleblog.com/adk-kotlin-android-building-ai-agents/)) is particularly interesting. It enables **hybrid orchestration**: a cloud-based orchestrator agent that can delegate specific sub-tasks to on-device agents running Gemini Nano.
 
 ```kotlin
+// On-device sub-agents: run locally with Gemini Nano — private data never leaves the device
+val onDeviceRetrievalAgent = LlmAgent(
+    name = "on_device_retrieval",
+    model = GeminiNano(),  // Gemini Nano — on-device model, no network required
+    instruction = "Retrieve the user's booking confirmation emails and personal documents locally. Return structured itinerary information.",
+    tools = listOf(EmailRetrievalTool(), DocumentParserTool()),
+)
+
+val validationAgent = LlmAgent(
+    name = "on_device_validation",
+    model = GeminiNano(),  // Also uses on-device model
+    instruction = "Validate that the extracted itinerary information is complete and consistent. Check dates, flight numbers, hotel addresses.",
+)
+
+// Cloud orchestrator: delegates privacy-sensitive tasks to on-device sub-agents
 val orchestrator = LlmAgent(
     name = "travel_assistant",
     model = Gemini(apiKey = apiKey, name = "gemini-2.5-flash"),
-    instruction = "You are a travel assistant. Help users with their trips.",
+    instruction = "You are a travel assistant helping users manage their itineraries. Delegate privacy-sensitive data retrieval and validation to on-device agents.",
     tools = listOf(GetTripDetailsTool(tripId)),
     subAgents = listOf(onDeviceRetrievalAgent, validationAgent),
 )
