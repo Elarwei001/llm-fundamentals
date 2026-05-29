@@ -81,11 +81,13 @@ Google 在 2003 年提出 SRE 时，解决的痛点是"服务经常挂，靠人�
 | 工具 | 特点 | 适合场景 |
 |------|------|----------|
 | **[Langfuse](https://langfuse.com)** | 开源，tracing + prompt 管理 + eval 一体化 | 中小团队、快速起步 |
-| **[Datadog LLM Observability](https://www.datadoghq.com/product/ai/llm-observability/)** | 与现有 Datadog 基础设施深度集成，auto-instrumentation | 已在用 Datadog 的团队 |
+| **[Datadog LLM Observability](https://www.datadoghq.com/product/ai/llm-observability/)** | 与现有 Datadog 基础设施深度集成，auto-instrumentation | 已在用 Datadog 的企业团队 |
 | **[Arize Phoenix](https://arize.com/phoenix/)** | 开源，本地部署，专注 LLM eval | 对数据隐私要求高的场景 |
 | **[Braintrust](https://www.braintrust.dev/)** | eval + experiment 优先 | 需要大量 A/B 实验的团队 |
 
 **起步建议**：如果团队没有现有的 observability 平台，从 Langfuse 开始——开源、免费起步、5 分钟集成。如果已经在用 Datadog，直接用它的 LLM Observability 模块，不用额外引入新工具。
+
+> **Datadog 是什么？** 一家提供云端可观测性服务的商业公司（上市企业，市值数百亿美元），做基础设施监控、APM（应用性能监控）、日志管理等。价格不便宜，按 host 和流量计费，大型部署成本较高。如果你需要开源替代：**Langfuse**（LLM tracing）+ **Prometheus + Grafana**（基础设施监控）可以覆盖 Datadog 在 Agent 场景下 90% 的需求，完全免费。另一个对标的**SigNoz**是开源的一体化可观测性平台（metrics + traces + logs），UI 更接近 Datadog 的体验。
 
 ### 集成方式
 

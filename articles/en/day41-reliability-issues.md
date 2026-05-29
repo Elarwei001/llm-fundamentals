@@ -81,11 +81,13 @@ An agent trace must capture at minimum:
 | Tool | Strengths | Best For |
 |------|-----------|----------|
 | **[Langfuse](https://langfuse.com)** | Open source, tracing + prompt management + eval in one | Small-medium teams, quick start |
-| **[Datadog LLM Observability](https://www.datadoghq.com/product/ai/llm-observability/)** | Deep integration with existing Datadog stack, auto-instrumentation | Teams already on Datadog |
+| **[Datadog LLM Observability](https://www.datadoghq.com/product/ai/llm-observability/)** | Deep integration with existing Datadog stack, auto-instrumentation | Enterprise teams already on Datadog |
 | **[Arize Phoenix](https://arize.com/phoenix/)** | Open source, local deployment, LLM eval focus | High data privacy requirements |
 | **[Braintrust](https://www.braintrust.dev/)** | Eval + experiment first | Teams needing heavy A/B testing |
 
 **Getting started**: If your team doesn't have an existing observability platform, start with Langfuse — open source, free to start, 5-minute integration. If you're already on Datadog, use its LLM Observability module and don't introduce a new tool.
+
+> **What is Datadog?** A commercial cloud observability platform (publicly traded, multi-billion dollar market cap) offering infrastructure monitoring, APM (application performance monitoring), log management, and more. It's not cheap — billed per host and traffic volume. For open-source alternatives: **Langfuse** (LLM tracing) + **Prometheus + Grafana** (infrastructure monitoring) covers ~90% of Datadog's agent-scenario capabilities at zero cost. **SigNoz** is another open-source all-in-one observability platform (metrics + traces + logs) with a UI that closely mirrors Datadog's experience.
 
 ### Integration
 
