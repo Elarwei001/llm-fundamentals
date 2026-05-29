@@ -159,7 +159,7 @@ LLM 会幻觉——我们在 [Day 21](day21-hallucination-problem.md) 讨论过�
 
 演示测试的是理想情况下的正常流程，生产测试的是异常输入、边缘情况以及各种失败模式的交叉组合。
 
-Gartner 在 2026 年 5 月的报告中[警告](https://www.gartner.com/en/newsroom/press-releases/2026-05-26-gartner-says-applying-uniform-governance-across-ai-agents-will-lead-to-enterprise-ai-agent-failure)称，**到 2027 年，40% 的企业将降级或停用自主 AI Agent**，原因是在生产事故发生后才发现的治理缺陷。根本原因不是 Agent 做不了工作——而是围绕 Agent 的**运营基础设施**（监控、兜底方案、护栏、治理）没有跟上 Agent 能力的发展。
+Gartner 在 2026 年 5 月的报告中[警告](https://www.gartner.com/en/newsroom/press-releases/2026-05-26-gartner-says-applying-uniform-governance-across-ai-agents-will-lead-to-enterprise-ai-agent-failure)称，**到 2027 年，40% 的企业将降级或停用自主 AI Agent**。值得注意的是，这个预测的前提是企业对 Agent 治理不够重视——但随着 Datadog LLM Observability、Langfuse 等可观测性工具的普及，以及护栏/检查点模式成为工程常识，实际情况可能没有 Gartner 描述的那么悲观。更值得关注的挑战不是"要不要做治理"，而是"如何在保持 Agent 灵活性的同时实施分层治理"——一刀切的治理反而会扼杀 Agent 的价值。
 
 ---
 

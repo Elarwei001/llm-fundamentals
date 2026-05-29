@@ -159,7 +159,7 @@ There's a fundamental gap between demo performance and production reliability:
 
 A demo tests the happy path. Production tests the unhappy paths, the edge cases, and the interactions between failure modes.
 
-Gartner's May 2026 report [warned](https://www.gartner.com/en/newsroom/press-releases/2026-05-26-gartner-says-applying-uniform-governance-across-ai-agents-will-lead-to-enterprise-ai-agent-failure) that **by 2027, 40% of enterprises will demote or decommission autonomous AI agents** due to governance failures identified only after production incidents. The root cause isn't that agents can't do the job — it's that the **operational infrastructure** around agents (monitoring, fallbacks, guardrails, governance) hasn't caught up with agent capabilities.
+Gartner's May 2026 report [warned](https://www.gartner.com/en/newsroom/press-releases/2026-05-26-gartner-says-applying-uniform-governance-across-ai-agents-will-lead-to-enterprise-ai-agent-failure) that **by 2027, 40% of enterprises will demote or decommission autonomous AI agents**. Notably, this prediction assumes enterprises aren't taking agent governance seriously — but with observability tools like Datadog LLM Observability and Langfuse now widely deployed, and guardrail/checkpoint patterns becoming engineering common sense, the reality may be less dire than Gartner suggests. The more interesting challenge isn't "whether to govern" but "how to implement layered governance without killing agent flexibility" — blanket governance can stifle agent value just as easily as no governance at all.
 
 ---
 
