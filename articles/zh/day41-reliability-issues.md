@@ -89,7 +89,9 @@ Google 在 2003 年提出 SRE 时，解决的痛点是"服务经常挂，靠人�
 
 ### 集成方式
 
-大多数框架支持 OpenTelemetry 协议（OpenLLMetry / OpenInference），一次 instrument 可以同时发到多个 backend：
+这里提一个关键协议：**OpenTelemetry（OTel）**。它是由 CNCF（管 Kubernetes 的同一个基金会）维护的开源可观测性标准，定义了统一的 tracing/metrics/logging 数据格式（OTLP 协议）。简单说，它就是可观测性领域的"USB-C 接口"——**写一次 instrument 代码，数据可以发给任何支持 OTLP 的 backend**，今天用 Langfuse，明天换 Datadog，不用改业务代码。
+
+对于 LLM/Agent 场景，社区在 OTel 之上做了两个扩展：OpenLLMetry（追踪 LLM 调用的 prompt/completion/token/cost）和 OpenInference（AI inference 的 tracing 规范）。
 
 ```python
 # Langfuse 最小集成示例

@@ -89,7 +89,9 @@ An agent trace must capture at minimum:
 
 ### Integration
 
-Most frameworks support OpenTelemetry (OpenLLMetry / OpenInference), so one instrumentation can send to multiple backends:
+One key protocol worth knowing: **OpenTelemetry (OTel)**. Maintained by the CNCF (the same foundation behind Kubernetes), it's an open-source observability standard that defines a unified data format (OTLP protocol) for traces, metrics, and logs. Think of it as the "USB-C connector" of observability — **instrument your code once, send data to any OTLP-compatible backend**. Start with Langfuse today, switch to Datadog tomorrow, no business code changes needed.
+
+For LLM/agent scenarios specifically, the community has built two extensions on top of OTel: OpenLLMetry (tracks LLM call prompts, completions, tokens, costs) and OpenInference (an AI inference tracing specification).
 
 ```python
 # Minimal Langfuse integration
