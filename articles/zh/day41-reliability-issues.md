@@ -146,12 +146,7 @@ LLM 会幻觉——我们在 [Day 21](day21-hallucination-problem.md) 讨论过�
 
 ## 3. 为什么演示成功、生产失败
 
-演示性能和生产可靠性之间存在根本性差距。理解这个差距至关重要。
-
-![错误级联流水线](./images/day41/day41-error-cascade-pipeline.png)
-*图 3：错误如何在多步骤 Agent 流水线中级联。每一步的错误都会传播到所有下游步骤。*
-
-### 演示环境 vs 生产环境
+演示性能和生产可靠性之间存在根本性差距：
 
 | 因素 | 演示环境 | 生产环境 |
 |------|---------|---------|
@@ -162,13 +157,9 @@ LLM 会幻觉——我们在 [Day 21](day21-hallucination-problem.md) 讨论过�
 | 规模 | 几次测试运行 | 数千个并发请求 |
 | 失败成本 | 再试一次 | 收入损失、工作流中断、信任侵蚀 |
 
-演示-生产差距不是 bug——它是 Agent 评估的**结构性特征**。演示测试的是快乐路径，生产测试的是不快乐路径、边缘情况以及失败模式之间的交互。
+演示测试的是快乐路径，生产测试的是不快乐路径、边缘情况以及失败模式之间的交互。
 
-### Gartner 的警告
-
-Gartner 在 2026 年 5 月的报告中[警告](https://www.gartner.com/en/newsroom/press-releases/2026-05-26-gartner-says-applying-uniform-governance-across-ai-agents-will-lead-to-enterprise-ai-agent-failure)称，**到 2027 年，40% 的企业将降级或停用自主 AI Agent**，原因是在生产事故发生后才发现的治理缺陷。他们更早的 2025 年 6 月预测指出，**超过 40% 的 Agentic AI 项目将在 2027 年底前被取消**，原因是成本上升、商业价值不清或风险控制不足。
-
-根本原因不是 Agent 做不了工作——而是围绕 Agent 的**运营基础设施**（监控、兜底方案、护栏、治理）没有跟上 Agent 能力的发展。
+Gartner 在 2026 年 5 月的报告中[警告](https://www.gartner.com/en/newsroom/press-releases/2026-05-26-gartner-says-applying-uniform-governance-across-ai-agents-will-lead-to-enterprise-ai-agent-failure)称，**到 2027 年，40% 的企业将降级或停用自主 AI Agent**，原因是在生产事故发生后才发现的治理缺陷。根本原因不是 Agent 做不了工作——而是围绕 Agent 的**运营基础设施**（监控、兜底方案、护栏、治理）没有跟上 Agent 能力的发展。
 
 ---
 
@@ -177,7 +168,7 @@ Gartner 在 2026 年 5 月的报告中[警告](https://www.gartner.com/en/newsro
 那怎么解决呢？好消息是：我们不需要重新发明可靠性工程。分布式系统几十年前就解决了这些完全相同的问题。我们只需要应用同样的工程纪律。
 
 ![可靠性工程模式](./images/day41/day41-reliability-patterns.png)
-*图 4：生产环境 Agent 的三层可靠性架构：LLM 前护栏、带自纠错的执行循环、LLM 后验证。*
+*图 3：生产环境 Agent 的三层可靠性架构：LLM 前护栏、带自纠错的执行循环、LLM 后验证。*
 
 ### 4.1 护栏（前置和后置）
 

@@ -146,12 +146,7 @@ The critical takeaway: **A well-aligned model does not equal a safe agent.** Saf
 
 ## 3. Why Demos Succeed and Production Fails
 
-There's a fundamental gap between demo performance and production reliability. Understanding this gap is essential.
-
-![Error Cascade Pipeline](../zh/images/day41/day41-error-cascade-pipeline.png)
-*Figure 3: How errors cascade through a multi-step agent pipeline. Each step's errors propagate to all downstream steps.*
-
-### The Demo Environment vs. Production
+There's a fundamental gap between demo performance and production reliability:
 
 | Factor | Demo Environment | Production |
 |--------|-----------------|------------|
@@ -162,13 +157,9 @@ There's a fundamental gap between demo performance and production reliability. U
 | Scale | A few test runs | Thousands of concurrent requests |
 | Failure cost | Try again | Lost revenue, broken workflows, eroded trust |
 
-The demo-Production gap is not a bug — it's a **structural feature** of agent evaluation. A demo tests the happy path. Production tests the unhappy paths, the edge cases, and the interactions between failure modes.
+A demo tests the happy path. Production tests the unhappy paths, the edge cases, and the interactions between failure modes.
 
-### The Gartner Warning
-
-Gartner's May 2026 report [warned](https://www.gartner.com/en/newsroom/press-releases/2026-05-26-gartner-says-applying-uniform-governance-across-ai-agents-will-lead-to-enterprise-ai-agent-failure) that **by 2027, 40% of enterprises will demote or decommission autonomous AI agents** due to governance failures identified only after production incidents. Their earlier June 2025 prediction stated that **over 40% of agentic AI projects will be canceled by the end of 2027**, driven by escalating costs, unclear business value, or inadequate risk controls.
-
-The root cause isn't that agents can't do the job — it's that the **operational infrastructure** around agents (monitoring, fallbacks, guardrails, governance) hasn't caught up with agent capabilities.
+Gartner's May 2026 report [warned](https://www.gartner.com/en/newsroom/press-releases/2026-05-26-gartner-says-applying-uniform-governance-across-ai-agents-will-lead-to-enterprise-ai-agent-failure) that **by 2027, 40% of enterprises will demote or decommission autonomous AI agents** due to governance failures identified only after production incidents. The root cause isn't that agents can't do the job — it's that the **operational infrastructure** around agents (monitoring, fallbacks, guardrails, governance) hasn't caught up with agent capabilities.
 
 ---
 
@@ -177,7 +168,7 @@ The root cause isn't that agents can't do the job — it's that the **operationa
 So how do we fix this? The good news: we don't need to reinvent reliability engineering. Distributed systems solved these exact problems decades ago. We just need to apply the same discipline.
 
 ![Reliability Patterns](../zh/images/day41/day41-reliability-patterns.png)
-*Figure 4: The three-layer reliability architecture for production agents: pre-LLM guardrails, execution loop with self-correction, and post-LLM validation.*
+*Figure 3: The three-layer reliability architecture for production agents: pre-LLM guardrails, execution loop with self-correction, and post-LLM validation.*
 
 ### 4.1 Guardrails (Pre and Post)
 
