@@ -124,7 +124,7 @@
 | Day | Topic | Core Question | Trend Source |
 |-----|-------|---------------|--------------|
 | D41 | **Reliability Issues** | Why agents often fail, error accumulation | Core pain point | [EN](articles/en/day41-reliability-issues.md) / [中文](articles/zh/day41-reliability-issues.md) |
-| D42 | Evaluation Challenges | How to evaluate agents? SWE-bench, WebArena | Evaluation methods |
+| D42 | Evaluation Challenges | How to evaluate agents? SWE-bench, WebArena | Evaluation methods | [EN](articles/en/day42-evaluation-challenges.md) / [中文](articles/zh/day42-evaluation-challenges.md) |
 | D43 | Safety and Alignment | Agent security risks, Prompt Injection | Security issues |
 | D44 | Human-AI Collaboration | Human-in-the-loop, when to intervene | Interaction design |
 | D45 | Cost and Latency | Agents are too expensive and slow, how to optimize | Practical issues |

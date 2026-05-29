@@ -89,6 +89,8 @@
 | GPT | GPT | Generative Pre-trained Transformer |
 | Grounding | 基于证据对齐 / 落地支撑 | 让模型的回答明确建立在输入文档、检索结果或工具输出之上 |
 | Grouped-Query Attention (GQA) | 分组查询注意力 | 多个 query 头按组共享 key/value 的注意力变体，降低缓存开销 |
+| GAIA | GAIA | General AI Assistants Benchmark，Meta 等提出的通用助手评估基准，测试多步推理和工具使用 |
+| Ground Truth | 金标答案 / 标准答案 | 评估中作为正确答案参考的标准输出 |
 
 ## H
 
@@ -97,6 +99,7 @@
 | Hallucination | 幻觉 | LLM 生成虚假但看起来合理的内容 |
 | HNSW (Hierarchical Navigable Small World) | 分层可导航小世界图 | 向量数据库中主流的 ANN 索引算法 |
 | Hidden Layer | 隐藏层 | 神经网络的中间层 |
+| Harness (Evaluation Harness) | 评估脚手架 | 包装基础模型并配置工具、prompt、重试策略等，以 Agent 模式运行评估的框架 |
 
 ## I
 
@@ -145,6 +148,7 @@
 | MCP Server | MCP 服务器 | 暴露 Tools、Resources、Prompts 三种原语给 AI 应用的外部服务 |
 | MCP Registry | MCP 注册中心 | 发现可用 MCP 服务器的中心索引，由社区维护 |
 | MCP Apps | MCP 应用 | MCP 的官方扩展，支持在聊天窗口内交付交互式 UI 组件 |
+| METR | METR | Model Evaluation and Threat Research，非营利研究组织，提出 Agent 时间窗口评估框架 |
 | AAIF (Agentic AI Foundation) | 智能体 AI 基金会 | Linux Foundation 下管理 MCP 的机构，由 Anthropic、Block、OpenAI 共同发起 |
 | SEP (Specification Enhancement Proposal) | 规范增强提案 | 社区推动 MCP 协议演进的正式提案机制 |
 | Streamable HTTP | 可流式 HTTP | MCP 的远程传输方式，通过 HTTP POST + SSE 实现流式响应 |
@@ -165,6 +169,7 @@
 |---------|------|----------|
 | One-Hot Encoding | 独热编码 | 稀疏向量表示，只有一个维度为 1，其余为 0 |
 | Overfitting | 过拟合 | 模型在训练集上表现好，测试集上差 |
+| OSWorld | OSWorld | 在真实操作系统上测试多模态桌面任务 Agent 的基准测试 |
 
 ## P
 
@@ -174,6 +179,8 @@
 | Parameter | 参数 | 模型中可学习的权重 |
 | Phase Transition | 相变 | 在临界阈值发生的质的变化（物理学概念，用于类比涌现） |
 | Pipeline Parallelism | 流水线并行 | 不同 Transformer 层分布在不同 GPU 上，数据像流水线一样流过 |
+| pass@k | pass@k | 在 k 次尝试中至少成功一次的概率（乐观可靠性指标） |
+| pass^k | pass^k | 在 k 次尝试中全部成功的概率（严格可靠性指标） |
 | Position Encoding | 位置编码 | 让模型感知 token 顺序 |
 | Position Interpolation | 位置插值 | 通过重缩放位置索引，把更长序列压缩映射到模型更熟悉的位置范围 |
 | Power Law | 幂律 | 变量间的乘幂关系，如 $y \propto x^{\alpha}$，缩放定律的数学基础 |
@@ -224,6 +231,8 @@
 | Softmax | Softmax | 将 logits 转换为概率分布 |
 | SAT Solver | 可满足性求解器 | 用于求解布尔可满足性问题的程序，常用于形式约束检查和组合优化 |
 | Subword Tokenization | 子词分词 | 介于字符和词之间的分词策略 |
+| SWE-bench | SWE-bench | Princeton 提出的软件工程基准测试，在真实 GitHub issue 上评估 Agent 的 bug 修复能力 |
+| Scaffold | 脚手架 | 包装基础模型并配置工具、prompt、重试策略等以 Agent 模式运行的评估/部署框架 |
 | Symbolic Perturbation | 符号扰动 | 在不改变底层数学结构的前提下，改写变量名、数字顺序或表面叙述，用于测试推理鲁棒性 |
 | Synthetic Data | 合成数据 | 由模型生成的用于训练其他模型的数据 |
 | Typical Sampling | 典型采样 | 偏好惊讶度接近分布平均值 token 的解码方法 |
@@ -239,6 +248,8 @@
 | Transformer | Transformer | 基于注意力机制的神经网络架构 |
 | Verification Pass | 验证前向 / 验证步骤 | 目标模型对草稿 token 块进行一次性检查的前向计算 |
 | Verifier | 验证器 | 用来检查候选答案或中间步骤是否正确、是否有证据支撑的组件 |
+| τ-bench (tau-bench) | τ-bench | Sierra Research 提出的 Agent 可靠性基准测试，通过 pass^k 指标衡量策略遵循的一致性 |
+| Time Horizon | 时间窗口 | METR 提出的概念，衡量 Agent 在失败前能自主工作多长时间 |
 
 ## U
 
@@ -271,6 +282,7 @@
 | Compound Reliability | 复合可靠性 | 多步骤流水线中每步错误相乘导致的端到端成功率下降 |
 | Error Cascading | 错误级联 | 一步的失败传播并恶化所有后续步骤的现象 |
 | Context Drift | 上下文漂移 | Agent 在长时间运行中逐渐偏离原始指令或目标的现象 |
+| WebArena | WebArena | CMU 提出的网页导航基准测试，在真实浏览器环境中评估 Agent 的自主浏览能力 |
 | Guardrails | 护栏 | LLM 调用前后的输入/输出验证层，用于拦截不合规内容 |
 | Reflexion | 反思模式 | Agent 生成自我批评语言反馈并重试的自纠错模式（Shinn 等人，NeurIPS 2023） |
 | Process Reward Model (PRM) | 过程奖励模型 | 对 Agent 推理的每个中间步骤（而非仅最终输出）打分的专用模型 |

@@ -1,6 +1,6 @@
 {
-  "current_day": 41,
-  "last_generated": "2026-05-28",
+  "current_day": 42,
+  "last_generated": "2026-05-29",
   "total_days": 60,
   "status": "active",
   "history": [
@@ -640,6 +640,22 @@
         "zh/images/day41/day41-error-cascade-pipeline.png",
         "zh/images/day41/day41-reliability-patterns.png",
         "zh/images/day41/day41-reliability-timeline.png"
+      ]
+    },
+    {
+      "day": 42,
+      "date": "2026-05-29",
+      "topic": "Evaluation Challenges",
+      "en_path": "en/day42-evaluation-challenges.md",
+      "zh_path": "zh/day42-evaluation-challenges.md",
+      "qa_score": 0,
+      "qa_rounds": 0,
+      "images": [
+        "zh/images/day42/benchmark-landscape.png",
+        "zh/images/day42/benchmark-exploit-problem.png",
+        "zh/images/day42/evaluation-dimensions-comparison.png",
+        "zh/images/day42/pass-k-metrics-and-sota.png",
+        "zh/images/day42/swebench-progress-timeline.png"
       ]
     }
   ]
