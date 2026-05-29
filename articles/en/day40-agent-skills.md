@@ -162,30 +162,30 @@ Regardless of framework, good skill design follows these principles:
 
 ---
 
-## 3. Tool vs. Plugin vs. Skill: Three Layers
+## 3. Tool vs. MCP vs. Skill: Three Layers
 
 These three concepts are often confused, but they operate at different abstraction levels:
 
-| Dimension | Tool | Plugin | Skill |
-|-----------|------|--------|-------|
-| **What it is** | A single function/API | Tool + connector packaging | Tool + knowledge + strategy |
-| **Question it answers** | "What can I call?" | "What can I connect to?" | "What can I do well?" |
-| **Analogy** | Screwdriver | Power tool set | Carpentry craft |
-| **Granularity** | Fine: one function call | Medium: a group of related tools | Coarse: a complete capability |
-| **Who defines it** | Developer (code) | Platform (registration) | Community + developer (Markdown) |
-| **Example** | `web_search(query)` | MCP Server (search + browse + extract) | "Research Survey" skill (search strategy + source evaluation + synthesis method) |
+| Dimension | Tool | MCP | Skill |
+|-----------|------|-----|-------|
+| **What it is** | A single function/API | A standardized protocol for connecting tools | Tool + knowledge + strategy |
+| **Question it answers** | "What can I call?" | "How does my agent call external tools?" | "How do I use these tools well?" |
+| **Analogy** | Screwdriver | Power outlet standard (lets any appliance plug in) | Carpentry craft |
+| **Granularity** | Fine: one function call | Medium: a connection spec for a group of related tools | Coarse: a complete capability |
+| **Who defines it** | Developer (code) | Open protocol led by Anthropic | Community + developer (Markdown) |
+| **Example** | `web_search(query)` | GitHub MCP Server (search + browse + extract) | "Research Survey" skill (search strategy + source evaluation + synthesis method) |
 
 ### Why This Distinction Matters
 
-**MCP** ([Day 38](day38-mcp-model-context-protocol.md)) standardized how tools are connected. **Skills** standardize how capabilities are described. They're complementary:
+**MCP** ([Day 38](day38-mcp-model-context-protocol.md)) standardized how tools connect — letting agents call external tools. **Skills** standardize how capabilities are described — letting agents know *when* and *how well* to use them. They're complementary:
 
-![Tool vs Plugin vs Skill](./images/day40/tool-plugin-skill-layers.png)
-*Figure 2: The three abstraction layers from Tool → Plugin → Skill, from a single function call to a complete capability.*
+![Tool vs MCP vs Skill](./images/day40/tool-plugin-skill-layers.png)
+*Figure 2: The three abstraction layers from Tool → MCP → Skill, from a single function call to standardized connectivity to a complete capability.*
 
 - MCP asks: "How does my agent call your tool?"
 - Skills ask: "How does my agent use these tools *well*?"
 
-One skill can invoke multiple MCP tools. One MCP tool can be used by multiple skills. Tools are vertical (one API), skills are horizontal (one task workflow).
+One skill can invoke multiple MCP tools. One MCP tool can be used by multiple skills. Tools are vertical (one API), MCP is horizontal (connection protocol), skills are three-dimensional (complete workflows).
 
 ---
 
@@ -467,7 +467,7 @@ This skill embodies all the design principles we discussed: single responsibilit
 | **Dependency gating** | Skills load only when environment conditions are met |
 | **ClawHub** | Public skill registry — like npm for Node.js |
 | **Skill Workshop** | Agents auto-create/update skills from experience |
-| **Tool vs Plugin vs Skill** | Three abstraction layers: function → connector → capability |
+| **Tool vs MCP vs Skill** | Three abstraction layers: function → connection protocol → capability |
 | **AgentSkills.io** | Open specification driving cross-framework skill interoperability |
 
 **Key Takeaway**: Tools give agents capabilities. Skills give agents craft. The difference: tools are *invoked*, skills are *mastered*. A good skill doesn't just tell the agent "how to do it" — it tells it "when to do it, how well is good enough, and when not to do it." This is the last mile from chatbot to true AI assistant.
