@@ -59,7 +59,7 @@
 | D12 | Fine-tuning | Parameter-efficient fine-tuning (LoRA, QLoRA) | [EN](articles/en/day12-fine-tuning.md) / [中文](articles/zh/day12-fine-tuning.md) |
 | D13 | **RLHF Explained** | Reinforcement Learning from Human Feedback, ChatGPT's secret | [EN](articles/en/day13-rlhf-explained.md) / [中文](articles/zh/day13-rlhf-explained.md) |
 | D14 | **RLHF Data & Practice** | Dataset construction, annotation workflow, costs | [EN](articles/en/day14-rlhf-data-and-practice.md) / [中文](articles/zh/day14-rlhf-data-and-practice.md) |
-| D15 | DPO and Alternatives | Why people are abandoning PPO | Latest developments |
+| D15 | DPO and Alternatives | Why people are abandoning PPO | Latest developments  | [EN](articles/en/day15-dpo-and-alternatives.md) / [中文](articles/zh/day15-dpo-and-alternatives.md) |
 
 ---
 
@@ -70,7 +70,7 @@
 | Day | Topic | Core Question | Trend Source |
 |-----|-------|---------------|--------------|
 | D16 | Sampling Strategies | Temperature, Top-k, Top-p, Beam search | [EN](articles/en/day16-sampling-strategies.md) / [中文](articles/zh/day16-sampling-strategies.md) |
-| D17 | KV Cache | Why inference can be accelerated, memory-compute trade-off | Inference optimization |
+| D17 | KV Cache | Why inference can be accelerated, memory-compute trade-off | Inference optimization  | [EN](articles/en/day17-kv-cache.md) / [中文](articles/zh/day17-kv-cache.md) |
 | D18 | Speculative Decoding | Using small models to speed up large model inference | [EN](articles/en/day18-speculative-decoding.md) / [中文](articles/zh/day18-speculative-decoding.md) |
 | D19 | Context Window | From 2K to 1M, long context technology evolution | [EN](articles/en/day19-context-window.md) / [中文](articles/zh/day19-context-window.md) |
 | D20 | **Prompt Engineering** | In-context learning, why prompts matter | [EN](articles/en/day20-prompt-engineering.md) / [中文](articles/zh/day20-prompt-engineering.md) |
@@ -83,7 +83,7 @@
 | D22 | Reasoning Ability | Can LLMs really reason? The nature of Chain-of-Thought | [EN](articles/en/day22-reasoning-ability.md) / [中文](articles/zh/day22-reasoning-ability.md) |
 | D23 | Math and Logic | Why LLMs struggle with math, return of Symbolic AI | [EN](articles/en/day23-math-and-logic.md) / [中文](articles/zh/day23-math-and-logic.md) |
 | D24 | World Models | Do LLMs have world models? Yann LeCun vs Ilya | [EN](articles/en/day24-world-models.md) / [中文](articles/zh/day24-world-models.md) |
-| D25 | Evaluation & Benchmarks | MMLU, HumanEval, ARC — What are we measuring? | Evaluation methods |
+| D25 | Evaluation & Benchmarks | MMLU, HumanEval, ARC — What are we measuring? | Evaluation methods  | [EN](articles/en/day25-evaluation-and-benchmarks.md) / [中文](articles/zh/day25-evaluation-and-benchmarks.md) |
 
 ### Week 6: Advanced Model Architecture 🔥🔥
 
@@ -117,7 +117,7 @@
 | D37 | **Agentic RAG** | RAG + Agent combination, dynamic retrieval | 🔥🔥 +300% rising · [EN](articles/en/day37-agentic-rag.md) / [中文](articles/zh/day37-agentic-rag.md) |
 | D38 | **MCP (Model Context Protocol)** | Anthropic's context protocol standard | 🔥🔥 rising new term | [EN](articles/en/day38-mcp-model-context-protocol.md) / [中文](articles/zh/day38-mcp-model-context-protocol.md) |
 | D39 | **Google ADK** | Agent Development Kit introduction | 🔥🔥 rising new term | [EN](articles/en/day39-google-adk-agent-development-kit.md) / [中文](articles/zh/day39-google-adk-agent-development-kit.md) |
-| D40 | Agent Tool Comparison | OpenClaw vs Codex vs ADK vs LangChain | 🔥 best ai agent +400% |
+| D40 | **Agent Skills** | From tools to capabilities | 🔥🔥 skills core concept  | [EN](articles/en/day40-agent-skills.md) / [中文](articles/zh/day40-agent-skills.md) |
 
 ### Week 9: Agent Bottlenecks and Frontiers
 
@@ -125,9 +125,9 @@
 |-----|-------|---------------|--------------|
 | D41 | **Reliability Issues** | Why agents often fail, error accumulation | Core pain point | [EN](articles/en/day41-reliability-issues.md) / [中文](articles/zh/day41-reliability-issues.md) |
 | D42 | Evaluation Challenges | How to evaluate agents? SWE-bench, WebArena | Evaluation methods | [EN](articles/en/day42-evaluation-challenges.md) / [中文](articles/zh/day42-evaluation-challenges.md) |
-| D43 | Safety and Alignment | Agent security risks, Prompt Injection | Security issues |
-| D44 | Human-AI Collaboration | Human-in-the-loop, when to intervene | Interaction design |
-| D45 | Cost and Latency | Agents are too expensive and slow, how to optimize | Practical issues |
+| D43 | Safety and Alignment | Agent security risks, Prompt Injection | Security issues  | |
+| D44 | Human-AI Collaboration | Human-in-the-loop, when to intervene | Interaction design  | |
+| D45 | Cost and Latency | Agents are too expensive and slow, how to optimize | Practical issues  | |
 
 ---
 
@@ -137,31 +137,31 @@
 
 | Day | Topic | Core Question | Trend Source |
 |-----|-------|---------------|--------------|
-| D46 | API Design and Selection | OpenAI, Anthropic, Google — How to choose | Practical guide |
-| D47 | Open Source vs Closed Source | Llama, Mistral, when to use open source | Technical choices |
-| D48 | Local Deployment | Ollama, vLLM, quantized inference | Deployment practice |
-| D49 | Evaluation and Monitoring | How to know if your LLM application works | Operations practice |
-| D50 | Prompt Management | Version control, A/B testing, iterative optimization | Engineering practice |
+| D46 | API Design and Selection | OpenAI, Anthropic, Google — How to choose | Practical guide  | |
+| D47 | Open Source vs Closed Source | Llama, Mistral, when to use open source | Technical choices  | |
+| D48 | Local Deployment | Ollama, vLLM, quantized inference | Deployment practice  | |
+| D49 | Evaluation and Monitoring | How to know if your LLM application works | Operations practice  | |
+| D50 | Prompt Management | Version control, A/B testing, iterative optimization | Engineering practice  | |
 
 ### Week 11: Industry Applications
 
 | Day | Topic | Core Question | Trend Source |
 |-----|-------|---------------|--------------|
-| D51 | Conversation and Customer Service | The right way to build chatbots | Use case |
-| D52 | Content Generation | Writing, marketing, creativity — Can AI replace humans? | Use case |
-| D53 | Knowledge Management | Enterprise knowledge bases, document Q&A | Use case |
-| D54 | **Developer Tools & Vibe Coding** | Copilot, Cursor, how AI is changing programming | 🔥 vibe coding rising |
-| D55 | Research and Science | AlphaFold, AI for Science | Frontier applications |
+| D51 | Conversation and Customer Service | The right way to build chatbots | Use case  | |
+| D52 | Content Generation | Writing, marketing, creativity — Can AI replace humans? | Use case  | |
+| D53 | Knowledge Management | Enterprise knowledge bases, document Q&A | Use case  | |
+| D54 | **Developer Tools & Vibe Coding** | Copilot, Cursor, how AI is changing programming | 🔥 vibe coding rising  | |
+| D55 | Research and Science | AlphaFold, AI for Science | Frontier applications  | |
 
 ### Week 12: OpenClaw Implementation 🔥
 
 | Day | Topic | Core Question | Trend Source |
 |-----|-------|---------------|--------------|
-| D56 | **OpenClaw Architecture Overview** | Gateway, Session, Channel | 🔥 openclaw rising |
-| D57 | Message Routing and Multi-Channel | Unified access for Telegram/Discord/Signal | System design |
-| D58 | Tool System Design | exec/browser/nodes — Capability extension | Tool system |
-| D59 | Memory and Context Management | Compaction, workspace, long-term memory | Memory system |
-| D60 | Sub-Agent Orchestration | sessions_spawn, subagent task decomposition | Orchestration system |
+| D56 | **OpenClaw Architecture Overview** | Gateway, Session, Channel | 🔥 openclaw rising  | |
+| D57 | Message Routing and Multi-Channel | Unified access for Telegram/Discord/Signal | System design  | |
+| D58 | Tool System Design | exec/browser/nodes — Capability extension | Tool system  | |
+| D59 | Memory and Context Management | Compaction, workspace, long-term memory | Memory system  | |
+| D60 | Sub-Agent Orchestration | sessions_spawn, subagent task decomposition | Orchestration system  | |
 
 ---
 

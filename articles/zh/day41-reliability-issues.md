@@ -163,9 +163,25 @@ Gartner 在 2026 年 5 月的报告中[警告](https://www.gartner.com/en/newsro
 
 ---
 
-## 4. 可靠性工程模式
+## 4. Agent Reliability Engineering（ARE）
 
-那怎么解决呢？好消息是：我们不需要重新发明可靠性工程。分布式系统几十年前就解决了这些完全相同的问题。我们只需要应用同样的工程纪律。
+在进入具体模式之前，值得先理清一个正在形成的学科名称：
+
+2025 年，swyx 在 AI Engineer Summit 上提出了 **Agent Engineering**——涵盖怎么从头构建一个靠谱的 agent 系统（架构设计、context 管理、工具调度、权限模型）。2026 年初，LangChain 发布了《State of Agent Engineering》报告，基于数百个生产级 agent 系统的分析，发现 32% 的组织认为**质量**是 agent 上线的最大阻碍。
+
+但本节要讲的是一个更聚焦的子集：**Agent Reliability Engineering（ARE）**。类比 Google 在 2003 年提出的 SRE（Site Reliability Engineering）——SRE 用工程方法解决运维可靠性问题（SLO、error budget、自动化缓解），ARE 则用同样的思路解决 agent 在生产环境中的可靠性问题：
+
+| SRE 概念 | ARE 对应 |
+|---------|----------|
+| 自动化缓解（auto-remediation） | 护栏 + 自纠错循环 |
+| 快速回滚（rollback） | 检查点 + 从已知好状态恢复 |
+| 监控 + 可观测性 | Agent tracing + 每步验证 |
+| Error budget | 可接受的 agent 失败率阈值 |
+| Incident postmortem | Agent 失败的归因分析 |
+
+简而言之：**Agent Engineering ≈ Software Engineering（怎么写好一个系统），ARE ≈ SRE（怎么让它在生产环境里稳定运行）。**
+
+好消息是：我们不需要重新发明 ARE。分布式系统几十年前就解决了这些完全相同的问题。我们只需要应用同样的工程纪律。
 
 ![可靠性工程模式](./images/day41/day41-reliability-patterns.png)
 *图 3：生产环境 Agent 的三层可靠性架构：LLM 前护栏、带自纠错的执行循环、LLM 后验证。*

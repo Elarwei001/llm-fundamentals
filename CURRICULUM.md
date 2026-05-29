@@ -43,23 +43,23 @@
 
 ### Week 2: 语言模型的本质 🔥🔥🔥
 
-| Day | 主题 | 核心问题 | 热度来源 |
+| Day | 主题 | 核心问题 | 热度来源 | 文章链接 |
 |-----|------|----------|----------|
-| D6 | **什么是 LLM** | P(next_token\|context) —— 一句话定义 | 🔥🔥 what is LLM +100 |
-| D7 | Tokenization | BPE、WordPiece，为什么 tokenizer 很重要 | token 相关搜索 |
-| D8 | Embedding 的魔法 | 词向量、位置编码、语义空间 | 技术细节 |
-| D9 | **Scaling Laws** | Chinchilla、Kaplan，为什么"大力出奇迹" | 模型规模问题 |
-| D10 | 涌现能力 | Emergence —— 量变到质变，还是测量偏差？ | 争议话题 |
+| D6 | **什么是 LLM** | P(next_token\|context) —— 一句话定义 | 🔥🔥 what is LLM +100  | [EN](articles/en/day06-what-is-an-llm.md) / [中文](articles/zh/day06-what-is-an-llm.md) |
+| D7 | Tokenization | BPE、WordPiece，为什么 tokenizer 很重要 | token 相关搜索  | [EN](articles/en/day07-tokenization.md) / [中文](articles/zh/day07-tokenization.md) |
+| D8 | Embedding 的魔法 | 词向量、位置编码、语义空间 | 技术细节  | [EN](articles/en/day08-the-magic-of-embeddings.md) / [中文](articles/zh/day08-the-magic-of-embeddings.md) |
+| D9 | **Scaling Laws** | Chinchilla、Kaplan，为什么"大力出奇迹" | 模型规模问题  | [EN](articles/en/day09-scaling-laws.md) / [中文](articles/zh/day09-scaling-laws.md) |
+| D10 | 涌现能力 | Emergence —— 量变到质变，还是测量偏差？ | 争议话题  | [EN](articles/en/day10-emergent-abilities.md) / [中文](articles/zh/day10-emergent-abilities.md) |
 
 ### Week 3: 训练范式 🔥
 
-| Day | 主题 | 核心问题 | 热度来源 |
+| Day | 主题 | 核心问题 | 热度来源 | 文章链接 |
 |-----|------|----------|----------|
-| D11 | Pre-training | 自监督学习，用互联网训练世界模型 | 训练基础 |
-| D12 | Fine-tuning | 参数高效微调 (LoRA, QLoRA) | 实用技术 |
-| D13 | **RLHF 详解** | 人类反馈强化学习，ChatGPT 的秘密 | 🔥 rlhf +140% training |
-| D14 | **RLHF 数据与实践** | 数据集构建、标注流程、成本 | 🔥 data +200% |
-| D15 | DPO 与替代方案 | 为什么大家开始抛弃 PPO | 最新进展 |
+| D11 | Pre-training | 自监督学习，用互联网训练世界模型 | 训练基础  | [EN](articles/en/day11-pre-training.md) / [中文](articles/zh/day11-pre-training.md) |
+| D12 | Fine-tuning | 参数高效微调 (LoRA, QLoRA) | 实用技术  | [EN](articles/en/day12-fine-tuning.md) / [中文](articles/zh/day12-fine-tuning.md) |
+| D13 | **RLHF 详解** | 人类反馈强化学习，ChatGPT 的秘密 | 🔥 rlhf +140% training  | [EN](articles/en/day13-rlhf-explained.md) / [中文](articles/zh/day13-rlhf-explained.md) |
+| D14 | **RLHF 数据与实践** | 数据集构建、标注流程、成本 | 🔥 data +200%  | [EN](articles/en/day14-rlhf-data-and-practice.md) / [中文](articles/zh/day14-rlhf-data-and-practice.md) |
+| D15 | DPO 与替代方案 | 为什么大家开始抛弃 PPO | 最新进展  | [EN](articles/en/day15-dpo-and-alternatives.md) / [中文](articles/zh/day15-dpo-and-alternatives.md) |
 
 ---
 
@@ -67,33 +67,33 @@
 
 ### Week 4: 推理与生成
 
-| Day | 主题 | 核心问题 | 热度来源 |
+| Day | 主题 | 核心问题 | 热度来源 | 文章链接 |
 |-----|------|----------|----------|
-| D16 | 采样策略 | Temperature、Top-k、Top-p、Beam search | 常见参数 |
-| D17 | KV Cache | 为什么推理可以加速，内存与计算 trade-off | 推理优化 |
-| D18 | Speculative Decoding | 用小模型加速大模型推理 | 前沿技术 |
-| D19 | Context Window | 从 2K 到 1M，长上下文技术演进 | 上下文限制 |
-| D20 | **Prompt Engineering** | In-context learning，为什么提示词重要 | 实用技能 |
+| D16 | 采样策略 | Temperature、Top-k、Top-p、Beam search | 常见参数  | [EN](articles/en/day16-sampling-strategies.md) / [中文](articles/zh/day16-sampling-strategies.md) |
+| D17 | KV Cache | 为什么推理可以加速，内存与计算 trade-off | 推理优化  | [EN](articles/en/day17-kv-cache.md) / [中文](articles/zh/day17-kv-cache.md) |
+| D18 | Speculative Decoding | 用小模型加速大模型推理 | 前沿技术  | [EN](articles/en/day18-speculative-decoding.md) / [中文](articles/zh/day18-speculative-decoding.md) |
+| D19 | Context Window | 从 2K 到 1M，长上下文技术演进 | 上下文限制  | [EN](articles/en/day19-context-window.md) / [中文](articles/zh/day19-context-window.md) |
+| D20 | **Prompt Engineering** | In-context learning，为什么提示词重要 | 实用技能  | [EN](articles/en/day20-prompt-engineering.md) / [中文](articles/zh/day20-prompt-engineering.md) |
 
 ### Week 5: 模型能力边界
 
-| Day | 主题 | 核心问题 | 热度来源 |
+| Day | 主题 | 核心问题 | 热度来源 | 文章链接 |
 |-----|------|----------|----------|
-| D21 | **幻觉问题** | 为什么 LLM 会一本正经地胡说八道 | 🔥 常见问题 |
-| D22 | 推理能力 | LLM 真的会推理吗？Chain-of-Thought 本质 | 能力争议 |
-| D23 | 数学与逻辑 | 为什么算不好数学，Symbolic AI 回归 | 已知缺陷 |
-| D24 | 世界模型 | LLM 有世界模型吗？Yann LeCun vs Ilya | 学术争论 |
-| D25 | 评测与 Benchmark | MMLU、HumanEval、ARC —— 我们在测什么 | 评测方法 |
+| D21 | **幻觉问题** | 为什么 LLM 会一本正经地胡说八道 | 🔥 常见问题  | [EN](articles/en/day21-hallucination-problem.md) / [中文](articles/zh/day21-hallucination-problem.md) |
+| D22 | 推理能力 | LLM 真的会推理吗？Chain-of-Thought 本质 | 能力争议  | [EN](articles/en/day22-reasoning-ability.md) / [中文](articles/zh/day22-reasoning-ability.md) |
+| D23 | 数学与逻辑 | 为什么算不好数学，Symbolic AI 回归 | 已知缺陷  | [EN](articles/en/day23-math-and-logic.md) / [中文](articles/zh/day23-math-and-logic.md) |
+| D24 | 世界模型 | LLM 有世界模型吗？Yann LeCun vs Ilya | 学术争论  | [EN](articles/en/day24-world-models.md) / [中文](articles/zh/day24-world-models.md) |
+| D25 | 评测与 Benchmark | MMLU、HumanEval、ARC —— 我们在测什么 | 评测方法  | [EN](articles/en/day25-evaluation-and-benchmarks.md) / [中文](articles/zh/day25-evaluation-and-benchmarks.md) |
 
 ### Week 6: 模型架构进阶 🔥🔥
 
-| Day | 主题 | 核心问题 | 热度来源 |
+| Day | 主题 | 核心问题 | 热度来源 | 文章链接 |
 |-----|------|----------|----------|
-| D26 | **Mixture of Experts (MoE)** | 稀疏激活，用更少算力获得更大模型 | 架构创新 |
-| D27 | Knowledge Distillation | 大模型→小模型，知识如何迁移 | 模型压缩 |
-| D28 | **FlashAttention & Sparse Attention** | 内存带宽瓶颈，让 Transformer 跑更快 | 🔥 sparse attention +30% |
-| D29 | **Attention-Free 架构** | Mamba、RWKV、State Space Models | 🔥🔥🔥 +350% 飙升 |
-| D30 | 多模态基础 | CLIP、Vision Transformer、GPT-4V | 多模态入门 |
+| D26 | **Mixture of Experts (MoE)** | 稀疏激活，用更少算力获得更大模型 | 架构创新  | [EN](articles/en/day26-mixture-of-experts.md) / [中文](articles/zh/day26-mixture-of-experts.md) |
+| D27 | Knowledge Distillation | 大模型→小模型，知识如何迁移 | 模型压缩  | [EN](articles/en/day27-knowledge-distillation.md) / [中文](articles/zh/day27-knowledge-distillation.md) |
+| D28 | **FlashAttention & Sparse Attention** | 内存带宽瓶颈，让 Transformer 跑更快 | 🔥 sparse attention +30%  | [EN](articles/en/day28-flashattention-and-sparse-attention.md) / [中文](articles/zh/day28-flashattention-and-sparse-attention.md) |
+| D29 | **Attention-Free 架构** | Mamba、RWKV、State Space Models | 🔥🔥🔥 +350% 飙升  | [EN](articles/en/day29-attention-free-architectures.md) / [中文](articles/zh/day29-attention-free-architectures.md) |
+| D30 | 多模态基础 | CLIP、Vision Transformer、GPT-4V | 多模态入门  | [EN](articles/en/day30-multimodal-basics.md) / [中文](articles/zh/day30-multimodal-basics.md) |
 
 ---
 
@@ -101,33 +101,33 @@
 
 ### Week 7: Agent 基础
 
-| Day | 主题 | 核心问题 | 热度来源 |
+| Day | 主题 | 核心问题 | 热度来源 | 文章链接 |
 |-----|------|----------|----------|
-| D31 | **什么是 AI Agent** | 从 LLM 到 Agent，核心区别是什么 | 🔥🔥🔥 ai agent 爆发 |
-| D32 | Agent 架构模式 | ReAct、Plan-and-Execute、自主循环 | 设计模式 |
-| D33 | **Tool Use** | Function Calling，让 LLM 操作真实世界 | 核心能力 |
-| D34 | Memory 系统 | 短期记忆、长期记忆、向量数据库 | 记忆设计 |
-| D35 | **RAG 详解** | 检索增强生成，知识与推理结合 | 🔥 what is rag +70% |
+| D31 | **什么是 AI Agent** | 从 LLM 到 Agent，核心区别是什么 | 🔥🔥🔥 ai agent 爆发  | [EN](articles/en/day31-what-is-an-ai-agent.md) / [中文](articles/zh/day31-what-is-an-ai-agent.md) |
+| D32 | Agent 架构模式 | ReAct、Plan-and-Execute、自主循环 | 设计模式  | [EN](articles/en/day32-agent-architecture-patterns.md) / [中文](articles/zh/day32-agent-architecture-patterns.md) |
+| D33 | **Tool Use** | Function Calling，让 LLM 操作真实世界 | 核心能力  | [EN](articles/en/day33-tool-use.md) / [中文](articles/zh/day33-tool-use.md) |
+| D34 | Memory 系统 | 短期记忆、长期记忆、向量数据库 | 记忆设计  | [EN](articles/en/day34-memory-systems.md) / [中文](articles/zh/day34-memory-systems.md) |
+| D35 | **RAG 详解** | 检索增强生成，知识与推理结合 | 🔥 what is rag +70%  | [EN](articles/en/day35-rag-explained.md) / [中文](articles/zh/day35-rag-explained.md) |
 
 ### Week 8: Agent 进阶 🔥🔥 (新热词集中)
 
-| Day | 主题 | 核心问题 | 热度来源 |
+| Day | 主题 | 核心问题 | 热度来源 | 文章链接 |
 |-----|------|----------|----------|
-| D36 | Multi-Agent 系统 | 多 Agent 协作，涌现与混乱 | 架构模式 |
-| D37 | **Agentic RAG** | RAG + Agent 结合，动态检索 | 🔥🔥 +300% 飙升 |
-| D38 | **MCP (Model Context Protocol)** | Anthropic 的上下文协议标准 | 🔥🔥 飙升新词 |
-| D39 | **Google ADK** | Agent Development Kit 介绍 | 🔥🔥 飙升新词 |
-| D40 | Agent 工具对比 | OpenClaw vs Codex vs ADK vs LangChain | 🔥 best ai agent +400% |
+| D36 | Multi-Agent 系统 | 多 Agent 协作，涌现与混乱 | 架构模式  | [EN](articles/en/day36-multi-agent-systems.md) / [中文](articles/zh/day36-multi-agent-systems.md) |
+| D37 | **Agentic RAG** | RAG + Agent 结合，动态检索 | 🔥🔥 +300% 飙升  | [EN](articles/en/day37-agentic-rag.md) / [中文](articles/zh/day37-agentic-rag.md) |
+| D38 | **MCP (Model Context Protocol)** | Anthropic 的上下文协议标准 | 🔥🔥 飙升新词  | [EN](articles/en/day38-mcp-model-context-protocol.md) / [中文](articles/zh/day38-mcp-model-context-protocol.md) |
+| D39 | **Google ADK** | Agent Development Kit 介绍 | 🔥🔥 飙升新词  | [EN](articles/en/day39-google-adk-agent-development-kit.md) / [中文](articles/zh/day39-google-adk-agent-development-kit.md) |
+| D40 | **Agent Skills** | 从工具到能力的封装 | 🔥🔥 skills 核心概念  | [EN](articles/en/day40-agent-skills.md) / [中文](articles/zh/day40-agent-skills.md) |
 
 ### Week 9: Agent 瓶颈与前沿
 
-| Day | 主题 | 核心问题 | 热度来源 |
+| Day | 主题 | 核心问题 | 热度来源 | 文章链接 |
 |-----|------|----------|----------|
-| D41 | **可靠性问题** | 为什么 Agent 经常失败，错误累积 | 核心痛点 |
-| D42 | 评估难题 | 如何评测 Agent？SWE-bench、WebArena | 评测方法 |
-| D43 | 安全与对齐 | Agent 的安全风险，Prompt Injection | 安全问题 |
-| D44 | 人机协作 | Human-in-the-loop，什么时候该介入 | 交互设计 |
-| D45 | 成本与延迟 | Agent 太贵太慢，如何优化 | 实用问题 |
+| D41 | **可靠性问题** | 为什么 Agent 经常失败，错误累积 | 核心痛点  | [EN](articles/en/day41-reliability-issues.md) / [中文](articles/zh/day41-reliability-issues.md) |
+| D42 | 评估难题 | 如何评测 Agent？SWE-bench、WebArena | 评测方法  | [EN](articles/en/day42-evaluation-challenges.md) / [中文](articles/zh/day42-evaluation-challenges.md) |
+| D43 | 安全与对齐 | Agent 的安全风险，Prompt Injection | 安全问题  | |
+| D44 | 人机协作 | Human-in-the-loop，什么时候该介入 | 交互设计  | |
+| D45 | 成本与延迟 | Agent 太贵太慢，如何优化 | 实用问题  | |
 
 ---
 
@@ -135,33 +135,33 @@
 
 ### Week 10: 开发实践
 
-| Day | 主题 | 核心问题 | 热度来源 |
+| Day | 主题 | 核心问题 | 热度来源 | 文章链接 |
 |-----|------|----------|----------|
-| D46 | API 设计与选择 | OpenAI、Anthropic、Google —— 如何选 | 实用指南 |
-| D47 | 开源 vs 闭源 | Llama、Mistral，什么时候用开源 | 技术选型 |
-| D48 | 本地部署 | Ollama、vLLM、量化推理 | 部署实践 |
-| D49 | 评估与监控 | 如何知道你的 LLM 应用是否 work | 运维实践 |
-| D50 | Prompt 管理 | 版本控制、A/B 测试、迭代优化 | 工程实践 |
+| D46 | API 设计与选择 | OpenAI、Anthropic、Google —— 如何选 | 实用指南  | |
+| D47 | 开源 vs 闭源 | Llama、Mistral，什么时候用开源 | 技术选型  | |
+| D48 | 本地部署 | Ollama、vLLM、量化推理 | 部署实践  | |
+| D49 | 评估与监控 | 如何知道你的 LLM 应用是否 work | 运维实践  | |
+| D50 | Prompt 管理 | 版本控制、A/B 测试、迭代优化 | 工程实践  | |
 
 ### Week 11: 行业应用
 
-| Day | 主题 | 核心问题 | 热度来源 |
+| Day | 主题 | 核心问题 | 热度来源 | 文章链接 |
 |-----|------|----------|----------|
-| D51 | 对话与客服 | Chatbot 的正确打开方式 | 应用场景 |
-| D52 | 内容生成 | 写作、营销、创意 —— AI 能替代人吗 | 应用场景 |
-| D53 | 知识管理 | 企业知识库、文档问答 | 应用场景 |
-| D54 | **开发者工具与 Vibe Coding** | Copilot、Cursor，AI 如何改变编程 | 🔥 vibe coding 飙升 |
-| D55 | 研究与科学 | AlphaFold、AI for Science | 前沿应用 |
+| D51 | 对话与客服 | Chatbot 的正确打开方式 | 应用场景  | |
+| D52 | 内容生成 | 写作、营销、创意 —— AI 能替代人吗 | 应用场景  | |
+| D53 | 知识管理 | 企业知识库、文档问答 | 应用场景  | |
+| D54 | **开发者工具与 Vibe Coding** | Copilot、Cursor，AI 如何改变编程 | 🔥 vibe coding 飙升  | |
+| D55 | 研究与科学 | AlphaFold、AI for Science | 前沿应用  | |
 
 ### Week 12: OpenClaw 实现原理 🔥
 
-| Day | 主题 | 核心问题 | 热度来源 |
+| Day | 主题 | 核心问题 | 热度来源 | 文章链接 |
 |-----|------|----------|----------|
-| D56 | **OpenClaw 架构总览** | Gateway、Session、Channel | 🔥 openclaw 飙升 |
-| D57 | 消息路由与多通道 | Telegram/Discord/Signal 统一接入 | 系统设计 |
-| D58 | Tool 系统设计 | exec/browser/nodes —— 能力扩展 | 工具系统 |
-| D59 | Memory 与 Context 管理 | Compaction、workspace、长期记忆 | 记忆系统 |
-| D60 | 子 Agent 编排 | sessions_spawn、subagent 任务分解 | 编排系统 |
+| D56 | **OpenClaw 架构总览** | Gateway、Session、Channel | 🔥 openclaw 飙升  | |
+| D57 | 消息路由与多通道 | Telegram/Discord/Signal 统一接入 | 系统设计  | |
+| D58 | Tool 系统设计 | exec/browser/nodes —— 能力扩展 | 工具系统  | |
+| D59 | Memory 与 Context 管理 | Compaction、workspace、长期记忆 | 记忆系统  | |
+| D60 | 子 Agent 编排 | sessions_spawn、subagent 任务分解 | 编排系统  | |
 
 ---
 

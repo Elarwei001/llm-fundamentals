@@ -163,9 +163,25 @@ Gartner's May 2026 report [warned](https://www.gartner.com/en/newsroom/press-rel
 
 ---
 
-## 4. Reliability Engineering Patterns
+## 4. Agent Reliability Engineering (ARE)
 
-So how do we fix this? The good news: we don't need to reinvent reliability engineering. Distributed systems solved these exact problems decades ago. We just need to apply the same discipline.
+Before diving into specific patterns, it's worth naming the discipline that's taking shape:
+
+In 2025, swyx coined **Agent Engineering** at the AI Engineer Summit — covering how to build a reliable agent system from scratch (architecture, context management, tool dispatch, authority models). In early 2026, LangChain published the *State of Agent Engineering* report, analyzing hundreds of production agent systems and finding that **32% of organizations cite quality as the #1 blocker** to agent deployment.
+
+But this section focuses on a narrower subset: **Agent Reliability Engineering (ARE)**. The analogy is Google's SRE (Site Reliability Engineering) from 2003 — SRE applies engineering discipline to operational reliability (SLOs, error budgets, auto-remediation), and ARE applies the same thinking to keeping agents reliable in production:
+
+| SRE Concept | ARE Equivalent |
+|-------------|---------------|
+| Auto-remediation | Guardrails + self-correction loops |
+| Fast rollback | Checkpoints + recovery from last known good state |
+| Monitoring + observability | Agent tracing + per-step verification |
+| Error budget | Acceptable agent failure rate threshold |
+| Incident postmortem | Root cause analysis for agent failures |
+
+In short: **Agent Engineering ≈ Software Engineering (how to build a good system), ARE ≈ SRE (how to keep it running reliably in production).**
+
+The good news: we don't need to reinvent ARE. Distributed systems solved these exact problems decades ago. We just need to apply the same discipline.
 
 ![Reliability Patterns](../zh/images/day41/day41-reliability-patterns.png)
 *Figure 3: The three-layer reliability architecture for production agents: pre-LLM guardrails, execution loop with self-correction, and post-LLM validation.*
