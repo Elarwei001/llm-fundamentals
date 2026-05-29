@@ -134,7 +134,7 @@ metadata: {
 - Skill 目录放在仓库的任意位置，通过配置文件指定搜索路径
 - 元数据中的 `requires` 做加载前门控（环境变量、二进制依赖、配置项）
 - ClawHub 作为社区分发渠道，`openclaw skills install` 一键安装
-- 支持 Skill Workshop：agent 可从自身操作模式中自动创建/更新 skill
+- 支持 Skill Workshop（实验性，默认关闭）：agent 可从自身操作模式中自动创建/更新 skill
 
 #### Claude Code
 
@@ -337,7 +337,12 @@ OpenClaw 的多层防御：
 
 ### 6.3 Skill Workshop：Agent 自我进化
 
-OpenClaw 的 Skill Workshop 插件是最前沿的功能之一：**agent 可以在运行中观察到自己反复执行的操作，自动创建或更新 skill**。
+OpenClaw 的 Skill Workshop 是一个实验性的内置插件（**默认关闭**，需通过 `plugins.entries.skill-workshop.enabled true` 手动启用）。它的核心能力是：**agent 观察到自己反复执行的操作，自动创建或更新 skill**。
+
+触发方式有三种：
+- Agent 直接调用 `skill_workshop` 工具
+- 启发式检测：用户说"以后都这样"、"记住要"等短语时自动触发
+- LLM reviewer 周期性分析近期对话，发现可复用模式后主动提议创建 skill
 
 比如你多次纠正 agent "生成图片后先检查比例再发给我"——Workshop 会把这个纠正规律写入 skill，下次自动执行。这是 agent 从"被教导"走向"自我学习"的关键一步。
 

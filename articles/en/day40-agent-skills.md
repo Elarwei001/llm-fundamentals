@@ -134,7 +134,7 @@ While each framework's skill format differs in details, the core philosophy is r
 - Skill directories live anywhere in the repo; search paths are specified in config
 - `requires` in metadata gates loading (env vars, binary deps, config keys)
 - ClawHub serves as the community distribution channel; `openclaw skills install` for one-click setup
-- Supports Skill Workshop: the agent can auto-create/update skills from its own behavioral patterns
+- Supports Skill Workshop (experimental, disabled by default): the agent can auto-create/update skills from its own behavioral patterns
 
 #### Claude Code
 
@@ -337,7 +337,12 @@ OpenClaw's multi-layer defense:
 
 ### 6.3 Skill Workshop: Agents That Teach Themselves
 
-OpenClaw's Skill Workshop plugin is one of the most cutting-edge features: **the agent can observe its own repeated operations and automatically create or update skills.**
+OpenClaw's Skill Workshop is an experimental built-in plugin (**disabled by default**; enable via `plugins.entries.skill-workshop.enabled true`). Its core capability: **the agent observes its own repeated operations and automatically creates or updates skills**.
+
+It triggers in three ways:
+- The agent directly invokes the `skill_workshop` tool
+- Heuristic detection: triggers when the user says phrases like "from now on" or "always remember to"
+- An LLM reviewer periodically analyzes recent conversation and proposes a skill when a reusable pattern is detected
 
 For example, if you repeatedly correct the agent to "check the aspect ratio before sending me the generated image," Workshop writes this pattern into a skill that's automatically followed next time. This is a key step from agents being "taught" to agents "learning on their own."
 
