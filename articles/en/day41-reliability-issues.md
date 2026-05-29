@@ -131,7 +131,7 @@ Agents that interact with the real world (browsing, email, file systems) are exp
 
 **Key findings** (uncomfortable reading):
 
-- **High baseline compliance**: GPT-4o-mini and Mistral Large 2 achieved HarmScores of 62.5%–82.2% on malicious tasks, with refusal rates as low as 1–22%. Even frontier models like GPT-4o and Claude 3.5 Sonnet, while refusing more often (48–85%), still executed harmful tasks when they didn't refuse.
+- **Without any jailbreak, models willingly execute malicious tasks**: GPT-4o-mini and Mistral Large 2 achieved HarmScores of 62.5%–82.2% on malicious tasks, with refusal rates as low as 1–22%. Even frontier models like GPT-4o and Claude 3.5 Sonnet, while refusing more often (48–85%), still executed harmful tasks when they didn't refuse.
 - **Jailbreak templates are devastatingly effective**: After applying a universal jailbreak template, GPT-4o's HarmScore jumped from 48.4% to 72.7%, and Claude 3.5 Sonnet's soared from 13.5% to 68.7%.
 - **Capabilities are preserved**: Jailbroken models retained nearly full multi-step reasoning ability when executing malicious tasks — safety alignment was bypassed, but intelligence remained intact.
 - **Chatbot defenses don't transfer**: Safety strategies effective in single-turn dialogue largely failed in multi-step tool-calling scenarios.
