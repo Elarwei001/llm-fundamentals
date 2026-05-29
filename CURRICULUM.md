@@ -123,7 +123,7 @@
 
 | Day | 主题 | 核心问题 | 热度来源 | 文章链接 |
 |-----|------|----------|----------|
-| D41 | **可靠性问题** | 为什么 Agent 经常失败，错误累积 | 核心痛点  | [EN](articles/en/day41-reliability-issues.md) / [中文](articles/zh/day41-reliability-issues.md) |
+| D41 | **Agent Reliability Engineering** | 从可观测性到持续改进的五步 ARE 体系 | ARE 核心实践  | [EN](articles/en/day41-reliability-issues.md) / [中文](articles/zh/day41-reliability-issues.md) |
 | D42 | 评估难题 | 如何评测 Agent？SWE-bench、WebArena | 评测方法  | [EN](articles/en/day42-evaluation-challenges.md) / [中文](articles/zh/day42-evaluation-challenges.md) |
 | D43 | 安全与对齐 | Agent 的安全风险，Prompt Injection | 安全问题  | |
 | D44 | 人机协作 | Human-in-the-loop，什么时候该介入 | 交互设计  | |
