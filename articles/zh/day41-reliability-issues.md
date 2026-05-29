@@ -116,29 +116,31 @@ LLM 会幻觉——我们在 [Day 21](day21-hallucination-problem.md) 讨论过�
 
 #### AgentHarm 基准：系统化测量 Agent 安全性
 
-[AgentHarm](https://arxiv.org/abs/2410.09024)（Andriushchenko 等人，ICLR 2025）是第一个专门针对**多步骤 Agent 场景**的安全基准。它填补了一个关键空白：之前的安全评估主要针对单轮对话聊天机器人，但 Agent 的多步工具调用能力让攻击面大幅扩展。
+[AgentHarm](https://arxiv.org/abs/2410.09024)（Andriushchenko 等人，ICLR 2025）是第一个专门针对**多步骤 Agent 场景**的安全基准。它填补了一个关键空白：之前的安全评估主要针对单轮 chatbot，但 Agent 的多步 tool-calling 能力让 attack surface 大幅扩展。
 
-**基准内容**：110 个精心设计的恶意任务（经增强后扩展为 440 个），覆盖 **11 个有害类别**：
+**基准内容**：110 个精心设计的恶意任务（经 augmentation 后扩展为 440 个），覆盖 **11 个 harm category**：
 
-| 类别 | 示例场景 |
-|------|----------|
-| 欺诈（Fraud） | 编写钓鱼邮件并自动发送 |
-| 网络犯罪（Cybercrime） | 扫描漏洞并生成利用脚本 |
-| 骚扰（Harassment） | 在社交媒体上定向骚扰特定目标 |
-| 虚假信息（Disinformation） | 批量生成并传播虚假新闻 |
-| 暴力（Violence） | 查找并策划物理攻击方案 |
-| 自残、色情、版权、毒品、仇恨、恐怖主义 | ... |
+| Category | 示例场景 |
+|----------|----------|
+| Fraud | 编写钓鱼邮件并自动发送 |
+| Cybercrime | 扫描漏洞并生成 exploit 脚本 |
+| Harassment | 在社交媒体上定向骚扰特定目标 |
+| Disinformation | 批量生成并传播虚假新闻 |
+| Violence | 查找并策划物理攻击方案 |
+| Self-harm, Sexual, Copyright, Drugs, Hate, Terrorism | ... |
 
-**核心发现**（令人不安的）：
+每个恶意任务都配有一个同等复杂度的 benign counterpart（例如"写一封正常的市场推广邮件" vs "写一封钓鱼邮件"），这样可以区分"模型 refuse 了"和"模型能力不够做不了"。Scoring 通过 custom grading function + LLM-based judge 自动完成。
 
-- **不加任何越狱的情况下，模型就愿意执行恶意任务**：GPT-4o-mini 和 Mistral Large 2 在恶意任务上的 HarmScore 达到 62.5%–82.2%，拒绝率低至 1–22%。即使是 GPT-4o 和 Claude 3.5 Sonnet 这样的前沿模型，虽然拒绝率更高（48–85%），但在未拒绝的情况下仍然执行了有害任务。
-- **越狱模板极其有效**：应用通用越狱模板后，GPT-4o 的 HarmScore 从 48.4% 跳升到 72.7%，Claude 3.5 Sonnet 从 13.5% 飙升到 68.7%。
-- **能力保持不变**：被越狱的模型在执行恶意任务时的多步推理能力几乎不受影响——安全对齐被绕过，但智能完好无损。
-- **聊天机器人的防御无法迁移**：在单轮对话中有效的安全策略，在多步骤工具调用场景中大量失效。
+**Key findings**（令人不安的）：
 
-**谁在使用**：AgentHarm 已被 OpenAI、Anthropic、Google DeepMind 用于评估自家模型的安全性，并被 ICLR 2025 接收为会议论文。它正在成为 Agent 安全评估的事实标准。
+- **Baseline（不加任何 jailbreak）下模型就愿意执行恶意任务**：GPT-4o-mini 和 Mistral Large 2 的 HarmScore 达到 62.5%–82.2%，RefusalRate 低至 1–22%。即使是 GPT-4o 和 Claude 3.5 Sonnet 这样的 frontier model，虽然 RefusalRate 更高（48–85%），但在未 refuse 的情况下仍然执行了有害任务。
+- **Universal jailbreak 极其有效**：应用 universal jailbreak template 后，GPT-4o 的 HarmScore 从 48.4% 跳升到 72.7%（RefusalRate 从 48.9% 降至 13.6%），Claude 3.5 Sonnet 的 HarmScore 从 13.5% 飙升到 68.7%（RefusalRate 从 85.2% 降至 16.7%）。
+- **Capability preservation**：被 jailbreak 的模型在执行恶意任务时的 multi-step reasoning 能力几乎不受影响——safety alignment 被绕过，但能力完好无损。
+- **Chatbot defense 无法迁移到 Agent 场景**：在单轮对话中有效的 safety 策略，在 multi-step tool-calling 场景中大量失效。
 
-关键启示：**对齐良好的模型 ≠ 安全的 Agent。** 单轮对话场景的安全对齐无法自然迁移到多步骤工具调用场景——这是 Agent 生产部署中最容易被低估的风险之一。
+**谁在使用**：AgentHarm 已被 OpenAI、Anthropic、Google DeepMind 用于评估自家模型的 safety，并被 ICLR 2025 接收为会议论文。它正在成为 Agent safety evaluation 的事实标准。
+
+关键启示：**Well-aligned model ≠ safe agent。** 单轮对话场景的 safety alignment 无法自然迁移到 multi-step tool-calling 场景——这是 Agent 生产部署中最容易被低估的风险之一。
 
 ---
 
