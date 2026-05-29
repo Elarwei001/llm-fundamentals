@@ -157,7 +157,7 @@ LLM 会幻觉——我们在 [Day 21](day21-hallucination-problem.md) 讨论过�
 | 规模 | 几次测试运行 | 数千个并发请求 |
 | 失败成本 | 再试一次 | 收入损失、工作流中断、信任侵蚀 |
 
-演示测试的是快乐路径，生产测试的是不快乐路径、边缘情况以及失败模式之间的交互。
+演示测试的是理想情况下的正常流程，生产测试的是异常输入、边缘情况以及各种失败模式的交叉组合。
 
 Gartner 在 2026 年 5 月的报告中[警告](https://www.gartner.com/en/newsroom/press-releases/2026-05-26-gartner-says-applying-uniform-governance-across-ai-agents-will-lead-to-enterprise-ai-agent-failure)称，**到 2027 年，40% 的企业将降级或停用自主 AI Agent**，原因是在生产事故发生后才发现的治理缺陷。根本原因不是 Agent 做不了工作——而是围绕 Agent 的**运营基础设施**（监控、兜底方案、护栏、治理）没有跟上 Agent 能力的发展。
 
