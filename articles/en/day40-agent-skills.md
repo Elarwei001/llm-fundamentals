@@ -297,7 +297,8 @@ Start with a minimal working skill, then iterate:
 1. **v0.1**: Basic instructions + one tool
 2. **v0.2**: Add quality checks + error recovery
 3. **v0.3**: Add reference examples + boundary conditions
-4. **v1.0**: Complete documentation + ClawHub publication
+4. **v1.0**: Complete documentation + commit to the repo (team members get it via `git pull`)
+5. **Publish (optional)**: To share publicly — push to ClawHub (OpenClaw), package as a Plugin (Codex), or publish to GitHub for community reuse (Claude Code)
 
 ---
 
