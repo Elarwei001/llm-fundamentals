@@ -109,7 +109,7 @@ You are an image generation specialist. When the user asks you to create or edit
 | **资源（Resources）** | 子目录文件 | 参考文档、示例、模板 |
 | **约束（Constraints）** | 元数据 + 指令中 | 依赖检查、安全边界、质量门控 |
 
-### 2.3 依赖和门控
+### 2.3 依赖、门控与跨框架实践
 
 Skill 不是无条件加载的。元数据中的 `requires` 字段定义了启用条件：
 
@@ -126,6 +126,39 @@ metadata: {
 ```
 
 如果条件不满足，skill 不会被加载——agent 不会"看到"一个它无法使用的技能。这避免了"知道怎么做但做不到"的尴尬。
+
+虽然各框架的 skill 格式在细节上不同，但核心思路高度一致。以下是最主流的三个框架的实践对比：
+
+#### OpenClaw
+
+- Skill 目录放在仓库的任意位置，通过配置文件指定搜索路径
+- 元数据中的 `requires` 做加载前门控（环境变量、二进制依赖、配置项）
+- ClawHub 作为社区分发渠道，`openclaw skills install` 一键安装
+- 支持 Skill Workshop：agent 可从自身操作模式中自动创建/更新 skill
+
+#### Claude Code
+
+- Skill 放在仓库的 `.claude/skills/` 目录下，核心文件同样是 `SKILL.md`
+- YAML frontmatter 支持 `disable-model-invocation`（仅用户手动调用）、`user-invocable`（后台知识）、`allowed-tools`（限制可用工具）等选项
+- 设计哲学强调**渐进式披露**：Codex 先只看到 skill 的 name + description，决定使用后才加载完整指令，以节省上下文窗口
+- 社区实践建议：保持 `CLAUDE.md` 在 200 行以内，把详细的领域知识卸载到 skill 中，避免主上下文膨胀
+
+#### OpenAI Codex
+
+- Skill 放在 `.agents/skills/` 目录下，Codex 会从当前工作目录向上扫描直到仓库根目录，自动发现所有 skill
+- 同样基于 `SKILL.md` 格式，遵循 [agentskills.io](https://agentskills.io) 开放标准
+- 支持显式调用（`$skill-name`）和隐式匹配（Codex 根据 description 自动选择）两种模式
+- 内置 `$skill-creator`：交互式引导用户创建新 skill，降低上手门槛
+- 分发层次：单个 skill 目录适合本地/团队使用，打包成 Plugin 后可通过 OpenAI 平台公开分发
+
+#### 共通的设计原则
+
+无论你用哪个框架，好的 skill 设计都遵循以下原则：
+
+1. **描述是第一优先级**——agent 靠 description 决定是否激活 skill，写得好选得准，写得模糊会漏选或误选
+2. **渐进式披露**——元数据轻量（name + description），详细指令只在激活后加载，避免浪费上下文
+3. **单一职责**——一个 skill 封装一个完整的工作流，不要把多个不相关的任务塞进同一个 skill
+4. **放在代码仓库里**——skill 跟项目代码一起版本管理，团队共享，`git clone` 即可用
 
 ---
 

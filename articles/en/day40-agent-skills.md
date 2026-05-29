@@ -109,7 +109,7 @@ You are an image generation specialist. When the user asks you to create or edit
 | **Resources** | Sub-directory files | Reference docs, examples, templates |
 | **Constraints** | Metadata + instructions | Dependency checks, safety boundaries, quality gates |
 
-### 2.3 Dependencies and Gating
+### 2.3 Dependencies, Gating, and Cross-Framework Practices
 
 Skills aren't loaded unconditionally. The `requires` field in metadata defines activation conditions:
 
@@ -126,6 +126,39 @@ metadata: {
 ```
 
 If conditions aren't met, the skill isn't loaded — the agent never "sees" a skill it can't actually use. This avoids the embarrassment of "knowing how but being unable to do."
+
+While each framework's skill format differs in details, the core philosophy is remarkably consistent. Here's a comparison of the three most popular frameworks:
+
+#### OpenClaw
+
+- Skill directories live anywhere in the repo; search paths are specified in config
+- `requires` in metadata gates loading (env vars, binary deps, config keys)
+- ClawHub serves as the community distribution channel; `openclaw skills install` for one-click setup
+- Supports Skill Workshop: the agent can auto-create/update skills from its own behavioral patterns
+
+#### Claude Code
+
+- Skills live in `.claude/skills/` in the repo, with `SKILL.md` as the core file
+- YAML frontmatter supports options like `disable-model-invocation` (user-only), `user-invocable` (background knowledge), `allowed-tools` (restrict available tools)
+- Design philosophy emphasizes **progressive disclosure**: Claude first sees only the skill's name + description, loading full instructions only when it decides to use the skill — saving context window budget
+- Community best practice: keep `CLAUDE.md` under 200 lines; offload detailed domain knowledge into skills to prevent main-context bloat
+
+#### OpenAI Codex
+
+- Skills live in `.agents/skills/`; Codex scans from the current working directory up to the repo root, auto-discovering all skills
+- Also uses `SKILL.md` format, following the [agentskills.io](https://agentskills.io) open standard
+- Supports explicit invocation (`$skill-name`) and implicit matching (Codex auto-selects based on description)
+- Built-in `$skill-creator`: an interactive guide that walks users through creating new skills, lowering the barrier to entry
+- Distribution tiers: individual skill directories for local/team use; package as a Plugin for public distribution via OpenAI's platform
+
+#### Universal Design Principles
+
+Regardless of framework, good skill design follows these principles:
+
+1. **Description is the top priority** — agents use the description to decide whether to activate a skill; precise descriptions enable accurate selection
+2. **Progressive disclosure** — lightweight metadata (name + description); detailed instructions load only on activation, preserving context
+3. **Single responsibility** — one skill wraps one complete workflow; don't jam unrelated tasks into the same skill
+4. **Live in the code repo** — version skills alongside project code for team sharing; `git clone` and you're ready
 
 ---
 
