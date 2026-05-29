@@ -12,7 +12,7 @@
 
 这正是 AI Agent 面临的问题。我们在 [Day 33](day33-tool-use.md) 学过工具调用（Function Calling）的机制——LLM 可以调用外部 API。但工具只是螺丝刀。**Skill 是螺丝刀 + 操作手册 + 经验判断的封装。**
 
-2025-2026 年，Skills 从一个 OpenClaw 的特色概念演变成了 agent 生态的核心抽象。Google ADK 有 skills，OpenAI Codex 有 skills，独立的 [AgentSkills.io](https://agentskills.io) 规范正在推动跨框架的 skill 互操作性。到 2026 年 5 月，仅 OpenClaw 的 ClawHub 上就有 5,400+ 个社区 skill。
+"Skill" 作为概念并不新鲜——微软 Semantic Kernel 在 2023 年就用了这个名字（后改称 "plugin"），Alexa Skills 更早至 2015 年。但 2025 年底，OpenClaw 首次将 skill 从"一个函数定义"提升为"工具 + 使用策略 + 经验知识的完整封装"（以 `SKILL.md` 为载体），这个思路迅速被整个 agent 生态采纳。Google ADK 引入了 skill 目录，OpenAI Codex 上线了 Codex Skills，独立的 [AgentSkills.io](https://agentskills.io) 规范正在推动跨框架互操作性。到 2026 年 5 月，仅 OpenClaw 的 ClawHub 上就有 5,400+ 个社区 skill。
 
 今天我们拆解：为什么工具 ≠ 技能，一个 skill 由什么组成，怎么设计好的 skill，以及 skill 正在如何改变 agent 生态。
 

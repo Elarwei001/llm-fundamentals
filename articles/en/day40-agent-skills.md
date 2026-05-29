@@ -12,7 +12,7 @@ You've given them a tool. But do they know *when* to use it, *which* screw to tu
 
 This is exactly the problem AI agents face. In [Day 33](day33-tool-use.md), we learned about Function Calling — how LLMs invoke external APIs. But a tool is just a screwdriver. **A Skill is the screwdriver plus the manual plus the experience — all packaged together.**
 
-Between 2025 and 2026, Skills evolved from an OpenClaw-specific concept into a core abstraction across the agent ecosystem. Google ADK has skills. OpenAI Codex has skills. The independent [AgentSkills.io](https://agentskills.io) specification is driving cross-framework skill interoperability. By May 2026, OpenClaw's ClawHub alone hosted 5,400+ community skills.
+"Skill" as a concept isn't new — Microsoft's Semantic Kernel used the name in 2023 (later rebranded to "plugin"), and Alexa Skills date back to 2015. But in late 2025, OpenClaw was the first to elevate skills from "a function definition" to "a full package of tools + usage strategies + experiential knowledge" (via `SKILL.md`). This approach was quickly adopted across the agent ecosystem. Google ADK introduced skill directories. OpenAI Codex launched Codex Skills. The independent [AgentSkills.io](https://agentskills.io) specification is driving cross-framework interoperability. By May 2026, OpenClaw's ClawHub alone hosted 5,400+ community skills.
 
 Today we'll break down: why tools ≠ skills, what a skill is made of, how to design good ones, and how skills are reshaping the agent ecosystem.
 
