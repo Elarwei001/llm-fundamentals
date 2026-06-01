@@ -1,6 +1,6 @@
 {
-  "current_day": 42,
-  "last_generated": "2026-05-29",
+  "current_day": 43,
+  "last_generated": "2026-06-01",
   "total_days": 60,
   "status": "active",
   "history": [
@@ -656,6 +656,22 @@
         "zh/images/day42/evaluation-dimensions-comparison.png",
         "zh/images/day42/pass-k-metrics-and-sota.png",
         "zh/images/day42/swebench-progress-timeline.png"
+      ]
+    },
+    {
+      "day": 43,
+      "date": "2026-06-01",
+      "topic": "Safety and Alignment",
+      "en_path": "en/day43-safety-and-alignment.md",
+      "zh_path": "zh/day43-safety-and-alignment.md",
+      "qa_score": 0,
+      "qa_rounds": 0,
+      "images": [
+        "zh/images/day43/day43-threat-taxonomy.png",
+        "zh/images/day43/day43-indirect-prompt-injection-flow.png",
+        "zh/images/day43/day43-defense-in-depth.png",
+        "zh/images/day43/defense-effectiveness-chart.png",
+        "zh/images/day43/day43-safety-alignment-timeline.png"
       ]
     }
   ]
