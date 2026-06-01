@@ -125,7 +125,7 @@
 |-----|-------|---------------|--------------|
 | D41 | **Agent Reliability Engineering** | Five-step ARE system from observability to continuous improvement | ARE core practice | [EN](articles/en/day41-reliability-issues.md) / [中文](articles/zh/day41-reliability-issues.md) |
 | D42 | Evaluation Challenges | How to evaluate agents? SWE-bench, WebArena | Evaluation methods | [EN](articles/en/day42-evaluation-challenges.md) / [中文](articles/zh/day42-evaluation-challenges.md) |
-| D43 | Safety and Alignment | Agent security risks, Prompt Injection | Security issues  | |
+| D43 | Safety and Alignment | Agent security risks, Prompt Injection | Security issues  | [EN](articles/en/day43-safety-and-alignment.md) / [中文](articles/zh/day43-safety-and-alignment.md) |
 | D44 | Human-AI Collaboration | Human-in-the-loop, when to intervene | Interaction design  | |
 | D45 | Cost and Latency | Agents are too expensive and slow, how to optimize | Practical issues  | |
 

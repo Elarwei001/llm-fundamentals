@@ -16,6 +16,8 @@
 | A2A (Agent-to-Agent Protocol) | Agent-to-Agent 协议 | Google 于 2025 年 4 月推出的开放标准，用于智能体间的发现、认证和通信 |
 | Agent Card | Agent 卡片 | A2A 协议中 JSON 格式的智能体能力描述文件 |
 | AutoGen (AG2) | AutoGen | Microsoft Research 的多智能体框架，支持对话式 GroupChat 和异步事件驱动 |
+| Alignment | 对齐 | 确保 AI 系统的行为符合人类意图和价值观的过程 |
+| Abliteration | 安全训练剥离 | 从开源模型中移除 safety alignment 训练的技术 |
 
 ## B
 
@@ -33,6 +35,7 @@
 
 | English | 中文 | 简要说明 |
 |---------|------|----------|
+| Constitutional AI (CAI) | Constitutional AI / 宪法 AI | Anthropic 提出的方法，模型根据一套伦理原则自我审视输出 |
 | CBOW | 连续词袋模型 | Continuous Bag of Words，Word2Vec 的一种变体，从上下文预测中心词 |
 | Chinchilla Scaling | Chinchilla 缩放 | DeepMind 2022 年提出的最优训练配方：每参数约 20 token |
 | Compute-Optimal | 计算最优 | 在固定计算预算下达到最低损失的模型规模和数据量配置 |
@@ -57,6 +60,7 @@
 | Distillation | 知识蒸馏 | 用大模型训练小模型 |
 | Dark Knowledge | 暗知识 | 老师模型对错误答案的概率分布中隐藏的有用信息 |
 | On-Policy Distillation | 在线策略蒸馏 | 学生自己生成输出，老师对学生输出提供反馈的蒸馏方法 |
+| Defense-in-Depth | 纵深防御 | 多层重叠安全防御策略，每层捕获不同类型的攻击 |
 | Dropout | Dropout | 随机丢弃神经元的正则化技术 |
 
 ## E
@@ -67,6 +71,7 @@
 | Emergent Abilities | 涌现能力 | 在特定模型规模突然出现的能力，小模型完全不具备 |
 | Emergence | 涌现 | 大模型展现出小模型没有的能力 |
 | Encoder | 编码器 | Transformer 的理解部分 |
+| Excessive Agency | 过度授权 | OWASP LLM06:2025，给 Agent 超出其需要的权限的风险 |
 | Exposure Bias | 暴露偏差 | 训练时看真实前缀、推理时看模型自生成前缀所带来的分布差异 |
 | Error Cascade | 错误级联 | 多智能体系统中一个 agent 的错误向下游 agent 传播放大 |
 
@@ -108,7 +113,14 @@
 | In-context Learning | 上下文学习 | 通过 prompt 中的示例学习，无需更新参数 |
 | Inference | 推理 | 使用训练好的模型进行预测 |
 | Inference-Time Scaling | 推理时缩放 | 通过增加推理计算（如更长的思维链）提升性能 |
+| Indirect Prompt Injection | 间接 Prompt 注入 | 通过 Agent 摄入的外部数据（邮件、网页等）隐藏恶意指令的攻击 |
 | Instruction Tuning | 指令微调 | 用指令-回答数据训练模型，使其更好地遵循自然语言指令 |
+
+## J
+
+| English | 中文 | 简要说明 |
+|---------|------|----------|
+| Jailbreak | 越狱 / 绕过安全 | 通过创造性提示绕过 LLM 安全训练的技术 |
 
 ## K
 
@@ -188,6 +200,7 @@
 | Prefix Caching | 前缀缓存 | 复用共享 prompt 前缀的 prefill 结果，避免重复构建 KV 缓存 |
 | Prompt | 提示词 | 给模型的输入指令 |
 | Prompt Engineering | 提示工程 | 通过设计指令、上下文、示例和输出约束来改善模型行为的方法 |
+| Prompt Injection | Prompt 注入 | 通过将恶意指令与合法数据混合来欺骗 LLM 的攻击技术 |
 
 ## Q
 
@@ -213,6 +226,9 @@
 | ReLU | ReLU | Rectified Linear Unit，常用激活函数 |
 | RLHF | 人类反馈强化学习 | Reinforcement Learning from Human Feedback |
 | RNN | 循环神经网络 | Recurrent Neural Network |
+| Red Teaming | 红队测试 | 系统性地对 AI 系统进行对抗性压力测试，发现安全漏洞 |
+| ReasAlign | ReasAlign | 推理增强的 safety alignment 方法，教会模型检测指令冲突（Li et al., 2026） |
+| RLAIF | AI 反馈强化学习 | Reinforcement Learning from AI Feedback，用 AI 生成反馈替代人类反馈 |
 | RoPE | 旋转位置嵌入 | Rotary Position Embedding，通过复数旋转编码相对位置 |
 
 ## S
