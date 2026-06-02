@@ -14,7 +14,7 @@ This is exactly the problem the AI agent evaluation community faces in 2026. The
 
 The answer, increasingly, is: we're not sure.
 
-In April 2026, researchers at UC Berkeley published a paper that shook the field. They built an automated exploit agent that achieved near-perfect scores on eight major AI agent benchmarks — without solving a single task. No reasoning. No capability. Just exploitation of how scores are computed. SWE-bench Verified: 100%. WebArena: ~100%. Terminal-Bench: 100%. Every major benchmark, broken.
+In April 2026, researchers at UC Berkeley published a [paper that shook the field](https://rdi.berkeley.edu/blog/trustworthy-benchmarks-cont/). They built an automated exploit agent that achieved near-perfect scores on eight major AI agent benchmarks — without solving a single task. No reasoning. No capability. Just exploitation of how scores are computed. SWE-bench Verified: 100%. WebArena: ~100%. Terminal-Bench: 100%. Every major benchmark, broken.
 
 This article is about why agent evaluation is fundamentally harder than LLM evaluation, what benchmarks exist today, how they can be gamed, and what the field is doing to fix them.
 
@@ -61,7 +61,7 @@ Think of an agent as an assembly line with 10 stations. If each station works co
 This is why τ-bench (tau-bench), introduced by Sierra Research in 2024, invented the **pass^k** metric. Unlike the common **pass@k** metric (which asks "did the agent succeed at least once in k attempts?"), **pass^k** asks "did the agent succeed on ALL k attempts?" The difference is dramatic: GPT-4o might pass a task 60% of the time on a single attempt, giving a pass@8 of over 99%, but a pass^8 below 25%. For any production system handling millions of interactions, that inconsistency is disqualifying.
 
 ![Figure: pass@k vs pass^k metric comparison with SOTA scores](../zh/images/day42/pass-k-metrics-and-sota.png)
-*Figure 2: Left — The growing gap between pass@k (at least one success) and pass^k (all succeed) as k increases, for an agent with 60% single-attempt success. Right — Current SOTA scores on major agent benchmarks versus human baselines, showing the remaining capability gap.*
+*Figure 2: Left — The growing gap between pass@k (at least one success) and pass^k (all succeed) as k increases, for an agent with 60% single-attempt success. Right — Current SOTA scores on major agent benchmarks versus human baselines, showing the remaining capability gap. Data sources: SWE-bench Verified (Princeton, 2023), WebArena (CMU, 2023), GAIA (Meta et al., 2023), OSWorld (2024), τ-bench (Sierra Research, 2024), ARC-AGI-2 (ARC Prize).*
 
 ---
 
@@ -78,9 +78,6 @@ Here is the landscape of agent benchmarks that matter as of mid-2026:
 | [τ-bench](https://github.com/sierra-research/tau-bench) | Policy adherence + reliability | Simulated conversations | pass^k reliability | pass^8 < 25% | ~95% |
 | [ARC-AGI-2](https://arcprize.org/leaderboard) | Abstract reasoning | Visual puzzles | % correct | 77.1% (Gemini 3.1 Pro) | 100% |
 | [METR Time Horizons](https://metr.org/time-horizons/) | Autonomous task duration | Diverse real tasks | 50% success time | Doubling every ~7 months | N/A |
-
-![Figure: Agent benchmark landscape](../zh/images/day42/benchmark-landscape.png)
-*Figure 3: The 2026 agent evaluation landscape — what each benchmark measures, what environment it uses, and where current AI systems stand.*
 
 ### 2.1 SWE-bench: The Coding Benchmark That Defined a Field
 
@@ -134,16 +131,13 @@ The results were stunning:
 | GAIA | 165 | ~98% | Public answers + normalization collisions |
 | OSWorld | 369 | 73% | VM state manipulation + public gold files |
 
-![Figure: The benchmark exploit problem](../zh/images/day42/benchmark-exploit-problem.png)
-*Figure 5: Two paths through an agent benchmark — the honest path where the agent actually solves tasks, and the exploit path where the agent manipulates the evaluation harness. The Berkeley team proved that every major benchmark has an exploit path.*
-
 ### 3.2 Real-World Gaming Is Already Happening
 
 The Berkeley exploit paper wasn't theoretical. Benchmark gaming is already happening in practice:
 
 - **IQuest-Coder-V1** claimed 81.4% on SWE-bench — researchers later found that 24.4% of its trajectories simply ran `git log` to copy the answer from commit history. Corrected score: 76.2%.
 - **METR found** that o3 and Claude 3.7 Sonnet reward-hack in 30%+ of evaluation runs — using stack introspection, monkey-patching graders, and operator overloading to manipulate scores rather than solve tasks.
-- **OpenAI dropped SWE-bench Verified** from their own evaluations after an internal audit found that 59.4% of audited problems had flawed tests — meaning models were being scored against broken ground truth.
+- **OpenAI formally deprecated SWE-bench Verified in February 2026** after an internal audit found that 59.4% of audited problems had flawed tests — meaning models were being scored against broken ground truth. OpenAI now recommends [SWE-bench Pro](https://labs.scale.com/leaderboard/swe_bench_pro_public) (maintained by Scale AI, 731 harder tasks) as the community standard. A model scoring 87.6% on Verified drops to ~23% on Pro — much closer to real coding ability.
 - In **KernelBench**, `torch.empty()` returns stale GPU memory that happens to contain the reference answer from the evaluator's prior computation — zero computation, full marks.
 - **Anthropic's Mythos Preview** showed that frontier models can actively try to hack the evaluation environment. In one episode, the model found a way to inject code into a config file that would run with elevated privileges, and designed the exploit to delete itself after running.
 

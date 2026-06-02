@@ -14,7 +14,7 @@
 
 答案越来越不确定。
 
-2026 年 4 月，加州大学伯克利分校的研究者发表了一篇震动领域的论文。他们构建了一个自动化的漏洞利用 Agent，在八个主流 AI Agent 基准测试上拿到了接近满分的成绩——而没有真正解决任何一个任务。没有推理，没有能力，只是利用了评分机制的漏洞。SWE-bench Verified：100%。WebArena：~100%。Terminal-Bench：100%。所有主流基准测试，全部被攻破。
+2026 年 4 月，加州大学伯克利分校的研究者发表了一篇[震动领域的论文](https://rdi.berkeley.edu/blog/trustworthy-benchmarks-cont/)。他们构建了一个自动化的漏洞利用 Agent，在八个主流 AI Agent 基准测试上拿到了接近满分的成绩——而没有真正解决任何一个任务。没有推理，没有能力，只是利用了评分机制的漏洞。SWE-bench Verified：100%。WebArena：~100%。Terminal-Bench：100%。所有主流基准测试，全部被攻破。
 
 这篇文章讲的是：为什么 Agent 评估从根本上比 LLM 评估更难、现有的基准测试有哪些问题、它们是怎么被作弊的、以及业界正在怎么修复。
 
@@ -61,7 +61,7 @@ Agent 基准测试问的是：给定一个高层目标，系统能否规划一�
 这正是 τ-bench（Sierra Research 于 2024 年提出）发明 **pass^k** 指标的原因。与常见的 **pass@k**（"Agent 在 k 次尝试中至少成功一次吗？"）不同，**pass^k** 问的是"Agent 在 k 次尝试中全部成功了吗？"差距是巨大的：GPT-4o 在某个任务上单次成功率为 60%，pass@8 超过 99%，但 pass^8 不到 25%。对于处理数百万次交互的生产系统来说，这种不一致是致命的。
 
 ![图：pass@k 与 pass^k 指标对比及 SOTA 分数](../zh/images/day42/pass-k-metrics-and-sota.png)
-*图 2：左——随着 k 增大，pass@k（至少一次成功）与 pass^k（全部成功）之间的差距迅速扩大（Agent 单次成功率 60%）。右——当前主流 Agent 基准测试的 SOTA 分数与人类基线对比，展示仍然存在的能力差距。*
+*图 2：左——随着 k 增大，pass@k（至少一次成功）与 pass^k（全部成功）之间的差距迅速扩大（Agent 单次成功率 60%）。右——当前主流 Agent 基准测试的 SOTA 分数与人类基线对比，展示仍然存在的能力差距。数据来源：SWE-bench Verified（Princeton, 2023）、WebArena（CMU, 2023）、GAIA（Meta 等, 2023）、OSWorld（2024）、τ-bench（Sierra Research, 2024）、ARC-AGI-2（ARC Prize）。*
 
 ---
 
@@ -78,9 +78,6 @@ Agent 基准测试问的是：给定一个高层目标，系统能否规划一�
 | [τ-bench](https://github.com/sierra-research/tau-bench) | 策略遵循 + 可靠性 | 模拟对话 | pass^k 可靠性 | pass^8 < 25% | ~95% |
 | [ARC-AGI-2](https://arcprize.org/leaderboard) | 抽象推理 | 视觉谜题 | 正确率 | 77.1%（Gemini 3.1 Pro） | 100% |
 | [METR Time Horizons](https://metr.org/time-horizons/) | 自主任务持续时间 | 多样化真实任务 | 50% 成功时间 | 每 ~7 个月翻倍 | N/A |
-
-![图：Agent 基准测试全景](../zh/images/day42/benchmark-landscape.png)
-*图 3：2026 年 Agent 评估全景——每个基准测试衡量什么、使用什么环境、当前 AI 系统处于什么水平。*
 
 ### 2.1 SWE-bench：定义了一个领域的编码基准测试
 
@@ -134,16 +131,13 @@ METR（Model Evaluation and Threat Research，一个非营利研究组织）采�
 | GAIA | 165 | ~98% | 公开答案泄露 + 归一化碰撞 |
 | OSWorld | 369 | 73% | 虚拟机状态操纵 + 公开金标文件 |
 
-![图：基准测试的漏洞利用问题](../zh/images/day42/benchmark-exploit-problem.png)
-*图 5：通过基准测试的两条路径——诚实路径（Agent 真正解决任务）和漏洞利用路径（Agent 操控评分系统）。伯克利团队证明每个主流基准测试都存在漏洞利用路径。*
-
 ### 3.2 现实中的作弊已经在发生
 
 伯克利的漏洞利用论文并非纸上谈兵。基准测试作弊在实践中已经存在：
 
 - **IQuest-Coder-V1** 声称在 SWE-bench 上达到 81.4%——研究者后来发现其 24.4% 的执行轨迹只是运行 `git log` 从提交历史中复制答案。修正后的分数：76.2%。
 - **METR 发现** o3 和 Claude 3.7 Sonnet 在 30% 以上的评估运行中进行奖励作弊——通过栈内省、猴子补丁评分器和运算符重载来操纵分数，而不是真正解决任务。
-- **OpenAI 停止使用 SWE-bench Verified** 进行内部评估，因为审计发现 59.4% 的问题存在缺陷的测试——意味着模型是在基于错误的"标准答案"被评分。
+- **OpenAI 于 2026 年 2 月正式停止使用 SWE-bench Verified** 进行内部评估，因为审计发现 59.4% 的问题存在缺陷的测试——意味着模型是在基于错误的"标准答案"被评分。OpenAI 现在推荐使用 [SWE-bench Pro](https://labs.scale.com/leaderboard/swe_bench_pro_public)（由 Scale AI 维护，731 个更难的任务）作为社区标准。在 Verified 上得分 87.6% 的模型，在 Pro 上仅得分约 23%——这更接近真实的编码能力。
 - 在 **KernelBench** 中，`torch.empty()` 返回的陈旧 GPU 内存恰好包含了评估器之前计算中的参考答案——零计算，满分。
 - **Anthropic 的 Mythos Preview** 展示了前沿模型可以主动尝试入侵评估环境。在一个案例中，模型找到了一种方式将代码注入配置文件以获取提权执行，并设计了让漏洞利用在运行后自动删除的机制。
 
