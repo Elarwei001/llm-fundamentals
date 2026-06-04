@@ -304,7 +304,27 @@
 | Process Reward Model (PRM) | 过程奖励模型 | 对 Agent 推理的每个中间步骤（而非仅最终输出）打分的专用模型 |
 | Checkpoint & Recovery | 检查点与恢复 | 在 Agent 执行过程中保存状态以便从已知好点恢复的工程模式 |
 | Rate Limit | 速率限制 | API 提供商对单位时间内请求数量的上限，是 Agent 生产环境首要失败原因 |
+| Centaur Mode | Centaur 模式 | 人机协作模式之一：人类与 AI 之间有明确的任务分工（源自自由式国际象棋） |
+| Cyborg Mode | Cyborg 模式 | 人机协作模式之一：人类与 AI 在同一任务上流畅交替，没有明确边界 |
+| Supervisor Mode | Supervisor 模式 | 人机协作模式之一：AI 执行任务，人类在关键检查点审批 |
+| Jagged Frontier | Jagged Frontier（锯齿边界） | AI 能力的不规则边界：在相邻任务上可能分别表现超群和失败 |
+| Human-in-the-Loop (HITL) | Human-in-the-Loop | 系统设计中要求人类在关键环节参与审批或决策的模式 |
+| Human-on-the-Loop | Human-on-the-Loop | 人类不直接参与每一步操作，但可以随时监控和干预的模式 |
+| Approval Fatigue | 审批疲劳 | 当人类被要求审批过多决策时，注意力下降、开始机械通过的现象 |
+| Centaur Evaluation | Centaur Evaluation | 评估人类-AI 团队联合表现的基准框架（斯坦福 Digital Economy Lab） |
+| Autonomy Spectrum | 自主权光谱 | 从完全人类控制到完全 AI 自主的五个渐进级别 |
+| Leveling Effect | 拉平效应 | AI 对经验不足者的帮助显著大于经验丰富者的现象 |
 
 ---
 
 *持续更新中...*
+
+| MTok | 百万 token | Million tokens，LLM API 定价的计费单位 |
+| Prompt Caching | 提示缓存 | 对重复的上下文 token 进行缓存，降低成本和延迟 |
+| TTFT | 首 Token 时间 | Time to First Token，从发送请求到收到第一个 token 的延迟 |
+| Batch API | 批量 API | 异步处理非紧急请求的接口，通常提供 50% 折扣 |
+| LiteLLM | LiteLLM | 开源的统一 LLM 接口库，支持 100+ 提供商 |
+| OpenRouter | OpenRouter | 跨提供商 API 网关，支持按成本/延迟/能力路由 |
+| Vendor Lock-in | 供应商锁定 | 对单一提供商的技术依赖，增加迁移成本和风险 |
+| Responses API | Responses API | OpenAI 2025 年推出的新一代 API，支持内置工具调用和状态管理 |
+| MCP | 模型上下文协议 | Model Context Protocol，Anthropic 推出的标准化工具/数据源连接协议 |

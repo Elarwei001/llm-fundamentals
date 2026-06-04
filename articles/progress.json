@@ -1,6 +1,6 @@
 {
-  "current_day": 43,
-  "last_generated": "2026-06-01",
+  "current_day": 46,
+  "last_generated": "2026-06-04",
   "total_days": 60,
   "status": "active",
   "history": [
@@ -672,6 +672,52 @@
         "zh/images/day43/day43-defense-in-depth.png",
         "zh/images/day43/defense-effectiveness-chart.png",
         "zh/images/day43/day43-safety-alignment-timeline.png"
+      ]
+    },
+    {
+      "day": 44,
+      "date": "2026-06-02",
+      "topic": "Human-AI Collaboration",
+      "en_path": "en/day44-human-ai-collaboration.md",
+      "zh_path": "zh/day44-human-ai-collaboration.md",
+      "qa_score": 0,
+      "qa_rounds": 0,
+      "images": [
+        "zh/images/day44/day44-autonomy-spectrum.png",
+        "zh/images/day44/day44-collaboration-modes.png",
+        "zh/images/day44/day44-intervention-decision-tree.png",
+        "zh/images/day44/day44-jagged-frontier-concept.png",
+        "zh/images/day44/day44-collaboration-timeline.png"
+      ]
+    },
+    {
+      "day": 45,
+      "date": "2026-06-03",
+      "topic": "Cost and Latency",
+      "en_path": "en/day45-cost-and-latency.md",
+      "zh_path": "zh/day45-cost-and-latency.md",
+      "qa_score": 0,
+      "qa_rounds": 0,
+      "images": [
+        "zh/images/day45/cost-breakdown-stack.png",
+        "zh/images/day45/agent-latency-breakdown.png",
+        "zh/images/day45/model-pricing-landscape.png",
+        "zh/images/day45/optimization-strategy-map.png"
+      ]
+    },
+    {
+      "day": 46,
+      "date": "2026-06-04",
+      "topic": "API Design and Selection",
+      "en_path": "en/day46-api-design-and-selection.md",
+      "zh_path": "zh/day46-api-design-and-selection.md",
+      "qa_score": 0,
+      "qa_rounds": 0,
+      "images": [
+        "zh/images/day46/provider-landscape.png",
+        "zh/images/day46/cost-comparison-by-usecase.png",
+        "zh/images/day46/capability-radar.png",
+        "zh/images/day46/selection-decision-tree.png"
       ]
     }
   ]
