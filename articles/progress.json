@@ -1,6 +1,6 @@
 {
-  "current_day": 46,
-  "last_generated": "2026-06-04",
+  "current_day": 47,
+  "last_generated": "2026-06-05",
   "total_days": 60,
   "status": "active",
   "history": [
@@ -718,6 +718,21 @@
         "zh/images/day46/cost-comparison-by-usecase.png",
         "zh/images/day46/capability-radar.png",
         "zh/images/day46/selection-decision-tree.png"
+      ]
+    },
+    {
+      "day": 47,
+      "date": "2026-06-05",
+      "topic": "Open Source vs Closed Source",
+      "en_path": "en/day47-open-source-vs-closed-source.md",
+      "zh_path": "zh/day47-open-source-vs-closed-source.md",
+      "qa_score": 0,
+      "qa_rounds": 0,
+      "images": [
+        "zh/images/day47/openness-spectrum.png",
+        "zh/images/day47/benchmark-gap-over-time.png",
+        "zh/images/day47/open-source-timeline.png",
+        "zh/images/day47/decision-tree-open-source.png"
       ]
     }
   ]
