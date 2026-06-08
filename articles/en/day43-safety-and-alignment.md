@@ -96,6 +96,99 @@ As agents become multi-modal (processing images, audio, and video alongside text
 
 This means even visual content can no longer be trusted as "just data."
 
+#### Why Text-Based Defenses Fail Completely Against Multimodal Injection
+
+Multimodal LLMs don't "see" images the way humans do. They pass images through a **vision encoder** that converts pixels into high-dimensional vectors, which then enter the same attention mechanism as text token embeddings. The critical point: **image vectors and text instructions have no natural boundary in the model's internal representation space.**
+
+If an attacker can find a set of pixel perturbations that make the vision encoder's output vector resemble a malicious text instruction, the model will execute it as an instruction.
+
+Existing text safety controls — input sanitization scanning for suspicious text patterns, prompt injection classifiers analyzing natural language for instruction-like content, safety alignment training teaching models to refuse harmful text queries — all assume malicious instructions arrive as text. Multimodal models break this assumption. Malicious instructions hidden in image vectors or audio representations enter the model's reasoning process before text filters ever see them.
+
+As [OWASP LLM01:2025](https://genai.owasp.org/llmrisk/llm01-prompt-injection/) notes, prompt injection remains the #1 security risk for LLM applications, and multimodal injections "hide malicious instructions in images, audio, and video that bypass text-only filters." The deeper issue: current safety alignment techniques were primarily developed for text modalities, leaving visual and audio inputs with weaker built-in guardrails.
+
+#### Four Image Injection Techniques (Simple to Sophisticated)
+
+**① Typographic Text Injection**
+
+The simplest yet surprisingly effective approach. Malicious text is rendered directly into the image using low contrast, small fonts, or backgrounds that blend in — nearly invisible to human eyes, but trivially readable by VLM OCR capabilities.
+
+- March 2026 research demonstrated a peak **64% attack success rate** in black-box settings against GPT-4V, Claude 3, Gemini, and LLaVA under stealth constraints designed to reduce human detectability
+- OpenAI responded with an OCR-based detector that extracts text from images and applies standard content filters
+- The **FigStep-Pro** attack (AAAI 2025) bypassed this by splitting harmful text across multiple sub-images — each fragment is innocuous on its own ("How to" + "pick a" + "lock"), but the model reassembles the full meaning when processing all tiles together, while no single tile triggers the OCR filter
+
+**② Steganographic Injection**
+
+No visible text is rendered at all. Instead, instructions are hidden within pixel data using three approaches:
+
+| Method | Principle | Stealth |
+|--------|-----------|---------|
+| **Spatial** (LSB) | Modify least-significant bits of pixel values (e.g., red channel 142 → 143) | High |
+| **Frequency-domain** (DCT/DWT) | Embed data in mid/high-frequency coefficients, similar to JPEG compression — humans are insensitive to these frequency changes | Very high |
+| **Neural steganography** | Train a dedicated encoder network to learn image modifications that remain invisible while the target model can decode hidden instructions | Highest |
+
+The July 2025 "Invisible Injections" study (Pathade) tested 8 SOTA VLMs:
+
+- Overall attack success rate: **24.3%**
+- Neural steganography achieved the highest: **31.8%**
+- Modified images showed PSNR of 38.4 dB and SSIM of 0.945 vs. originals — near-perfect visual indistinguishability
+- Commercial models (GPT-4V, Claude) had lower success rates than open-source models, showing safety layers help but are far from sufficient
+
+**③ Adversarial Perturbation**
+
+The most technically sophisticated approach. No human-readable text is embedded at all. Instead, **gradient-based optimization** carefully tunes pixel noise to directly manipulate the vision encoder's internal representations. The attacker uses a surrogate model (typically an open-source VLM) to define a target (e.g., "make the encoder output a vector corresponding to 'ignore all previous instructions'"), then uses gradient backpropagation to optimize each pixel's perturbation:
+
+$$\min_{\delta} \|\delta\|_p \quad \text{s.t.} \quad f(x + \delta) = y_{\text{target}}$$
+
+where $\delta$ is the pixel perturbation, $f$ is the vision encoder, and $y_{\text{target}}$ is the internal representation of the malicious instruction.
+
+Key property: **cross-model transferability**. Perturbations optimized on one open-source model work on closed-source models like GPT-4V, Claude, and Gemini. The AnyAttack framework and CrossInject (ACM MM 2025) both demonstrated this — CrossInject improved attack success rates by **+30.1%** over prior methods.
+
+Even more striking is **Con Instruction** (ACL 2025): a single optimized adversarial image can **universally jailbreak an aligned LLM**, making it comply with a wide range of harmful text instructions. No per-instruction optimization needed — one "master key" image disables all safety guardrails.
+
+**④ Physical-World Injection**
+
+Typographic adversarial instructions or patterns are printed on **physical objects** — road signs, product packaging, clothing, displayed screens — for camera-equipped multimodal agents to "see" in the real world.
+
+The CHAI attack (UC Santa Cruz, January 2026) validated this on real robotic vehicles: optimized text printed on a road sign caused the VLM powering an autonomous vehicle or drone to read and execute instructions. High success rates were achieved across aerial tracking, autonomous driving, and drone landing scenarios.
+
+This echoes the 2017 **DolphinAttack**, which used ultrasonic audio commands inaudible to humans to hijack voice assistants. Multimodal prompt injection follows the same pattern: **instructions humans cannot perceive, but machines obey.**
+
+#### Why These Attacks Are Hard to Detect
+
+| Attack Type | Human-visible? | Text filter? | OCR detection? | Specialized detector? |
+|------------|---------------|-------------|---------------|---------------------|
+| Typographic (low contrast) | ⚠️ Might notice if looking carefully | ❌ Not in text layer | ⚠️ Partially effective | ✅ |
+| Steganographic | ❌ Completely invisible | ❌ | ❌ | ⚠️ Requires steganalysis tools |
+| Adversarial perturbation | ❌ Indistinguishable to humans | ❌ | ❌ | ⚠️ Early research stage |
+| Physical-world | ⚠️ Visible but not recognized as attack | ❌ | ❌ | ❌ Real-time detection very difficult |
+
+#### Audio Injection: The Emerging Vector
+
+Beyond images, **audio injection** is becoming a new front line. As Audio LLMs (ALLMs) see broader deployment in voice assistants, transcription services, and real-time translation, the attack surface grows in parallel.
+
+- **Adversarial audio perturbations**: A short audio segment prepended to any speech input can override Whisper's behavior — forcing the model to switch from transcription to translation mode, or produce entirely different output than the actual speech content (Raina et al., 2024)
+- **AudioJailbreak** (ACM CCS 2025): Not a digital injection, but adversarial audio played through real speakers in a room. The researchers modeled real-world acoustic effects (reflection, frequency attenuation, reverb), achieving **87-88% success rates** even when played from a distance. Practical scenario: background audio during a conference call can inject instructions into the meeting transcription system
+- **"Muting Whisper"** (EMNLP 2024): A carefully designed 0.64-second waveform tricks Whisper into believing the audio has ended. Prepended to any input, the transcriber stays silent with **>97% success rate** — useful for making transcription systems "not hear" specific content
+
+#### Known Real-World Attack Cases
+
+**EchoLeak — First Zero-Click Production Attack** (CVE-2025-32711, CVSS 9.3/10, disclosed June 2025)
+
+An attacker sends a carefully crafted email requiring zero interaction from the target — Microsoft 365 Copilot processes it automatically in the background. The email contains hidden instructions that bypass Microsoft's XPIA classifier, causing Copilot to access internal files and exfiltrate them to an attacker-controlled server via a Microsoft Teams domain proxy (bypassing Content Security Policy). Microsoft patched in May 2025 before public disclosure.
+
+**Medical Imaging Injection** (Nature Communications, 2025)
+
+Clusmann et al. used 594 attack samples to demonstrate that hidden instructions embedded in medical images (X-rays, pathology slides, surgical video) can cause VLMs to produce **harmful diagnostic outputs**. Every VLM tested was susceptible — including Claude 3 Opus, GPT-4o, and Reka Core. In clinical settings, an AI-assisted diagnostic system compromised by this attack directly endangers patient safety.
+
+#### Implications for Defense-in-Depth
+
+Multimodal injection underscores this article's core thesis: **single-layer defense is insufficient; defense-in-depth is mandatory.** Input-level keyword matching and regex scanning are completely ineffective against multimodal injection — the attack never passes through the text layer. Effective defense must rely on:
+
+- **Model-level alignment** (Section 5.1): Teaching the model itself to refuse suspicious instructions regardless of modality
+- **Representation-space defenses**: Frameworks like ARGUS identify a safety subspace in the model's activation space and apply adaptive-strength steering to decouple injected instruction-following from legitimate task performance
+- **Execution-level verification** (Section 5.3): VIGIL's verify-before-commit mechanism independently validates whether each agent action aligns with the user's original intent before execution
+- **Pipeline-level defenses**: The Cross-Agent Provenance-Aware Defense Framework reported **94%** injection detection accuracy by tracing data provenance across agent pipelines and independently verifying outputs
+
 ---
 
 ## 3. Jailbreak Techniques: Bypassing Safety Training
