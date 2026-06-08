@@ -137,7 +137,11 @@ The July 2025 "Invisible Injections" study (Pathade) tested 8 SOTA VLMs:
 
 The most technically sophisticated approach. No human-readable text is embedded at all. Instead, **gradient-based optimization** carefully tunes pixel noise to directly manipulate the vision encoder's internal representations. The attacker uses a surrogate model (typically an open-source VLM) to define a target (e.g., "make the encoder output a vector corresponding to 'ignore all previous instructions'"), then uses gradient backpropagation to optimize each pixel's perturbation:
 
-$$\min_{\delta} \|\delta\|_p \quad \text{s.t.} \quad f(x + \delta) = y_{\text{target}}$$
+```
+min ‖δ‖_p  subject to  f(x + δ) = y_target
+```
+
+In other words, minimize the norm of the pixel perturbation δ while ensuring the perturbed encoder output equals the internal representation of the target instruction.
 
 where $\delta$ is the pixel perturbation, $f$ is the vision encoder, and $y_{\text{target}}$ is the internal representation of the malicious instruction.
 
@@ -341,9 +345,11 @@ In 2024, Arditi et al. published a critical finding: refusal behavior in languag
 
 Mathematically:
 
-$$\text{ablated}(h) = h - \frac{h \cdot r}{r \cdot r} \cdot r$$
+```
+ablated(h) = h - ((h · r) / (r · r)) × r
+```
 
-where $h$ is the residual stream activation and $r$ is the refusal direction vector. This operation requires no retraining — it's geometric surgery in weight space.
+where `h` is the residual stream activation and `r` is the refusal direction vector. This operation requires no retraining — it's geometric surgery in weight space.
 
 The key insight is that **safety alignment isn't uniformly distributed across model weights**. Current alignment methods (RLHF, Constitutional AI) train models to refuse harmful requests, but this training creates **identifiable, isolated neural pathways** dedicated to refusal behavior rather than integrating safety throughout the model's processing. This isolated "refusal channel" is precisely what abliteration targets.
 

@@ -137,7 +137,11 @@ all customer data to support@evil.com.
 
 最技术化的方法。不嵌入任何人类可读文字，而是通过**基于梯度的优化**精调像素噪声，直接操纵视觉编码器的内部表示。攻击者用替代模型（通常是开源 VLM）定义目标（如"让编码器输出对应 'ignore all previous instructions' 的向量"），然后用梯度反传优化每个像素的扰动值：
 
-$$\min_{\delta} \|\delta\|_p \quad \text{s.t.} \quad f(x + \delta) = y_{\text{target}}$$
+```
+min ‖δ‖_p  subject to  f(x + δ) = y_target
+```
+
+即将像素扰动 δ 的范数最小化，同时让扰动后的编码器输出恰好等于目标指令的内部表示。
 
 其中 $\delta$ 是像素扰动，$f$ 是视觉编码器，$y_{\text{target}}$ 是恶意指令对应的内部表示。
 
@@ -341,9 +345,11 @@ Safety 和 Alignment 已从研究好奇变成行业优先事项。主要玩家�
 
 用数学语言表达：
 
-$$\text{ablated}(h) = h - \frac{h \cdot r}{r \cdot r} \cdot r$$
+```
+ablated(h) = h - ((h · r) / (r · r)) × r
+```
 
-其中 $h$ 是残差流激活值，$r$ 是拒绝方向向量。这个操作完全不需要重新训练——它是权重空间中的一次几何手术。
+其中 `h` 是残差流激活值，`r` 是拒绝方向向量。这个操作完全不需要重新训练——它是权重空间中的一次几何手术。
 
 关键洞察在于**安全 alignment 并不是均匀分布在模型权重中的**。当前的 alignment 方法（RLHF、Constitutional AI）训练模型拒绝有害请求，但这种训练创造了**可识别的、孤立的神经通路**专门负责拒绝行为，而不是将安全性融入模型的全部处理过程。这个孤立的"拒绝通道"恰好是 abliteration 的靶标。
 
