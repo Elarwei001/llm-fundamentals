@@ -328,3 +328,16 @@
 | Vendor Lock-in | 供应商锁定 | 对单一提供商的技术依赖，增加迁移成本和风险 |
 | Responses API | Responses API | OpenAI 2025 年推出的新一代 API，支持内置工具调用和状态管理 |
 | MCP | 模型上下文协议 | Model Context Protocol，Anthropic 推出的标准化工具/数据源连接协议 |
+| GGUF | GGUF | GPT-Generated Unified Format，llama.cpp 社区开发的模型打包格式，支持多种量化等级和 CPU-GPU 混合推理 |
+| AWQ | AWQ | Activation-aware Weight Quantization，激活感知的 4-bit 权重量化方法，质量损失约 1% |
+| GPTQ | GPTQ | Generative Pre-trained Transformer Quantization，使用近似二阶信息的训练后量化方法 |
+| BitNet | BitNet | Microsoft Research 提出的原生 1.58-bit 训练方法（三值权重 -1/0/+1），通过 BitNet.cpp 实现高效 CPU 推理 |
+| Ollama | Ollama | 本地 LLM 部署工具，封装 llama.cpp/MLX，提供 OpenAI 兼容 API，自动选择最佳量化 |
+| vLLM | vLLM | 高吞吐 LLM 推理服务引擎，核心创新 PagedAttention，适合生产级 GPU 服务 |
+| SGLang | SGLang | 高性能 LLM 服务引擎，通过 RadixAttention 实现 KV cache 前缀复用，2026 年吞吐量领跑 |
+| MLX | MLX | Apple 开发的开源数组框架，专为 Apple Silicon 统一内存架构优化 |
+| FP8 | FP8 | 8-bit 浮点格式，在 H100/Blackwell 等 GPU 上原生支持，推理时内存减半 |
+| RadixAttention | RadixAttention | SGLang 的核心优化，用基数树结构缓存和复用 KV cache 前缀 |
+| PagedAttention | 分页注意力 | 将 KV 缓存按块存储和映射的推理优化技术，常用于减少内存碎片 |
+| Continuous Batching | 连续批处理 | 动态将新请求加入当前批次的技术，最大化 GPU 利用率 |
+| Tensor Parallelism | 张量并行 | 将模型层切分到多个 GPU 上并行计算的技术 |

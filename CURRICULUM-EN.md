@@ -139,7 +139,7 @@
 |-----|-------|---------------|--------------|
 | D46 | API Design and Selection | OpenAI, Anthropic, Google — How to choose | Practical guide  | [EN](articles/en/day46-api-design-and-selection.md) / [中文](articles/zh/day46-api-design-and-selection.md) |
 | D47 | Open Source vs Closed Source | Llama, Mistral, when to use open source | Technical choices  | [EN](articles/en/day47-open-source-vs-closed-source.md) / [中文](articles/zh/day47-open-source-vs-closed-source.md) |
-| D48 | Local Deployment | Ollama, vLLM, quantized inference | Deployment practice  | |
+| D48 | Local Deployment | Ollama, vLLM, quantized inference | Deployment practice  | [EN](articles/en/day48-local-deployment.md) / [中文](articles/zh/day48-local-deployment.md) |
 | D49 | Evaluation and Monitoring | How to know if your LLM application works | Operations practice  | |
 | D50 | Prompt Management | Version control, A/B testing, iterative optimization | Engineering practice  | |
 
