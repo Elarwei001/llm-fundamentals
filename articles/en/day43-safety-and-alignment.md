@@ -143,7 +143,7 @@ min ‖δ‖_p  subject to  f(x + δ) = y_target
 
 In other words, minimize the norm of the pixel perturbation δ while ensuring the perturbed encoder output equals the internal representation of the target instruction.
 
-where $\delta$ is the pixel perturbation, $f$ is the vision encoder, and $y_{\text{target}}$ is the internal representation of the malicious instruction.
+where δ is the pixel perturbation, f is the vision encoder, and y_target is the internal representation of the malicious instruction.
 
 Key property: **cross-model transferability**. Perturbations optimized on one open-source model work on closed-source models like GPT-4V, Claude, and Gemini. The AnyAttack framework and CrossInject (ACM MM 2025) both demonstrated this — CrossInject improved attack success rates by **+30.1%** over prior methods.
 
@@ -267,12 +267,10 @@ No single defense is sufficient. The industry is converging on a **defense-in-de
 
 The key formula behind reasoning-based alignment:
 
-$$
-\begin{aligned}
-P(\text{safe action} \mid q, c) &= \sum_{r} P(a \mid r) \cdot P(r \mid q, c) \\
-\text{where } r &= \text{reasoning chain}, \; q = \text{query}, \; c = \text{context}
-\end{aligned}
-$$
+```
+P(safe action | q, c) = Σ_r P(a | r) · P(r | q, c)
+where r = reasoning chain, q = query, c = context
+```
 
 Instead of directly mapping query to action, the model first generates a reasoning chain about whether the action is safe, then decides. This intermediate step makes the decision more robust to adversarial manipulation.
 

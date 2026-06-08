@@ -143,7 +143,7 @@ min ‖δ‖_p  subject to  f(x + δ) = y_target
 
 即将像素扰动 δ 的范数最小化，同时让扰动后的编码器输出恰好等于目标指令的内部表示。
 
-其中 $\delta$ 是像素扰动，$f$ 是视觉编码器，$y_{\text{target}}$ 是恶意指令对应的内部表示。
+其中 δ 是像素扰动，f 是视觉编码器，y_target 是恶意指令对应的内部表示。
 
 关键特性：**跨模型迁移性**。在一个开源模型上优化出的扰动，在 GPT-4V、Claude、Gemini 等闭源模型上依然有效。AnyAttack 框架和 CrossInject（ACM MM 2025）都展示了这一点——CrossInject 比之前的扰动方法**提升了 30.1%** 的攻击成功率。
 
@@ -267,12 +267,10 @@ OWASP LLM Top 10（2025 版）特别强调了 **Excessive Agency**（过度授�
 
 推理式 alignment 背后的核心思想：
 
-$$
-\begin{aligned}
-P(\text{safe action} \mid q, c) &= \sum_{r} P(a \mid r) \cdot P(r \mid q, c) \\
-\text{where } r &= \text{reasoning chain}, \; q = \text{query}, \; c = \text{context}
-\end{aligned}
-$$
+```
+P(safe action | q, c) = Σ_r P(a | r) · P(r | q, c)
+where r = reasoning chain, q = query, c = context
+```
 
 模型不再直接从查询映射到动作，而是先生成一条关于动作是否安全的推理链，再做决定。这个中间步骤使决策对抗对抗性操控更加鲁棒。
 
