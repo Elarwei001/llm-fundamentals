@@ -1,6 +1,6 @@
 {
-  "current_day": 47,
-  "last_generated": "2026-06-05",
+  "current_day": 49,
+  "last_generated": "2026-06-09",
   "total_days": 60,
   "status": "active",
   "history": [
@@ -733,6 +733,38 @@
         "zh/images/day47/benchmark-gap-over-time.png",
         "zh/images/day47/open-source-timeline.png",
         "zh/images/day47/decision-tree-open-source.png"
+      ]
+    },
+    {
+      "day": 48,
+      "date": "2026-06-08",
+      "topic": "Local Deployment",
+      "en_path": "en/day48-local-deployment.md",
+      "zh_path": "zh/day48-local-deployment.md",
+      "qa_score": 0,
+      "qa_rounds": 0,
+      "images": [
+        "zh/images/day48/local-deployment-ecosystem.png",
+        "zh/images/day48/quantization-methods-comparison.png",
+        "zh/images/day48/framework-decision-tree.png",
+        "zh/images/day48/inference-throughput-comparison.png",
+        "zh/images/day48/local-deployment-timeline.png"
+      ]
+    },
+    {
+      "day": 49,
+      "date": "2026-06-09",
+      "topic": "Evaluation and Monitoring",
+      "en_path": "en/day49-evaluation-and-monitoring.md",
+      "zh_path": "zh/day49-evaluation-and-monitoring.md",
+      "qa_score": 0,
+      "qa_rounds": 0,
+      "images": [
+        "zh/images/day49/eval-lifecycle-pipeline.png",
+        "zh/images/day49/llm-as-judge-flow.png",
+        "zh/images/day49/monitoring-tool-comparison.png",
+        "zh/images/day49/eval-timeline.png",
+        "zh/images/day49/bias-chart.png"
       ]
     }
   ]

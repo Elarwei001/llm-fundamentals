@@ -341,3 +341,17 @@
 | PagedAttention | 分页注意力 | 将 KV 缓存按块存储和映射的推理优化技术，常用于减少内存碎片 |
 | Continuous Batching | 连续批处理 | 动态将新请求加入当前批次的技术，最大化 GPU 利用率 |
 | Tensor Parallelism | 张量并行 | 将模型层切分到多个 GPU 上并行计算的技术 |
+| Golden Dataset | Golden Dataset（评估数据集） | 精心策划的输入-输出对集合，作为 LLM 应用的评估基准 |
+| LLM-as-a-Judge | LLM-as-a-Judge | 用一个 LLM 来评估另一个 LLM 系统输出质量的技术 |
+| RAG Triad | RAG 三元组 | RAG 评估的三个核心指标：Faithfulness、Context Relevance、Answer Relevance |
+| Evaluation-as-Observability | Evaluation-as-Observability | 将部署前评估与生产监控融合为一条管线的趋势 |
+| Pass@k | Pass@k | 运行任务 k 次，至少成功一次即通过的概率指标 |
+| Position Bias | Position Bias（位置偏差） | LLM 评审倾向于选择先出现的答案的系统性偏差 |
+| OTLP | OTLP | OpenTelemetry Protocol，供应商中立的遥测数据传输协议 |
+| OpenInference | OpenInference | 基于 OpenTelemetry 的 LLM 追踪语义约定 |
+| Faithfulness | Faithfulness（忠实度） | 衡量 LLM 输出是否基于提供的上下文而非编造的指标 |
+| Context Relevance | Context Relevance（上下文相关性） | 衡量检索到的上下文是否与查询相关的指标 |
+| Answer Relevance | Answer Relevance（答案相关性） | 衡量 LLM 回答是否真正切题的指标 |
+| Drift Detection | Drift Detection（漂移检测） | 监控 LLM 输出质量随时间变化的自动化方法 |
+| SWE-bench | SWE-bench | 评估编程 Agent 能否解决真实 GitHub issue 的基准测试 |
+| G-Eval | G-Eval | 使用概率加权输出的 LLM 评估方法，由 Liu et al. (2023) 提出 |
