@@ -141,7 +141,7 @@
 | D47 | Open Source vs Closed Source | Llama, Mistral, when to use open source | Technical choices  | [EN](articles/en/day47-open-source-vs-closed-source.md) / [中文](articles/zh/day47-open-source-vs-closed-source.md) |
 | D48 | Local Deployment | Ollama, vLLM, quantized inference | Deployment practice  | [EN](articles/en/day48-local-deployment.md) / [中文](articles/zh/day48-local-deployment.md) |
 | D49 | Evaluation and Monitoring | How to know if your LLM application works | Operations practice  | [EN](articles/en/day49-evaluation-and-monitoring.md) / [中文](articles/zh/day49-evaluation-and-monitoring.md) |
-| D50 | Prompt Management | Version control, A/B testing, iterative optimization | Engineering practice  | |
+| D50 | Prompt Management | Version control, A/B testing, iterative optimization | Engineering practice  | [EN](articles/en/day50-prompt-management.md) / [中文](articles/zh/day50-prompt-management.md) |
 
 ### Week 11: Industry Applications
 

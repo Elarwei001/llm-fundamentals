@@ -1,6 +1,6 @@
 {
-  "current_day": 49,
-  "last_generated": "2026-06-09",
+  "current_day": 50,
+  "last_generated": "2026-06-10",
   "total_days": 60,
   "status": "active",
   "history": [
@@ -765,6 +765,22 @@
         "zh/images/day49/monitoring-tool-comparison.png",
         "zh/images/day49/eval-timeline.png",
         "zh/images/day49/bias-chart.png"
+      ]
+    },
+    {
+      "day": 50,
+      "date": "2026-06-10",
+      "topic": "Prompt Management",
+      "en_path": "en/day50-prompt-management.md",
+      "zh_path": "zh/day50-prompt-management.md",
+      "qa_score": 0,
+      "qa_rounds": 0,
+      "images": [
+        "zh/images/day50/prompt-lifecycle.png",
+        "zh/images/day50/version-control-flow.png",
+        "zh/images/day50/ab-testing-flow.png",
+        "zh/images/day50/optimization-methods-comparison.png",
+        "zh/images/day50/prompt-management-timeline.png"
       ]
     }
   ]
