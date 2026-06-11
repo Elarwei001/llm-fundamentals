@@ -1,6 +1,6 @@
 {
-  "current_day": 50,
-  "last_generated": "2026-06-10",
+  "current_day": 51,
+  "last_generated": "2026-06-11",
   "total_days": 60,
   "status": "active",
   "history": [
@@ -781,6 +781,22 @@
         "zh/images/day50/ab-testing-flow.png",
         "zh/images/day50/optimization-methods-comparison.png",
         "zh/images/day50/prompt-management-timeline.png"
+      ]
+    },
+    {
+      "day": 51,
+      "date": "2026-06-11",
+      "topic": "Conversation and Customer Service",
+      "en_path": "en/day51-conversation-and-customer-service.md",
+      "zh_path": "zh/day51-conversation-and-customer-service.md",
+      "qa_score": 0,
+      "qa_rounds": 0,
+      "images": [
+        "zh/images/day51/customer-service-evolution.png",
+        "zh/images/day51/llm-agent-architecture.png",
+        "zh/images/day51/escalation-decision-flow.png",
+        "zh/images/day51/performance-by-generation.png",
+        "zh/images/day51/customer-service-timeline.png"
       ]
     }
   ]

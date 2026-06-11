@@ -355,3 +355,12 @@
 | Drift Detection | Drift Detection（漂移检测） | 监控 LLM 输出质量随时间变化的自动化方法 |
 | SWE-bench | SWE-bench | 评估编程 Agent 能否解决真实 GitHub issue 的基准测试 |
 | G-Eval | G-Eval | 使用概率加权输出的 LLM 评估方法，由 Liu et al. (2023) 提出 |
+| CSAT (Customer Satisfaction Score) | 客户满意度评分 | 客服对话后由客户给出的满意度评分，通常为 1–5 分 |
+| FCR (First Contact Resolution) | 首次联系解决率 | 客户首次联系即解决问题的比例，客服核心 KPI |
+| STT (Speech-to-Text) | 语音转文字 | 将语音信号转换为文本的技术，如 Whisper、Deepgram |
+| TTS (Text-to-Speech) | 文字转语音 | 将文本转换为自然语音的技术，如 ElevenLabs、OpenAI TTS |
+| SIP (Session Initiation Protocol) | 会话发起协议 | 用于建立、修改和终止 VoIP 电话会话的标准协议 |
+| Resolution Rate | 解决率 | AI Agent 无需人工介入即可完全解决的对话比例 |
+| Escalation | 转交 / 升级 | 当 AI 无法处理时，将对话连同上下文转交给人工坐席 |
+| Handle Time | 处理时间 | 从客户发起联系到问题解决的总耗时 |
+| Deflection | 挡回 / 转向自助 | 将客户从人工渠道引导至 AI 或自助服务的行为 |
