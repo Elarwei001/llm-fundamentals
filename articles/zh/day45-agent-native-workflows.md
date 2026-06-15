@@ -226,36 +226,52 @@ Skill A 的输出留在 agent 的 context window 里。Skill B 从那里读。
 - *缺点*：Context window 污染；大输出挤占 instructions；重试很麻烦
 - *适用*：短 pipeline（2–3 步）、小输出
 
-**方法 2 — 外部 State Store**
+**方法 2 — 外部 State Store（Skill 自己通过共享存储协调）**
 
-每个 skill 把输出写到共享 store（文件、数据库、key-value store）。Pipeline 在步骤间传递引用（ID、path），而非数据本身。
+每个 skill 把输出写到共享 store（文件、数据库、key-value store）。Pipeline 在步骤间传递引用（ID、path），而非数据本身。**关键在于：每个 skill 自己负责知道去哪里读、往哪里写**——orchestrator 只是按顺序触发 skill。
 
 ```
-Step 1 output → /state/pipeline-123/deploy.json
-Step 2 reads  → /state/pipeline-123/deploy.json
-Step 2 output → /state/pipeline-123/health.json
+Orchestrator: "先跑 deploy，再跑 health_check"
+
+Skill deploy:
+  → 从 pipeline context 读输入
+  → 执行
+  → 写 /state/pipeline-123/deploy.json  （skill 自己决定路径）
+
+Skill health_check:
+  → 读 /state/pipeline-123/deploy.json   （skill 自己知道去哪找）
+  → 执行
+  → 写 /state/pipeline-123/health.json
 ```
 
 - *优点*：Context window 干净，支持重试（step 2 可以重读 step 1 的输出而不重跑 step 1），处理大数据
-- *缺点*：需要 state 管理基础设施
-- *适用*：生产 pipeline、长序列、大输出
+- *缺点*：Skill 之间必须约定存储路径和格式——Skill B 需要知道 Skill A 的输出路径和格式。这是隐式耦合，不会出现在任何 contract 里
+- *适用*：同一团队编写所有 skill、存储约定稳定的场景
 
-**方法 3 — 结构化 Handoff Object**
+**方法 3 — Orchestrator 管理的 Handoff（Pipeline 负责数据传递）**
 
-折中方案：每个 skill 返回一个结构化对象，pipeline orchestrator 提取后作为 typed input 传给下一个 skill——不经过 context window，而是通过编排层。
+与方法 2 的关键区别：**skill 之间完全不知道彼此的存在。** 每个 skill 只声明自己的 input/output contract。Orchestrator 读取 Skill A 的输出，根据 pipeline 定义做字段映射，然后作为 typed input 注入 Skill B。Skill 从不直接碰共享存储。
 
 ```python
-# Orchestrator 负责 handoff，不是 agent
+# Orchestrator 负责传递——skill 是纯函数
 deploy_result = await execute_skill("service-deploy", inputs)
+
+# Orchestrator 根据 pipeline 定义做字段映射：
+#   pipeline 说：health_check.service_name = deploy.service_name
+#   pipeline 说：health_check.environment = deploy.environment
 health_result = await execute_skill("health-check", {
     "service_name": deploy_result.service_name,
     "environment": deploy_result.environment
 })
 ```
 
-- *优点*：Agent 推理和数据流干净分离；与 cloud agent session 配合好
-- *缺点*：需要一个理解 skill contract 的编排层
-- *适用*：大多数团队 workflow 系统的甜区
+这个区别在 skill 来自不同团队、或需要适配字段名时很重要。在方法 2 里，如果 Skill A 输出 `app_version` 而 Skill B 期望 `version`，你得改其中一个 skill。在方法 3 里，orchestrator 处理映射——两个 skill 都不用改。
+
+- *优点*：Skill 完全解耦——每个只关心自己的 contract；orchestrator 层做字段映射处理 mismatch；contract 违反在 pipeline 定义时就能发现
+- *缺点*：需要一个理解 skill contract 并执行映射的编排层
+- *适用*：Skill 来自不同团队、跨框架 pipeline、或任何需要严格 contract 执行的系统
+
+**怎么选 2 和 3**：如果你自己写所有 skill 且它们共享一致的数据格式，方法 2 更简单。如果 skill 来自不同团队、字段命名不同、或需要独立替换，方法 3 的解耦值得那点编排开销。
 
 ### 4.3 Failure Contract
 

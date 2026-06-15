@@ -226,36 +226,52 @@ Skill A's output stays in the agent's context window. Skill B reads it from ther
 - *Con*: Context window pollution; large outputs crowd out instructions; retries are messy
 - *When to use*: Short pipelines (2–3 steps), small outputs
 
-**Approach 2 — External State Store**
+**Approach 2 — External State Store (Skills self-coordinate via shared storage)**
 
-Each skill writes its output to a shared store (file, database, key-value store). The pipeline passes references (IDs, paths) between steps, not the data itself.
+Each skill writes its output to a shared store (file, database, key-value store). The pipeline passes references (IDs, paths) between steps, not the data itself. **Crucially, each skill is responsible for knowing where to read from and where to write to** — the orchestrator just triggers skills in order.
 
 ```
-Step 1 output → /state/pipeline-123/deploy.json
-Step 2 reads  → /state/pipeline-123/deploy.json
-Step 2 output → /state/pipeline-123/health.json
+Orchestrator: "Run deploy, then run health_check"
+
+Skill deploy:
+  → reads input from pipeline context
+  → executes
+  → writes /state/pipeline-123/deploy.json  (skill decides the path)
+
+Skill health_check:
+  → reads /state/pipeline-123/deploy.json   (skill knows where to look)
+  → executes
+  → writes /state/pipeline-123/health.json
 ```
 
 - *Pro*: Clean context window, supports retries (step 2 can re-read step 1's output without re-running step 1), handles large data
-- *Con*: Requires state management infrastructure
-- *When to use*: Production pipelines, long sequences, large outputs
+- *Con*: Skills must agree on storage conventions — Skill B needs to know Skill A's output path and format. This is implicit coupling that doesn't show up in any contract
+- *When to use*: Production pipelines where skills are written by the same team and storage conventions are stable
 
-**Approach 3 — Structured Handoff Objects**
+**Approach 3 — Orchestrator-Managed Handoff (The pipeline handles data transfer)**
 
-A middle ground: each skill returns a structured object that the pipeline orchestrator extracts and passes to the next skill as a typed input — not via the context window, but via the orchestration layer.
+The key difference from Approach 2: **skills don't know about each other at all.** Each skill only declares its input/output contract. The orchestrator reads Skill A's output, applies any field mapping defined in the pipeline, and injects the result as Skill B's typed input. Skills never touch shared storage directly.
 
 ```python
-# The orchestrator handles handoff, not the agent
+# The orchestrator handles handoff — skills are pure functions
 deploy_result = await execute_skill("service-deploy", inputs)
+
+# Orchestrator maps fields based on pipeline definition:
+#   pipeline says: health_check.service_name = deploy.service_name
+#   pipeline says: health_check.environment = deploy.environment
 health_result = await execute_skill("health-check", {
     "service_name": deploy_result.service_name,
     "environment": deploy_result.environment
 })
 ```
 
-- *Pro*: Clean separation between agent reasoning and data flow; works well with cloud agent sessions
-- *Con*: Requires an orchestration layer that understands skill contracts
-- *When to use*: The sweet spot for most team workflow systems
+The distinction matters when skills come from different teams or when you need to adapt field names between steps. In Approach 2, if Skill A outputs `app_version` and Skill B expects `version`, you'd have to modify one of the skills. In Approach 3, the orchestrator handles the mapping — neither skill changes.
+
+- *Pro*: Skills are fully decoupled — each only knows its own contract; field mapping at the orchestrator level handles mismatches; contract violations caught at pipeline-definition time
+- *Con*: Requires an orchestration layer that understands skill contracts and performs the mapping
+- *When to use*: Skills from different teams, cross-framework pipelines, or any system where you want strict contract enforcement
+
+**How to choose between 2 and 3**: If you're writing all skills yourself and they share a consistent data format, Approach 2 is simpler. If skills come from different teams, use different field naming, or need to be swapped independently, Approach 3's decoupling is worth the orchestration overhead.
 
 ### 4.3 Failure Contracts
 
