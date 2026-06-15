@@ -24,6 +24,12 @@ A home cook has recipe cards — one dish at a time, pulled out when needed. A r
 
 Agent workflows have gone through a similar evolution.
 
+> **How does this relate to loop engineering?** In June 2026, Peter Steinberger's tweet about "designing loops that prompt your agents" (6.5M views) sparked the loop engineering movement — the idea that you should stop typing prompts manually and instead build an outer loop that triggers agents on a schedule, checks results, and iterates automatically.
+>
+> Loop engineering and skill pipelines solve different problems. **Loop engineering is about *when* and *how often* agents run** — the temporal control structure that replaces manual prompting with automated cycles. **Skill pipelines are about *what happens inside* a single execution** — how multiple skills are organized, connected, and orchestrated to complete a task.
+>
+> They're complementary: a well-designed loop often triggers a skill pipeline as its body. You need both — loops for the outer automation, pipelines for the inner execution. This article focuses on the pipeline layer.
+
 ### Generation 1: Ad-Hoc Prompting (2023–2024)
 
 Every interaction starts from scratch. You write a prompt, the LLM responds, you iterate. Tools are called manually via function calling ([Day 33](day33-tool-use.md)). No persistence, no reuse, no system.

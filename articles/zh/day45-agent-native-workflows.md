@@ -24,6 +24,12 @@ AI agent 团队很快就会撞上这堵墙。在 [Day 40](day40-agent-skills.md)
 
 Agent workflow 经历了类似的演进。
 
+> **这篇文章和 loop engineering 有什么关系？** 2026 年 6 月，Peter Steinberger 那条"你应该设计让 agent 自动运行的 loop，而不是自己打 prompt"的推文（650 万浏览）引爆了 loop engineering 这个概念——核心理念是人不再手动输 prompt，而是构建一个外层循环，按计划触发 agent、检查结果、自动迭代。
+>
+> Loop engineering 和 skill pipeline 解决的是不同层面的问题。**Loop engineering 关注的是 agent *什么时候*、*多久一次*被触发**——替代手动 prompt 的自动化控制结构。**Skill pipeline 关注的是一次执行*内部*发生了什么**——多个 skill 怎么组织、连接、编排来完成任务。
+>
+> 两者是互补的：一个设计良好的 loop，它的循环体往往就是一个 skill pipeline。你需要两者——loop 负责外层自动化，pipeline 负责内层执行。本文聚焦在 pipeline 这一层。
+
 ### 第一代：Ad-Hoc Prompting（2023–2024）
 
 每次交互都从零开始。你写 prompt，LLM 回复，你迭代。工具通过 function calling 手动调用（[Day 33](day33-tool-use.md)）。没有持久化，没有复用，没有系统。
