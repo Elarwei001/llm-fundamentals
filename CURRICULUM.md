@@ -127,7 +127,7 @@
 | D42 | 评估难题 | 如何评测 Agent？SWE-bench、WebArena | 评测方法  | [EN](articles/en/day42-evaluation-challenges.md) / [中文](articles/zh/day42-evaluation-challenges.md) |
 | D43 | 安全与对齐 | Agent 的安全风险，Prompt Injection | 安全问题  | |
 | D44 | 人机协作 | Human-in-the-loop，什么时候该介入 | 交互设计  | |
-| D45 | 成本与延迟 | Agent 太贵太慢，如何优化 | 实用问题  | |
+| D45 | **Agent-Native Workflows** | 从散乱工具到编排化 Skill Pipeline | 工作流架构  | [EN](articles/en/day45-agent-native-workflows.md) / [中文](articles/zh/day45-agent-native-workflows.md) |
 
 ---
 
