@@ -1,6 +1,6 @@
 {
-  "current_day": 51,
-  "last_generated": "2026-06-11",
+  "current_day": 52,
+  "last_generated": "2026-06-15",
   "total_days": 60,
   "status": "active",
   "history": [
@@ -797,6 +797,22 @@
         "zh/images/day51/escalation-decision-flow.png",
         "zh/images/day51/performance-by-generation.png",
         "zh/images/day51/customer-service-timeline.png"
+      ]
+    },
+    {
+      "day": 52,
+      "date": "2026-06-15",
+      "topic": "Content Generation",
+      "en_path": "en/day52-content-generation.md",
+      "zh_path": "zh/day52-content-generation.md",
+      "qa_score": 91,
+      "qa_rounds": 0,
+      "images": [
+        "zh/images/day52/content-generation-evolution.png",
+        "zh/images/day52/content-generation-pipeline.png",
+        "zh/images/day52/ai-slop-model-collapse.png",
+        "zh/images/day52/content-quality-radar.png",
+        "zh/images/day52/tool-selection-decision-tree.png"
       ]
     }
   ]

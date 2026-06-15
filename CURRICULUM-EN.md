@@ -148,7 +148,7 @@
 | Day | Topic | Core Question | Trend Source |
 |-----|-------|---------------|--------------|
 | D51 | Conversation and Customer Service | The right way to build chatbots | Use case  | [EN](articles/en/day51-conversation-and-customer-service.md) / [中文](articles/zh/day51-conversation-and-customer-service.md) |
-| D52 | Content Generation | Writing, marketing, creativity — Can AI replace humans? | Use case  | |
+| D52 | Content Generation | Writing, marketing, creativity — Can AI replace humans? | Use case  | [EN](articles/en/day52-content-generation.md) / [中文](articles/zh/day52-content-generation.md) |
 | D53 | Knowledge Management | Enterprise knowledge bases, document Q&A | Use case  | |
 | D54 | **Developer Tools & Vibe Coding** | Copilot, Cursor, how AI is changing programming | 🔥 vibe coding rising  | |
 | D55 | Research and Science | AlphaFold, AI for Science | Frontier applications  | |
