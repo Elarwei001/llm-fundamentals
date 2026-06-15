@@ -637,13 +637,13 @@ Pipeline Run #abc123 (deploy-and-verify)
 
 ## 9. 实践经验
 
-构建过 skill pipeline 系统的团队报告了一致的经验教训：
+构建过 skill pipeline 系统的团队，总结出了以下经验：
 
-1. **从无聊的事情开始**。最高价值的 pipeline 是最重复、最没意思的任务——部署、检查、报告。不是花哨的 AI 驱动分析。
-2. **已知 workflow 用 fixed pipeline 胜过自主 agent**。Agent "自己想办法"的自由在 workflow 已经很清楚时是负债。结构赢。
-3. **Contract 就是一切**。一旦你放松 input/output contract，pipeline 就开始不稳。尽早执行 contract，即使 3 个人的团队觉得过度设计。
-4. **Dry-run 模式拯救职业生涯**。第一次有人不小心触发了生产部署 pipeline 时，你会感谢 `--dry-run`。
-5. **从第一天起就有可观测性**。不要在第一次 incident 后才加 tracing。要在那之前。当（不是如果）pipeline 失败时，你需要 trace 来调试。
+1. **先做最无聊的事**。最高价值的 pipeline 恰恰是最重复、最没意思的任务——部署、检查、生成报告，而不是那些花哨的 AI 分析功能。
+2. **已知的 workflow，固定 pipeline 胜过让 agent 自主决策**。当 workflow 已经很明确时，给 agent "自由发挥"的空间反而是一种风险。结构化比灵活性更重要。
+3. **Contract 就是生命线**。一旦放松 input/output contract 的校验，pipeline 立刻变得脆弱。哪怕团队只有 3 个人，也要尽早严格定义 contract。
+4. **Dry-run 模式能救命**。当有人不小心触发了生产环境的部署 pipeline 时，你会庆幸有 `--dry-run` 这个选项。
+5. **可观测性从第一天就要有**。不要等出了事故才加 tracing——要在上线之前就准备好。pipeline 出问题是迟早的事（不是会不会的问题），到时候你需要 trace 来定位问题。
 
 ---
 
