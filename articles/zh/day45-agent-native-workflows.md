@@ -310,7 +310,20 @@ on_failure:
 
 在生产环境里，agent 需要一个可靠的方式来发现和调用 skill。一个**为 agent 设计的 CLI**——不是为人设计的——是最有效的模式之一。
 
-### 5.1 为什么是 CLI 而不是 API？
+### 5.1 Skill 不决定自己的接口
+
+一个 skill 定义了*做什么、怎么做*——但不规定*怎么被调用*。同一个 skill 可以通过多种接口暴露给 agent：
+
+| 接口 | Agent 怎么调用 | 适用场景 |
+|------|---------------|---------|
+| **CLI command** | Shell 执行：`mycli deploy --service api` | 自包含 pipeline、ephemeral session |
+| **MCP server**（[Day 38](day38-mcp-model-context-protocol.md)） | 标准化的 tool protocol | 跨平台工具共享 |
+| **Function call** | Agent runtime 内的原生 tool calling | 单 agent session 内使用的简单 skill |
+| **Context injection** | Agent 直接读 `SKILL.md` 然后按指令执行 | 没有 script 的纯推理类 skill |
+
+CLI 只是其中一种选择——但它是目前最适合 skill pipeline 的那种。原因如下。
+
+### 5.2 为什么是 CLI 而不是 API？
 
 听起来反直觉。都 2026 年了，为什么不用 REST API？因为 agent 天生是 tool-caller（[Day 33](day33-tool-use.md)），2026 年的 agent 主要通过三种方式与世界交互：
 
@@ -330,7 +343,7 @@ CLI 三者通吃：它可以被包装成 function call，可以直接在 shell �
 | **可脚本化** | Skill 可以作为 CLI subcommand 发布，复杂 skill 可以 bundle 多个 script |
 | **结构化输出** | `--json` 给 agent 机器可读的结果 |
 
-### 5.2 Agent-Facing CLI 的设计原则
+### 5.3 Agent-Facing CLI 的设计原则
 
 为人设计的 CLI 优化可读性和交互性。为 agent 设计的 CLI 优化可预测性和机器可解析性。设计原则不同：
 

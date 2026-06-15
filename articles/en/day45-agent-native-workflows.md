@@ -310,7 +310,20 @@ This separation is important: the skill doesn't need to know what happens when i
 
 In a production setup, the agent needs a reliable way to discover and invoke skills. A **CLI designed for agent use** — not human use — is one of the most effective patterns for this.
 
-### 5.1 Why a CLI, Not an API?
+### 5.1 Skills Don't Dictate Their Interface
+
+A skill defines *what to do and how to do it* — but it doesn't dictate *how it gets called*. The same skill can be exposed to agents through multiple interfaces:
+
+| Interface | How the Agent Calls It | Best For |
+|-----------|----------------------|----------|
+| **CLI command** | Shell execution: `mycli deploy --service api` | Self-contained pipelines, ephemeral sessions |
+| **MCP server** ([Day 38](day38-mcp-model-context-protocol.md)) | Standardized tool protocol | Cross-platform tool sharing |
+| **Function call** | Native tool calling within the agent runtime | Simple skills used inside a single agent session |
+| **Context injection** | Agent reads `SKILL.md` directly and follows instructions | Pure reasoning skills with no scripts |
+
+A CLI is just one of these options — but it's the one that fits skill pipelines best. Here's why.
+
+### 5.2 Why a CLI, Not an API?
 
 This sounds counterintuitive. Why build a CLI when a REST API is the standard service interface? Because agents are tool-callers by nature ([Day 33](day33-tool-use.md)), and in 2026, agents interact with the world primarily through:
 
@@ -330,7 +343,7 @@ But more importantly, a CLI designed for agent use has specific properties that 
 | **Scriptable** | Skills can ship as CLI subcommands, and complex skills can bundle scripts that the CLI dispatches |
 | **Structured output** | `--json` or `--format=json` gives the agent machine-readable results |
 
-### 5.2 Design Principles for Agent-Facing CLIs
+### 5.3 Design Principles for Agent-Facing CLIs
 
 A CLI built for humans optimizes for readability and interactivity. A CLI built for agents optimizes for predictability and machine parsability. The design principles differ:
 
