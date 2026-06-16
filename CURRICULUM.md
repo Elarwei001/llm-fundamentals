@@ -30,7 +30,7 @@
 ### Week 1: 从神经网络到 Transformer 🔥🔥
 
 | Day | 主题 | 核心问题 | 文章链接 |
-|-----|------|----------|----------|
+|-----|------|----------|----------|----------|
 | D1 | 神经网络速览 | 为什么深度学习能 work？ | [EN](articles/en/day01-neural-network-overview.md) / [中文](articles/zh/day01-neural-network-overview.md) |
 | D2 | RNN 的兴衰 | 序列建模的第一次尝试 | [EN](articles/en/day02-rise-and-fall-of-rnn.md) / [中文](articles/zh/day02-rise-and-fall-of-rnn.md) |
 | D3 | **Attention 的诞生** | "Attention is All You Need" 精读 | [EN](articles/en/day03-birth-of-attention.md) / [中文](articles/zh/day03-birth-of-attention.md) |
@@ -44,7 +44,7 @@
 ### Week 2: 语言模型的本质 🔥🔥🔥
 
 | Day | 主题 | 核心问题 | 热度来源 | 文章链接 |
-|-----|------|----------|----------|
+|-----|------|----------|----------|----------|
 | D6 | **什么是 LLM** | P(next_token\|context) —— 一句话定义 | 🔥🔥 what is LLM +100  | [EN](articles/en/day06-what-is-an-llm.md) / [中文](articles/zh/day06-what-is-an-llm.md) |
 | D7 | Tokenization | BPE、WordPiece，为什么 tokenizer 很重要 | token 相关搜索  | [EN](articles/en/day07-tokenization.md) / [中文](articles/zh/day07-tokenization.md) |
 | D8 | Embedding 的魔法 | 词向量、位置编码、语义空间 | 技术细节  | [EN](articles/en/day08-the-magic-of-embeddings.md) / [中文](articles/zh/day08-the-magic-of-embeddings.md) |
@@ -54,7 +54,7 @@
 ### Week 3: 训练范式 🔥
 
 | Day | 主题 | 核心问题 | 热度来源 | 文章链接 |
-|-----|------|----------|----------|
+|-----|------|----------|----------|----------|
 | D11 | Pre-training | 自监督学习，用互联网训练世界模型 | 训练基础  | [EN](articles/en/day11-pre-training.md) / [中文](articles/zh/day11-pre-training.md) |
 | D12 | Fine-tuning | 参数高效微调 (LoRA, QLoRA) | 实用技术  | [EN](articles/en/day12-fine-tuning.md) / [中文](articles/zh/day12-fine-tuning.md) |
 | D13 | **RLHF 详解** | 人类反馈强化学习，ChatGPT 的秘密 | 🔥 rlhf +140% training  | [EN](articles/en/day13-rlhf-explained.md) / [中文](articles/zh/day13-rlhf-explained.md) |
@@ -68,7 +68,7 @@
 ### Week 4: 推理与生成
 
 | Day | 主题 | 核心问题 | 热度来源 | 文章链接 |
-|-----|------|----------|----------|
+|-----|------|----------|----------|----------|
 | D16 | 采样策略 | Temperature、Top-k、Top-p、Beam search | 常见参数  | [EN](articles/en/day16-sampling-strategies.md) / [中文](articles/zh/day16-sampling-strategies.md) |
 | D17 | KV Cache | 为什么推理可以加速，内存与计算 trade-off | 推理优化  | [EN](articles/en/day17-kv-cache.md) / [中文](articles/zh/day17-kv-cache.md) |
 | D18 | Speculative Decoding | 用小模型加速大模型推理 | 前沿技术  | [EN](articles/en/day18-speculative-decoding.md) / [中文](articles/zh/day18-speculative-decoding.md) |
@@ -78,7 +78,7 @@
 ### Week 5: 模型能力边界
 
 | Day | 主题 | 核心问题 | 热度来源 | 文章链接 |
-|-----|------|----------|----------|
+|-----|------|----------|----------|----------|
 | D21 | **幻觉问题** | 为什么 LLM 会一本正经地胡说八道 | 🔥 常见问题  | [EN](articles/en/day21-hallucination-problem.md) / [中文](articles/zh/day21-hallucination-problem.md) |
 | D22 | 推理能力 | LLM 真的会推理吗？Chain-of-Thought 本质 | 能力争议  | [EN](articles/en/day22-reasoning-ability.md) / [中文](articles/zh/day22-reasoning-ability.md) |
 | D23 | 数学与逻辑 | 为什么算不好数学，Symbolic AI 回归 | 已知缺陷  | [EN](articles/en/day23-math-and-logic.md) / [中文](articles/zh/day23-math-and-logic.md) |
@@ -88,7 +88,7 @@
 ### Week 6: 模型架构进阶 🔥🔥
 
 | Day | 主题 | 核心问题 | 热度来源 | 文章链接 |
-|-----|------|----------|----------|
+|-----|------|----------|----------|----------|
 | D26 | **Mixture of Experts (MoE)** | 稀疏激活，用更少算力获得更大模型 | 架构创新  | [EN](articles/en/day26-mixture-of-experts.md) / [中文](articles/zh/day26-mixture-of-experts.md) |
 | D27 | Knowledge Distillation | 大模型→小模型，知识如何迁移 | 模型压缩  | [EN](articles/en/day27-knowledge-distillation.md) / [中文](articles/zh/day27-knowledge-distillation.md) |
 | D28 | **FlashAttention & Sparse Attention** | 内存带宽瓶颈，让 Transformer 跑更快 | 🔥 sparse attention +30%  | [EN](articles/en/day28-flashattention-and-sparse-attention.md) / [中文](articles/zh/day28-flashattention-and-sparse-attention.md) |
@@ -102,7 +102,7 @@
 ### Week 7: Agent 基础
 
 | Day | 主题 | 核心问题 | 热度来源 | 文章链接 |
-|-----|------|----------|----------|
+|-----|------|----------|----------|----------|
 | D31 | **什么是 AI Agent** | 从 LLM 到 Agent，核心区别是什么 | 🔥🔥🔥 ai agent 爆发  | [EN](articles/en/day31-what-is-an-ai-agent.md) / [中文](articles/zh/day31-what-is-an-ai-agent.md) |
 | D32 | Agent 架构模式 | ReAct、Plan-and-Execute、自主循环 | 设计模式  | [EN](articles/en/day32-agent-architecture-patterns.md) / [中文](articles/zh/day32-agent-architecture-patterns.md) |
 | D33 | **Tool Use** | Function Calling，让 LLM 操作真实世界 | 核心能力  | [EN](articles/en/day33-tool-use.md) / [中文](articles/zh/day33-tool-use.md) |
@@ -112,7 +112,7 @@
 ### Week 8: Agent 进阶 🔥🔥 (新热词集中)
 
 | Day | 主题 | 核心问题 | 热度来源 | 文章链接 |
-|-----|------|----------|----------|
+|-----|------|----------|----------|----------|
 | D36 | Multi-Agent 系统 | 多 Agent 协作，涌现与混乱 | 架构模式  | [EN](articles/en/day36-multi-agent-systems.md) / [中文](articles/zh/day36-multi-agent-systems.md) |
 | D37 | **Agentic RAG** | RAG + Agent 结合，动态检索 | 🔥🔥 +300% 飙升  | [EN](articles/en/day37-agentic-rag.md) / [中文](articles/zh/day37-agentic-rag.md) |
 | D38 | **MCP (Model Context Protocol)** | Anthropic 的上下文协议标准 | 🔥🔥 飙升新词  | [EN](articles/en/day38-mcp-model-context-protocol.md) / [中文](articles/zh/day38-mcp-model-context-protocol.md) |
@@ -122,7 +122,7 @@
 ### Week 9: Agent 瓶颈与前沿
 
 | Day | 主题 | 核心问题 | 热度来源 | 文章链接 |
-|-----|------|----------|----------|
+|-----|------|----------|----------|----------|
 | D41 | **Agent Reliability Engineering** | 从可观测性到持续改进的五步 ARE 体系 | ARE 核心实践  | [EN](articles/en/day41-reliability-issues.md) / [中文](articles/zh/day41-reliability-issues.md) |
 | D42 | 评估难题 | 如何评测 Agent？SWE-bench、WebArena | 评测方法  | [EN](articles/en/day42-evaluation-challenges.md) / [中文](articles/zh/day42-evaluation-challenges.md) |
 | D43 | 安全与对齐 | Agent 的安全风险，Prompt Injection | 安全问题  | |
@@ -136,9 +136,9 @@
 ### Week 10: 开发实践
 
 | Day | 主题 | 核心问题 | 热度来源 | 文章链接 |
-|-----|------|----------|----------|
-| D46 | API 设计与选择 | OpenAI、Anthropic、Google —— 如何选 | 实用指南  | |
-| D47 | 开源 vs 闭源 | Llama、Mistral，什么时候用开源 | 技术选型  | |
+|-----|------|----------|----------|----------|
+| D46 | **开源 vs 闭源模型** | API 阵营 vs 开源阵营，能力、成本、安全的全面对比 | 🔥 技术选型  | [EN](articles/en/day46-open-vs-closed-models.md) / [中文](articles/zh/day46-open-vs-closed-models.md) |
+| D47 | **顶级开源模型深入** | Gemma 4、Qwen 3、DeepSeek V4 架构与能力解析 | 🔥 开源生态  | [EN](articles/en/day47-top-open-source-models.md) / [中文](articles/zh/day47-top-open-source-models.md) |
 | D48 | 本地部署 | Ollama、vLLM、量化推理 | 部署实践  | |
 | D49 | 评估与监控 | 如何知道你的 LLM 应用是否 work | 运维实践  | |
 | D50 | Prompt 管理 | 版本控制、A/B 测试、迭代优化 | 工程实践  | |
@@ -146,7 +146,7 @@
 ### Week 11: 行业应用
 
 | Day | 主题 | 核心问题 | 热度来源 | 文章链接 |
-|-----|------|----------|----------|
+|-----|------|----------|----------|----------|
 | D51 | 对话与客服 | Chatbot 的正确打开方式 | 应用场景  | [EN](articles/en/day51-conversation-and-customer-service.md) / [中文](articles/zh/day51-conversation-and-customer-service.md) |
 | D52 | 内容生成 | 写作、营销、创意 —— AI 能替代人吗 | 应用场景  | |
 | D53 | 知识管理 | 企业知识库、文档问答 | 应用场景  | |
@@ -156,7 +156,7 @@
 ### Week 12: OpenClaw 实现原理 🔥
 
 | Day | 主题 | 核心问题 | 热度来源 | 文章链接 |
-|-----|------|----------|----------|
+|-----|------|----------|----------|----------|
 | D56 | **OpenClaw 架构总览** | Gateway、Session、Channel | 🔥 openclaw 飙升  | |
 | D57 | 消息路由与多通道 | Telegram/Discord/Signal 统一接入 | 系统设计  | |
 | D58 | Tool 系统设计 | exec/browser/nodes —— 能力扩展 | 工具系统  | |
