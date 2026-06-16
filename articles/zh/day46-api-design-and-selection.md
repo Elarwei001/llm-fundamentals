@@ -6,7 +6,7 @@
 
 ## 开篇
 
-假设你在做一个 AI 客服工具，需要一个 LLM API。打开浏览器，面对一整面选项：OpenAI 有 GPT-5.4 和 GPT-5.5，Anthropic 提供 Claude Opus 4.8 和 Sonnet 4.6，Google 有 Gemini 3.1 Pro 和 Flash 系列，DeepSeek 以零头的价格截胡。
+假设你在做一个 AI 客服工具，需要一个 LLM API。打开浏览器，面对一整面选项：OpenAI 有 GPT-5.4 和 GPT-5.5，Anthropic 提供 Claude Opus 4.8 和 Sonnet 4.6，Google 有 Gemini 3.5 Flash 和 3.1 Pro，DeepSeek 和 GLM 以零头的价格截胡。
 
 每个提供商都声称自己最强。各项 benchmark 数据都很好看。定价页面用的单位不同、分层不同、附加条件不同。三个月后，API 账单是预算的 10 倍，或者模型在你以为它能搞定的任务上频频翻车。
 
@@ -67,17 +67,18 @@ Anthropic 的 Claude 模型在复杂推理、代码生成和自主 Agent 工作�
 
 ### 1.3 Google — 多模态与性价比之王
 
-Google 的 Gemini 模型在 2026 年提供最强的性价比和最全面的多模态支持。其基于上下文长度的分级定价增加了一层其他提供商没有的复杂度。
+Google 的 Gemini 模型在 2026 年提供最强的性价比和最全面的多模态支持。2026 年 5 月，Gemini 3.5 Flash 发布，以接近旗舰模型的推理能力重新定义了 Flash 系列的定位。3.5 Pro 已在内部使用，预计 7 月通过 API 开放。
 
 | 模型 | 输入（每 MTok） | 输出（每 MTok） | 上下文窗口 | 最佳场景 |
 |------|------------------|------------------|------------|----------|
-| 3.1 Pro | **$2.00** | **$12.00** | 1M | 通用推理 |
-| 2.5 Pro | **$1.25** | **$10.00** | 1M | 品质平衡 |
+| 3.5 Flash | **$1.50** | **$9.00** | 1M | 前沿速度与品质 |
+| 3.1 Pro | **$2.00** | **$12.00** | 1M | 通用推理（>200K 翻倍） |
 | 3 Flash | **$0.50** | **$3.00** | 1M | 快速生产 |
-| 2.5 Flash | **$0.30** | **$2.50** | 1M | 经济实惠 |
+| 3.1 Flash-Lite | **$0.25** | **$1.50** | 1M | 超经济 |
 | 2.5 Flash-Lite | **$0.10** | **$0.40** | 1M | 最便宜的付费选项 |
 
 核心差异化优势：
+- **Gemini 3.5 Flash**（2026 年 5 月 19 日）：推理能力可比旗舰模型，编码性能较上一代 Flash 提升 10–20%，但保持 Flash 系列的速度（[Google 公告](https://blog.google/innovation-and-ai/models-and-research/gemini-models/gemini-3-5/)）
 - **原生视频和音频理解** — Gemini 在多模态长上下文任务上明显领先
 - **Context caching** 约 90% 节省
 - **Batch API** 所有模型 50% 折扣
@@ -98,7 +99,27 @@ DeepSeek 是专注于开源的中国 AI 实验室，在 2026 年成为价格领�
 
 DeepSeek V4 Flash 大约比 GPT-5.5 或 Claude Opus 4.8 **便宜 35–100 倍**。对于预算敏感的应用——批量分类、摘要、数据提取——DeepSeek 通常以极低的成本提供够用的质量（[DeepSeek 定价](https://api-docs.deepseek.com/quick_start/pricing)）。
 
-代价是：DeepSeek 缺乏生态广度（没有原生 embedding、有限的 fine-tuning、较少的企业功能），且部分团队反馈实时场景下延迟较高。
+代价是：DeepSeek 缺乏生态广度——不支持多模态（仅纯文本输入）、没有原生 embedding、有限的 fine-tuning、较少的企业功能，且部分团队反馈实时场景下延迟较高。
+
+### 1.5 智谱 GLM — 中国开源新势力
+
+智谱 AI（Zhipu AI / Z.ai）是中国领先的 AI 实验室，其 GLM 系列模型在 2026 年成为国际市场上值得注意的开源选择。GLM 模型兼容 OpenAI API 格式，并通过 [OpenRouter](https://openrouter.ai/z-ai/glm-5.1) 等平台向全球开发者提供。
+
+| 模型 | 输入（每 MTok） | 输出（每 MTok） | 上下文窗口 | 最佳场景 |
+|------|------------------|------------------|------------|----------|
+| GLM-5.1 | **$0.98** | **$3.08** | ~200K | 复杂推理、编程 |
+| GLM-5 | **$0.60** | **$1.92** | ~200K | 通用生产 |
+| GLM-4.7 | **$0.40** | **$1.75** | ~131K | 性价比平衡 |
+| GLM-4.7-Flash | **免费** | **免费** | — | 开发测试 |
+
+核心差异化优势：
+- **GLM-5.1**（2026 年 3 月 27 日发布）：编程能力大幅提升，尤其在长程任务（long-horizon tasks）上表现突出，定位对标 Claude Opus 级别
+- **开源生态**：GLM 系列模型开源可自部署，为需要数据私有化的团队提供灵活选择
+- **兼容 OpenAI API 格式**：迁移成本极低，现有代码只需改 endpoint 和 API key
+- **Coding Plan 订阅**：Pro（~$30/月）解锁 GLM-5，Max（~$80/月）提供更高配额
+- **免费 Flash 模型**：GLM-4.7-Flash 和 GLM-4.5-Flash 对所有注册用户免费
+
+需要注意的限制：GLM 模型的上下文窗口（~200K）比三大主流提供商（1M）短；2026 年初智谱两次上调 API 价格（2 月涨价 30%，4 月再涨 10%），低价优势正在收窄；企业级合规认证（SOC 2、HIPAA 等）仍在建设中。
 
 ---
 
@@ -132,16 +153,16 @@ $$
 
 不同提供商在关键功能的实现上差异很大。以下是对生产系统最重要的能力对比：
 
-| 功能 | OpenAI | Anthropic | Google | DeepSeek |
-|------|--------|-----------|--------|----------|
-| 结构化输出（JSON） | ★★★★★ 内置 Schema 验证 | ★★★★☆ 可靠、格式正确 | ★★★☆☆ 持续改进，重试较多 | ★★★☆☆ 基础支持 |
-| Function Calling | ★★★★★ 并行执行、strict 模式 | ★★★★☆ 准确率高、JSON 干净 | ★★★☆☆ 成熟度稍低 | ★★★☆☆ 兼容 OpenAI |
-| 流式输出 | ★★★★★ 语义流式（Responses API） | ★★★★☆ 可靠 SSE | ★★★★☆ SSE 支持良好 | ★★★☆☆ 基础 |
-| Prompt Caching | ★★★★★ 最高 90% 节省 | ★★★★★ 最高 90% 节省 | ★★★★★ ~90% 节省 | ★★☆☆☆ 有限 |
-| Embeddings | ★★★★★ 多种模型 | ★☆☆☆☆ 原生不可用 | ★★★★★ 原生模型 | ★☆☆☆☆ 不可用 |
-| Fine-tuning | ★★★★★ 支持 | ★☆☆☆☆ 不可用 | ★★★★★ 通过 Vertex AI | ★★☆☆☆ 有限 |
-| 多模态（视觉） | ★★★★☆ 较强 | ★★★☆☆ 支持 | ★★★★★ 原生视频/音频 | ★★☆☆☆ 基础 |
-| 企业合规 | ★★★★★ SOC 2, HIPAA, ISO | ★★★★☆ SOC 2，扩展中 | ★★★★★ 完整 Google Cloud 认证 | ★★☆☆☆ 有限 |
+| 功能 | OpenAI | Anthropic | Google | DeepSeek | GLM |
+|------|--------|-----------|--------|----------|-----|
+| 结构化输出（JSON） | ★★★★★ 内置 Schema 验证 | ★★★★☆ 可靠、格式正确 | ★★★☆☆ 持续改进，重试较多 | ★★★☆☆ 基础支持 | ★★★☆☆ 兼容 OpenAI |
+| Function Calling | ★★★★★ 并行执行、strict 模式 | ★★★★☆ 准确率高、JSON 干净 | ★★★☆☆ 成熟度稍低 | ★★★☆☆ 兼容 OpenAI | ★★★☆☆ 兼容 OpenAI |
+| 流式输出 | ★★★★★ 语义流式（Responses API） | ★★★★☆ 可靠 SSE | ★★★★☆ SSE 支持良好 | ★★★☆☆ 基础 | ★★★☆☆ 基础 |
+| Prompt Caching | ★★★★★ 最高 90% 节省 | ★★★★★ 最高 90% 节省 | ★★★★★ ~90% 节省 | ★★☆☆☆ 有限 | ★★☆☆☆ 有限 |
+| Embeddings | ★★★★★ 多种模型 | ★☆☆☆☆ 原生不可用 | ★★★★★ 原生模型 | ★☆☆☆☆ 不可用 | ★★☆☆☆ 有限 |
+| Fine-tuning | ★★★★★ 支持 | ★☆☆☆☆ 不可用 | ★★★★★ 通过 Vertex AI | ★★☆☆☆ 有限 | ★★★☆☆ 开源可自部署 |
+| 多模态（视觉） | ★★★★☆ 较强 | ★★★☆☆ 支持 | ★★★★★ 原生视频/音频 | ☆☆☆☆☆ 不支持 | ★★☆☆☆ 基础 |
+| 企业合规 | ★★★★★ SOC 2, HIPAA, ISO | ★★★★☆ SOC 2，扩展中 | ★★★★★ 完整 Google Cloud 认证 | ★★☆☆☆ 有限 | ★★☆☆☆ 建设中 |
 
 ### 2.3 延迟与可靠性
 
@@ -381,8 +402,10 @@ MMLU、HumanEval、SWE-bench 等 benchmark 有助于了解相对能力，但它�
 | 动态 | 日期 | 影响 |
 |------|------|------|
 | [Claude Opus 4.8](https://www.anthropic.com/news/claude-opus-4-8) 发布，含 dynamic workflows | 2026.05.28 | 代码诚实度提升 4 倍，与 Opus 4.7 同价 |
+| [Gemini 3.5 Flash](https://blog.google/innovation-and-ai/models-and-research/gemini-models/gemini-3-5/) 发布，定价 **$1.50/9**/MTok | 2026.05.19 | 推理能力比肩旗舰，编码性能提升 10–20% |
 | [GPT-5.5 Instant](https://openai.com/research/index/release/) 成为 ChatGPT 新默认 | 2026.05.05 | 高风险 prompt 幻觉率降低 52.5% |
 | [OpenAI Realtime Voice API](https://openai.com/index/advancing-voice-intelligence-with-new-models-in-the-api/) 发布 | 2026.05.07 | 语音应用新范式：推理、翻译、转录一体化 |
+| [GLM-5.1](https://openrouter.ai/z-ai/glm-5.1) 发布，定价 **$0.98/3.08**/MTok | 2026.03.27 | 开源模型编程能力大幅提升，对标 Claude Opus |
 | [Anthropic 取消长上下文附加费](https://www.anthropic.com/claude/opus) | 2026.03 | 所有上下文长度（最高 1M token）统一费率 |
 | [DeepSeek V4](https://api-docs.deepseek.com/quick_start/pricing) 定价 **$0.14/0.28**/MTok | 2026.04 | 比高端提供商便宜 35–100 倍 |
 | [Gemini 3.1 Pro](https://ai.google.dev/) 定价 **$2/12**/MTok | 2026.03 | Opus 级品质、一半价格 |
@@ -399,6 +422,7 @@ MMLU、HumanEval、SWE-bench 等 benchmark 有助于了解相对能力，但它�
 2. [Anthropic Claude API 文档](https://docs.anthropic.com/en/docs) — Claude API 指南和参考
 3. [Google Gemini API 文档](https://ai.google.dev/gemini-api/docs) — Gemini API 指南和定价
 4. [DeepSeek API 文档](https://api-docs.deepseek.com/) — DeepSeek API 参考
+5. [智谱 GLM 开放平台](https://open.bigmodel.cn/) — GLM API 指南和定价
 
 ### 工具
 1. [LiteLLM](https://github.com/BerriAI/litellm) — 100+ LLM 提供商的统一接口

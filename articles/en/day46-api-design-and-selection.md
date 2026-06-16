@@ -6,7 +6,7 @@
 
 ## Opening
 
-Imagine you're building an AI-powered customer support tool. You need an LLM API. You open your browser and face a wall of options: OpenAI has GPT-5.4 and GPT-5.5, Anthropic offers Claude Opus 4.8 and Sonnet 4.6, Google has Gemini 3.1 Pro and Flash variants, and DeepSeek undercuts everyone at a fraction of the price.
+Imagine you're building an AI-powered customer support tool. You need an LLM API. You open your browser and face a wall of options: OpenAI has GPT-5.4 and GPT-5.5, Anthropic offers Claude Opus 4.8 and Sonnet 4.6, Google has Gemini 3.5 Flash and 3.1 Pro, and DeepSeek and GLM undercut everyone at a fraction of the price.
 
 Each provider claims to be the best. The benchmarks all look impressive. The pricing pages use different units, different tiers, and different caveats. Three months later, your API bill is 10x what you budgeted, or your model struggles with tasks you assumed it could handle.
 
@@ -67,17 +67,18 @@ Limitations to note: Anthropic did not offer native embeddings models or fine-tu
 
 ### 1.3 Google — The Multimodal and Value Leader
 
-Google's Gemini models offer the strongest price-performance ratio and the most capable multimodal support in 2026. Their tiered pricing based on context length adds a nuance other providers don't have.
+Google's Gemini models offer the strongest price-performance ratio and the most capable multimodal support in 2026. In May 2026, Gemini 3.5 Flash launched, redefining the Flash series with reasoning capabilities that rival flagship models. Gemini 3.5 Pro is already in internal use and expected to roll out via API in July.
 
 | Model | Input (per MTok) | Output (per MTok) | Context Window | Best For |
 |-------|-------------------|--------------------|----------------|----------|
-| 3.1 Pro | **$2.00** | **$12.00** | 1M | General reasoning |
-| 2.5 Pro | **$1.25** | **$10.00** | 1M | Balanced quality |
+| 3.5 Flash | **$1.50** | **$9.00** | 1M | Frontier speed + quality |
+| 3.1 Pro | **$2.00** | **$12.00** | 1M | General reasoning (>200K 2x) |
 | 3 Flash | **$0.50** | **$3.00** | 1M | Fast production |
-| 2.5 Flash | **$0.30** | **$2.50** | 1M | Cost-effective |
+| 3.1 Flash-Lite | **$0.25** | **$1.50** | 1M | Ultra-budget |
 | 2.5 Flash-Lite | **$0.10** | **$0.40** | 1M | Cheapest paid option |
 
 Key differentiators:
+- **Gemini 3.5 Flash** (May 19, 2026): reasoning capabilities rival flagship models, coding performance improved 10–20% over previous Flash generation while maintaining Flash-tier speeds ([Google announcement](https://blog.google/innovation-and-ai/models-and-research/gemini-models/gemini-3-5/))
 - **Native video and audio understanding** — Gemini dominates multimodal long-context tasks
 - **Context caching** saves approximately 90% on repeated inputs
 - **Batch API** at 50% discount across all models
@@ -98,7 +99,27 @@ DeepSeek, a Chinese AI lab focused on open-source, has emerged as the cost leade
 
 DeepSeek V4 Flash is roughly **35–100x cheaper** than GPT-5.5 or Claude Opus 4.8 at equivalent context lengths. For budget-sensitive applications — bulk classification, summarization, data extraction — DeepSeek often delivers adequate quality at a fraction of the cost ([DeepSeek pricing](https://api-docs.deepseek.com/quick_start/pricing)).
 
-The trade-off: DeepSeek lacks the ecosystem breadth (no native embeddings, limited fine-tuning, fewer enterprise features), and some teams report higher latency for real-time use cases.
+The trade-off: DeepSeek lacks ecosystem breadth — no multimodal support (text-only input), no native embeddings, limited fine-tuning, fewer enterprise features — and some teams report higher latency for real-time use cases.
+
+### 1.5 Zhipu GLM — China's Open-Source Rising Star
+
+Zhipu AI (Z.ai) is a leading Chinese AI lab whose GLM model series has become a noteworthy open-source option on the global market in 2026. GLM models are OpenAI-API-compatible and available to international developers through platforms like [OpenRouter](https://openrouter.ai/z-ai/glm-5.1).
+
+| Model | Input (per MTok) | Output (per MTok) | Context Window | Best For |
+|-------|-------------------|--------------------|----------------|----------|
+| GLM-5.1 | **$0.98** | **$3.08** | ~200K | Complex reasoning, coding |
+| GLM-5 | **$0.60** | **$1.92** | ~200K | General production |
+| GLM-4.7 | **$0.40** | **$1.75** | ~131K | Balanced cost/performance |
+| GLM-4.7-Flash | **Free** | **Free** | — | Development & testing |
+
+Key differentiators:
+- **GLM-5.1** (released March 27, 2026): major leap in coding capability, particularly for long-horizon tasks, positioned as comparable to Claude Opus tier
+- **Open-source**: GLM models can be self-deployed, offering flexibility for teams with data sovereignty requirements
+- **OpenAI-API-compatible**: migration cost is minimal — existing code only needs endpoint and API key changes
+- **Coding Plan subscription**: Pro (~$30/mo) unlocks GLM-5, Max (~$80/mo) offers higher quotas
+- **Free Flash models**: GLM-4.7-Flash and GLM-4.5-Flash are free for all registered users
+
+Limitations to note: GLM models have shorter context windows (~200K) compared to the big three (1M); Zhipu raised API prices twice in early 2026 (+30% in February, +10% in April), narrowing the cost advantage; enterprise compliance certifications (SOC 2, HIPAA, etc.) are still in progress.
 
 ---
 
@@ -132,16 +153,16 @@ Cost optimization levers:
 
 Not all APIs are equal in how they implement key features. Here's a comparison of the capabilities that matter most for production systems:
 
-| Feature | OpenAI | Anthropic | Google | DeepSeek |
-|---------|--------|-----------|--------|----------|
-| Structured Output (JSON) | ★★★★★ Schema validation built-in | ★★★★☆ Reliable, well-formed JSON | ★★★☆☆ Improving, more retries needed | ★★★☆☆ Basic support |
-| Function Calling | ★★★★★ Parallel execution, strict mode | ★★★★☆ High accuracy, clean JSON | ★★★☆☆ Less mature | ★★★☆☆ OpenAI-compatible |
-| Streaming | ★★★★★ Semantic streaming (Responses API) | ★★★★☆ Reliable SSE streaming | ★★★★☆ Good SSE support | ★★★☆☆ Basic |
-| Prompt Caching | ★★★★★ Up to 90% savings | ★★★★★ Up to 90% savings | ★★★★★ ~90% savings | ★★☆☆☆ Limited |
-| Embeddings | ★★★★★ Multiple models | ★☆☆☆☆ Not available natively | ★★★★★ Native embedding models | ★☆☆☆☆ Not available |
-| Fine-tuning | ★★★★★ Supported | ★☆☆☆☆ Not available | ★★★★★ Via Vertex AI | ★★☆☆☆ Limited |
-| Multimodal (Vision) | ★★★★☆ Strong | ★★★☆☆ Supported | ★★★★★ Native video/audio | ★★☆☆☆ Basic |
-| Enterprise Compliance | ★★★★★ SOC 2, HIPAA, ISO | ★★★★☆ SOC 2, expanding | ★★★★★ Full Google Cloud certs | ★★☆☆☆ Limited |
+| Feature | OpenAI | Anthropic | Google | DeepSeek | GLM |
+|---------|--------|-----------|--------|----------|-----|
+| Structured Output (JSON) | ★★★★★ Schema validation built-in | ★★★★☆ Reliable, well-formed JSON | ★★★☆☆ Improving, more retries needed | ★★★☆☆ Basic support | ★★★☆☆ OpenAI-compatible |
+| Function Calling | ★★★★★ Parallel execution, strict mode | ★★★★☆ High accuracy, clean JSON | ★★★☆☆ Less mature | ★★★☆☆ OpenAI-compatible | ★★★☆☆ OpenAI-compatible |
+| Streaming | ★★★★★ Semantic streaming (Responses API) | ★★★★☆ Reliable SSE streaming | ★★★★☆ Good SSE support | ★★★☆☆ Basic | ★★★☆☆ Basic |
+| Prompt Caching | ★★★★★ Up to 90% savings | ★★★★★ Up to 90% savings | ★★★★★ ~90% savings | ★★☆☆☆ Limited | ★★☆☆☆ Limited |
+| Embeddings | ★★★★★ Multiple models | ★☆☆☆☆ Not available natively | ★★★★★ Native embedding models | ★☆☆☆☆ Not available | ★★☆☆☆ Limited |
+| Fine-tuning | ★★★★★ Supported | ★☆☆☆☆ Not available | ★★★★★ Via Vertex AI | ★★☆☆☆ Limited | ★★★☆☆ Open-source, self-hostable |
+| Multimodal (Vision) | ★★★★☆ Strong | ★★★☆☆ Supported | ★★★★★ Native video/audio | ☆☆☆☆☆ Not supported | ★★☆☆☆ Basic |
+| Enterprise Compliance | ★★★★★ SOC 2, HIPAA, ISO | ★★★★☆ SOC 2, expanding | ★★★★★ Full Google Cloud certs | ★★☆☆☆ Limited | ★★☆☆☆ In progress |
 
 ### 2.3 Latency and Reliability
 
@@ -381,8 +402,10 @@ The LLM API landscape in 2026 is evolving rapidly. Here are the most significant
 | Development | Date | Impact |
 |-------------|------|--------|
 | [Claude Opus 4.8](https://www.anthropic.com/news/claude-opus-4-8) release with dynamic workflows | May 28, 2026 | 4x better code honesty, same price as Opus 4.7 |
+| [Gemini 3.5 Flash](https://blog.google/innovation-and-ai/models-and-research/gemini-models/gemini-3-5/) launch at **$1.50/9** per MTok | May 19, 2026 | Frontier-tier reasoning at Flash speeds, 10–20% coding gains |
 | [GPT-5.5 Instant](https://openai.com/research/index/release/) as new ChatGPT default | May 5, 2026 | 52.5% fewer hallucinated claims on high-stakes prompts |
 | [OpenAI Realtime Voice API](https://openai.com/index/advancing-voice-intelligence-with-new-models-in-the-api/) launch | May 7, 2026 | New class of voice apps with reasoning, translation, transcription |
+| [GLM-5.1](https://openrouter.ai/z-ai/glm-5.1) launch at **$0.98/3.08** per MTok | Mar 27, 2026 | Open-source coding gains rivaling Claude Opus tier |
 | [Anthropic dropped long-context surcharges](https://www.anthropic.com/claude/opus) | March 2026 | Flat pricing for all context lengths up to 1M tokens |
 | [DeepSeek V4](https://api-docs.deepseek.com/quick_start/pricing) at **$0.14/0.28** per MTok | April 2026 | 35–100x cheaper than premium providers |
 | [Gemini 3.1 Pro](https://ai.google.dev/) at **$2/12** per MTok | March 2026 | Claude-Opus-level quality at half the price |
@@ -399,6 +422,7 @@ The trend is clear: **prices are falling fast, capabilities are converging, and 
 2. [Anthropic Claude API Documentation](https://docs.anthropic.com/en/docs) — Claude API guides and reference
 3. [Google Gemini API Documentation](https://ai.google.dev/gemini-api/docs) — Gemini API guides and pricing
 4. [DeepSeek API Documentation](https://api-docs.deepseek.com/) — DeepSeek API reference
+5. [Zhipu GLM Open Platform](https://open.bigmodel.cn/) — GLM API guides and pricing
 
 ### Tools
 1. [LiteLLM](https://github.com/BerriAI/litellm) — unified interface for 100+ LLM providers
