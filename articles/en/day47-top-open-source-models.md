@@ -65,6 +65,9 @@ Gemma 4 pushes further toward local agents. Official launch materials emphasize:
 
 ### 2.3 What: The Key Architectural Ideas
 
+![Figure 2: Three key architectural designs of Gemma 4 edge models](../zh/images/day47/gemma-architecture.png)
+*Figure 2: Hybrid attention, GQA, and encoder-free multimodal input — the three pillars of edge-side model design.*
+
 **1. Hybrid local + global attention**
 
 Gemma 3 uses a pattern similar to five local sliding-window attention layers followed by one global attention layer. Local layers see nearby tokens; global layers periodically integrate full-context information.

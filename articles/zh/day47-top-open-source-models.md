@@ -65,6 +65,9 @@ Gemma 4 继续往端侧 agent 方向推进。官方发布信息强调三件事�
 
 ### 2.3 What：Gemma 路线的关键架构点
 
+![图 2：Gemma 4 端侧架构三大关键设计](./images/day47/gemma-architecture.png)
+*图 2：混合 attention、GQA、encoder-free 多模态输入——端侧模型的三板斧。*
+
 **1. 局部 + 全局 attention 的混合**
 
 Gemma 3 的典型设计是 5 个 local sliding-window attention 层配 1 个 global attention 层。local 层只看附近窗口，global 层周期性整合全局信息。
