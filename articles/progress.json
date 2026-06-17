@@ -1,6 +1,6 @@
 {
-  "current_day": 52,
-  "last_generated": "2026-06-15",
+  "current_day": 53,
+  "last_generated": "2026-06-17",
   "total_days": 60,
   "status": "active",
   "history": [
@@ -813,6 +813,22 @@
         "zh/images/day52/ai-slop-model-collapse.png",
         "zh/images/day52/content-quality-radar.png",
         "zh/images/day52/tool-selection-decision-tree.png"
+      ]
+    },
+    {
+      "day": 53,
+      "date": "2026-06-17",
+      "topic": "Knowledge Management",
+      "en_path": "en/day53-knowledge-management.md",
+      "zh_path": "zh/day53-knowledge-management.md",
+      "qa_score": 92.4,
+      "qa_rounds": 0,
+      "images": [
+        "zh/images/day53/knowledge-management-pipeline.png",
+        "zh/images/day53/retrieval-stack.png",
+        "zh/images/day53/knowledge-strategy-tradeoffs.png",
+        "zh/images/day53/document-qa-reliability-loop.png",
+        "zh/images/day53/frontier-agentic-rag-map.png"
       ]
     }
   ]

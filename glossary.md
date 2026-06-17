@@ -7,8 +7,10 @@
 | English | 中文 | 简要说明 |
 |---------|------|----------|
 | Activation Function | 激活函数 | 引入非线性的函数，如 ReLU、Sigmoid |
+| Access Control List (ACL) | 访问控制列表 | 描述哪些用户或角色可以访问某个文档、字段或资源的权限规则 |
 | ANN (Approximate Nearest Neighbor) | 近似最近邻 | 在高维空间中快速找到近似最近邻的算法，如 HNSW |
 | Agentic Memory (AgeMem) | 智能体记忆 | 统一长短期记忆管理的框架，让智能体学习何时存取和遗忘 |
+| Agentic RAG | Agentic RAG | 让 LLM 在回答前迭代搜索、检查证据、改写查询并判断证据是否充分的 RAG 形态 |
 | ALiBi | ALiBi / 线性偏置注意力 | Attention with Linear Biases，通过距离相关的线性偏置帮助模型外推到更长输入长度 |
 | Attention | 注意力机制 | 让模型关注输入的不同部分 |
 | Autoregressive | 自回归 | 根据前面的 token 预测下一个 token |
@@ -103,6 +105,7 @@
 |---------|------|----------|
 | Hallucination | 幻觉 | LLM 生成虚假但看起来合理的内容 |
 | HNSW (Hierarchical Navigable Small World) | 分层可导航小世界图 | 向量数据库中主流的 ANN 索引算法 |
+| Hybrid Retrieval | 混合检索 | 结合关键词检索、向量检索和 reranking 的检索策略，常用于企业文档问答 |
 | Hidden Layer | 隐藏层 | 神经网络的中间层 |
 | Harness (Evaluation Harness) | 评估脚手架 | 包装基础模型并配置工具、prompt、重试策略等，以 Agent 模式运行评估的框架 |
 
@@ -128,6 +131,7 @@
 |---------|------|----------|
 | KV Cache | KV 缓存 | 在推理时缓存历史 token 的 key/value 张量，避免重复计算 |
 | Knowledge Graph | 知识图谱 | 存储实体和关系的图结构数据库，用于关系推理和时间感知记忆 |
+| Knowledge Management | 知识管理 | 捕获、组织、检索、验证、治理和更新组织知识的系统性过程 |
 
 ## L
 
