@@ -171,9 +171,40 @@ That is why Qwen 3 includes both dense and MoE models:
 ![Figure 3: Qwen 3 Transformer Block — unified Dense and MoE design](../zh/images/day47/qwen-architecture.png)
 *Figure 3: The same transformer structure, where the FFN can be either Dense (all params computed) or MoE (router selects top-8 experts). This is the core of Qwen 3's "one architecture, two model types" design.*
 
-The Qwen 3 technical report describes a familiar modern decoder-only architecture: GQA, SwiGLU, RoPE, RMSNorm, and pre-normalization.
+The Qwen 3 technical report describes a familiar modern decoder-only architecture: GQA, SwiGLU, RoPE, RMSNorm, and pre-normalization. If these terms are new to you, here is a quick walkthrough:
 
-Two details matter:
+> **RoPE (Rotary Positional Embedding)**
+>
+> Transformers do not inherently know token order — you need some way to tell the model "this word is at position 5, that one at position 100." The old approach was to add a fixed or learnable position vector to each token (Positional Encoding). RoPE takes a different approach: it applies rotation matrices to the Q and K vectors, encoding position into the angles of the vectors.
+>
+> Why is this good? The relative positional relationship between two tokens ("how far apart they are") is directly reflected in the Q·K dot product result, without needing extra position parameters. This makes RoPE especially suited for long contexts — different rotation frequencies capture positional relationships at different distances, and it naturally supports context length extrapolation.
+>
+> **RMSNorm (Root Mean Square Normalization)**
+>
+> Traditional LayerNorm does two things: subtract the mean and divide by standard deviation (normalization), then apply two learnable parameters for scaling and shifting. RMSNorm drops the "subtract mean" and "shift" steps, only scaling by the RMS (root mean square).
+>
+> Why? At large training scale, the mean-subtraction step has non-trivial computational cost, yet contributes little to final quality. RMSNorm needs only one multiplication and one square root, making it ~10-50% faster than LayerNorm with nearly identical results. Nearly every open-source LLM since 2024 (Llama, Qwen, Gemma, DeepSeek) uses RMSNorm instead of LayerNorm.
+>
+> **Pre-normalization**
+>
+> This tells you where RMSNorm goes in the transformer layer. Pre-norm means: normalize first, then enter attention or FFN.
+>
+> ```text
+> Pre-norm:  x → RMSNorm → Attention → + x (residual)
+> Post-norm: x → Attention → + x (residual) → RMSNorm
+> ```
+>
+> Pre-norm is more stable during training — gradients can flow directly back to early layers through residual connections, without being distorted or vanishing through too many normalization + non-linear transforms. Post-norm frequently caused training collapse in early deep models. Modern LLMs almost universally use pre-norm.
+>
+> **SwiGLU (Swish-Gated Linear Unit)**
+>
+> This is the activation function design for the FFN (Feed-Forward Network) layer. A standard FFN is: `x → Linear → ReLU → Linear`. SwiGLU changes it to: `x → two parallel Linears → apply Swish to one → multiply the two → Linear`.
+>
+> Intuitively: SwiGLU = gating + non-linearity. One branch computes the "value," the other computes "how wide the gate opens," and their product determines the output. The Swish function (`x · sigmoid(βx)`) is smoother than ReLU — it does not have the "cliff" near zero that ReLU has, making gradients friendlier.
+>
+> The cost is one extra Linear layer (because you need two parallel branches), but experiments show SwiGLU outperforms ReLU and GeLU variants under equal parameter budgets. Llama, Qwen, and Gemma all use SwiGLU.
+
+We already covered GQA earlier. Two details truly matter here:
 
 1. **QKV bias is removed, QK-Norm is introduced**  
    QK-Norm stabilizes the scale of attention queries and keys, reducing the risk of exploding attention logits during large-scale training.

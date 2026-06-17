@@ -171,9 +171,40 @@ Qwen 的路线和 Gemma 不一样。Gemma 先问“怎样在设备上跑”，Qw
 ![图 3：Qwen 3 Transformer Block 架构——Dense 与 MoE 的统一设计](./images/day47/qwen-architecture.png)
 *图 3：同一个 transformer 结构，FFN 部分可以选择 Dense（全部参数参与计算）或 MoE（router 只选 top-8 个专家）。这就是 Qwen 3「一套架构两种模型」的核心设计。*
 
-Qwen 3 技术报告给出的 dense 架构并不神秘：GQA、SwiGLU、RoPE、RMSNorm、pre-normalization。这些已经是现代 decoder-only LLM 的主流配置。
+Qwen 3 技术报告给出的 dense 架构并不神秘：GQA、SwiGLU、RoPE、RMSNorm、pre-normalization。这些已经是现代 decoder-only LLM 的主流配置。如果你对这些术语不熟，这里快速过一遍：
 
-真正值得注意的是两个变化：
+> **RoPE（Rotary Positional Embedding，旋转位置编码）**
+>
+> Transformer 本身不知道 token 的顺序——你需要某种方式告诉模型「这个词在第 5 个位置，那个词在第 100 个位置」。老办法是给每个位置加一个固定的或可学习的向量（Positional Encoding）。RoPE 换了一个思路：它用旋转矩阵作用于 Q 和 K 向量，把位置信息编码进向量的角度里。
+>
+> 好处是什么？两个 token 之间的相对位置关系（「它们隔了多远」）直接体现在 Q·K 点积的结果里，而不需要额外的位置参数。这使得 RoPE 特别适合长上下文——你可以用不同的旋转频率来处理不同距离的位置关系，而且天然支持上下文外推。
+>
+> **RMSNorm（Root Mean Square Normalization）**
+>
+> 传统 LayerNorm 会做两件事：先把 hidden state 减去均值、除以标准差（归一化），再用两个可学习参数做缩放和偏移。RMSNorm 砍掉了「减均值」和「偏移」这两步，只做按 RMS（均方根）缩放。
+>
+> 为什么？因为在大规模训练中，减均值这一步的计算开销不可忽视，而实验表明它对最终效果贡献很小。RMSNorm 只需要一次乘法和一次开方，比 LayerNorm 快约 10-50%，而效果几乎相同。几乎所有 2024 年以后的开源 LLM（Llama、Qwen、Gemma、DeepSeek）都用 RMSNorm 而非 LayerNorm。
+>
+> **Pre-normalization**
+>
+> 告诉你 RMSNorm 放在 transformer 层的哪个位置。Pre-norm 是指：先做归一化，再进入 attention 或 FFN。
+>
+> ```text
+> Pre-norm:  x → RMSNorm → Attention → + x（残差）
+> Post-norm: x → Attention → + x（残差） → RMSNorm
+> ```
+>
+> Pre-norm 的优势是训练更稳定——梯度能通过残差连接直接回传到早期层，不会因为经过太多归一化+非线性变换而消失或爆炸。Post-norm 在早期深度模型中常导致训练崩溃。现代 LLM 几乎都用 pre-norm。
+>
+> **SwiGLU（Swish-Gated Linear Unit）**
+>
+> 这是 FFN（Feed-Forward Network）层的激活函数设计。标准 FFN 是：`x → Linear → ReLU → Linear`。SwiGLU 把它变成：`x → 两个并行 Linear → 其中一个过 Swish 激活 → 两个结果相乘 → Linear`。
+>
+> 直觉上理解：SwiGLU = 门控 + 非线性。一个分支算出「值」，另一个分支算出「门开多大」，两者相乘决定最终输出。Swish 函数（`x · sigmoid(βx)`）比 ReLU 更平滑，在 0 附近不会像 ReLU 那样有「突然断崖」，梯度更友好。
+>
+> 代价是参数多了一个 Linear 层（因为需要两个并行分支），但实验表明同等参数预算下 SwiGLU 的效果优于 ReLU 和 GeLU 变体。Llama、Qwen、Gemma 都用 SwiGLU。
+
+GQA 我们前面已经讲过了。真正值得注意的是两个变化：
 
 1. **去掉 QKV bias，引入 QK-Norm**  
    QK-Norm 用来稳定 attention query/key 的尺度，降低大规模训练时 attention logits 爆掉的风险。
