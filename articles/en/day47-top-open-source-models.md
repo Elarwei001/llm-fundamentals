@@ -85,6 +85,18 @@ This is similar to how humans read long documents: most reasoning happens locall
 
 Grouped Query Attention lets multiple query-head groups share fewer key/value heads. This does not magically make the model smarter; it makes KV cache smaller and inference faster. For edge models, memory bandwidth often becomes the bottleneck before raw FLOPs do.
 
+A common misunderstanding needs clarifying: **"sharing" does not mean sharing across different users or requests. It means that within a single token at a single layer, multiple query heads share the same K/V.**
+
+In standard Multi-Head Attention (MHA), every query head has its own independent K head and V head. For example, 32 query heads require 32 K heads + 32 V heads, and the KV cache stores 32 copies.
+
+GQA groups the 32 query heads into several groups (e.g., 8 groups), where each group of 4 query heads **shares 1 K head and 1 V head**. The result: only 8 K/V heads, and the KV cache stores only 8 copies — a 75% memory saving.
+
+The critical point: **all query heads still independently compute attention.** Each head uses its own distinct Q matrix to dot-product with the shared K, producing different attention patterns. What is shared is the K/V storage, not the attention computation result.
+
+An analogy: MHA is 32 people each carrying their own reference book; GQA is 32 people split into 8 groups of 4, each group sharing one book — but each person **reads it differently** (different Q), so they reach different conclusions.
+
+This works because different attention heads learn K/V representations with significant redundancy — many heads' K/V are nearly identical. GQA explicitly merges this redundancy, with almost no quality loss but a dramatic reduction in inference-time memory and bandwidth pressure.
+
 **3. A shorter multimodal input path**
 
 Gemma 4 12B's encoder-free direction is important. Traditional VLMs often follow "image encoder -> projector -> LLM"; audio follows a similar path. Gemma 4 12B uses a lighter vision embedder and audio wave projection to map image patches and audio frames more directly into the LLM token space.

@@ -85,6 +85,18 @@ Global layer:  偶尔做一次全局信息同步
 
 Grouped Query Attention (GQA) 让多组 query heads 共享较少的 key/value heads。它的好处不是让模型更聪明，而是让 KV cache 更小、推理更快。端侧模型尤其需要这种优化，因为 memory bandwidth 往往比 FLOPs 更先成为瓶颈。
 
+这里需要澄清一个常见误解：**「共享」不是指不同用户或不同请求之间共享，而是同一个 token 在同一层内，多个 query head 共用同一组 K/V。**
+
+标准 Multi-Head Attention (MHA) 中，每个 query head 都有自己独立的 K head 和 V head。比如 32 个 query heads 就需要 32 个 K heads + 32 个 V heads，KV cache 存 32 份。
+
+GQA 则把 32 个 query heads 分成若干组（比如 8 组），每组 4 个 query heads **共用 1 个 K head 和 1 个 V head**。结果只有 8 个 K/V heads，KV cache 只存 8 份——内存省 75%。
+
+关键点在于：**所有 query heads 仍然各自独立计算 attention**。它们用各自不同的 Q 矩阵和共享的 K 做点积，得到不同的 attention pattern。共享的只是 K 和 V 的存储，不是注意力计算结果。
+
+打个比方：MHA 是 32 个人各自带了 32 本不同的参考书；GQA 是 32 个人分成 8 组，每组 4 人共用 1 本参考书，但每个人**读法不同**（不同的 Q），所以得到的理解也不同。
+
+这之所以可行，是因为不同 attention heads 学到的 K/V 表示存在大量冗余——很多 heads 的 K/V 几乎一样。GQA 显式地把这种冗余「合并」掉，几乎不损失质量，但大幅降低推理时的显存和带宽压力。
+
 **3. 多模态输入路径变短**
 
 Gemma 4 12B 的 encoder-free 方向值得注意：传统 VLM 需要“图像 encoder -> projector -> LLM”，音频也类似。Gemma 4 12B 用更轻的视觉 embedder 和音频 wave projection，把图像 patch / 音频帧更直接地变成 LLM token 空间中的输入。这样做的优势是：
