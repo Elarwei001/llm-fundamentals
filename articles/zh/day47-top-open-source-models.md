@@ -394,45 +394,151 @@ DeepSeek V4 在此基础上继续推进，技术报告给出两个模型：
 
 ### 4.3 What：CSA + HCA 为什么重要？
 
-DeepSeek V4 技术报告把 attention 分成两类：
+要先理解为什么 DeepSeek V4 需要新的 attention 机制。问题根源：**1M context 下的 KV cache 太大了。**
 
-**CSA (Compressed Sparse Attention)**  
-先把每 m 个 token 的 KV 压缩成一个 entry，再让 query 只 attend 到 top-k 个压缩 entry。也就是：
+一个简单估算：1M token × 49B active params × 多层 attention = KV cache 轻松超过 100GB。即便是 H100 80GB 也放不下。如果用传统的 sliding window，窗口外的信息直接丢失；如果用全局 dense attention，计算量是 O(n²)，1M token 下完全不可行。
 
-```text
-长序列 -> 分块压缩 KV -> 稀疏选择相关块 -> attention
-```
+DeepSeek V4 的方案是把 attention 分成两种模式，配合使用：
 
-它同时做了两件事：
+#### CSA (Compressed Sparse Attention)
 
-- 压缩序列长度；
-- 不再对所有历史块做 dense attention。
+CSA 做了两件事：**压缩 + 稀疏选择。**
 
-**HCA (Heavily Compressed Attention)**  
-更激进地把更长片段压缩成一个 KV entry，但保留 dense attention。它适合提供粗粒度的全局记忆。
-
-两者组合的直觉是：
+**第一步：压缩。** 把每 m 个 token 的 KV 压缩成一个 entry。比如 m=4，就是把 4 个 token 的 key/value 压缩成一组，序列长度直接缩短 4 倍。
 
 ```text
-CSA：保留较细粒度的可检索历史，但只看相关部分
-HCA：保留更粗粒度的全局历史摘要
+原始 KV 序列:  [t1][t2][t3][t4] [t5][t6][t7][t8] [t9][t10][t11][t12] ...
+压缩后:        [C1]             [C2]             [C3]             ...
 ```
 
-这比简单的 sliding window 更强，因为 sliding window 会直接丢掉远处细节；也比全局 attention 便宜，因为全局 attention 在 1M context 下成本太高。
+压缩怎么做？用一个轻量的 token compressor（小型 MLP 或 attention pooling），把 m 个 token 的 K/V 信息汇聚成一个压缩向量。
+
+**第二步：稀疏选择。** 压缩后仍然可能有 25 万个 entry（1M/4）。CSA 不对全部 entry 做 attention，而是用一个轻量的「闪电索引器」（lightning indexer）为每个 query 挑选 top-k 个最相关的压缩 entry，只对这 k 个做 attention。
+
+```text
+Query Q_i → 闪电索引器评估所有压缩 entry → 选 top-k → 只 attend 这 k 个
+```
+
+直觉理解：CSA 像一个**带检索的长期记忆**——先把历史压缩成摘要卡片，再根据当前问题检索最相关的几张卡片细看。
+
+#### HCA (Heavily Compressed Attention)
+
+HCA 用同样的压缩思路，但**压缩更狠 + 不做稀疏选择。**
+
+它把 m′ ≫ m 个 token（比如 128 个）压缩成一个 entry，序列长度缩短 128 倍。1M token 压缩后只剩约 8000 个 entry——这个量级可以做 dense attention 了（全部都看）。
+
+```text
+CSA:  4× 压缩 + 稀疏选择 → 细粒度但只看相关部分
+HCA:  128× 压缩 + 全局 dense → 粗粒度但覆盖全部历史
+```
+
+#### 为什么需要两种？
+
+因为它们解决不同的问题：
+
+- **CSA** 保留较细粒度的信息（4 token 一个 entry），但通过稀疏选择控制成本。适合「我需要找到 500 页前提到的某个具体细节」。
+- **HCA** 丢失了细节，但提供了全局摘要。适合「整篇文档的主题是什么」。
+
+还有一个关键设计：**最近的 token 不压缩。** DeepSeek V4 在 CSA 和 HCA 之外，还保留了一个 sliding-window 分支，处理最近的 token（比如最近 4096 个），这些 token 的 KV 不压缩、不稀疏，保持完整精度。这保证了近期上下文的质量不打折扣。
+
+```text
+最终 attention = CSA(细粒度稀疏历史) + HCA(粗粒度全局摘要) + Sliding Window(近期完整上下文)
+```
+
+这就是 DeepSeek V4 能在 1M context 下把 KV cache 压缩到原来 2% 的核心原因。它不是单一技巧，而是三级混合策略。
 
 ### 4.4 mHC：为什么残差连接也要升级？
 
-Transformer 的 residual connection 看似普通，但当模型极深、MoE 极大、训练 token 极多时，信号在层间传播的稳定性会变得很重要。
+要理解 mHC，需要从残差连接的演进看起。
 
-DeepSeek V4 使用 mHC 来增强传统 residual connection。粗略理解：它不是简单地把上一层输出加回来，而是用受约束的映射来混合多条状态路径，并通过数学约束保持稳定。技术报告提到它将 residual mapping 约束到 doubly stochastic matrices 所在的 manifold，以稳定层间信号传播。
+#### 第一代：标准残差连接（ResNet）
 
-这类改动提醒我们：大模型 scaling 到后期，创新不只发生在 attention 和 MoE，也会发生在看起来“不起眼”的连接结构和优化器上。
+Transformer 中每一层的输出 = `x + Attention(x)` 或 `x + FFN(x)`。那个 `x` 就是残差连接——把输入直接加到输出上。好处是梯度可以通过这条「短路」直接回传到早期层，不会因为网络太深而消失。
+
+```text
+输出 = x + f(x)    ← f 是 attention 或 FFN
+```
+
+#### 第二代：Hyper-Connections（HC）
+
+标准残差只有一条「短路」。Hyper-Connections 把它扩展成**多条并行的残差路径**——不只是一条 shortcut，而是多条可学习的混合路径，让信息能在层间更丰富地流动。
+
+问题是：当这些路径的权重不受约束时，信号可能在传播中指数级放大或衰减。DeepSeek 在 27B 模型上实验发现，不受约束的 HC 信号增益超过 3000 倍——直接导致训练崩溃。
+
+#### 第三代：Manifold-Constrained Hyper-Connections（mHC）
+
+mHC 的核心创新：**把残差路径的混合矩阵约束到一个特殊的数学流形上——Birkhoff Polytope。**
+
+什么是 Birkhoff Polytope？它是所有**双随机矩阵（doubly stochastic matrix）**构成的空间。双随机矩阵有两个性质：
+
+1. 所有元素 ≥ 0
+2. 每一行的和 = 1，每一列的和 = 1
+
+为什么这个约束有用？因为双随机矩阵的谱范数（spectral norm）恰好等于 1。这意味着信号经过这个矩阵后，既不会放大也不会衰减——无论经过多少层。
+
+```text
+标准残差:   输出 = x + f(x)                         ← 一条路径，简单但信息带宽有限
+HC:         输出 = M · [x, f(x)]                     ← 多条路径，但 M 不受约束，信号会爆炸
+mHC:        输出 = M_doubly_stochastic · [x, f(x)]   ← 多条路径 + 谱范数 = 1，信号稳定
+```
+
+训练时怎么保证 M 是双随机的？用 **Sinkhorn-Knopp 算法**——交替地按行归一化和按列归一化，迭代几次后 M 就近似双随机了。这个过程是可微的，不影响梯度回传。
+
+直觉比喻：标准残差像一条单车道公路；HC 修了多条并行车道但没装红绿灯（交通事故频发）；mHC 给每条车道装上了精确的流量控制——无论多少条路、多少层，总流量守恒。
+
+这类改动提醒我们：大模型 scaling 到后期，创新不只发生在 attention 和 MoE，也会发生在看起来不起眼的连接结构和优化器上。
 
 ### 4.5 Muon optimizer：训练效率也是架构的一部分
 
-DeepSeek V4 使用 Muon optimizer 更新大部分模块，只在 embedding、prediction head、RMSNorm 等部分保留 AdamW。Muon 的目标是更快收敛和更稳定训练。
+要理解 Muon 为什么重要，先看传统优化器的问题。
 
-对课程读者来说，不必记住 Muon 的算法细节，但要记住这个判断：**当模型规模进入万亿级 MoE 后，优化器、并行策略、checkpointing、kernel、KV cache 存储，都不再是“工程细节”，而是模型能力能否落地的一部分。**
+#### AdamW 的问题
+
+AdamW 是目前 LLM 训练的标准优化器。它为每个参数维护一个动量（历史梯度的指数移动平均）和一个自适应学习率（基于历史梯度的平方）。但 AdamW 有一个隐含假设：**所有参数方向同等重要。**
+
+实际上不是。权重矩阵的不同方向（奇异向量）对损失的影响差异巨大——某些方向的微小变动就会大幅改变输出，另一些方向则近乎无关紧要。AdamW 用同一个标量学习率去更新所有方向，导致「重要方向学得太慢、不重要方向学得太快」。
+
+#### Muon 的核心思路：对更新矩阵做正交化
+
+Muon（MomentUm Orthogonalized by Newton-Schulz）针对 2D 权重矩阵做了一个额外步骤：**把动量更新矩阵正交化。**
+
+具体来说，标准优化器的更新流程是：
+
+```text
+1. 计算梯度 G
+2. 累积动量 M = β·M_prev + (1-β)·G
+3. 更新权重 W = W - lr · M
+```
+
+Muon 在第 3 步之前插入了一步：
+
+```text
+1. 计算梯度 G
+2. 累积动量 M = β·M_prev + (1-β)·G
+3. 【Muon 新增】用 Newton-Schulz 迭代把 M 正交化： M_orth ≈ orthogonalize(M)
+4. 更新权重 W = W - lr · M_orth
+```
+
+#### Newton-Schulz 正交化是什么？
+
+给定一个矩阵 M，它的极分解是 M = U·P（U 是正交矩阵，P 是半正定矩阵）。Newton-Schulz 是一种迭代算法，用一系列矩阵乘法来近似 U——不需要做昂贵的 SVD。
+
+正交化之后，更新矩阵的所有奇异值都等于 1。这意味着什么？**每个参数方向获得相同大小的更新——不管它原来更重要还是更不重要。**
+
+直觉比喻：AdamW 像「大家投票，但有钱人票更多」；Muon 正交化后变成「一人一票，每个方向平等」。这反而让模型学得更快——因为被 AdamW 压制的「弱方向」往往也携带有用信息。
+
+#### 为什么不全用 Muon？
+
+DeepSeek V4 只对隐藏层的 2D 权重矩阵用 Muon，embedding、prediction head、RMSNorm 等部分仍用 AdamW。原因：
+
+- Newton-Schulz 正交化需要矩阵是 2D 的（行 × 列）。Embedding 是查表操作，不是矩阵乘法，不适用。
+- 实验表明，Muon 对隐藏层权重效果最好，对其他部分改用 Muon 收益不明显。
+
+#### 为什么这重要？
+
+Muon 让 DeepSeek V4 的训练收敛速度提高约 2 倍，节省了大量 GPU 时间。对于 1.6T 参数的模型，训练效率提升 2 倍意味着节省数百万美元的算力成本。
+
+对课程读者来说，不必记住 Newton-Schulz 的公式，但要记住这个判断：**当模型规模进入万亿级 MoE 后，优化器、并行策略、checkpointing、kernel、KV cache 存储，都不再是「工程细节」，而是模型能力能否落地的一部分。**
 
 ### 4.6 学到什么？
 

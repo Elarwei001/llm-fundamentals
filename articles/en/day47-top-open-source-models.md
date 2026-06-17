@@ -392,45 +392,151 @@ The major upgrades include:
 
 ### 4.3 What: Why CSA + HCA Matters
 
-The DeepSeek V4 report describes two attention mechanisms:
+To understand why DeepSeek V4 needs new attention mechanisms, start with the root problem: **KV cache at 1M context is enormous.**
 
-**CSA (Compressed Sparse Attention)**  
-First compress the KV cache of every m tokens into one entry, then let each query attend only to top-k compressed entries.
+A rough estimate: 1M tokens × 49B active params × multiple attention layers = KV cache easily exceeding 100GB. Even an H100 80GB cannot hold it. Traditional sliding window discards everything outside the window; full dense attention is O(n²), completely infeasible at 1M tokens.
 
-```text
-long sequence -> compressed KV blocks -> sparse selection of relevant blocks -> attention
-```
+DeepSeek V4 splits attention into two complementary modes:
 
-It does two things at once:
+#### CSA (Compressed Sparse Attention)
 
-- compresses sequence length;
-- avoids dense attention over every historical block.
+CSA does two things: **compress + sparsely select.**
 
-**HCA (Heavily Compressed Attention)**  
-Compresses much longer spans into a single KV entry, but keeps dense attention over those compressed entries. It provides a coarser global memory.
-
-The combination can be understood as:
+**Step 1: Compress.** Compress every m tokens' KV into one entry. For example, m=4 means 4 tokens' key/value are merged into one group, reducing sequence length by 4×.
 
 ```text
-CSA: keep finer-grained retrievable history, but look only at relevant parts
-HCA: keep coarser global summaries of very long history
+Original KV:    [t1][t2][t3][t4] [t5][t6][t7][t8] [t9][t10][t11][t12] ...
+Compressed:     [C1]             [C2]             [C3]             ...
 ```
 
-This is stronger than simple sliding-window attention because a pure sliding window discards far-away details. It is cheaper than full global attention because full attention is too expensive at 1M context.
+How? A lightweight token compressor (small MLP or attention pooling) aggregates m tokens' K/V information into one compressed vector.
+
+**Step 2: Sparse selection.** Even after compression, there can be 250K entries (1M/4). CSA does not attend to all of them — a lightweight "lightning indexer" picks the top-k most relevant compressed entries for each query, and attention is only computed over those k entries.
+
+```text
+Query Q_i -> lightning indexer scores all compressed entries -> pick top-k -> attend only to those k
+```
+
+Intuitively: CSA is like **long-term memory with retrieval** — first compress history into summary cards, then retrieve the few most relevant cards for the current question.
+
+#### HCA (Heavily Compressed Attention)
+
+HCA uses the same compression idea, but **compresses far more aggressively + no sparse selection.**
+
+It compresses m′ ≫ m tokens (e.g., 128) into one entry, reducing sequence length by 128×. 1M tokens compressed becomes only ~8000 entries — small enough for dense attention (look at all of them).
+
+```text
+CSA:  4× compress + sparse selection -> fine-grained but only relevant parts
+HCA:  128× compress + dense attention -> coarse-grained but covers all history
+```
+
+#### Why two modes?
+
+They solve different problems:
+
+- **CSA** preserves finer-grained information (one entry per 4 tokens) but controls cost via sparse selection. Good for "I need that specific detail from page 500."
+- **HCA** loses detail but provides global summaries. Good for "what is the overall theme of this document?"
+
+A critical design choice: **recent tokens are not compressed.** DeepSeek V4 keeps a sliding-window branch alongside CSA and HCA, handling recent tokens (e.g., the last 4096) with full, uncompressed KV. This ensures near-context quality is not degraded.
+
+```text
+Final attention = CSA (fine-grained sparse history) + HCA (coarse global summary) + Sliding Window (recent full-fidelity context)
+```
+
+This is how DeepSeek V4 compresses KV cache to ~2% of the original at 1M context. It is not one trick — it is a three-level hybrid strategy.
 
 ### 4.4 mHC: Why Upgrade Residual Connections?
 
-Transformer residual connections look ordinary, but when models become extremely deep, sparse, and large-scale, stable signal propagation across layers matters.
+To understand mHC, trace the evolution of residual connections.
 
-DeepSeek V4 uses mHC to strengthen conventional residual connections. Roughly, instead of simply adding the previous layer output back, it mixes multiple state paths with constrained mappings. The report says the residual mapping is constrained to a manifold of doubly stochastic matrices, improving stability across layers.
+#### Generation 1: Standard Residual Connection (ResNet)
+
+Each layer's output = `x + Attention(x)` or `x + FFN(x)`. The `x` is the residual connection — the input is added directly to the output. The benefit: gradients can flow through this "short circuit" directly back to early layers without vanishing in deep networks.
+
+```text
+output = x + f(x)    ← f is attention or FFN
+```
+
+#### Generation 2: Hyper-Connections (HC)
+
+Standard residuals provide only one "short circuit." Hyper-Connections extend this to **multiple parallel residual paths** — not one shortcut, but several learnable mixing paths, allowing richer information flow between layers.
+
+The problem: when these paths' weights are unconstrained, signals can amplify or attenuate exponentially during propagation. DeepSeek found in 27B model experiments that unconstrained HC signal gain exceeded 3000× — causing catastrophic training collapse.
+
+#### Generation 3: Manifold-Constrained Hyper-Connections (mHC)
+
+mHC's core innovation: **constrain the residual mixing matrix to a specific mathematical manifold — the Birkhoff Polytope.**
+
+What is the Birkhoff Polytope? It is the space of all **doubly stochastic matrices**. A doubly stochastic matrix has two properties:
+
+1. All entries ≥ 0
+2. Each row sums to 1, and each column sums to 1
+
+Why is this constraint useful? Because the spectral norm of a doubly stochastic matrix is exactly 1. This means signal passing through it is neither amplified nor attenuated — no matter how many layers.
+
+```text
+Standard:    output = x + f(x)                         ← one path, simple but limited bandwidth
+HC:          output = M · [x, f(x)]                     ← multiple paths, but M unconstrained → signal explosion
+mHC:         output = M_doubly_stochastic · [x, f(x)]   ← multiple paths + spectral norm = 1, signal stable
+```
+
+How is the doubly stochastic constraint enforced during training? Using the **Sinkhorn-Knopp algorithm** — alternately normalize rows and columns, iterating a few times until M approximates doubly stochastic. This process is differentiable, so gradients are not affected.
+
+Analogy: standard residual is a single-lane road; HC built multiple parallel lanes but installed no traffic lights (accidents everywhere); mHC adds precise flow control to every lane — no matter how many lanes or layers, total flow is conserved.
 
 This reminds us that late-stage scaling innovations do not only happen in attention and MoE. They also happen in apparently small details such as connection structures and optimizers.
 
 ### 4.5 Muon Optimizer: Training Efficiency Is Part of the Architecture
 
-DeepSeek V4 uses the Muon optimizer for most modules, while keeping AdamW for embeddings, prediction heads, RMSNorm, and several special parameters. The goal is faster convergence and better training stability.
+To understand why Muon matters, first look at the problem with traditional optimizers.
 
-You do not need to memorize Muon's algorithm to get the lesson: **at trillion-scale MoE, optimizer choice, parallelism, checkpointing, kernels, and KV-cache storage are no longer mere engineering details. They determine whether the model can exist as a deployable system.**
+#### The Problem with AdamW
+
+AdamW is the standard optimizer for LLM training. It maintains a momentum (exponential moving average of historical gradients) and an adaptive learning rate (based on squared gradients) for each parameter. But AdamW has an implicit assumption: **all parameter directions are equally important.**
+
+In reality, they are not. Different directions (singular vectors) of a weight matrix affect the loss very differently — a tiny change in one direction might dramatically alter outputs, while another direction barely matters. AdamW uses the same scalar learning rate for all directions, causing "important directions to learn too slowly, unimportant directions to learn too fast."
+
+#### Muon's Core Idea: Orthogonalize the Update Matrix
+
+Muon (MomentUm Orthogonalized by Newton-Schulz) adds one extra step for 2D weight matrices: **orthogonalize the momentum update matrix.**
+
+The standard optimizer update flow:
+
+```text
+1. Compute gradient G
+2. Accumulate momentum M = β·M_prev + (1-β)·G
+3. Update weights W = W - lr · M
+```
+
+Muon inserts a step before step 3:
+
+```text
+1. Compute gradient G
+2. Accumulate momentum M = β·M_prev + (1-β)·G
+3. [Muon addition] Orthogonalize M via Newton-Schulz iteration: M_orth ≈ orthogonalize(M)
+4. Update weights W = W - lr · M_orth
+```
+
+#### What is Newton-Schulz Orthogonalization?
+
+Given a matrix M, its polar decomposition is M = U·P (U is orthogonal, P is positive semi-definite). Newton-Schulz is an iterative algorithm that approximates U using a series of matrix multiplications — no expensive SVD needed.
+
+After orthogonalization, all singular values of the update matrix equal 1. What does this mean? **Every parameter direction gets the same update magnitude — regardless of whether it was originally more or less important.**
+
+Analogy: AdamW is like "everyone votes, but the rich get more votes"; Muon orthogonalization turns it into "one person, one vote, every direction equal." This actually makes the model learn faster — because the "weak directions" suppressed by AdamW often carry useful information too.
+
+#### Why Not Use Muon for Everything?
+
+DeepSeek V4 uses Muon only for hidden layer 2D weight matrices. Embeddings, prediction heads, and RMSNorm still use AdamW. Reasons:
+
+- Newton-Schulz orthogonalization requires a 2D matrix (rows × columns). Embeddings are lookup operations, not matrix multiplications — not applicable.
+- Experiments show Muon works best for hidden layer weights; switching other parts to Muon yields minimal benefit.
+
+#### Why Does This Matter?
+
+Muon roughly doubles DeepSeek V4's training convergence speed, saving enormous GPU time. For a 1.6T parameter model, a 2× training efficiency improvement means saving millions of dollars in compute costs.
+
+You do not need to memorize Newton-Schulz formulas to get the lesson: **at trillion-scale MoE, optimizer choice, parallelism, checkpointing, kernels, and KV-cache storage are no longer mere engineering details. They determine whether the model can exist as a deployable system.**
 
 ### 4.6 What Do We Learn?
 
