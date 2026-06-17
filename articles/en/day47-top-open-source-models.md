@@ -246,9 +246,39 @@ We already covered GQA earlier. Two details truly matter here:
 
 1. **QKV bias is removed, QK-Norm is introduced**
 
-   First, what is QKV bias? In standard attention, the Q, K, and V projection matrices each have a bias vector: `Q = x·W_q + b_q`. This bias is harmless in small models, but at large training scale it introduces an uncontrolled constant offset — when attention computes `Q·K^T`, the two biases multiply to produce an extra constant term that can push attention logits (pre-softmax) out of a reasonable range.
+   First, what is QKV bias? In standard attention, the Q, K, and V projection matrices each have a bias vector:
 
-   Qwen 3 simply removes QKV bias entirely, eliminating this uncontrolled offset source.
+   ```text
+   Q = x · W_q + b_q
+   K = x · W_k + b_k
+   ```
+
+   The core attention-logit computation is `Q · K^T`. Expanding it shows the issue:
+
+   ```text
+   Q · K^T = (x·W_q + b_q) · (x·W_k + b_k)^T
+           = x·W_q·W_k^T·x^T     ← Term 1: data-dependent, constrained by gradients
+           + x·W_q·b_k^T          ← Term 2: data-dependent
+           + b_q·W_k^T·x^T        ← Term 3: data-dependent
+           + b_q·b_k^T            ← Term 4: constant, independent of input
+   ```
+
+   The key problem is Term 4: `b_q · b_k^T`. This is a constant matrix that does not depend on the input `x`.
+
+   Why does that matter? Attention logits are passed through softmax: `softmax(Q·K^T / √d)`. Softmax is sensitive to absolute scale. If logits are lifted by an uncontrolled positive offset, attention weights can become less meaningful; if they become too large, softmax saturates and gradients approach zero.
+
+   The issue is that `b_q · b_k^T` is not controlled by the input. During training, `b_q` and `b_k` are updated from batch data, but their product creates a global offset that can push all token-pair logits up or down, with different directions and magnitudes for each head. At large scale (hundreds of layers, hundreds of billions of tokens), these offsets can accumulate. Some heads may drift toward consistently high logits, softmax saturation, and vanishing gradients — one pathway to "logits exploding."
+
+   Remove the bias, and the expression becomes:
+
+   ```text
+   Q = x · W_q
+   K = x · W_k
+
+   Q · K^T = x · W_q · W_k^T · x^T
+   ```
+
+   Now there is no fourth term. Attention logits are determined by the input and learned weights, without a free-floating constant offset. Qwen 3 removes QKV bias to eliminate this risk source; QK-Norm then further constrains Q/K norms to keep logits in a stable range.
 
    QK-Norm is a second layer of protection. It applies RMSNorm to the Q and K matrices — before attention is computed, each head's Q and K vectors are scaled to unit norm by their root mean square.
 

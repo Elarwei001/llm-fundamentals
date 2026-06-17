@@ -246,9 +246,41 @@ GQA 我们前面已经讲过了。真正值得注意的是两个变化：
 
 1. **去掉 QKV bias，引入 QK-Norm**
 
-   先说 QKV bias 是什么。在标准 attention 中，Q、K、V 三个投影矩阵各自有一个 bias 向量：`Q = x·W_q + b_q`。这个 bias 在小模型中无害，但在大规模训练中，它会引入一个不受控的常数偏移——当 attention 做 `Q·K^T` 时，两个 bias 相乘会产生一个额外的常数项，可能让 attention logits（softmax 之前）偏离合理范围。
+   先说 QKV bias 是什么。在标准 attention 中，Q、K、V 三个投影矩阵各自有一个 bias 向量：
 
-   Qwen 3 直接去掉 QKV bias，消除了这个不受控的偏移来源。
+   ```text
+   Q = x · W_q + b_q
+   K = x · W_k + b_k
+   ```
+
+   attention logits 的核心运算是 `Q · K^T`。展开看看会发生什么：
+
+   ```text
+   Q · K^T = (x·W_q + b_q) · (x·W_k + b_k)^T
+           = x·W_q·W_k^T·x^T     ← 第 1 项：数据相关，受梯度约束
+           + x·W_q·b_k^T          ← 第 2 项：数据相关
+           + b_q·W_k^T·x^T        ← 第 3 项：数据相关
+           + b_q·b_k^T            ← 第 4 项：常数项，和数据无关！
+   ```
+
+   关键在第 4 项 `b_q · b_k^T`。这是一个完全不受输入 x 影响的常数矩阵。
+
+   这有什么问题？attention logits 要过 softmax：`softmax(Q·K^T / √d)`。softmax 对输入的绝对尺度很敏感——如果 logits 整体被一个正的常数垫高，softmax 输出会趋近均匀分布（每个 token 的 attention weight 差距缩小）；如果被垫得太高，梯度会趋近于零（softmax 饱和）。
+
+   问题在于：`b_q · b_k^T` 这个常数矩阵的值不受输入控制。训练过程中，`b_q` 和 `b_k` 的更新取决于 batch 数据，但它们的乘积产生的是一个全局偏移——它会推高或压低所有 token 的 attention logits，而且每个 head 的偏移方向和幅度都不一样。在大规模训练中（数百层、数百亿 token），这些不受控的偏移会累积。某些 head 可能因为 bias 累积导致 logits 持续偏高，softmax 饱和，梯度消失——这就是「logits 爆掉」的一种来源。
+
+   去掉 bias 后：
+
+   ```text
+   Q = x · W_q
+   K = x · W_k
+
+   Q · K^T = x · W_q · W_k^T · x^T
+   ```
+
+   没有第 4 项了。attention logits 完全由输入数据和权重决定，不存在「凭空多出来的常数」。训练更可控，配合 QK-Norm 进一步约束 Q/K 范数，基本消除了 logits 爆掉的风险。
+
+   这也解释了为什么 Qwen 3、DeepSeek V3、Llama 3 等新一代大模型都不约而同地去掉了 attention bias——它们不是在优化效果，而是在移除一个在大规模训练中不可控的风险源。
 
    QK-Norm 则是另一层保险。它是对 Q 和 K 矩阵做 RMSNorm 归一化——在 attention 计算之前，先把 Q 和 K 每个 head 的向量按均方根缩放到单位尺度。
 
