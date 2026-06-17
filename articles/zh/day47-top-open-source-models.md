@@ -1,316 +1,445 @@
-# Day 47: 顶级开源模型深入 — Gemma 4、Qwen 3、DeepSeek V4
+# Day 47: 顶级开源模型深入 — 用架构对比读懂 Gemma 4、Qwen 3、DeepSeek V4
 
-> **核心问题**：开源模型百花齐放，但你不可能全部试一遍。哪几个最值得关注，它们各自强在哪里？
+> **核心问题**：不要只问“哪个开源模型最强”。更好的问题是：这些模型为什么会长成今天这样？它们分别把算力、显存、长上下文、多模态、MoE 路由和端侧部署之间的矛盾，压到了哪里？
 
 ---
 
 ## 开篇
 
-上一篇文章我们讨论了开源 vs 闭源的整体格局。今天我们放大视野，深入三个最重要的开源模型家族：**Gemma 4、Qwen 3、DeepSeek V4**。
+上一篇文章讨论了开源 vs 闭源的整体格局。今天我们不再把 Gemma、Qwen、DeepSeek 当成三个产品名来背，而是把它们当成三种架构路线来比较：
 
-为什么选这三个？因为它们代表了 2026 年开源 LLM 的三种不同哲学：
+- **Gemma 4**：端侧优先，把“能在普通设备上跑”放在第一位。
+- **Qwen 3**：通用能力优先，用 dense + MoE 的完整矩阵覆盖不同规模，并强调 thinking / non-thinking 的统一。
+- **DeepSeek V4**：长上下文和推理效率优先，用更激进的稀疏化、压缩注意力和工程优化，把 1M context 变成常规能力。
 
-- **Gemma 4**（Google） — 从手机到工作站的全面覆盖，商业许可最友好
-- **Qwen 3**（阿里巴巴） — 综合能力最强，多语言和编程的全能选手
-- **DeepSeek V4**（DeepSeek AI） — 推理能力顶尖，价格颠覆者
-
-选模型就像选工具——不存在"最好的锤子"，只存在"最适合你钉的那颗钉子的锤子"。理解每个模型的设计哲学和优势边界，比记住 benchmark 分数重要得多。
+读完这篇，你应该能学会一件更通用的事：**看到一个新开源模型时，如何从架构表判断它真正适合什么，而不是被 benchmark 排名牵着走。**
 
 ---
 
-## 1. Gemma 4 — Google 的开放之手
+## 1. 先建立读模型的坐标系
 
-### 1.1 设计哲学：从边缘到云端的全覆盖
+一个 LLM 的“架构性格”，通常不是由单个指标决定的，而是由五组取舍共同决定：
 
-Gemma 4 于 2026 年 3 月 31 日发布，采用 Apache 2.0 许可证（商业使用无限制）。它的核心设计目标是：**让前沿 AI 能力在每一个设备上可用**。
+| 维度 | 要问的问题 | 影响什么 |
+|------|------------|----------|
+| 参数组织 | Dense 还是 MoE？总参数和活跃参数差多少？ | 知识容量、推理成本、部署门槛 |
+| Attention | MHA、GQA、MLA、稀疏注意力、压缩注意力？ | 长上下文成本、KV cache、吞吐 |
+| 长上下文 | 靠 RoPE 外推、滑动窗口、压缩 KV，还是专门训练？ | RAG、代码仓库理解、长文档任务 |
+| 多模态 | 独立 encoder、轻量 embedder，还是 encoder-free？ | 视觉/音频延迟、微调复杂度 |
+| 后训练 | SFT、RLHF/RLAIF、thinking mode、agent 数据？ | 指令跟随、推理深度、工具调用 |
 
-Gemma 4 的独特之处在于它不是单一模型，而是一个覆盖不同硬件层级的产品线：
+很多模型介绍只讲“跑分高”。但工程上更关键的是：**这个分数是用什么成本换来的？**
 
-| 模型 | 参数量 | 活跃参数 | 上下文窗口 | 目标硬件 |
-|------|--------|---------|-----------|---------|
-| Gemma 4 E2B | 2B | 2B | 128K | 手机、IoT |
-| Gemma 4 E4B | 4B | 4B | 128K | 边缘设备、树莓派 |
-| Gemma 4 26B MoE | 26B | 3.8B | 256K | 消费级 GPU |
-| Gemma 4 31B Dense | 31B | 31B | 256K | 工作站、服务器 |
+例如：
 
-#### 为什么这很重要？
+- 一个 235B MoE 模型如果每 token 只激活 22B 参数，算力成本接近 22B，但显存仍要容纳 235B 权重。
+- 一个 1M context 模型如果仍保留完整 KV cache，显存和带宽会快速爆炸；它必须在 attention 结构上做压缩或稀疏化。
+- 一个端侧模型如果追求手机可运行，就不能只堆参数；它必须在量化、局部 attention、多模态输入路径和推理 runtime 上一起设计。
 
-大多数开源模型只提供"大"版本——你需要一张 H100 才能跑。Gemma 4 的 E2B 可以在手机上本地推理，这让一类全新的应用成为可能：**离线 AI 助手、隐私优先的本地文档分析、无网络环境下的智能工具**。
-
-26B MoE 版本特别巧妙：总参数 26B 但每次只激活 3.8B，推理速度接近一个 4B 模型，但能力接近 30B 级别。消费级 GPU（如 RTX 4090）可以流畅运行。
-
-### 1.2 能力表现
-
-Gemma 4 31B Dense 在关键 benchmark 上的表现：
-
-| Benchmark | Gemma 4 31B | 对比 |
-|-----------|------------|------|
-| MMLU Pro | **85.2%** | 接近 GPT-5.4 Mini |
-| AIME 2026 | **89.2%** | 数学推理极强 |
-| LiveCodeBench v6 | **~80%** | 编程能力扎实 |
-| Arena AI | #3 | 开源模型中最高 |
-
-### 1.3 优势与短板
-
-**优势：**
-- **Apache 2.0 许可证** — 最宽松的商业许可，无需任何报告或限制
-- **端到端覆盖** — 从 2B 到 31B，一个模型家族解决所有部署场景
-- **本地部署生态好** — Ollama、LM Studio、MediaPipe、LiteRT 全面支持
-- **多模态** — 支持文本和图像输入，小模型还支持音频
-
-**短板：**
-- 31B Dense 的绝对能力仍低于 Qwen 3.7 Max 和 DeepSeek V4 Pro
-- Agent 工具调用能力不如 Qwen 3-Coder 专注
-- 社区 fine-tune 生态不如 Llama 丰富
-
-### 1.4 什么时候选 Gemma 4？
-
-- 你需要**在手机/边缘设备上**运行模型
-- 你需要 **Apache 2.0 的商业确定性**
-- 你需要一个**从小到大全覆盖**的模型家族，统一技术栈
+这就是为什么我们要用“对比学习”的方式读 Gemma、Qwen、DeepSeek。
 
 ---
 
-## 2. Qwen 3 — 阿里巴巴的全能选手
+## 2. Gemma 4：端侧模型不是“小模型”，而是另一套系统设计
 
-### 2.1 设计哲学：把前沿能力做到极致开源
+### 2.1 Why：为什么 Google 要把 Gemma 做成端侧优先？
 
-Qwen（通义千问）系列在 2026 年已经是全球最强的开源模型家族之一。不同于 Gemma 的"覆盖全场景"策略，Qwen 的哲学是：**在每个赛道都做到开源最强**。
+很多开源模型的默认假设是：你有一张或多张数据中心 GPU。Gemma 的默认假设不同：**模型要能进入手机、笔记本、浏览器、边缘设备和本地 agent。**
 
-Qwen 3 的模型矩阵极其丰富：
+这带来两个约束：
 
-| 模型 | 类型 | 参数量 | 上下文窗口 | 定位 |
-|------|------|--------|-----------|------|
-| Qwen 3.7 Max | MoE | 未公开 | 1M | 综合最强 |
-| Qwen 3.7 Plus | MoE | 未公开 | 1M | 高性价比 + 视觉 |
-| Qwen 3-Coder 480B | MoE | 480B (A35B) | 256K | 编程专用 |
-| Qwen 3 235B | MoE | 235B (A22B) | 128K | 通用旗舰 |
-| Qwen 3.5-397B | Dense | 397B | 128K | 研究/部署 |
-| Qwen 3-30B-A3B | MoE | 30B (A3B) | 128K | 消费级 GPU |
+1. **显存预算很小**：手机和普通笔记本无法承受大模型权重和长上下文 KV cache。
+2. **延迟比峰值能力更重要**：端侧应用常常需要即时响应，不能每次都把请求发到云端。
 
-### 2.2 能力亮点
+所以 Gemma 的重点不是“最大模型有多大”，而是“在有限硬件上如何保留尽可能多的能力”。
 
-**推理：** Qwen 3.7 Max 在 GPQA Diamond 上得分 92.4%，超过了 Claude Opus 4.6。在 HMMT 2026 数学竞赛中得分 97.1，超越 DeepSeek V4 Pro。
+### 2.2 How：从 Gemma 3 到 Gemma 4 的演进
 
-**编程：** Qwen 3-Coder-480B 是专门为 agentic coding 训练的模型，在代码生成和调试任务上达到 Claude Sonnet 级别。如果你在构建 AI 编程助手，这是开源中最强的选择。
+Gemma 3 已经展示了这条路线：模型规模覆盖 1B、4B、12B、27B，引入视觉理解、至少 128K context，并通过更多局部 attention 层来降低长上下文 KV cache 压力。Gemma 3 技术报告明确指出，它通过提高 local/global attention 的比例、缩短 local attention 的 span 来控制 KV cache 增长。
 
-**多语言：** Qwen 3.5 覆盖 201 种语言和方言，远超任何其他开源模型。如果你的应用面向非英语市场，Qwen 几乎是唯一选择。
+Gemma 4 继续往端侧 agent 方向推进。官方发布信息强调三件事：
 
-### 2.3 Qwen 的 MoE 架构深入
+- **Apache 2.0**：商业使用友好。
+- **端侧 agent**：多步规划、离线代码生成、视觉/音频处理可以在设备上完成。
+- **Gemma 4 12B 的 encoder-free 多模态**：传统多模态模型常用独立视觉 encoder / 音频 encoder，再把特征投给 LLM；Gemma 4 12B 试图把多模态输入直接接入 decoder-only backbone，减少多 encoder 带来的延迟和内存碎片。
 
-Qwen 3 大量使用 Mixture-of-Experts (MoE) 架构。以 Qwen 3 235B 为例：
+### 2.3 What：Gemma 路线的关键架构点
 
-- **总参数**：235B
-- **每次激活参数**：22B（约 1/10）
-- **专家数量**：128 个
-- **每次选择专家**：8 个（Top-8 路由）
+**1. 局部 + 全局 attention 的混合**
 
-这意味着虽然模型有 235B 的知识容量，但每次推理只计算 22B 的量——**推理速度等同于一个 22B 的 dense 模型，但能力远超**。
+Gemma 3 的典型设计是 5 个 local sliding-window attention 层配 1 个 global attention 层。local 层只看附近窗口，global 层周期性整合全局信息。
 
-MoE 的代价是显存：你需要装下全部 235B 参数（约 470GB FP16，或 ~120GB 4-bit 量化），但计算只需要 22B 的算力。
+直觉上可以这样理解：
 
-### 2.4 优势与短板
+```text
+Local layers:  低成本地处理邻近上下文
+Global layer:  偶尔做一次全局信息同步
+```
 
-**优势：**
-- **综合能力最强** — 在几乎所有 benchmark 上都是开源 Top 3
-- **模型变体最丰富** — 从 3B 到 480B，从通用到编程专用
-- **Apache 2.0 许可证** — 商业友好
-- **1M 上下文窗口** — 与闭源旗舰持平
-- **多语言覆盖无敌** — 201 种语言
+这和人读长文有点像：大部分时候按段落局部理解，偶尔回到全文结构做整合。它牺牲了“每一层都看全局”的表达自由度，换来更低的 KV cache 和更稳定的长上下文成本。
 
-**短板：**
-- 旗舰模型部署门槛高（235B 需要 ~4-8 张 A100）
-- 模型变体太多，选择有学习成本
-- 文档和开发者体验不如 Gemma 和 DeepSeek 清晰
+**2. GQA 降低 KV cache**
 
-### 2.5 什么时候选 Qwen 3？
+Grouped Query Attention (GQA) 让多组 query heads 共享较少的 key/value heads。它的好处不是让模型更聪明，而是让 KV cache 更小、推理更快。端侧模型尤其需要这种优化，因为 memory bandwidth 往往比 FLOPs 更先成为瓶颈。
 
-- 你需要**开源中最强的综合推理能力**
-- 你的应用面向**多语言市场**
-- 你在构建 **AI 编程助手**（选 Qwen 3-Coder）
-- 你有 GPU 预算运行大模型
+**3. 多模态输入路径变短**
 
----
+Gemma 4 12B 的 encoder-free 方向值得注意：传统 VLM 需要“图像 encoder -> projector -> LLM”，音频也类似。Gemma 4 12B 用更轻的视觉 embedder 和音频 wave projection，把图像 patch / 音频帧更直接地变成 LLM token 空间中的输入。这样做的优势是：
 
-## 3. DeepSeek V4 — 推理之王与价格颠覆者
+- 延迟更低；
+- 端侧内存碎片更少；
+- LoRA 或 full fine-tuning 时，不需要同时协调多个大型 frozen encoder。
 
-### 3.1 设计哲学：用工程效率碾压成本
+### 2.4 学到什么？
 
-DeepSeek AI 是一家专注于开源的中国 AI 实验室，以"用更少算力做更强模型"著称。DeepSeek V4 于 2026 年 4 月发布，再次刷新了性价比的极限。
+Gemma 告诉我们：**小模型不是大模型的缩水版。真正好的端侧模型是从 attention、KV cache、多模态输入、量化和 runtime 一起设计出来的。**
 
-| 模型 | 参数量 | 活跃参数 | 上下文窗口 | 类型 |
-|------|--------|---------|-----------|------|
-| DeepSeek V4 Pro | 1.6T | 49B | 1M | 通用 MoE |
-| DeepSeek V4 Flash | 未公开 | 未公开 | 1M | 轻量快速 |
-| DeepSeek R1 | 671B | 37B | 128K | 推理专用 |
+当你看到一个模型声称“适合端侧”，不要只看参数量，还要问：
 
-### 3.2 能力亮点
-
-**编程：** V4 Pro 在 SWE-bench Verified 上得分 80.6%，与 Claude Opus 4.6（80.8%）几乎持平。考虑到它便宜 35-100 倍，这个成绩令人震惊。
-
-**数学推理：** DeepSeek R1 在 AIME 2026 上得分 99.4%，是所有模型（含闭源）中最高分之一。它证明了：**前沿推理能力不一定需要万亿参数和天价算力**。
-
-**价格：** V4 Flash 定价 $0.14/$0.28 每 MTok——比 GPT-5.5 便宜约 100 倍。如果 API 成本是你产品的核心约束，DeepSeek 几乎是无脑选择。
-
-### 3.3 DeepSeek 的工程创新
-
-DeepSeek 的低价不是靠偷工减料，而是靠极致的工程优化：
-
-**1. MoE 架构的激进设计**
-V4 Pro 的 1.6T 参数中只激活 49B（约 3%）——这个稀疏比率远高于 Qwen 3 235B 的 9.4%。更激进的稀疏意味着更低的推理成本，但也更难训练（路由不稳定、负载均衡困难）。
-
-**2. 多 Token 预测（MTP）**
-DeepSeek V4 在训练和推理中都使用 MTP——模型一次预测多个 token 而非一个。这大幅提升了推理吞吐量。
-
-**3. FP8 训练**
-DeepSeek 是最早大规模使用 FP8 精度训练的团队之一。更低精度 = 更少显存 = 更低训练成本。
-
-### 3.4 优势与短板
-
-**优势：**
-- **推理能力顶尖** — 数学竞赛级别的问题处理能力
-- **API 价格最低** — 性价比碾压所有竞争对手
-- **MIT 许可证** — 最宽松的开源许可
-- **兼容 OpenAI API** — 迁移成本为零
-- **技术报告极其详细** — 对研究者极有价值
-
-**短板：**
-- **不支持多模态** — 纯文本输入，不能处理图像
-- **没有原生 embedding 模型** — 需要 RAG 的场景要搭配其他模型
-- **1.6T 参数部署门槛极高** — V4 Pro 自部署需要 ~16 张 H100
-- **延迟较高** — 实时场景（对话、流式输出）的响应速度不如 Gemini Flash
-
-### 3.5 什么时候选 DeepSeek？
-
-- 你的应用**对 API 成本极度敏感**
-- 你需要**顶级数学/逻辑推理**（选 R1）
-- 你的应用是**纯文本**的（分类、摘要、代码生成、问答）
-- 你做**AI 研究**，需要详细的技术报告和可复现的方法
+- 它的 KV cache 怎么控制？
+- attention 是全局的、局部的，还是混合的？
+- 多模态是否依赖笨重 encoder？
+- 官方是否提供 LiteRT、MediaPipe、llama.cpp、Ollama 等真实端侧路径？
 
 ---
 
-## 4. 横向对比：三大模型家族怎么选？
+## 3. Qwen 3：能力矩阵的核心不是“模型多”，而是 dense/MoE 统一设计
+
+### 3.1 Why：为什么 Qwen 需要这么多模型？
+
+Qwen 的路线和 Gemma 不一样。Gemma 先问“怎样在设备上跑”，Qwen 先问“怎样覆盖尽可能多的能力边界”：通用推理、代码、多语言、agent、长上下文、不同显存档位。
+
+这就是 Qwen 3 同时发布 dense 和 MoE 的原因：
+
+- **Dense 模型**：结构简单，部署和 fine-tuning 更直接，适合中小规模和确定性部署。
+- **MoE 模型**：用更大的总参数承载知识容量，但每 token 只激活一部分专家，适合追求更高能力/成本比。
+
+### 3.2 How：Qwen 3 的基础结构
+
+Qwen 3 技术报告给出的 dense 架构并不神秘：GQA、SwiGLU、RoPE、RMSNorm、pre-normalization。这些已经是现代 decoder-only LLM 的主流配置。
+
+真正值得注意的是两个变化：
+
+1. **去掉 QKV bias，引入 QK-Norm**  
+   QK-Norm 用来稳定 attention query/key 的尺度，降低大规模训练时 attention logits 爆掉的风险。
+
+2. **MoE 和 dense 共享基础设计**  
+   Qwen 3 MoE 不是另起炉灶，而是在同一套 transformer 结构上替换 FFN 部分：把原来的 dense FFN 换成多个 expert FFN，再由 router 为每个 token 选择专家。
+
+### 3.3 What：Qwen 3 MoE 到底在做什么？
+
+以 Qwen3-235B-A22B 为例：
+
+| 指标 | 数值 |
+|------|------|
+| 总参数 | 235B |
+| 每 token 活跃参数 | 22B |
+| 层数 | 94 |
+| Attention heads | Q 64 / KV 4 |
+| Experts | 128 total / 8 activated |
+| Context | 128K |
+
+这里有三个关键点。
+
+**1. MoE 的“省”只省计算，不省权重存储**
+
+235B-A22B 的意思是：模型总共有 235B 参数，但每个 token 只激活约 22B 参数。推理时的矩阵乘法成本接近 22B dense 模型，但显存仍然要放下 235B 权重。
+
+所以 MoE 适合云端和多 GPU 服务，不等于适合本地单卡。
+
+**2. 128 个专家，每 token 选 8 个**
+
+Router 会为每个 token 选择 top-8 experts。理想状态下，不同专家会学到不同能力区域：代码、数学、多语言、格式化、工具调用、领域知识等。但路由有两个麻烦：
+
+- 如果某些专家总被选中，会造成负载不均；
+- 如果强行加入负载均衡损失，又可能伤害模型能力。
+
+Qwen 3 使用 global-batch load balancing loss 来鼓励专家分工。它不是没有成本的技巧，而是在“专家专精”和“设备负载均衡”之间找平衡。
+
+**3. 没有 shared experts**
+
+Qwen 3 技术报告提到，Qwen3-MoE 不再使用 Qwen2.5-MoE 中的 shared experts。shared expert 的作用通常是兜底通用能力；去掉它意味着模型更依赖 router 把 token 分给合适专家。这会让专家分工更彻底，但也更考验路由训练。
+
+### 3.4 Thinking / Non-thinking：不是 prompt 花样，而是推理预算控制
+
+Qwen 3 的一个重要产品化设计是统一 thinking 和 non-thinking 模式。它背后的核心问题是：**同一个模型，什么时候应该快速回答，什么时候应该花更多 token 做推理？**
+
+这不是简单的“输出 chain-of-thought”。更准确地说，它是在控制 test-time compute：
+
+```text
+简单问题：少量推理 token -> 低延迟、低成本
+复杂问题：更多推理 token -> 更高正确率、更高成本
+```
+
+这条路线对开发者很重要，因为未来模型选型不只是“选哪个模型”，还包括“给它多少推理预算”。
+
+### 3.5 学到什么？
+
+Qwen 告诉我们：**MoE 的核心不是参数越大越好，而是 router、专家粒度、负载均衡、上下文长度和后训练共同决定能力/成本曲线。**
+
+看到一个 MoE 模型时，至少要问：
+
+- total params 和 active params 分别是多少？
+- 每层有多少 experts？每 token 选几个？
+- 有没有 shared experts？
+- 负载均衡靠 auxiliary loss、global-batch loss，还是其他机制？
+- thinking mode 是否只是 prompt，还是训练和服务系统都支持的推理预算机制？
+
+---
+
+## 4. DeepSeek V4：把 1M context 做便宜，才是真正的架构问题
+
+### 4.1 Why：为什么长上下文会变成 DeepSeek 的主战场？
+
+普通聊天 8K、32K 已经够用，但 agent、代码仓库理解、企业知识库、长文档分析、长期任务执行需要更长上下文。问题是：Transformer 的 attention 和 KV cache 对长上下文非常敏感。
+
+如果上下文从 128K 拉到 1M，真正麻烦的不是“能不能塞进去”，而是：
+
+- prefill 成本会非常高；
+- decode 时每生成一个 token 都要访问巨大的历史 KV；
+- KV cache 会吃掉大量显存；
+- 多用户服务时，缓存调度和前缀复用会变成系统瓶颈。
+
+DeepSeek V4 的重点正是：**让 1M context 不只是 demo，而是可以常规服务的能力。**
+
+### 4.2 How：从 DeepSeek V3 到 V4
+
+DeepSeek V3 已经奠定了三块基础：
+
+- **DeepSeekMoE**：671B total / 37B active，用稀疏专家降低每 token 计算量。
+- **MLA (Multi-head Latent Attention)**：压缩 key/value 表示，降低 KV cache。
+- **MTP (Multi-Token Prediction)**：训练时预测多个未来 token，增强训练信号，也可用于 speculative decoding。
+
+DeepSeek V4 在此基础上继续推进，技术报告给出两个模型：
+
+| 模型 | 总参数 | 活跃参数 | 上下文 |
+|------|--------|----------|--------|
+| DeepSeek-V4-Pro | 1.6T | 49B | 1M |
+| DeepSeek-V4-Flash | 284B | 13B | 1M |
+
+它新增的重点包括：
+
+- **CSA + HCA 混合注意力**；
+- **mHC (Manifold-Constrained Hyper-Connections)**；
+- **Muon optimizer**；
+- routed expert 使用更低精度；
+- 更复杂的 KV cache 管理和长上下文推理系统。
+
+### 4.3 What：CSA + HCA 为什么重要？
+
+DeepSeek V4 技术报告把 attention 分成两类：
+
+**CSA (Compressed Sparse Attention)**  
+先把每 m 个 token 的 KV 压缩成一个 entry，再让 query 只 attend 到 top-k 个压缩 entry。也就是：
+
+```text
+长序列 -> 分块压缩 KV -> 稀疏选择相关块 -> attention
+```
+
+它同时做了两件事：
+
+- 压缩序列长度；
+- 不再对所有历史块做 dense attention。
+
+**HCA (Heavily Compressed Attention)**  
+更激进地把更长片段压缩成一个 KV entry，但保留 dense attention。它适合提供粗粒度的全局记忆。
+
+两者组合的直觉是：
+
+```text
+CSA：保留较细粒度的可检索历史，但只看相关部分
+HCA：保留更粗粒度的全局历史摘要
+```
+
+这比简单的 sliding window 更强，因为 sliding window 会直接丢掉远处细节；也比全局 attention 便宜，因为全局 attention 在 1M context 下成本太高。
+
+### 4.4 mHC：为什么残差连接也要升级？
+
+Transformer 的 residual connection 看似普通，但当模型极深、MoE 极大、训练 token 极多时，信号在层间传播的稳定性会变得很重要。
+
+DeepSeek V4 使用 mHC 来增强传统 residual connection。粗略理解：它不是简单地把上一层输出加回来，而是用受约束的映射来混合多条状态路径，并通过数学约束保持稳定。技术报告提到它将 residual mapping 约束到 doubly stochastic matrices 所在的 manifold，以稳定层间信号传播。
+
+这类改动提醒我们：大模型 scaling 到后期，创新不只发生在 attention 和 MoE，也会发生在看起来“不起眼”的连接结构和优化器上。
+
+### 4.5 Muon optimizer：训练效率也是架构的一部分
+
+DeepSeek V4 使用 Muon optimizer 更新大部分模块，只在 embedding、prediction head、RMSNorm 等部分保留 AdamW。Muon 的目标是更快收敛和更稳定训练。
+
+对课程读者来说，不必记住 Muon 的算法细节，但要记住这个判断：**当模型规模进入万亿级 MoE 后，优化器、并行策略、checkpointing、kernel、KV cache 存储，都不再是“工程细节”，而是模型能力能否落地的一部分。**
+
+### 4.6 学到什么？
+
+DeepSeek 告诉我们：**长上下文不是把 context window 数字写大，而是 attention、KV cache、稀疏路由、低精度、推理系统一起解决的问题。**
+
+看到一个模型宣传 1M context，要问：
+
+- 训练时是否真的覆盖长上下文？
+- attention 是 dense、sparse，还是 compressed sparse？
+- KV cache 如何压缩和存储？
+- 1M 下的 single-token decode 成本是多少？
+- 长上下文 benchmark 是 synthetic retrieval，还是真实文档/代码/agent 场景？
+
+---
+
+## 5. 三条路线放在一起看
 
 ![图 1：Gemma 4 vs Qwen 3 vs DeepSeek V4 能力画像对比](./images/day47/triple-comparison.png)
-*图 1：三大开源模型家族在不同维度上的能力画像。形状比面积更重要——每个家族都有独特的"指纹"。*
+*图 1：三大开源模型家族的能力画像。现在再看这张图，重点不是谁面积更大，而是每个形状背后的架构取舍。*
 
-| 维度 | Gemma 4 | Qwen 3 | DeepSeek V4 |
+| 问题 | Gemma 4 | Qwen 3 | DeepSeek V4 |
 |------|---------|--------|-------------|
-| 综合推理 | ★★★★☆ | ★★★★★ | ★★★★★ |
-| 编程能力 | ★★★★☆ | ★★★★★ (Coder) | ★★★★★ |
-| 多模态 | ★★★☆☆ (文本+图像) | ★★★★☆ (Plus 版) | ☆☆☆☆☆ (纯文本) |
-| 多语言 | ★★★☆☆ (140+) | ★★★★★ (201+) | ★★★☆☆ |
-| 边缘部署 | ★★★★★ (E2B/E4B) | ★★☆☆☆ | ★☆☆☆☆ |
-| API 成本 | ★★★☆☆ | ★★★★☆ | ★★★★★ |
-| 商业许可 | ★★★★★ (Apache 2.0) | ★★★★★ (Apache 2.0) | ★★★★★ (MIT) |
-| 社区生态 | ★★★★☆ | ★★★☆☆ | ★★★★☆ |
+| 首要目标 | 端侧可用、本地 agent | 综合能力矩阵 | 1M context 与推理效率 |
+| 参数路线 | 小/中模型 + 端侧优化 | Dense + MoE 全矩阵 | 大规模 MoE + 高稀疏 |
+| Attention 重点 | local/global 混合、GQA | GQA、QK-Norm、RoPE | CSA + HCA、压缩/稀疏 attention |
+| MoE 重点 | 部分型号使用轻量 MoE | 128 experts / top-8，global-batch balance | DeepSeekMoE，极高 total/active 比 |
+| 多模态路线 | 端侧视觉/音频，12B encoder-free | 部分模型支持视觉，代码/agent 强 | 主要聚焦文本、推理、长上下文 |
+| 适合场景 | 手机、笔记本、离线、本地隐私 | 多语言、代码、通用 agent | 长文档、代码仓库、低成本推理、复杂推理 |
+| 核心风险 | 绝对能力上限 | 变体复杂、部署门槛 | 系统复杂、延迟和服务工程要求高 |
 
-### 选型速查
+这三条路线不是简单的强弱关系，而是三种不同的答案：
 
-| 你的场景 | 首选 | 原因 |
-|---------|------|------|
-| 手机/边缘设备本地推理 | **Gemma 4 E2B/E4B** | 唯一能在手机上流畅运行的前沿模型 |
-| 消费级 GPU 上跑最强模型 | **Gemma 4 26B MoE** | 3.8B 激活参数，RTX 4090 可跑 |
-| 最强开源综合推理 | **Qwen 3.7 Max** | GPQA 92.4%，开源最高 |
-| AI 编程助手 | **Qwen 3-Coder** | 专为 agentic coding 优化 |
-| 超大规模低成本 API | **DeepSeek V4 Flash** | $0.14/MTok，无可匹敌 |
-| 数学/科学推理 | **DeepSeek R1** | AIME 99.4%，接近理论上限 |
-| 多语言应用（非英语） | **Qwen 3.5** | 201 种语言覆盖 |
-| 商业产品（许可确定性） | **Gemma 4 / DeepSeek** | Apache 2.0 / MIT，最宽松 |
-| 需要图像理解 | **Qwen 3.7 Plus** | 开源中多模态最成熟 |
+- Gemma 4 问：**能不能把 agent 带到设备上？**
+- Qwen 3 问：**能不能用一套模型矩阵覆盖最多能力场景？**
+- DeepSeek V4 问：**能不能把超长上下文和强推理做得足够便宜？**
 
 ---
 
-## 5. 实战：如何开始使用？
+## 6. 为什么有些模型支持多模态，有些不支持？
 
-### 5.1 本地部署
+多模态不是在文本模型旁边“加一个摄像头”这么简单。它至少需要解决三件事：
 
-```bash
-# Gemma 4 — 最简单的本地体验
-ollama run gemma4
+1. **输入表示**：图像 patch、音频帧、视频帧要先变成 LLM 能处理的 token-like representation。
+2. **跨模态对齐**：模型要学会把视觉/音频特征和语言概念对齐，例如“这张图里的表格”和文本里的 row / column 对应起来。
+3. **推理成本**：图像和音频会引入大量额外 token 或特征，长上下文、KV cache、batching 都会变贵。
 
-# Qwen 3 — 消费级 GPU 可用的版本
-ollama run qwen3:30b-a3b
+所以，一个模型家族是否支持多模态，通常取决于它的主目标。
 
-# DeepSeek V4 — 通过 API 调用（自部署门槛太高）
-# 或用蒸馏版 R1
-ollama run deepseek-r1:70b
-```
+**Gemma 4 更适合把多模态做进核心路线**，因为它的目标是端侧 agent。手机、浏览器和本地助手天然会遇到相机、截图、录音、屏幕理解这些输入。如果 Gemma 只做文本，就很难支撑“设备上的 agent”。因此它会强调轻量视觉/audio 输入路径，甚至探索 encoder-free 或近似 encoder-free 的方式，减少端侧延迟和内存压力。
 
-### 5.2 API 调用
+**Qwen 3 是“部分模型多模态，部分模型专精文本/代码”**。原因是 Qwen 的核心不是单一路线，而是模型矩阵：有些变体负责视觉语言任务，有些变体负责 coding、agentic coding、数学、多语言和 thinking。视觉能力需要额外数据、encoder/embedder、对齐训练和评测体系；如果一个模型主要面向代码 agent，把预算放在 repo 数据、tool-use 数据和代码执行反馈上，往往比加入图像输入更划算。
 
-三大模型家族都提供官方 API 或通过第三方平台访问：
+**DeepSeek V4 更偏文本、推理和长上下文**，不是因为多模态“不重要”，而是因为它的主要架构问题已经很重：1M context、压缩/稀疏 attention、MoE 路由、KV cache、低成本服务。多模态会进一步增加输入 token 和缓存压力，和“把超长文本上下文做便宜”这个目标存在资源竞争。对于 DeepSeek 这条路线，先把文本长上下文和推理成本打穿，比同时加入视觉/audio 更符合它的技术主线。
 
-| 平台 | Gemma 4 | Qwen 3 | DeepSeek V4 |
-|------|---------|--------|-------------|
-| 官方 API | Google AI Studio | 阿里云 DashScope | DeepSeek Platform |
-| OpenRouter | ✅ | ✅ | ✅ |
-| 自部署 | Ollama / vLLM | vLLM / SGLang | vLLM (需要大量 GPU) |
+可以用一句话概括：
 
-### 5.3 Fine-tuning
+| 模型家族 | 多模态能力为什么这样设计？ |
+|---------|----------------------------|
+| Gemma 4 | 端侧 agent 需要看图、听音频、理解屏幕，所以多模态是核心能力的一部分 |
+| Qwen 3 | 模型矩阵覆盖不同任务，视觉是其中一条分支，不是所有型号都必须支持 |
+| DeepSeek V4 | 技术预算主要投向文本推理、1M context 和低成本服务，多模态会加重 KV/cache 和训练复杂度 |
 
-```python
-# 所有三个模型家族都支持 LoRA/QLoRA fine-tuning
-# 推荐工具：Unsloth（最高效）、PEFT、Axolotl
-
-# Gemma 4 fine-tune 示例（Unsloth）
-from unsloth import FastModel
-model, tokenizer = FastModel.from_pretrained("google/gemma-4-31b")
-# ... 标准 fine-tune 流程
-```
+这也是读模型时很重要的一点：**“不支持多模态”不一定代表落后，有时只是架构预算被投到了另一条能力曲线上。**
 
 ---
 
-## 6. 常见误区
+## 7. 实战选型：从“排行榜”改成“约束反推”
 
-### ❌ "开源模型差不多，选哪个都行"
+### 7.1 如果你要做本地应用
 
-差远了。Gemma 4 在边缘部署上碾压其他两个，Qwen 3-Coder 在编程上碾压其他两个，DeepSeek R1 在数学推理上碾压其他两个。选型不当可能导致 10 倍的成本差异或巨大的能力差距。
+优先看 Gemma。
 
-### ❌ "DeepSeek 便宜是因为质量差"
+原因不是它永远最强，而是它的系统假设和你一致：端侧 runtime、量化、低延迟、多模态输入、本地 API server，这些都比纯 benchmark 更关键。
 
-不是。DeepSeek 的低价来自激进的 MoE 设计、FP8 训练和多 Token 预测。V4 Pro 在 SWE-bench 上 80.6% 的成绩证明它绝不是"廉价替代品"。
+适合：
 
-### ❌ "最大的模型就是最好的"
+- 本地写作助手；
+- 离线会议记录；
+- 手机端视觉问答；
+- 隐私敏感的个人知识库；
+- 本地 coding / data analysis 小工具。
 
-Qwen 3-Coder 480B 在编程上最强，但 Qwen 3-30B-A3B 在消费级 GPU 上也能提供很好的体验。**部署约束（显存、延迟、成本）通常比 benchmark 分数更重要**。
+### 7.2 如果你要做通用 AI 产品
+
+优先看 Qwen。
+
+它的优势是模型矩阵完整：从小 dense 到大 MoE，从通用模型到 coder，从 non-thinking 到 thinking。你可以从小模型原型开始，再逐步换到更大模型，而不是一开始就被某个单点模型锁死。
+
+适合：
+
+- 多语言客服；
+- 代码助手；
+- 企业内部 agent；
+- 需要 fine-tuning 的行业模型；
+- 既要成本可控又要保留升级路径的产品。
+
+### 7.3 如果你要做长上下文和高强度推理
+
+优先看 DeepSeek。
+
+尤其是这些场景：
+
+- 代码仓库级理解；
+- 大型 PDF / 合同 / 研报分析；
+- 长周期 agent 任务；
+- 成本敏感的大规模 API 调用；
+- 数学、科学、工程推理。
+
+DeepSeek 的关键价值不是“便宜”，而是它把便宜做成了架构结果：MoE 稀疏化、KV 压缩、长上下文 attention、低精度训练/推理和服务系统共同作用。
 
 ---
 
-## 7. 延伸阅读
+## 8. 常见误区
 
-### 技术报告
-1. [Gemma 4 Model Card](https://ai.google.dev/gemma/docs/core/model_card_4) — 官方模型卡和评测细节
-2. [Qwen 3 Technical Report](https://arxiv.org/abs/2503.09965) — 架构和训练方法详解
-3. [DeepSeek V4 Technical Report](https://arxiv.org/abs/2502.04872) — 万亿 MoE 的工程突破
-4. [DeepSeek R1 Paper](https://arxiv.org/abs/2501.12948) — 推理模型的低成本训练方法
+### 误区 1：“MoE 就一定更省”
 
-### 模型对比
-1. [Artificial Analysis — Open Model Leaderboard](https://artificialanalysis.ai/) — 实时开源模型排名
-2. [Hugging Face Open LLM Leaderboard](https://huggingface.co/spaces/open-llm-leaderboard/open_llm_leaderboard)
-3. [OpenCompass](https://opencompass.org.cn/) — 中文社区维护的综合评测
+MoE 省的是每 token 计算，不一定省显存。总参数越大，权重存储越重；专家分布在多卡上时，还会引入通信成本。
+
+### 误区 2：“1M context 就等于会读 1M”
+
+不等于。长上下文能力至少有三层：
+
+- 训练和位置编码是否支持；
+- attention / KV cache 是否撑得住；
+- 模型是否真的能在长文档中稳定检索、归纳和推理。
+
+很多模型能“放进”长文本，但不能“用好”长文本。
+
+### 误区 3：“端侧模型就是能力弱”
+
+端侧模型的目标函数不同。它追求的是隐私、低延迟、离线、低成本和可嵌入，而不是在所有 benchmark 上赢最大云端模型。对许多真实应用来说，这些约束比 2-3 个百分点的 benchmark 差距更重要。
+
+### 误区 4：“开源模型只是在复刻闭源”
+
+现在已经不是这样。Gemma 在端侧 agent，Qwen 在开源 MoE 矩阵和 agentic coding，DeepSeek 在长上下文效率和稀疏化工程上，都有自己的路线。开源模型不只是闭源模型的廉价替代品，而是在一些工程方向上反过来推动前沿。
+
+---
+
+## 9. 延伸阅读
+
+### 官方资料与技术报告
+
+1. [Gemma 4 launch: Bring state-of-the-art agentic skills to the edge](https://developers.googleblog.com/bring-state-of-the-art-agentic-skills-to-the-edge-with-gemma-4/)
+2. [Gemma 4 12B: The Developer Guide](https://developers.googleblog.com/gemma-4-12b-the-developer-guide/)
+3. [Gemma 3 Technical Report](https://arxiv.org/abs/2503.19786)
+4. [Qwen3 Technical Report](https://arxiv.org/abs/2505.09388)
+5. [Qwen3: Think Deeper, Act Faster](https://qwenlm.github.io/blog/qwen3/)
+6. [Qwen3-Coder: Agentic Coding in the World](https://qwenlm.github.io/blog/qwen3-coder/)
+7. [DeepSeek V4 Preview Release](https://api-docs.deepseek.com/news/news260424)
+8. [DeepSeek-V4 Technical Report](https://huggingface.co/deepseek-ai/DeepSeek-V4-Pro/blob/main/DeepSeek_V4.pdf)
+9. [DeepSeek-V3 Technical Report](https://arxiv.org/abs/2412.19437)
 
 ---
 
 ## 思考题
 
-1. 如果你只能选一个开源模型作为你未来一年的主力，你会选 Gemma 4、Qwen 3、还是 DeepSeek V4？为什么？
-2. DeepSeek V4 Pro 和 Claude Opus 4.6 在 SWE-bench 上几乎相同（80.6% vs 80.8%），但价格差 35-100 倍。这个价格差异在什么情况下合理？
-3. 为什么 Gemma 4 能做到在手机上运行而 Qwen 和 DeepSeek 不能？从架构设计角度分析。
+1. 如果你要为一个本地知识库选择模型，为什么“最大参数量”可能不是第一指标？
+2. Qwen3-235B-A22B 的 active params 只有 22B，但为什么它仍然不适合普通消费级单卡？
+3. DeepSeek V4 的 CSA + HCA 和 Gemma 的 local/global attention 都在降低长上下文成本。它们分别牺牲了什么，又保留了什么？
+4. 如果未来模型都支持 thinking mode，产品定价应该按输入输出 token 收费，还是按 reasoning effort 收费？
 
 ---
 
 ## 总结
 
-| 模型家族 | 一句话定位 | 最强维度 | 最弱维度 |
-|---------|-----------|---------|---------|
-| Gemma 4 | 从口袋到数据中心的开放 AI | 边缘部署、商业许可 | 绝对推理能力 |
-| Qwen 3 | 开源全能王 | 综合推理、编程、多语言 | 部署门槛高、变体复杂 |
-| DeepSeek V4 | 推理巅峰 + 价格屠夫 | 数学推理、API 成本 | 多模态、延迟 |
+| 模型家族 | 一句话定位 | 你真正该学到的架构知识 |
+|---------|-----------|--------------------------|
+| Gemma 4 | 端侧 agent 路线 | 端侧能力来自 KV cache、局部 attention、多模态输入路径和 runtime 的共同设计 |
+| Qwen 3 | 开源能力矩阵路线 | MoE 的关键是 total/active params、router、专家粒度、负载均衡和推理预算 |
+| DeepSeek V4 | 长上下文效率路线 | 1M context 需要压缩/稀疏 attention、KV cache 工程、低精度和训练系统协同 |
 
-**核心要点**：2026 年的顶级开源模型不再是闭源模型的"廉价替代品"——它们各自在特定维度上是全球最强的，包括与闭源模型的对比。理解每个模型的设计哲学和优势边界，是做出正确技术选型的关键。选模型不是选排名最高的，而是选最适合你工程约束的。
+**核心要点**：顶级开源模型的差异，已经不只是“谁的 benchmark 更高”。Gemma、Qwen、DeepSeek 分别代表端侧化、能力矩阵化、长上下文效率化三条路线。真正的学习价值，是从它们的架构选择中理解：LLM 能力永远是在算力、显存、延迟、数据、训练稳定性和服务系统之间做取舍。
 
 ---
 
 *Day 47 of 60 | LLM Fundamentals*
-*Word count: ~3500 | Reading time: ~18 minutes*
+*Length: ~11,500 Chinese characters | Reading time: ~25 minutes*

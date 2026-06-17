@@ -1,316 +1,447 @@
-# Day 47: Top Open-Source Models In Depth — Gemma 4, Qwen 3, DeepSeek V4
+# Day 47: Top Open-Source Models In Depth — Learning Gemma 4, Qwen 3, and DeepSeek V4 Through Architecture
 
-> **Core Question**: The open-source model landscape is blooming, but you can't try them all. Which ones deserve your attention, and what is each one best at?
+> **Core question**: Do not only ask "which open model is strongest?" A better question is: why do these models look the way they do, and where do they push the trade-offs among compute, memory, long context, multimodality, MoE routing, and edge deployment?
 
 ---
 
 ## Opening
 
-In the previous article, we covered the overall open vs closed landscape. Today we zoom in on three of the most important open-source model families: **Gemma 4, Qwen 3, and DeepSeek V4**.
+In the previous article, we covered the open vs closed model landscape. Today we will not treat Gemma, Qwen, and DeepSeek as product names to memorize. We will treat them as three architectural paths:
 
-Why these three? Because they represent three distinct philosophies of open-source LLMs in 2026:
+- **Gemma 4**: edge-first design, prioritizing "can this run on ordinary devices?"
+- **Qwen 3**: capability-matrix design, using both dense and MoE models to cover many scales and tasks, with unified thinking / non-thinking modes.
+- **DeepSeek V4**: long-context and reasoning-efficiency design, using aggressive sparsity, compressed attention, and systems engineering to make 1M context routine.
 
-- **Gemma 4** (Google) — Comprehensive coverage from phones to workstations, most business-friendly license
-- **Qwen 3** (Alibaba) — Strongest overall capability, the all-rounder for multilingual and coding tasks
-- **DeepSeek V4** (DeepSeek AI) — Top-tier reasoning, the price disruptor
-
-Choosing a model is like choosing a tool — there's no "best hammer," only "the right hammer for your specific nail." Understanding each model's design philosophy and strength boundaries matters more than memorizing benchmark scores.
+The goal is more general than choosing among three model families. After reading this article, you should be able to inspect a new open model and infer what it is actually good for from its architecture table, rather than following leaderboard rankings blindly.
 
 ---
 
-## 1. Gemma 4 — Google's Open Hand
+## 1. A Coordinate System for Reading Models
 
-### 1.1 Design Philosophy: Full Coverage from Edge to Cloud
+An LLM's architectural personality is rarely determined by one metric. It usually emerges from five groups of trade-offs:
 
-Gemma 4 was released on March 31, 2026, under the Apache 2.0 license (unrestricted commercial use). Its core design goal: **make frontier AI capability available on every device**.
+| Dimension | Question to ask | What it affects |
+|-----------|-----------------|-----------------|
+| Parameter organization | Dense or MoE? How far apart are total and active parameters? | Knowledge capacity, inference cost, deployment barrier |
+| Attention | MHA, GQA, MLA, sparse attention, compressed attention? | Long-context cost, KV cache, throughput |
+| Long context | RoPE extrapolation, sliding window, compressed KV, or long-context training? | RAG, repository understanding, long-document tasks |
+| Multimodality | Separate encoder, lightweight embedder, or encoder-free? | Vision/audio latency, fine-tuning complexity |
+| Post-training | SFT, RLHF/RLAIF, thinking mode, agent data? | Instruction following, reasoning depth, tool use |
 
-What makes Gemma 4 unique is that it's not a single model but a product line covering different hardware tiers:
+Many model writeups only say "the score is high." In engineering, the more important question is: **what cost was paid to get that score?**
 
-| Model | Parameters | Active Params | Context Window | Target Hardware |
-|-------|-----------|---------------|----------------|-----------------|
-| Gemma 4 E2B | 2B | 2B | 128K | Phones, IoT |
-| Gemma 4 E4B | 4B | 4B | 128K | Edge devices, Raspberry Pi |
-| Gemma 4 26B MoE | 26B | 3.8B | 256K | Consumer GPUs |
-| Gemma 4 31B Dense | 31B | 31B | 256K | Workstations, servers |
+For example:
 
-#### Why This Matters
+- A 235B MoE model with 22B active parameters per token has compute closer to a 22B dense model, but memory still has to hold 235B parameters.
+- A 1M-context model with full KV cache will quickly explode in memory and bandwidth; it needs compressed or sparse attention.
+- An edge model cannot simply pile up parameters. It needs co-design across quantization, local attention, multimodal input paths, and inference runtime.
 
-Most open-source models only offer "large" versions — you need an H100 to run them. Gemma 4 E2B can do on-device inference on phones, enabling a whole new category of applications: **offline AI assistants, privacy-first local document analysis, intelligent tools for no-network environments**.
-
-The 26B MoE version is particularly clever: 26B total parameters but only 3.8B active per inference, so speed approximates a 4B model while capability approaches the 30B class. A consumer GPU (like RTX 4090) can run it smoothly.
-
-### 1.2 Performance
-
-Gemma 4 31B Dense on key benchmarks:
-
-| Benchmark | Gemma 4 31B | Comparison |
-|-----------|------------|------------|
-| MMLU Pro | **85.2%** | Close to GPT-5.4 Mini |
-| AIME 2026 | **89.2%** | Excellent math reasoning |
-| LiveCodeBench v6 | **~80%** | Solid coding ability |
-| Arena AI | #3 | Highest among open-source |
-
-### 1.3 Strengths & Weaknesses
-
-**Strengths:**
-- **Apache 2.0 license** — most permissive commercial license, no reporting or restrictions
-- **End-to-end coverage** — from 2B to 31B, one model family for all deployment scenarios
-- **Great local deployment ecosystem** — Ollama, LM Studio, MediaPipe, LiteRT all supported
-- **Multimodal** — supports text and image input; smaller models also support audio
-
-**Weaknesses:**
-- 31B Dense absolute capability still below Qwen 3.7 Max and DeepSeek V4 Pro
-- Agent tool-use capability less specialized than Qwen 3-Coder
-- Community fine-tune ecosystem less rich than Llama's
-
-### 1.4 When to Choose Gemma 4?
-
-- You need to run models **on phones/edge devices**
-- You need **Apache 2.0 commercial certainty**
-- You want **one model family from small to large**, unified tech stack
+That is why we compare Gemma, Qwen, and DeepSeek by architecture rather than by slogans.
 
 ---
 
-## 2. Qwen 3 — Alibaba's All-Arounder
+## 2. Gemma 4: Edge Models Are Not Just Smaller Models
 
-### 2.1 Design Philosophy: Push Frontier Capability into Open Source
+### 2.1 Why: Why Make Gemma Edge-First?
 
-The Qwen (Tongyi Qianwen) series is one of the strongest open-source model families globally in 2026. Unlike Gemma's "cover all scenarios" strategy, Qwen's philosophy is: **be the best open-source model in every lane**.
+Many open models assume you have one or more datacenter GPUs. Gemma starts from a different assumption: **the model should enter phones, laptops, browsers, edge devices, and local agents.**
 
-Qwen 3's model matrix is extremely rich:
+That creates two hard constraints:
 
-| Model | Type | Parameters | Context Window | Positioning |
-|-------|------|-----------|----------------|-------------|
-| Qwen 3.7 Max | MoE | Undisclosed | 1M | Strongest overall |
-| Qwen 3.7 Plus | MoE | Undisclosed | 1M | High value + vision |
-| Qwen 3-Coder 480B | MoE | 480B (A35B) | 256K | Coding-specialized |
-| Qwen 3 235B | MoE | 235B (A22B) | 128K | General flagship |
-| Qwen 3.5-397B | Dense | 397B | 128K | Research/deployment |
-| Qwen 3-30B-A3B | MoE | 30B (A3B) | 128K | Consumer GPU |
+1. **Small memory budget**: phones and ordinary laptops cannot afford huge weights plus huge long-context KV cache.
+2. **Latency matters more than peak capability**: edge apps often need immediate response and cannot send every request to the cloud.
 
-### 2.2 Capability Highlights
+So Gemma's central question is not "how large can the biggest model be?" It is "how much capability can we preserve under constrained hardware?"
 
-**Reasoning:** Qwen 3.7 Max scores 92.4% on GPQA Diamond, beating Claude Opus 4.6. On HMMT 2026 (math competition), it scores 97.1, surpassing DeepSeek V4 Pro.
+### 2.2 How: From Gemma 3 to Gemma 4
 
-**Coding:** Qwen 3-Coder-480B is specifically trained for agentic coding, reaching Claude Sonnet-level performance on code generation and debugging. If you're building an AI coding assistant, this is the strongest open-source option.
+Gemma 3 already showed this direction. It covered 1B, 4B, 12B, and 27B sizes, added vision understanding, supported at least 128K context, and reduced long-context KV-cache pressure by increasing the ratio of local to global attention layers and keeping local attention spans short.
 
-**Multilingual:** Qwen 3.5 covers 201 languages and dialects, far more than any other open-source model. If your application targets non-English markets, Qwen is virtually the only choice.
+Gemma 4 pushes further toward local agents. Official launch materials emphasize:
 
-### 2.3 Qwen's MoE Architecture In Depth
+- **Apache 2.0**: friendly for commercial use.
+- **Edge agents**: multi-step planning, offline code generation, visual/audio processing on device.
+- **Encoder-free multimodality in Gemma 4 12B**: traditional multimodal models often use separate vision/audio encoders before projecting features into the LLM. Gemma 4 12B feeds multimodal inputs more directly into a decoder-only backbone, reducing latency and memory fragmentation.
 
-Qwen 3 heavily uses Mixture-of-Experts (MoE) architecture. Taking Qwen 3 235B as an example:
+### 2.3 What: The Key Architectural Ideas
 
-- **Total parameters**: 235B
-- **Active parameters per inference**: 22B (~1/10)
-- **Number of experts**: 128
-- **Experts selected per token**: 8 (Top-8 routing)
+**1. Hybrid local + global attention**
 
-This means while the model has 235B of knowledge capacity, each inference only computes 22B worth of work — **inference speed equals a 22B dense model, but capability far exceeds it**.
+Gemma 3 uses a pattern similar to five local sliding-window attention layers followed by one global attention layer. Local layers see nearby tokens; global layers periodically integrate full-context information.
 
-The trade-off is VRAM: you need to hold all 235B parameters (~470GB FP16, or ~120GB in 4-bit quantization), but computation only requires 22B of processing power.
+Intuitively:
 
-### 2.4 Strengths & Weaknesses
+```text
+Local layers:  cheaply process nearby context
+Global layer:  occasionally synchronize global information
+```
 
-**Strengths:**
-- **Strongest overall capability** — top 3 open-source on virtually every benchmark
-- **Richest model variants** — from 3B to 480B, from general-purpose to coding-specific
-- **Apache 2.0 license** — commercially friendly
-- **1M context window** — matches closed-source flagships
-- **Unmatched multilingual coverage** — 201 languages
+This is similar to how humans read long documents: most reasoning happens locally within paragraphs, while occasional passes integrate the whole structure. The model gives up the freedom of full attention in every layer, but gains lower KV cache cost and more stable long-context behavior.
 
-**Weaknesses:**
-- Flagship models have high deployment barriers (235B needs ~4-8 A100s)
-- Too many model variants creates selection complexity
-- Documentation and developer experience less clear than Gemma and DeepSeek
+**2. GQA reduces KV cache**
 
-### 2.5 When to Choose Qwen 3?
+Grouped Query Attention lets multiple query-head groups share fewer key/value heads. This does not magically make the model smarter; it makes KV cache smaller and inference faster. For edge models, memory bandwidth often becomes the bottleneck before raw FLOPs do.
 
-- You need **the strongest open-source general reasoning**
-- Your application targets **multilingual markets**
-- You're building an **AI coding assistant** (choose Qwen 3-Coder)
-- You have GPU budget for large models
+**3. A shorter multimodal input path**
 
----
+Gemma 4 12B's encoder-free direction is important. Traditional VLMs often follow "image encoder -> projector -> LLM"; audio follows a similar path. Gemma 4 12B uses a lighter vision embedder and audio wave projection to map image patches and audio frames more directly into the LLM token space.
 
-## 3. DeepSeek V4 — The Reasoning King & Price Disruptor
+The benefit:
 
-### 3.1 Design Philosophy: Outperform Through Engineering Efficiency
+- lower latency;
+- less memory fragmentation on device;
+- easier LoRA or full fine-tuning because there are fewer large frozen encoders to coordinate.
 
-DeepSeek AI is a Chinese AI lab focused on open-source, renowned for "doing more with less compute." DeepSeek V4, released in April 2026, once again redefined the price-performance frontier.
+### 2.4 What Do We Learn?
 
-| Model | Parameters | Active Params | Context Window | Type |
-|-------|-----------|---------------|----------------|------|
-| DeepSeek V4 Pro | 1.6T | 49B | 1M | General MoE |
-| DeepSeek V4 Flash | Undisclosed | Undisclosed | 1M | Lightweight fast |
-| DeepSeek R1 | 671B | 37B | 128K | Reasoning-specialized |
+Gemma teaches a key lesson: **a small model is not just a shrunken large model. A good edge model is co-designed across attention, KV cache, multimodal inputs, quantization, and runtime.**
 
-### 3.2 Capability Highlights
+When a model claims to be edge-friendly, do not only look at parameter count. Ask:
 
-**Coding:** V4 Pro scores 80.6% on SWE-bench Verified, nearly matching Claude Opus 4.6 (80.8%). Considering it's 35-100x cheaper, this result is staggering.
-
-**Math Reasoning:** DeepSeek R1 scores 99.4% on AIME 2026, among the highest of any model including closed-source. It proves: **frontier reasoning capability doesn't necessarily require trillion parameters and astronomical compute**.
-
-**Pricing:** V4 Flash at $0.14/$0.28 per MTok — roughly 100x cheaper than GPT-5.5. If API cost is your product's core constraint, DeepSeek is almost a no-brainer.
-
-### 3.3 DeepSeek's Engineering Innovations
-
-DeepSeek's low prices don't come from cutting corners but from extreme engineering optimization:
-
-**1. Aggressive MoE Design**
-V4 Pro's 1.6T parameters with only 49B active (~3%) — this sparsity ratio is far higher than Qwen 3 235B's 9.4%. More aggressive sparsity means lower inference cost, but also makes training harder (routing instability, load balancing difficulty).
-
-**2. Multi-Token Prediction (MTP)**
-DeepSeek V4 uses MTP in both training and inference — the model predicts multiple tokens at once rather than one at a time. This dramatically increases inference throughput.
-
-**3. FP8 Training**
-DeepSeek was one of the first teams to use FP8 precision training at scale. Lower precision = less VRAM = lower training cost.
-
-### 3.4 Strengths & Weaknesses
-
-**Strengths:**
-- **Top-tier reasoning** — competition-grade math problem capability
-- **Lowest API pricing** — price-performance crushes all competitors
-- **MIT license** — most permissive open-source license
-- **OpenAI API-compatible** — zero migration cost
-- **Extremely detailed technical reports** — invaluable for researchers
-
-**Weaknesses:**
-- **No multimodal** — text-only, cannot process images
-- **No native embedding model** — RAG scenarios need a companion model
-- **1.6T parameter deployment barrier** — V4 Pro self-deployment needs ~16 H100s
-- **Higher latency** — real-time scenarios (chat, streaming) are slower than Gemini Flash
-
-### 3.5 When to Choose DeepSeek?
-
-- Your application is **extremely cost-sensitive**
-- You need **top-tier math/logic reasoning** (choose R1)
-- Your application is **text-only** (classification, summarization, code generation, Q&A)
-- You do **AI research** and need detailed technical reports and reproducible methods
+- How does it control KV cache?
+- Is attention global, local, or hybrid?
+- Does multimodality depend on heavy encoders?
+- Are real edge paths provided, such as LiteRT, MediaPipe, llama.cpp, or Ollama?
 
 ---
 
-## 4. Head-to-Head: How to Choose Among the Three?
+## 3. Qwen 3: The Point Is Not "Many Models," but a Unified Dense/MoE Design
+
+### 3.1 Why: Why Does Qwen Need So Many Models?
+
+Qwen follows a different path from Gemma. Gemma asks how to run on devices. Qwen asks how to cover as many capability boundaries as possible: general reasoning, coding, multilinguality, agents, long context, and different memory tiers.
+
+That is why Qwen 3 includes both dense and MoE models:
+
+- **Dense models**: simpler structure, easier deployment and fine-tuning, good for small and mid-sized deterministic deployments.
+- **MoE models**: larger total parameter capacity, but only part of the experts activate per token, improving capability per unit of compute.
+
+### 3.2 How: Qwen 3's Base Architecture
+
+The Qwen 3 technical report describes a familiar modern decoder-only architecture: GQA, SwiGLU, RoPE, RMSNorm, and pre-normalization.
+
+Two details matter:
+
+1. **QKV bias is removed, QK-Norm is introduced**  
+   QK-Norm stabilizes the scale of attention queries and keys, reducing the risk of exploding attention logits during large-scale training.
+
+2. **MoE and dense models share the same foundation**  
+   Qwen 3 MoE is not a separate architecture. It uses the same transformer backbone and replaces dense FFN blocks with multiple expert FFNs, then lets a router choose experts for each token.
+
+### 3.3 What: What Is Qwen 3 MoE Actually Doing?
+
+Take Qwen3-235B-A22B:
+
+| Metric | Value |
+|--------|-------|
+| Total parameters | 235B |
+| Active parameters per token | 22B |
+| Layers | 94 |
+| Attention heads | Q 64 / KV 4 |
+| Experts | 128 total / 8 activated |
+| Context | 128K |
+
+Three points matter.
+
+**1. MoE saves compute, not weight storage**
+
+235B-A22B means the model has 235B parameters in total, but each token activates about 22B. Matrix multiplication cost is closer to a 22B dense model, but memory still needs to hold 235B of weights.
+
+So MoE is excellent for cloud and multi-GPU serving. It does not automatically make a model easy to run on a single local GPU.
+
+**2. 128 experts, 8 selected per token**
+
+The router selects top-8 experts per token. Ideally, experts specialize into different capability regions: code, math, multilingual text, formatting, tool use, domain knowledge, and so on. But routing creates two problems:
+
+- if a few experts are selected too often, load becomes imbalanced;
+- if we force load balancing too aggressively, model quality can suffer.
+
+Qwen 3 uses global-batch load balancing loss to encourage expert specialization. This is not a free trick; it is a compromise between specialization and hardware load balance.
+
+**3. No shared experts**
+
+The Qwen 3 technical report notes that Qwen3-MoE removes the shared experts used in Qwen2.5-MoE. Shared experts usually provide a general fallback path. Removing them makes the model rely more strongly on routing token to the right experts. That can create cleaner specialization, but makes router training more important.
+
+### 3.4 Thinking / Non-Thinking: Inference Budget Control
+
+One important productized design in Qwen 3 is unified thinking and non-thinking modes. The underlying question is: **when should the same model answer quickly, and when should it spend more tokens reasoning?**
+
+This is not just a prompt trick. It is a way to control test-time compute:
+
+```text
+Simple question: fewer reasoning tokens -> lower latency, lower cost
+Hard question:   more reasoning tokens -> higher accuracy, higher cost
+```
+
+For developers, this is important because model selection is no longer only "which model?" It is also "how much reasoning budget should we allocate?"
+
+### 3.5 What Do We Learn?
+
+Qwen teaches that **MoE is not about making parameter count as large as possible. It is about the joint design of routing, expert granularity, load balancing, context length, and post-training.**
+
+When reading an MoE model card, ask:
+
+- What are the total and active parameters?
+- How many experts exist per layer, and how many are activated per token?
+- Are there shared experts?
+- Is load balancing done with auxiliary loss, global-batch loss, or another mechanism?
+- Is thinking mode only a prompt convention, or is it supported by training and serving?
+
+---
+
+## 4. DeepSeek V4: Making 1M Context Cheap Is the Real Architecture Problem
+
+### 4.1 Why: Why Did Long Context Become DeepSeek's Main Battlefield?
+
+For ordinary chat, 8K or 32K context is often enough. But agents, repository-level coding, enterprise knowledge bases, long-document analysis, and long-horizon tasks need much longer context. The issue is that transformer attention and KV cache are extremely sensitive to sequence length.
+
+When context grows from 128K to 1M, the hard part is not merely fitting tokens into the window. The hard parts are:
+
+- prefill becomes expensive;
+- every decode step has to access a huge historical KV cache;
+- KV cache consumes large amounts of memory;
+- multi-user serving turns cache scheduling and prefix reuse into system bottlenecks.
+
+DeepSeek V4 focuses on making **1M context not a demo feature, but a routinely serviceable capability.**
+
+### 4.2 How: From DeepSeek V3 to V4
+
+DeepSeek V3 established three foundations:
+
+- **DeepSeekMoE**: 671B total / 37B active, using sparse experts to reduce per-token compute.
+- **MLA (Multi-head Latent Attention)**: compresses key/value representation to reduce KV cache.
+- **MTP (Multi-Token Prediction)**: predicts multiple future tokens during training, strengthens the learning signal, and can support speculative decoding.
+
+DeepSeek V4 builds on that foundation. Its technical report introduces two models:
+
+| Model | Total parameters | Active parameters | Context |
+|-------|------------------|-------------------|---------|
+| DeepSeek-V4-Pro | 1.6T | 49B | 1M |
+| DeepSeek-V4-Flash | 284B | 13B | 1M |
+
+The major upgrades include:
+
+- **hybrid CSA + HCA attention**;
+- **mHC (Manifold-Constrained Hyper-Connections)**;
+- **Muon optimizer**;
+- lower precision for routed experts;
+- more sophisticated KV cache management and long-context serving systems.
+
+### 4.3 What: Why CSA + HCA Matters
+
+The DeepSeek V4 report describes two attention mechanisms:
+
+**CSA (Compressed Sparse Attention)**  
+First compress the KV cache of every m tokens into one entry, then let each query attend only to top-k compressed entries.
+
+```text
+long sequence -> compressed KV blocks -> sparse selection of relevant blocks -> attention
+```
+
+It does two things at once:
+
+- compresses sequence length;
+- avoids dense attention over every historical block.
+
+**HCA (Heavily Compressed Attention)**  
+Compresses much longer spans into a single KV entry, but keeps dense attention over those compressed entries. It provides a coarser global memory.
+
+The combination can be understood as:
+
+```text
+CSA: keep finer-grained retrievable history, but look only at relevant parts
+HCA: keep coarser global summaries of very long history
+```
+
+This is stronger than simple sliding-window attention because a pure sliding window discards far-away details. It is cheaper than full global attention because full attention is too expensive at 1M context.
+
+### 4.4 mHC: Why Upgrade Residual Connections?
+
+Transformer residual connections look ordinary, but when models become extremely deep, sparse, and large-scale, stable signal propagation across layers matters.
+
+DeepSeek V4 uses mHC to strengthen conventional residual connections. Roughly, instead of simply adding the previous layer output back, it mixes multiple state paths with constrained mappings. The report says the residual mapping is constrained to a manifold of doubly stochastic matrices, improving stability across layers.
+
+This reminds us that late-stage scaling innovations do not only happen in attention and MoE. They also happen in apparently small details such as connection structures and optimizers.
+
+### 4.5 Muon Optimizer: Training Efficiency Is Part of the Architecture
+
+DeepSeek V4 uses the Muon optimizer for most modules, while keeping AdamW for embeddings, prediction heads, RMSNorm, and several special parameters. The goal is faster convergence and better training stability.
+
+You do not need to memorize Muon's algorithm to get the lesson: **at trillion-scale MoE, optimizer choice, parallelism, checkpointing, kernels, and KV-cache storage are no longer mere engineering details. They determine whether the model can exist as a deployable system.**
+
+### 4.6 What Do We Learn?
+
+DeepSeek teaches that **long context is not a large number in the context-window field. It is a joint solution across attention, KV cache, sparse routing, low precision, and inference systems.**
+
+When a model advertises 1M context, ask:
+
+- Was it actually trained for long context?
+- Is attention dense, sparse, or compressed sparse?
+- How is KV cache compressed and stored?
+- What is the single-token decode cost at 1M?
+- Are long-context benchmarks synthetic retrieval tasks, or real document/code/agent tasks?
+
+---
+
+## 5. Putting the Three Paths Together
 
 ![Figure 1: Gemma 4 vs Qwen 3 vs DeepSeek V4 capability profiles](../zh/images/day47/triple-comparison.png)
-*Figure 1: Capability profiles of the three open-source families across dimensions. Shape matters more than area — each family has a unique "fingerprint."*
+*Figure 1: Capability profiles of the three open-source families. The important part is not which area is larger, but which architectural trade-offs create each shape.*
 
-| Dimension | Gemma 4 | Qwen 3 | DeepSeek V4 |
-|-----------|---------|--------|-------------|
-| General Reasoning | ★★★★☆ | ★★★★★ | ★★★★★ |
-| Coding Ability | ★★★★☆ | ★★★★★ (Coder) | ★★★★★ |
-| Multimodal | ★★★☆☆ (text+image) | ★★★★☆ (Plus variant) | ☆☆☆☆☆ (text only) |
-| Multilingual | ★★★☆☆ (140+) | ★★★★★ (201+) | ★★★☆☆ |
-| Edge Deployment | ★★★★★ (E2B/E4B) | ★★☆☆☆ | ★☆☆☆☆ |
-| API Cost | ★★★☆☆ | ★★★★☆ | ★★★★★ |
-| Commercial License | ★★★★★ (Apache 2.0) | ★★★★★ (Apache 2.0) | ★★★★★ (MIT) |
-| Community Ecosystem | ★★★★☆ | ★★★☆☆ | ★★★★☆ |
-
-### Quick Selection Guide
-
-| Your Scenario | First Choice | Reason |
-|--------------|-------------|--------|
-| Phone/edge local inference | **Gemma 4 E2B/E4B** | Only frontier model that runs smoothly on phones |
-| Strongest model on consumer GPU | **Gemma 4 26B MoE** | 3.8B active, runs on RTX 4090 |
-| Strongest open-source reasoning | **Qwen 3.7 Max** | GPQA 92.4%, highest in open-source |
-| AI coding assistant | **Qwen 3-Coder** | Purpose-built for agentic coding |
-| Massive low-cost API | **DeepSeek V4 Flash** | $0.14/MTok, unbeatable |
-| Math/science reasoning | **DeepSeek R1** | AIME 99.4%, near theoretical ceiling |
-| Multilingual app (non-English) | **Qwen 3.5** | 201 language coverage |
-| Commercial product (license certainty) | **Gemma 4 / DeepSeek** | Apache 2.0 / MIT, most permissive |
-| Need image understanding | **Qwen 3.7 Plus** | Most mature multimodal in open-source |
-
----
-
-## 5. Practical: How to Get Started?
-
-### 5.1 Local Deployment
-
-```bash
-# Gemma 4 — simplest local experience
-ollama run gemma4
-
-# Qwen 3 — consumer GPU-friendly version
-ollama run qwen3:30b-a3b
-
-# DeepSeek V4 — via API (self-deployment barrier too high)
-# Or use distilled R1
-ollama run deepseek-r1:70b
-```
-
-### 5.2 API Access
-
-All three model families offer official APIs or access through third-party platforms:
-
-| Platform | Gemma 4 | Qwen 3 | DeepSeek V4 |
+| Question | Gemma 4 | Qwen 3 | DeepSeek V4 |
 |----------|---------|--------|-------------|
-| Official API | Google AI Studio | Alibaba Cloud DashScope | DeepSeek Platform |
-| OpenRouter | ✅ | ✅ | ✅ |
-| Self-deploy | Ollama / vLLM | vLLM / SGLang | vLLM (requires many GPUs) |
+| Primary goal | Edge usability, local agents | Broad capability matrix | 1M context and reasoning efficiency |
+| Parameter path | Small/mid models + edge optimization | Dense + MoE matrix | Large MoE + high sparsity |
+| Attention focus | Local/global hybrid, GQA | GQA, QK-Norm, RoPE | CSA + HCA, compressed/sparse attention |
+| MoE focus | Lightweight MoE in some variants | 128 experts / top-8, global-batch balance | DeepSeekMoE, high total/active ratio |
+| Multimodal path | Edge vision/audio, 12B encoder-free | Vision in selected models, strong code/agent focus | Mostly text, reasoning, long context |
+| Best-fit scenarios | Phones, laptops, offline use, local privacy | Multilingual, coding, general agents | Long documents, repositories, low-cost reasoning, complex reasoning |
+| Main risk | Lower absolute ceiling | Variant complexity, deployment barrier | System complexity, latency and serving burden |
 
-### 5.3 Fine-tuning
+These are not simply stronger or weaker versions of one another. They answer different questions:
 
-```python
-# All three model families support LoRA/QLoRA fine-tuning
-# Recommended tools: Unsloth (most efficient), PEFT, Axolotl
-
-# Gemma 4 fine-tune example (Unsloth)
-from unsloth import FastModel
-model, tokenizer = FastModel.from_pretrained("google/gemma-4-31b")
-# ... standard fine-tune flow
-```
+- Gemma 4 asks: **can we bring agents onto the device?**
+- Qwen 3 asks: **can one model matrix cover the widest range of capability scenarios?**
+- DeepSeek V4 asks: **can ultra-long context and strong reasoning become cheap enough to use routinely?**
 
 ---
 
-## 6. Common Pitfalls
+## 6. Why Do Some Models Support Multimodality While Others Do Not?
 
-### ❌ "Open-source models are all about the same, just pick any"
+Multimodality is not as simple as attaching a camera to a text model. At minimum, it has to solve three problems:
 
-Far from it. Gemma 4 crushes the other two on edge deployment, Qwen 3-Coder crushes on coding, DeepSeek R1 crushes on math reasoning. Wrong selection can lead to 10x cost differences or massive capability gaps.
+1. **Input representation**: image patches, audio frames, and video frames must become token-like representations the LLM can process.
+2. **Cross-modal alignment**: the model must learn how visual/audio features correspond to language concepts, such as how a table in an image maps to rows and columns in text.
+3. **Inference cost**: images and audio introduce extra tokens or features, making long context, KV cache, and batching more expensive.
 
-### ❌ "DeepSeek is cheap because it's low quality"
+So whether a model family supports multimodality usually depends on its primary objective.
 
-No. DeepSeek's low price comes from aggressive MoE design, FP8 training, and multi-token prediction. V4 Pro's 80.6% on SWE-bench proves it's no "cheap substitute."
+**Gemma 4 has strong reasons to put multimodality on the core path**, because its goal is edge agents. Phones, browsers, and local assistants naturally need cameras, screenshots, audio, and screen understanding. If Gemma were text-only, it would be much less useful as an on-device agent. That is why it emphasizes lightweight vision/audio input paths and explores encoder-free or near-encoder-free designs that reduce latency and memory pressure on device.
 
-### ❌ "The biggest model is always the best"
+**Qwen 3 is "multimodal in selected variants, specialized in others."** Qwen's core idea is a model matrix rather than a single universal model. Some variants target vision-language tasks; others prioritize coding, agentic coding, math, multilinguality, or thinking modes. Vision requires extra data, encoders or embedders, alignment training, and evaluation. For a coding-agent model, spending training budget on repository data, tool-use traces, and code execution feedback can be more valuable than adding image input.
 
-Qwen 3-Coder 480B is strongest at coding, but Qwen 3-30B-A3B still delivers a great experience on consumer GPUs. **Deployment constraints (VRAM, latency, cost) are usually more important than benchmark scores**.
+**DeepSeek V4 is mostly focused on text, reasoning, and long context**, not because multimodality is unimportant, but because its main architecture problem is already heavy: 1M context, compressed/sparse attention, MoE routing, KV cache, and low-cost serving. Multimodal inputs would add more tokens and cache pressure, competing directly with the goal of making ultra-long text context cheap. For DeepSeek's path, solving text long context and reasoning cost first is more coherent than adding vision/audio at the same time.
+
+In short:
+
+| Model family | Why is multimodality designed this way? |
+|--------------|------------------------------------------|
+| Gemma 4 | Edge agents need vision, audio, and screen understanding, so multimodality is part of the core path |
+| Qwen 3 | The model matrix serves different tasks; vision is one branch, not a requirement for every variant |
+| DeepSeek V4 | The technical budget goes into text reasoning, 1M context, and low-cost serving; multimodality would add KV/cache and training complexity |
+
+The lesson is important: **lack of multimodality is not always a sign that a model is behind. Sometimes it means the architecture budget was deliberately spent on a different capability curve.**
 
 ---
 
-## 7. Further Reading
+## 7. Practical Selection: Start from Constraints, Not Leaderboards
 
-### Technical Reports
-1. [Gemma 4 Model Card](https://ai.google.dev/gemma/docs/core/model_card_4) — Official model card and evaluation details
-2. [Qwen 3 Technical Report](https://arxiv.org/abs/2503.09965) — Architecture and training methodology
-3. [DeepSeek V4 Technical Report](https://arxiv.org/abs/2502.04872) — Engineering breakthroughs in trillion-scale MoE
-4. [DeepSeek R1 Paper](https://arxiv.org/abs/2501.12948) — Low-cost training of reasoning models
+### 7.1 If You Are Building a Local App
 
-### Model Comparisons
-1. [Artificial Analysis — Open Model Leaderboard](https://artificialanalysis.ai/) — Real-time open-source rankings
-2. [Hugging Face Open LLM Leaderboard](https://huggingface.co/spaces/open-llm-leaderboard/open_llm_leaderboard)
-3. [OpenCompass](https://opencompass.org.cn/) — Comprehensive evaluation maintained by the Chinese community
+Start with Gemma.
+
+Not because it is always strongest, but because its system assumptions match yours: edge runtime, quantization, low latency, multimodal input, and local API serving matter more than raw leaderboard scores.
+
+Good fits:
+
+- local writing assistants;
+- offline meeting notes;
+- mobile visual Q&A;
+- privacy-sensitive personal knowledge bases;
+- local coding or data-analysis tools.
+
+### 7.2 If You Are Building a General AI Product
+
+Start with Qwen.
+
+Its strength is the completeness of the model matrix: small dense models, large MoE models, general models, coder models, non-thinking and thinking modes. You can start with smaller prototypes and move up the matrix without locking yourself into one isolated model.
+
+Good fits:
+
+- multilingual customer support;
+- coding assistants;
+- enterprise internal agents;
+- industry models that need fine-tuning;
+- products that need controlled cost today and an upgrade path later.
+
+### 7.3 If You Need Long Context and Heavy Reasoning
+
+Start with DeepSeek.
+
+Especially for:
+
+- repository-level understanding;
+- large PDF / contract / research-report analysis;
+- long-horizon agent tasks;
+- cost-sensitive API workloads;
+- math, science, and engineering reasoning.
+
+DeepSeek's core value is not simply being cheap. Its cost advantage is architectural: MoE sparsity, KV compression, long-context attention, low-precision training/inference, and serving systems work together.
+
+---
+
+## 8. Common Misconceptions
+
+### Misconception 1: "MoE is always cheaper"
+
+MoE saves per-token compute, not necessarily memory. Large total parameters still require large weight storage. Expert parallelism can also introduce communication overhead.
+
+### Misconception 2: "1M context means the model can read 1M well"
+
+Not necessarily. Long-context ability has at least three layers:
+
+- training and positional encoding support;
+- attention and KV cache efficiency;
+- real ability to retrieve, summarize, and reason over long documents.
+
+Many models can fit long input, but cannot use long input reliably.
+
+### Misconception 3: "Edge models are just weak models"
+
+Edge models optimize a different objective: privacy, low latency, offline use, low cost, and embeddability. For many real products, those constraints matter more than a 2-3 point benchmark difference.
+
+### Misconception 4: "Open models only copy closed models"
+
+That is no longer true. Gemma pushes local agents, Qwen pushes open MoE matrices and agentic coding, and DeepSeek pushes long-context efficiency and sparse systems engineering. Open models are not merely cheaper substitutes; in several engineering directions, they are driving the frontier.
+
+---
+
+## 9. Further Reading
+
+### Official Materials and Technical Reports
+
+1. [Gemma 4 launch: Bring state-of-the-art agentic skills to the edge](https://developers.googleblog.com/bring-state-of-the-art-agentic-skills-to-the-edge-with-gemma-4/)
+2. [Gemma 4 12B: The Developer Guide](https://developers.googleblog.com/gemma-4-12b-the-developer-guide/)
+3. [Gemma 3 Technical Report](https://arxiv.org/abs/2503.19786)
+4. [Qwen3 Technical Report](https://arxiv.org/abs/2505.09388)
+5. [Qwen3: Think Deeper, Act Faster](https://qwenlm.github.io/blog/qwen3/)
+6. [Qwen3-Coder: Agentic Coding in the World](https://qwenlm.github.io/blog/qwen3-coder/)
+7. [DeepSeek V4 Preview Release](https://api-docs.deepseek.com/news/news260424)
+8. [DeepSeek-V4 Technical Report](https://huggingface.co/deepseek-ai/DeepSeek-V4-Pro/blob/main/DeepSeek_V4.pdf)
+9. [DeepSeek-V3 Technical Report](https://arxiv.org/abs/2412.19437)
 
 ---
 
 ## Reflection Questions
 
-1. If you could only pick one open-source model as your primary for the next year, would you choose Gemma 4, Qwen 3, or DeepSeek V4? Why?
-2. DeepSeek V4 Pro and Claude Opus 4.6 are nearly identical on SWE-bench (80.6% vs 80.8%), but differ 35-100x in price. When is this price difference justified?
-3. Why can Gemma 4 run on phones while Qwen and DeepSeek can't? Analyze from an architecture design perspective.
+1. If you are choosing a model for a local knowledge base, why might maximum parameter count be the wrong first metric?
+2. Qwen3-235B-A22B activates only 22B parameters per token. Why is it still not a good fit for an ordinary single consumer GPU?
+3. DeepSeek V4's CSA + HCA and Gemma's local/global attention both reduce long-context cost. What does each approach sacrifice, and what does it preserve?
+4. If future models all support thinking mode, should products price by input/output tokens, or by reasoning effort?
 
 ---
 
 ## Summary
 
-| Model Family | One-liner | Strongest Dimension | Weakest Dimension |
-|-------------|-----------|--------------------|-------------------|
-| Gemma 4 | Open AI from pocket to data center | Edge deployment, commercial license | Absolute reasoning power |
-| Qwen 3 | The open-source all-rounder | General reasoning, coding, multilingual | High deployment barrier, complex variants |
-| DeepSeek V4 | Reasoning peak + price slasher | Math reasoning, API cost | Multimodal, latency |
+| Model family | One-line positioning | The real architectural lesson |
+|--------------|----------------------|-------------------------------|
+| Gemma 4 | Edge-agent path | Edge capability comes from joint design across KV cache, local attention, multimodal input paths, and runtime |
+| Qwen 3 | Open capability-matrix path | MoE is about total/active params, routing, expert granularity, load balancing, and reasoning budget |
+| DeepSeek V4 | Long-context efficiency path | 1M context requires compressed/sparse attention, KV-cache engineering, low precision, and training-system co-design |
 
-**Key takeaway**: Top open-source models in 2026 are no longer "cheap alternatives" to closed-source — each is the globally strongest in specific dimensions, including against closed-source models. Understanding each model's design philosophy and strength boundaries is the key to making the right technical selection. Choosing a model isn't about picking the highest rank — it's about picking the best fit for your engineering constraints.
+**Key takeaway**: The difference among top open models is no longer only "which benchmark is higher." Gemma, Qwen, and DeepSeek represent three paths: edge deployment, capability matrices, and long-context efficiency. The real learning value is understanding how LLM capability is always negotiated among compute, memory, latency, data, training stability, and serving systems.
 
 ---
 
 *Day 47 of 60 | LLM Fundamentals*
-*Word count: ~3500 | Reading time: ~18 minutes*
+*Word count: ~3300 | Reading time: ~18 minutes*
