@@ -354,6 +354,9 @@ When reading an MoE model card, ask:
 
 ## 4. DeepSeek V4: Making 1M Context Cheap Is the Real Architecture Problem
 
+![Figure 4: DeepSeek V4 long-context architecture](../zh/images/day47/deepseek-architecture.png)
+*Figure 4: DeepSeek V4's core design: three-level hybrid attention, mHC, Muon optimizer, and the MoE / MLA / MTP foundation inherited from V3.*
+
 ### 4.1 Why: Why Did Long Context Become DeepSeek's Main Battlefield?
 
 For ordinary chat, 8K or 32K context is often enough. But agents, repository-level coding, enterprise knowledge bases, long-document analysis, and long-horizon tasks need much longer context. The issue is that transformer attention and KV cache are extremely sensitive to sequence length.

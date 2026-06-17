@@ -356,6 +356,9 @@ Qwen 告诉我们：**MoE 的核心不是参数越大越好，而是 router、�
 
 ## 4. DeepSeek V4：把 1M context 做便宜，才是真正的架构问题
 
+![图 4：DeepSeek V4 长上下文架构图](./images/day47/deepseek-architecture.png)
+*图 4：DeepSeek V4 的核心设计：三级混合 attention、mHC、Muon optimizer，以及来自 V3 的 MoE / MLA / MTP 基础。*
+
 ### 4.1 Why：为什么长上下文会变成 DeepSeek 的主战场？
 
 普通聊天 8K、32K 已经够用，但 agent、代码仓库理解、企业知识库、长文档分析、长期任务执行需要更长上下文。问题是：Transformer 的 attention 和 KV cache 对长上下文非常敏感。
