@@ -143,6 +143,16 @@ Gemma 告诉我们：**小模型不是大模型的缩水版。真正好的端侧
 - 多模态是否依赖笨重 encoder？
 - 官方是否提供 LiteRT、MediaPipe、llama.cpp、Ollama 等真实端侧路径？
 
+> **LiteRT、MediaPipe 是什么？**
+>
+> **LiteRT**（原名 TensorFlow Lite / TFLite，2024 年改名）是 Google 的设备端推理运行时，专为手机、平板、IoT 设备设计。它把模型转换成 .tflite 格式，通过 CPU/GPU/NPU Delegate 执行推理，支持 INT8/INT4 量化。Gemma 4 E2B/E4B 官方提供 LiteRT 部署路径，可以在手机上用 NPU 加速。
+>
+> **MediaPipe** 是 Google 的跨平台 ML pipeline 框架——不只是推理引擎，更像是「把模型串成应用」的工具。比如你要做「拍照 → 人脸检测 → 表情识别 → 输出」，MediaPipe 帮你把多个模型串联起来，处理相机输入、预处理、后处理。2024 年开始集成 LLM 推理能力（MediaPipe LLM Inference API），支持 Gemma 等小模型在手机端运行。
+>
+> 简单类比：**LiteRT ≈ 端侧的 vLLM/SGLang**（负责高效跑模型），**MediaPipe ≈ 端侧的 LangChain**（负责把模型、输入输出、预处理后处理串成完整应用）。MediaPipe 底层可以用 LiteRT 作为推理后端。
+>
+> 文章里提到它们是因为 Gemma 4 不只是「小」，还配套了完整的端侧部署工具链——模型再小，没有好的 runtime 和 pipeline 工具也跑不起来。
+
 ---
 
 ## 3. Qwen 3：能力矩阵的核心不是“模型多”，而是 dense/MoE 统一设计
@@ -153,10 +163,13 @@ Qwen 的路线和 Gemma 不一样。Gemma 先问“怎样在设备上跑”，Qw
 
 这就是 Qwen 3 同时发布 dense 和 MoE 的原因：
 
-- **Dense 模型**：结构简单，部署和 fine-tuning 更直接，适合中小规模和确定性部署。
+- **Dense 模型**：结构简单，部署和 fine-tuning 更直接，适合中小规模和确定性部署。所谓「简单」是相对于 MoE 而言的——每个 token 都经过所有参数的计算，没有 router、没有专家选择，线性地跑完每一层。这意味着：部署时不用考虑 router kernel 和 expert-parallel；fine-tuning 时梯度直接回传到所有权重，不需要额外的 auxiliary loss 约束 router；显存和 FLOPs 固定可预测；vLLM、llama.cpp、Ollama 等框架对 dense 模型的支持也更成熟。少一个复杂度维度就意味着 fewer bugs、faster iteration。
 - **MoE 模型**：用更大的总参数承载知识容量，但每 token 只激活一部分专家，适合追求更高能力/成本比。
 
 ### 3.2 How：Qwen 3 的基础结构
+
+![图 3：Qwen 3 Transformer Block 架构——Dense 与 MoE 的统一设计](./images/day47/qwen-architecture.png)
+*图 3：同一个 transformer 结构，FFN 部分可以选择 Dense（全部参数参与计算）或 MoE（router 只选 top-8 个专家）。这就是 Qwen 3「一套架构两种模型」的核心设计。*
 
 Qwen 3 技术报告给出的 dense 架构并不神秘：GQA、SwiGLU、RoPE、RMSNorm、pre-normalization。这些已经是现代 decoder-only LLM 的主流配置。
 

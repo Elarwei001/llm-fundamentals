@@ -143,6 +143,16 @@ When a model claims to be edge-friendly, do not only look at parameter count. As
 - Does multimodality depend on heavy encoders?
 - Are real edge paths provided, such as LiteRT, MediaPipe, llama.cpp, or Ollama?
 
+> **What are LiteRT and MediaPipe?**
+>
+> **LiteRT** (formerly TensorFlow Lite / TFLite, renamed in 2024) is Google's on-device inference runtime, designed for phones, tablets, and IoT devices. It converts models to .tflite format and executes inference via CPU/GPU/NPU Delegates, with INT8/INT4 quantization support. Gemma 4 E2B/E4B officially provide LiteRT deployment paths for NPU-accelerated inference on phones.
+>
+> **MediaPipe** is Google's cross-platform ML pipeline framework — not just an inference engine, but a tool for "stringing models into applications." For example, if you want to build a "photo → face detection → expression recognition → output" pipeline, MediaPipe helps you chain multiple models together, handling camera input, preprocessing, and postprocessing. In 2024 it integrated LLM inference capabilities (MediaPipe LLM Inference API), supporting Gemma and other small models on phones.
+>
+> Simple analogy: **LiteRT ≈ on-device vLLM/SGLang** (efficiently runs models), **MediaPipe ≈ on-device LangChain** (chains models with I/O, preprocessing, and postprocessing into complete applications). MediaPipe can use LiteRT as its inference backend.
+>
+> These are mentioned because Gemma 4 is not just "small" — it comes with a complete edge deployment toolchain. A model, no matter how small, cannot run well without good runtime and pipeline tooling.
+
 ---
 
 ## 3. Qwen 3: The Point Is Not "Many Models," but a Unified Dense/MoE Design
@@ -153,10 +163,13 @@ Qwen follows a different path from Gemma. Gemma asks how to run on devices. Qwen
 
 That is why Qwen 3 includes both dense and MoE models:
 
-- **Dense models**: simpler structure, easier deployment and fine-tuning, good for small and mid-sized deterministic deployments.
+- **Dense models**: simpler structure, easier deployment and fine-tuning, good for small and mid-sized deterministic deployments. "Simpler" here is relative to MoE — every token passes through all parameters, with no router, no expert selection, just linearly running through each layer. This means: no need for router kernels or expert-parallelism during deployment; gradients flow directly to all weights during fine-tuning without auxiliary losses to constrain routing; VRAM and FLOPs are fixed and predictable; and frameworks like vLLM, llama.cpp, and Ollama have more mature support for dense models. Fewer complexity dimensions means fewer bugs and faster iteration.
 - **MoE models**: larger total parameter capacity, but only part of the experts activate per token, improving capability per unit of compute.
 
 ### 3.2 How: Qwen 3's Base Architecture
+
+![Figure 3: Qwen 3 Transformer Block — unified Dense and MoE design](../zh/images/day47/qwen-architecture.png)
+*Figure 3: The same transformer structure, where the FFN can be either Dense (all params computed) or MoE (router selects top-8 experts). This is the core of Qwen 3's "one architecture, two model types" design.*
 
 The Qwen 3 technical report describes a familiar modern decoder-only architecture: GQA, SwiGLU, RoPE, RMSNorm, and pre-normalization.
 
