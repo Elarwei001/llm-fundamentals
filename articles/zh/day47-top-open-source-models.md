@@ -161,10 +161,48 @@ Gemma 告诉我们：**小模型不是大模型的缩水版。真正好的端侧
 
 Qwen 的路线和 Gemma 不一样。Gemma 先问“怎样在设备上跑”，Qwen 先问“怎样覆盖尽可能多的能力边界”：通用推理、代码、多语言、agent、长上下文、不同显存档位。
 
-这就是 Qwen 3 同时发布 dense 和 MoE 的原因：
+这就是 Qwen 3 同时发布 dense 和 MoE 的原因。但「dense」和「MoE」到底差在哪？这不只是参数量的问题——它影响部署、fine-tuning、显存、框架兼容性的每一个环节。
 
-- **Dense 模型**：结构简单，部署和 fine-tuning 更直接，适合中小规模和确定性部署。所谓「简单」是相对于 MoE 而言的——每个 token 都经过所有参数的计算，没有 router、没有专家选择，线性地跑完每一层。这意味着：部署时不用考虑 router kernel 和 expert-parallel；fine-tuning 时梯度直接回传到所有权重，不需要额外的 auxiliary loss 约束 router；显存和 FLOPs 固定可预测；vLLM、llama.cpp、Ollama 等框架对 dense 模型的支持也更成熟。少一个复杂度维度就意味着 fewer bugs、faster iteration。
-- **MoE 模型**：用更大的总参数承载知识容量，但每 token 只激活一部分专家，适合追求更高能力/成本比。
+#### Dense vs MoE：不只是参数量的区别
+
+**Dense 模型的计算路径：**
+
+每个 token 都经过**所有参数**的计算。一个 397B 的 dense 模型，每次推理都要跑完全部 397B 参数的前向传播——所有 transformer 层、所有 attention heads、所有 FFN 权重，一个不少。
+
+```text
+输入 token → [Layer 1 (全部权重)] → [Layer 2 (全部权重)] → ... → [Layer N (全部权重)] → 输出
+```
+
+**MoE 模型的计算路径：**
+
+每个 token 只经过**一小部分参数**。一个 235B 的 MoE 模型，每个 token 只激活 22B——router 先决定「这个 token 该发给哪些专家」，然后只有被选中的专家参与计算。
+
+```text
+输入 token → Router 选 8/128 个专家 → [Layer 1: 只跑选中的专家] → ... → 输出
+```
+
+从这四条线理解差异：
+
+**1. 部署不用考虑 router**
+
+MoE 推理时，框架需要管理 128 个专家的权重全部驻留在显存里，还要处理动态路由——每个 token 的计算路径不同，GPU kernel 要做条件分支或 scatter/gather。Dense 模型没有 router，没有专家选择，就是线性地跑完每一层，部署逻辑简单很多。
+
+**2. Fine-tuning 更稳定**
+
+Dense 模型做 LoRA/full fine-tuning 时，梯度直接回传到所有权重，优化目标清晰。MoE fine-tuning 时，router 的决策会随训练变化——某个专家突然被选更多/更少，导致负载不均衡、训练不稳定。你需要额外的 auxiliary loss 来约束 router，调参更麻烦。
+
+**3. 显存计算更可预测**
+
+Dense 模型的显存 = 模型权重 + KV cache，推理 FLOPs 固定不变。MoE 模型虽然每次激活少，但**全部专家权重都要驻留在显存**，而且不同 batch 里每个专家被选中的频率不同，计算时间和显存使用模式更难预测。
+
+**4. 框架兼容性更好**
+
+vLLM、SGLang、llama.cpp、Ollama 这些框架对 dense 模型的支持都非常成熟。MoE 需要额外的 expert-parallel、router kernel 支持，不同框架的 MoE 优化程度差异很大。
+
+一句话总结：**Dense 简单不是因为它「低级」，而是因为它没有 routing 这个额外的复杂度维度。** 对于要做 fine-tuning 或自部署的团队来说，少一个复杂度维度就意味着 fewer bugs、faster iteration。
+
+- **Dense 模型**适合：中小规模部署、确定性推理、需要 fine-tuning 的场景、框架兼容性要求高。
+- **MoE 模型**适合：追求更高能力/成本比、云端多 GPU 服务、大规模推理场景。
 
 ### 3.2 How：Qwen 3 的基础结构
 

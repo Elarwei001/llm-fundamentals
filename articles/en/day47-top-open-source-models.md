@@ -161,10 +161,48 @@ When a model claims to be edge-friendly, do not only look at parameter count. As
 
 Qwen follows a different path from Gemma. Gemma asks how to run on devices. Qwen asks how to cover as many capability boundaries as possible: general reasoning, coding, multilinguality, agents, long context, and different memory tiers.
 
-That is why Qwen 3 includes both dense and MoE models:
+That is why Qwen 3 includes both dense and MoE models. But what exactly is the difference between "dense" and "MoE"? It is not just about parameter count — it affects deployment, fine-tuning, VRAM, and framework compatibility at every level.
 
-- **Dense models**: simpler structure, easier deployment and fine-tuning, good for small and mid-sized deterministic deployments. "Simpler" here is relative to MoE — every token passes through all parameters, with no router, no expert selection, just linearly running through each layer. This means: no need for router kernels or expert-parallelism during deployment; gradients flow directly to all weights during fine-tuning without auxiliary losses to constrain routing; VRAM and FLOPs are fixed and predictable; and frameworks like vLLM, llama.cpp, and Ollama have more mature support for dense models. Fewer complexity dimensions means fewer bugs and faster iteration.
-- **MoE models**: larger total parameter capacity, but only part of the experts activate per token, improving capability per unit of compute.
+#### Dense vs MoE: More Than Just Parameter Count
+
+**Dense model computation path:**
+
+Every token passes through **all parameters**. A 397B dense model runs the full 397B parameters in every forward pass — all transformer layers, all attention heads, all FFN weights, nothing skipped.
+
+```text
+Input token → [Layer 1 (all weights)] → [Layer 2 (all weights)] → ... → [Layer N (all weights)] → Output
+```
+
+**MoE model computation path:**
+
+Every token passes through only **a small fraction of parameters**. A 235B MoE model activates only 22B per token — the router first decides "which experts should handle this token," and only the selected experts participate.
+
+```text
+Input token → Router picks 8 of 128 experts → [Layer 1: only selected experts run] → ... → Output
+```
+
+Understand the difference across four dimensions:
+
+**1. No router to worry about for deployment**
+
+During MoE inference, the framework must keep all 128 experts' weights in VRAM and handle dynamic routing — every token takes a different computation path, requiring GPU kernels with conditional branching or scatter/gather. Dense models have no router, no expert selection — they simply run through each layer linearly, making deployment logic much simpler.
+
+**2. More stable fine-tuning**
+
+When fine-tuning a dense model with LoRA or full fine-tuning, gradients flow directly back to all weights, with a clear optimization target. With MoE fine-tuning, router decisions shift during training — an expert may suddenly be selected more or less often, causing load imbalance and training instability. You need additional auxiliary losses to constrain the router, making hyperparameter tuning harder.
+
+**3. More predictable VRAM and compute**
+
+Dense model VRAM = model weights + KV cache, and inference FLOPs are fixed. MoE models, while activating fewer parameters per token, must keep **all expert weights resident in VRAM**, and different batches hit different experts at different frequencies, making computation time and memory usage patterns harder to predict.
+
+**4. Better framework compatibility**
+
+vLLM, SGLang, llama.cpp, and Ollama have mature support for dense models. MoE requires extra expert-parallel and router kernel support, and different frameworks optimize MoE to varying degrees.
+
+In one sentence: **Dense is simpler not because it is "less advanced," but because it lacks the extra complexity dimension of routing.** For teams doing fine-tuning or self-deployment, one fewer complexity dimension means fewer bugs and faster iteration.
+
+- **Dense models** suit: small-to-mid-scale deployment, deterministic inference, scenarios requiring fine-tuning, high framework compatibility requirements.
+- **MoE models** suit: pursuing higher capability/cost ratios, cloud multi-GPU serving, large-scale inference scenarios.
 
 ### 3.2 How: Qwen 3's Base Architecture
 
