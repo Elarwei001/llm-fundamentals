@@ -99,11 +99,38 @@ GQA 则把 32 个 query heads 分成若干组（比如 8 组），每组 4 个 q
 
 **3. 多模态输入路径变短**
 
-Gemma 4 12B 的 encoder-free 方向值得注意：传统 VLM 需要“图像 encoder -> projector -> LLM”，音频也类似。Gemma 4 12B 用更轻的视觉 embedder 和音频 wave projection，把图像 patch / 音频帧更直接地变成 LLM token 空间中的输入。这样做的优势是：
+Gemma 4 12B 的 encoder-free 方向值得注意。要理解为什么这条路能省这么多，先看传统 VLM 的输入路径：
 
-- 延迟更低；
-- 端侧内存碎片更少；
-- LoRA 或 full fine-tuning 时，不需要同时协调多个大型 frozen encoder。
+```text
+传统 VLM：图像 → Vision Encoder (ViT/SigLIP，几百M~1B参数) → Projector (MLP/Q-Former) → LLM token 空间
+```
+
+Vision Encoder 是一个完整的独立 Transformer，专门用来「看图」。它把像素变成一组特征向量，然后 Projector 再把这些向量对齐到 LLM 能理解的 embedding 空间。两个大模块，路径很长。
+
+Gemma 4 12B 换了一个思路：它不是用一个完整的 ViT，而是用一个**轻量的 patch embedding 层**——把图像切成小块（patch），每个 patch 用一个很浅的 CNN 或线性层映射成一组向量，然后直接喂进 LLM。没有几百 M 的独立 vision transformer，没有额外的 projector 对齐阶段。音频也类似：传统做法是音频 → Mel 频谱图 → 独立音频 encoder → projector → LLM，而 Gemma 4 直接把音频波形分成短帧，用轻量投影层映射成 token。
+
+**这为什么能行？** 关键在于 LLM 本身就有足够的容量来处理这些输入，前提是输入对齐到 token 空间。传统 VLM 用重型 encoder 是因为早期 LLM 不够强，需要 encoder 先「提炼」好视觉/音频特征。但当你有 12B 级别的 LLM 时，它自己就能学会处理这些浅层 embedding。
+
+**但这意味着训练必须端到端。** 训练时，图像被切成 patch，每个 patch 经过轻量 embedder 变成一个向量，和文本 token embedding 拼在同一个序列里。模型用标准 next-token prediction 来训练——它必须自己学会理解这些 patch 向量的含义，否则 loss 降不下来。经过足够多的图文对照训练后，LLM 的 attention 层自然学会了「这个 patch 向量代表红色像素块」「这组 patch 组合起来是一只猫」。
+
+这和传统 VLM 有本质区别：传统 VLM 里，Vision Encoder 是预训练好的，它已经知道怎么把像素变成有意义的特征，Projector 再把这些特征「翻译」给 LLM。LLM 本身从来没见过原始像素，它只见到翻译好的高级特征。Encoder-free 的代价就是需要海量的图文/音频-文本对照训练数据，因为 LLM 要从零学会视觉理解，而不是站在 ViT 的肩膀上。但好处是一旦学会，推理时就不再需要那个独立的 encoder 了。
+
+**端侧内存碎片为什么也减少了？** 传统多模态路径里，端侧要同时跑好几个大模块，它们的内存形态很不一样：
+
+```text
+图像 → Vision Encoder → Projector → LLM
+音频 → Audio Encoder → Projector → LLM
+```
+
+这会带来三类碎片问题：
+
+1. **模块多，生命周期不同** — Vision encoder、audio encoder、projector、LLM 各自有自己的权重、activation、temporary buffers。有的只在前处理阶段用，有的在整个生成阶段持续用。端侧内存分配器要不断申请、释放不同大小的块，久了留下很多不连续的小洞。
+2. **buffer 尺寸差异大** — Vision encoder 里是 patch feature、attention map、hidden states；音频 encoder 里是频谱或帧级特征；LLM 里是 token embedding 和 KV cache。这些张量大小、形状、对齐要求都不同，内存 planner 很难提前规划复用。
+3. **多个 runtime 之间难复用** — 如果 vision encoder、audio encoder 和 LLM 用的是不同算子路径，端侧 GPU/NPU/CPU 混合执行时还涉及跨设备拷贝和临时 staging buffer。
+
+而轻量 embedder + wave projection 把输入更早地统一成 `image patches / audio frames → LLM token embeddings → LLM 主干`，前端不再保留大型独立 encoder 的完整中间激活，后面都进入同一个 LLM 内存模式。内存分配更集中、更可预测，buffer 复用更容易。**不是 projection 本身神奇地「整理内存」，而是它减少了独立大模块和异构中间张量，让推理过程更像单一 LLM pipeline。**
+
+除了延迟和内存，还有第三个好处：LoRA 或 full fine-tuning 时，不需要同时协调多个大型 frozen encoder。
 
 ### 2.4 学到什么？
 

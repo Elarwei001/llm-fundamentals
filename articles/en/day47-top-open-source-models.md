@@ -99,13 +99,38 @@ This works because different attention heads learn K/V representations with sign
 
 **3. A shorter multimodal input path**
 
-Gemma 4 12B's encoder-free direction is important. Traditional VLMs often follow "image encoder -> projector -> LLM"; audio follows a similar path. Gemma 4 12B uses a lighter vision embedder and audio wave projection to map image patches and audio frames more directly into the LLM token space.
+Gemma 4 12B's encoder-free direction is important. To understand why this saves so much, first look at the traditional VLM input path:
 
-The benefit:
+```text
+Traditional VLM: Image → Vision Encoder (ViT/SigLIP, hundreds of millions to 1B params) → Projector (MLP/Q-Former) → LLM token space
+```
 
-- lower latency;
-- less memory fragmentation on device;
-- easier LoRA or full fine-tuning because there are fewer large frozen encoders to coordinate.
+The Vision Encoder is a complete independent Transformer designed to "see" images. It converts pixels into feature vectors, and then the Projector aligns those vectors into the LLM's embedding space. Two large modules, a long path.
+
+Gemma 4 12B takes a different approach: instead of a full ViT, it uses a **lightweight patch embedding layer** — the image is sliced into patches, each patch is mapped to a vector by a shallow CNN or linear layer, and the result is fed directly into the LLM. No hundreds-of-millions-parameter vision transformer, no separate projector alignment step. Audio works similarly: instead of audio → Mel spectrogram → independent audio encoder → projector → LLM, Gemma 4 splits the audio waveform into short frames and maps them to tokens via a lightweight projection layer.
+
+**Why does this work?** The key insight is that the LLM itself has enough capacity to process these inputs, provided they are aligned to the token space. Traditional VLMs used heavy encoders because early LLMs were not strong enough — they needed the encoder to first "refine" visual/audio features. But when you have a 12B-class LLM, it can learn to handle these shallow embeddings on its own.
+
+**But this means training must be end-to-end.** During training, images are sliced into patches, each patch passes through the lightweight embedder to become a vector, and these vectors are concatenated with text token embeddings in the same sequence. The model is trained with standard next-token prediction — it must learn to understand these patch vectors, or the loss will not go down. After enough image-text paired training, the LLM's attention layers naturally learn "this patch vector represents a red pixel block" or "this combination of patches is a cat."
+
+This is fundamentally different from traditional VLMs: there, the Vision Encoder is pre-trained and already knows how to convert pixels into meaningful features. The Projector then "translates" these features for the LLM. The LLM itself never sees raw pixels — it only sees pre-translated high-level features. The cost of going encoder-free is that you need massive amounts of image-text and audio-text paired training data, because the LLM must learn visual understanding from scratch rather than standing on the shoulders of a ViT. But the benefit is that once learned, you no longer need that independent encoder at inference time.
+
+**Why does this also reduce memory fragmentation on edge devices?** In the traditional multimodal path, the device must simultaneously run several large modules with very different memory characteristics:
+
+```text
+Image → Vision Encoder → Projector → LLM
+Audio → Audio Encoder → Projector → LLM
+```
+
+This causes three types of fragmentation:
+
+1. **Many modules with different lifetimes** — Vision encoder, audio encoder, projector, and LLM each have their own weights, activations, and temporary buffers. Some are only used during pre-processing, others throughout generation. The edge memory allocator must constantly allocate and free blocks of different sizes, leaving many non-contiguous gaps over time.
+2. **Large buffer size variance** — Vision encoder produces patch features, attention maps, and hidden states; audio encoder produces spectral or frame-level features; LLM produces token embeddings and KV cache. These tensors have different sizes, shapes, and alignment requirements, making it hard for the memory planner to reuse buffers ahead of time.
+3. **Hard to reuse across runtimes** — If vision encoder, audio encoder, and LLM use different operator paths, the memory planner cannot easily coordinate buffer reuse. On edge devices with mixed GPU/NPU/CPU execution, this also involves cross-device copies and temporary staging buffers.
+
+The lightweight embedder + wave projection approach unifies inputs earlier into `image patches / audio frames → LLM token embeddings → LLM trunk`, so the front end no longer maintains full intermediate activations from a large independent encoder — everything enters the same LLM memory pattern. Memory allocation becomes more concentrated and predictable, and buffer reuse is easier. **It is not that projection itself magically "defrags memory" — rather, it reduces the number of independent large modules and heterogeneous intermediate tensors, making inference look more like a single LLM pipeline.**
+
+Beyond latency and memory, there is a third benefit: during LoRA or full fine-tuning, you do not need to coordinate multiple large frozen encoders.
 
 ### 2.4 What Do We Learn?
 
