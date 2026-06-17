@@ -206,8 +206,19 @@ Qwen 3 技术报告给出的 dense 架构并不神秘：GQA、SwiGLU、RoPE、RM
 
 GQA 我们前面已经讲过了。真正值得注意的是两个变化：
 
-1. **去掉 QKV bias，引入 QK-Norm**  
-   QK-Norm 用来稳定 attention query/key 的尺度，降低大规模训练时 attention logits 爆掉的风险。
+1. **去掉 QKV bias，引入 QK-Norm**
+
+   先说 QKV bias 是什么。在标准 attention 中，Q、K、V 三个投影矩阵各自有一个 bias 向量：`Q = x·W_q + b_q`。这个 bias 在小模型中无害，但在大规模训练中，它会引入一个不受控的常数偏移——当 attention 做 `Q·K^T` 时，两个 bias 相乘会产生一个额外的常数项，可能让 attention logits（softmax 之前）偏离合理范围。
+
+   Qwen 3 直接去掉 QKV bias，消除了这个不受控的偏移来源。
+
+   QK-Norm 则是另一层保险。它是对 Q 和 K 矩阵做 RMSNorm 归一化——在 attention 计算之前，先把 Q 和 K 每个 head 的向量按均方根缩放到单位尺度。
+
+   为什么需要这个？在大规模训练（数千亿 token、数百层）中，Q 和 K 向量的范数（norm）会逐渐增长。`Q·K^T` 的值正比于两者的范数乘积，所以范数增长意味着 attention logits 会越来越大，softmax 之后梯度越来越集中在少数 token 上——这就是所谓的 "logits 爆掉"。一旦爆掉，梯度要么消失要么爆炸，训练就崩了。
+
+   QK-Norm 把这个风险在源头掐住：不管训练多久、向量怎么漂移，Q 和 K 的范数始终被约束在 1 附近。这不是一个 "提升能力" 的设计，而是一个 "让训练能跑下去" 的基础设施。
+
+   值得注意的是 Gemma 3 也用了 QK-Norm（前面 2.3 节提过）——这说明它已经成为 2025-2026 年大规模 LLM 的标配。
 
 2. **MoE 和 dense 共享基础设计**  
    Qwen 3 MoE 不是另起炉灶，而是在同一套 transformer 结构上替换 FFN 部分：把原来的 dense FFN 换成多个 expert FFN，再由 router 为每个 token 选择专家。

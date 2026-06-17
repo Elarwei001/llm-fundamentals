@@ -206,8 +206,19 @@ The Qwen 3 technical report describes a familiar modern decoder-only architectur
 
 We already covered GQA earlier. Two details truly matter here:
 
-1. **QKV bias is removed, QK-Norm is introduced**  
-   QK-Norm stabilizes the scale of attention queries and keys, reducing the risk of exploding attention logits during large-scale training.
+1. **QKV bias is removed, QK-Norm is introduced**
+
+   First, what is QKV bias? In standard attention, the Q, K, and V projection matrices each have a bias vector: `Q = x·W_q + b_q`. This bias is harmless in small models, but at large training scale it introduces an uncontrolled constant offset — when attention computes `Q·K^T`, the two biases multiply to produce an extra constant term that can push attention logits (pre-softmax) out of a reasonable range.
+
+   Qwen 3 simply removes QKV bias entirely, eliminating this uncontrolled offset source.
+
+   QK-Norm is a second layer of protection. It applies RMSNorm to the Q and K matrices — before attention is computed, each head's Q and K vectors are scaled to unit norm by their root mean square.
+
+   Why is this needed? During large-scale training (hundreds of billions of tokens, hundreds of layers), the norms of Q and K vectors gradually grow. Since `Q·K^T` is proportional to the product of their norms, growing norms mean attention logits get larger and larger. After softmax, gradients concentrate on fewer and fewer tokens — this is what "logits exploding" means. Once that happens, gradients either vanish or blow up, and training collapses.
+
+   QK-Norm clips this risk at the source: no matter how long training runs or how vectors drift, Q and K norms stay around 1. This is not a "capability boost" design — it is infrastructure that "makes training survive."
+
+   Note that Gemma 3 also uses QK-Norm (mentioned in section 2.3) — this confirms it has become standard for large-scale LLMs in 2025-2026.
 
 2. **MoE and dense models share the same foundation**  
    Qwen 3 MoE is not a separate architecture. It uses the same transformer backbone and replaces dense FFN blocks with multiple expert FFNs, then lets a router choose experts for each token.
