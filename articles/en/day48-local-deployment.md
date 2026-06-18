@@ -67,7 +67,16 @@ An unquantized 8B-parameter model in FP16 needs ~16 GB of memory just to load th
 
 **GPTQ (Generative Pre-trained Transformer Quantization)** ([paper](https://arxiv.org/abs/2210.17323), introduced by researchers at ETH Zurich and UW-Madison in October 2022) uses approximate second-order information (the Hessian) to quantize weights layer-by-layer while minimizing reconstruction error. In 2026, **MatGPTQ** ([paper](https://arxiv.org/abs/2602.03537), February 2026) improved upon it with 1.34% better accuracy at 3-bit and support for per-layer heterogeneous bit-widths.
 
-**BitNet** ([paper](https://arxiv.org/abs/2310.11453), introduced by Microsoft Research in October 2023) takes a fundamentally different approach: instead of quantizing a trained model, it **trains natively in 1.58-bit** (ternary weights: -1, 0, +1). The [BitNet.cpp](https://github.com/microsoft/BitNet) framework, with its January 2026 optimization update, can run 100B-parameter models on a single CPU at human reading speed (5-7 tokens/sec) by replacing floating-point multiplications with simple additions.
+**BitNet** ([paper](https://arxiv.org/abs/2310.11453), introduced by Microsoft Research in October 2023) represents a **paradigm shift**, not just another quantization method. Understanding the distinction is critical:
+
+- **Quantization methods** (GGUF, AWQ, GPTQ) take an existing FP16 model and compress it after training. The model was trained with full precision; compression is an afterthought.
+- **BitNet trains natively in 1.58-bit.** The weights never existed in full precision. During training, the model learns with ternary constraints — each weight is constrained to {-1, 0, +1}, which requires only log₂(3) ≈ 1.58 bits to represent. This means the model's entire knowledge is encoded in a vastly smaller parameter space from the start.
+
+Why does this matter? When you quantize a trained model to 4-bit, you lose information that was originally there. BitNet avoids this loss because the model was never trained with that information — it learned to be effective within ternary constraints from the beginning. The result is a fundamentally different quality-efficiency frontier.
+
+The efficiency gains are dramatic. Standard LLM inference spends most of its compute on floating-point matrix multiplications (multiply-accumulate operations). With ternary weights, multiplications become simple additions and subtractions — there's nothing to multiply when weights are just -1, 0, or +1. The [BitNet.cpp](https://github.com/microsoft/BitNet) framework (with its January 2026 optimization update) exploits this to run 100B-parameter models on a single CPU at human reading speed (5-7 tokens/sec), a feat impossible with any post-training quantization method.
+
+**The trade-off**: BitNet models must be trained from scratch — you cannot convert an existing LLaMA or Qwen model to BitNet format. As of 2026, the BitNet model ecosystem is still small compared to the mainstream, and most available models are research prototypes rather than production-ready. But if native low-bit training matures, it could fundamentally change the deployment landscape.
 
 ### 2.4 Choosing a Quantization Level
 
