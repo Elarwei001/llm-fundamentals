@@ -1,6 +1,6 @@
 {
-  "current_day": 53,
-  "last_generated": "2026-06-17",
+  "current_day": 54,
+  "last_generated": "2026-06-18",
   "total_days": 60,
   "status": "active",
   "history": [
@@ -829,6 +829,22 @@
         "zh/images/day53/knowledge-strategy-tradeoffs.png",
         "zh/images/day53/document-qa-reliability-loop.png",
         "zh/images/day53/frontier-agentic-rag-map.png"
+      ]
+    },
+    {
+      "day": 54,
+      "date": "2026-06-18",
+      "topic": "Developer Tools & Vibe Coding",
+      "en_path": "en/day54-developer-tools-and-vibe-coding.md",
+      "zh_path": "zh/day54-developer-tools-and-vibe-coding.md",
+      "qa_score": 92.8,
+      "qa_rounds": 0,
+      "images": [
+        "zh/images/day54/ai-coding-evolution.png",
+        "zh/images/day54/coding-agent-loop.png",
+        "zh/images/day54/developer-tool-layers.png",
+        "zh/images/day54/vibe-coding-workflow.png",
+        "zh/images/day54/coding-agent-evaluation-gap.png"
       ]
     }
   ]

@@ -368,3 +368,7 @@
 | Escalation | 转交 / 升级 | 当 AI 无法处理时，将对话连同上下文转交给人工坐席 |
 | Handle Time | 处理时间 | 从客户发起联系到问题解决的总耗时 |
 | Deflection | 挡回 / 转向自助 | 将客户从人工渠道引导至 AI 或自助服务的行为 |
+| Vibe Coding | Vibe coding | 用自然语言描述意图并让 AI 生成、修改和运行代码的软件创建方式，适合快速原型但需要验证 |
+| Coding Agent | 编程 Agent | 能读取代码库、编辑文件、运行工具、观察结果并迭代的软件工程 Agent |
+| Agent Harness | Agent Harness | 连接模型、上下文、工具、sandbox、diff 和反馈信号的执行框架 |
+| Private Eval | 私有评估集 | 团队针对自身代码库、业务风险和生产约束构建的 Agent 评估集 |
