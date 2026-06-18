@@ -20,7 +20,7 @@ This article covers the full stack: quantization (how to shrink models to fit yo
 
 Think of local LLM deployment like setting up a restaurant kitchen. The **hardware** is the kitchen itself — ovens, stoves, counter space. The **engine** is the cooking technique — how efficiently you use those tools. The **experience layer** is the menu and service — what the customer (your application) actually interacts with. You can have a great kitchen (GPU) with poor technique (inefficient inference), or a basic kitchen (CPU) with smart recipes (quantization) that still produces great food.
 
-![Figure 1: The local LLM deployment ecosystem, organized into three layers: experience (user-facing tools), engine (inference backends), and hardware (physical compute).](../zh/images/day48/local-deployment-ecosystem.png)
+![Figure 1: The local LLM deployment ecosystem, organized into three layers: experience (user-facing tools), engine (inference backends), and hardware (physical compute).](../zh/images/day48/local-deployment-ecosystem-v2.png)
 *Figure 1: The three-layer local LLM ecosystem. Each experience-layer tool wraps one or more engines, which target specific hardware platforms.*
 
 The ecosystem has crystallized into a clear three-layer architecture:
@@ -47,7 +47,7 @@ An unquantized 8B-parameter model in FP16 needs ~16 GB of memory just to load th
 
 ### 2.2 The Quantization Landscape
 
-![Figure 2: Comparison of quantization methods by bits-per-weight and expected quality loss.](../zh/images/day48/quantization-methods-comparison.png)
+![Figure 2: Comparison of quantization methods by bits-per-weight and expected quality loss.](../zh/images/day48/quantization-methods-comparison-v2.png)
 *Figure 2: Memory vs. quality trade-off across quantization methods. Lower bits/weight means less memory but potentially more quality degradation.*
 
 | Method | Bits/Weight | Quality Loss | Best For | Format |
@@ -175,7 +175,7 @@ response = generate(model, tokenizer, prompt="Explain quantum computing", verbos
 
 ## 4. Choosing Your Setup
 
-![Figure 3: Decision tree for selecting the right local deployment framework based on your use case and hardware.](../zh/images/day48/framework-decision-tree.png)
+![Figure 3: Decision tree for selecting the right local deployment framework based on your use case and hardware.](../zh/images/day48/framework-decision-tree-v2.png)
 *Figure 3: A practical decision tree. Start with your use case, narrow by hardware, and choose quantization based on available memory.*
 
 ### 4.1 The Hybrid Pattern
@@ -204,7 +204,7 @@ client = OpenAI(
 | **MLX** | Apple Silicon optimized | Apple M-series | MLX quantization | High (on Apple) |
 | **LM Studio** | Non-technical users, GUI | All (via llama.cpp) | GGUF auto-select | Low-moderate |
 
-![Figure 4: Throughput comparison across frameworks and hardware configurations for an 8B model. The ~100x gap between laptop inference and GPU server serving illustrates why framework choice must be paired with the right hardware.](../zh/images/day48/inference-throughput-comparison.png)
+![Figure 4: Throughput comparison across frameworks and hardware configurations for an 8B model. The ~100x gap between laptop inference and GPU server serving illustrates why framework choice must be paired with the right hardware.](../zh/images/day48/inference-throughput-comparison-v2.png)
 *Figure 4: Representative throughput for an 8B model across frameworks and hardware. The ~100x gap between laptop and GPU server is why serving engines matter for production.*
 
 ### 4.3 Memory Is the Real Constraint

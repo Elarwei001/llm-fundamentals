@@ -20,7 +20,7 @@
 
 把本地部署想象成开一家餐厅后厨。**硬件**是厨房本身 —— 烤箱、炉灶、操作台。**引擎**是烹饪技法 —— 你怎么高效地使用这些工具。**体验层**是菜单和服务 —— 顾客（你的应用）直接交互的东西。你可以有一个好厨房（GPU）但技法差（推理效率低），也可以在一个普通厨房（CPU）里用聪明的做法（量化）做出好菜。
 
-![图 1：本地 LLM 部署生态，按三层组织：体验层（面向用户的工具）、引擎层（推理后端）和硬件层（物理计算设备）。](./images/day48/local-deployment-ecosystem.png)
+![图 1：本地 LLM 部署生态，按三层组织：体验层（面向用户的工具）、引擎层（推理后端）和硬件层（物理计算设备）。](./images/day48/local-deployment-ecosystem-v2.png)
 *图 1：三层本地 LLM 生态。每个体验层工具封装一个或多个引擎，引擎再指向特定的硬件平台。*
 
 这个生态已经形成了清晰的三层架构：
@@ -47,7 +47,7 @@
 
 ### 2.2 量化方法全景
 
-![图 2：量化方法对比 —— 每权重比特数与预期质量损失。](./images/day48/quantization-methods-comparison.png)
+![图 2：量化方法对比 —— 每权重比特数与预期质量损失。](./images/day48/quantization-methods-comparison-v2.png)
 *图 2：量化方法的内存与质量权衡。每权重比特数越低，内存占用越少，但质量可能下降更多。*
 
 | 方法 | 比特数/权重 | 质量损失 | 适用场景 | 格式 |
@@ -175,7 +175,7 @@ response = generate(model, tokenizer, prompt="解释量子计算", verbose=True)
 
 ## 4. 如何选择
 
-![图 3：根据使用场景和硬件选择合适的本地部署框架的决策树。](./images/day48/framework-decision-tree.png)
+![图 3：根据使用场景和硬件选择合适的本地部署框架的决策树。](./images/day48/framework-decision-tree-v2.png)
 *图 3：实用的决策树。从使用场景出发，按硬件缩小范围，再根据可用内存选择量化等级。*
 
 ### 4.1 混合模式
@@ -204,7 +204,7 @@ client = OpenAI(
 | **MLX** | Apple Silicon 优化 | Apple M 系列 | MLX 量化 | 高（Apple 上） |
 | **LM Studio** | 非技术用户、GUI | 全部（通过 llama.cpp） | GGUF 自动选择 | 低-中 |
 
-![图 4：不同框架和硬件配置下 8B 模型的吞吐量对比。笔记本到 GPU 服务器之间约 100 倍的差距说明了为什么框架选择必须搭配正确的硬件。](./images/day48/inference-throughput-comparison.png)
+![图 4：不同框架和硬件配置下 8B 模型的吞吐量对比。笔记本到 GPU 服务器之间约 100 倍的差距说明了为什么框架选择必须搭配正确的硬件。](./images/day48/inference-throughput-comparison-v2.png)
 *图 4：8B 模型在不同框架和硬件上的代表性吞吐量。笔记本到 GPU 服务器约 100 倍的差距，解释了为什么生产环境需要专业服务引擎。*
 
 ### 4.3 内存才是真正的瓶颈
