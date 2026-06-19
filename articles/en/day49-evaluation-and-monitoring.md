@@ -38,7 +38,7 @@ This means you cannot test your way to confidence the way you would with convent
 
 A mature LLM evaluation practice spans five stages, forming a closed loop:
 
-![Figure 1: Evaluation Lifecycle Pipeline](../zh/images/day49/eval-lifecycle-pipeline.png)
+![Figure 1: Evaluation Lifecycle Pipeline](../zh/images/day49/eval-lifecycle-pipeline-v2.png)
 *Caption: The five-stage evaluation lifecycle — from golden dataset creation through production monitoring and back again.*
 
 ### 2.1 The Golden Dataset
@@ -81,7 +81,7 @@ If you've ever had a teacher grade an essay, you understand LLM-as-a-judge. The 
 
 **LLM-as-a-judge** uses a capable LLM to evaluate the outputs of another LLM system. This idea, formalized by Zheng et al. (2023) in ["Judging LLM-as-a-Judge with MT-Bench and Chatbot Arena"](https://arxiv.org/abs/2306.05685), has become the dominant evaluation technique for open-ended generation tasks.
 
-![Figure 2: LLM-as-a-Judge Evaluation Flow](../zh/images/day49/llm-as-judge-flow.png)
+![Figure 2: LLM-as-a-Judge Evaluation Flow](../zh/images/day49/llm-as-judge-flow-v2.png)
 *Caption: Two evaluation paths — reference-based comparison against ground truth, and reference-free LLM-as-judge scoring using a rubric.*
 
 ### 3.1 How It Works
@@ -110,7 +110,7 @@ LLM judges are biased. A 2026 survey published in *Data & Knowledge Engineering*
 - **Verbosity bias**: Longer responses are rated higher, regardless of quality.
 - **Self-preference**: Models tend to prefer outputs from the same model family.
 
-![Figure 5: Bias Patterns and Mitigations](../zh/images/day49/bias-chart.png)
+![Figure 5: Bias Patterns and Mitigations](../zh/images/day49/bias-chart-v2.png)
 *Caption: Position bias rates across models (left) and effectiveness of mitigation strategies (right). Data synthesized from Adaline AI (2026) and Li et al. (2025).*
 
 A May 2026 analysis from Adaline AI found that while LLM judges achieve ~80% agreement with humans in controlled settings, frontier models can exceed 50% error rates on bias tests in production-like conditions ([Adaline AI, 2026](https://www.adaline.ai/blog/llm-as-a-judge-reliability-bias)).
@@ -189,7 +189,7 @@ Modern LLM observability platforms trace every request through your application 
 
 The 2026 landscape has consolidated around a few key players:
 
-![Figure 3: Tool Landscape Comparison](../zh/images/day49/monitoring-tool-comparison.png)
+![Figure 3: Tool Landscape Comparison](../zh/images/day49/monitoring-tool-comparison-v2.png)
 *Caption: Capability comparison across evaluation and monitoring tools. Scores reflect general coverage, not absolute ranking — choose based on your specific requirements.*
 
 | Platform | Best For | License | Key Differentiator |

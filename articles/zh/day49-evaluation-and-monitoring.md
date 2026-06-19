@@ -38,7 +38,7 @@
 
 成熟的 LLM 评估实践涵盖五个阶段，形成一个闭环：
 
-![图1：评估生命周期流水线](../zh/images/day49/eval-lifecycle-pipeline.png)
+![图1：评估生命周期流水线](../zh/images/day49/eval-lifecycle-pipeline-v2.png)
 *Caption：五阶段评估生命周期——从 golden dataset 创建到生产监控，再回到起点。*
 
 ### 2.1 Golden Dataset
@@ -81,7 +81,7 @@
 
 **LLM-as-a-judge** 用一个能力强的 LLM 来评估另一个 LLM 系统的输出。这个想法由 Zheng 等人（2023）在 ["Judging LLM-as-a-Judge with MT-Bench and Chatbot Arena"](https://arxiv.org/abs/2306.05685) 中正式提出，已成为开放式生成任务的主流评估技术。
 
-![图2：LLM-as-a-Judge 评估流程](../zh/images/day49/llm-as-judge-flow.png)
+![图2：LLM-as-a-Judge 评估流程](../zh/images/day49/llm-as-judge-flow-v2.png)
 *Caption：两条评估路径——基于标准答案的对比，以及使用评分标准的 reference-free LLM 评审。*
 
 ### 3.1 工作原理
@@ -110,7 +110,7 @@ LLM 评审有系统性偏差。2026 年发表在 *Data & Knowledge Engineering* 
 - **冗长偏差（Verbosity bias）**：更长的回复被评得更高，不管实际质量如何。
 - **自我偏好（Self-preference）**：模型倾向于偏好同族模型的输出。
 
-![图5：偏差模式与缓解策略](../zh/images/day49/bias-chart.png)
+![图5：偏差模式与缓解策略](../zh/images/day49/bias-chart-v2.png)
 *Caption：各模型的位置偏差率（左）和缓解策略的有效性（右）。数据综合自 Adaline AI (2026) 和 Li et al. (2025)。*
 
 2026 年 5 月 Adaline AI 的分析发现，虽然 LLM 评审在受控环境中与人类达到约 80% 的一致率，但在类生产条件下，前沿模型在偏差测试上的错误率可能超过 50%（[Adaline AI, 2026](https://www.adaline.ai/blog/llm-as-a-judge-reliability-bias)）。
@@ -189,7 +189,7 @@ SWE-bench（[Jimenez et al., 2024](https://arxiv.org/abs/2310.06770)）是评估
 
 2026 年的格局已围绕几个关键平台收敛：
 
-![图3：工具生态对比](../zh/images/day49/monitoring-tool-comparison.png)
+![图3：工具生态对比](../zh/images/day49/monitoring-tool-comparison-v2.png)
 *Caption：评估和监控工具的能力对比。分数反映通用覆盖度，不是绝对排名——根据你的具体需求选择。*
 
 | 平台 | 最适合 | 许可证 | 核心差异 |
