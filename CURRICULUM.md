@@ -151,7 +151,7 @@
 | D52 | 内容生成 | 写作、营销、创意 —— AI 能替代人吗 | 应用场景  | |
 | D53 | 知识管理 | 企业知识库、文档问答 | 应用场景  | |
 | D54 | **开发者工具与 Vibe Coding** | Copilot、Cursor，AI 如何改变编程 | 🔥 vibe coding 飙升  | |
-| D55 | 研究与科学 | AlphaFold、AI for Science | 前沿应用  | |
+| D55 | 研究与科学 | AlphaFold、AI for Science | 前沿应用  | [EN](articles/en/day55-research-and-science.md) / [中文](articles/zh/day55-research-and-science.md) |
 
 ### Week 12: OpenClaw 实现原理 🔥
 

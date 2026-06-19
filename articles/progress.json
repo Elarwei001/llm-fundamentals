@@ -1,6 +1,6 @@
 {
-  "current_day": 54,
-  "last_generated": "2026-06-18",
+  "current_day": 55,
+  "last_generated": "2026-06-19",
   "total_days": 60,
   "status": "active",
   "history": [
@@ -845,6 +845,22 @@
         "zh/images/day54/developer-tool-layers.png",
         "zh/images/day54/vibe-coding-workflow.png",
         "zh/images/day54/coding-agent-evaluation-gap.png"
+      ]
+    },
+    {
+      "day": 55,
+      "date": "2026-06-19",
+      "topic": "Research and Science",
+      "en_path": "en/day55-research-and-science.md",
+      "zh_path": "zh/day55-research-and-science.md",
+      "qa_score": 92,
+      "qa_rounds": 0,
+      "images": [
+        "zh/images/day55/ai-science-discovery-stack.png",
+        "zh/images/day55/alphafold-to-ai-science-timeline.png",
+        "zh/images/day55/closed-loop-active-learning.png",
+        "zh/images/day55/frontier-taxonomy-control-surface.png",
+        "zh/images/day55/active-learning-efficiency-curve.png"
       ]
     }
   ]

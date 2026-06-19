@@ -151,7 +151,7 @@
 | D52 | Content Generation | Writing, marketing, creativity — Can AI replace humans? | Use case  | [EN](articles/en/day52-content-generation.md) / [中文](articles/zh/day52-content-generation.md) |
 | D53 | Knowledge Management | Enterprise knowledge bases, document Q&A | Use case  | [EN](articles/en/day53-knowledge-management.md) / [中文](articles/zh/day53-knowledge-management.md) |
 | D54 | **Developer Tools & Vibe Coding** | Copilot, Cursor, how AI is changing programming | 🔥 vibe coding rising  | [EN](articles/en/day54-developer-tools-and-vibe-coding.md) / [中文](articles/zh/day54-developer-tools-and-vibe-coding.md) |
-| D55 | Research and Science | AlphaFold, AI for Science | Frontier applications  | |
+| D55 | Research and Science | AlphaFold, AI for Science | Frontier applications  | [EN](articles/en/day55-research-and-science.md) / [中文](articles/zh/day55-research-and-science.md) |
 
 ### Week 12: OpenClaw Implementation 🔥
 

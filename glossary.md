@@ -372,3 +372,10 @@
 | Coding Agent | 编程 Agent | 能读取代码库、编辑文件、运行工具、观察结果并迭代的软件工程 Agent |
 | Agent Harness | Agent Harness | 连接模型、上下文、工具、sandbox、diff 和反馈信号的执行框架 |
 | Private Eval | 私有评估集 | 团队针对自身代码库、业务风险和生产约束构建的 Agent 评估集 |
+## Day 55: Research and Science
+
+- **AI for Science**: AI systems that accelerate scientific discovery by modeling data, hypotheses, experiments, and feedback loops.
+- **Closed-loop discovery**: An iterative workflow that generates candidates, predicts outcomes, selects experiments, tests them, and updates the model with evidence.
+- **Active learning**: A strategy for choosing the next data point or experiment based on expected information value, uncertainty, and cost.
+- **Acquisition function**: A scoring rule used in active learning or Bayesian optimization to decide which candidate should be tested next.
+- **AI scientist**: An agentic system that automates parts of scientific workflow such as ideation, literature search, experiment execution, analysis, and writing.
