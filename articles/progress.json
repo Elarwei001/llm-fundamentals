@@ -1,6 +1,6 @@
 {
-  "current_day": 55,
-  "last_generated": "2026-06-19",
+  "current_day": 56,
+  "last_generated": "2026-06-22",
   "total_days": 60,
   "status": "active",
   "history": [
@@ -861,6 +861,22 @@
         "zh/images/day55/closed-loop-active-learning.png",
         "zh/images/day55/frontier-taxonomy-control-surface.png",
         "zh/images/day55/active-learning-efficiency-curve.png"
+      ]
+    },
+    {
+      "day": 56,
+      "date": "2026-06-22",
+      "topic": "OpenClaw Architecture Overview",
+      "en_path": "en/day56-openclaw-architecture-overview.md",
+      "zh_path": "zh/day56-openclaw-architecture-overview.md",
+      "qa_score": 92,
+      "qa_rounds": 0,
+      "images": [
+        "zh/images/day56/openclaw-gateway-architecture-ai.png",
+        "zh/images/day56/message-to-action-flow.png",
+        "zh/images/day56/session-routing-matrix.png",
+        "zh/images/day56/trust-boundary-map.png",
+        "zh/images/day56/openclaw-frontier-timeline.png"
       ]
     }
   ]

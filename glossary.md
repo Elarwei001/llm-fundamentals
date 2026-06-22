@@ -379,3 +379,11 @@
 - **Active learning**: A strategy for choosing the next data point or experiment based on expected information value, uncertainty, and cost.
 - **Acquisition function**: A scoring rule used in active learning or Bayesian optimization to decide which candidate should be tested next.
 - **AI scientist**: An agentic system that automates parts of scientific workflow such as ideation, literature search, experiment execution, analysis, and writing.
+
+## Day 56: OpenClaw Architecture Overview
+
+- **Gateway**: The long-lived OpenClaw control plane that owns routing, sessions, channel connections, and agent run coordination.
+- **Channel adapter**: A platform adapter that normalizes messages from surfaces such as Telegram, Slack, Discord, WhatsApp, WebChat, cron, or CLI into common events.
+- **Session key**: A routing/context selector used to choose the conversation state for a message; it is not an authorization token.
+- **Channel docking**: Moving the delivery route of an existing OpenClaw session to another linked channel while keeping the same transcript and context.
+- **Trust boundary**: The line that separates who is trusted to cause actions, which credentials/tools they can use, and which host or gateway should enforce that separation.
