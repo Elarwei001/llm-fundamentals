@@ -127,7 +127,7 @@
 | D42 | Evaluation Challenges | How to evaluate agents? SWE-bench, WebArena | Evaluation methods | [EN](articles/en/day42-evaluation-challenges.md) / [中文](articles/zh/day42-evaluation-challenges.md) |
 | D43 | Safety and Alignment | Agent security risks, Prompt Injection | Security issues  | [EN](articles/en/day43-safety-and-alignment.md) / [中文](articles/zh/day43-safety-and-alignment.md) |
 | D44 | Human-AI Collaboration | Human-in-the-loop, when to intervene | Interaction design  | [EN](articles/en/day44-human-ai-collaboration.md) / [中文](articles/zh/day44-human-ai-collaboration.md) |
-| D45 | Cost and Latency | Agents are too expensive and slow, how to optimize | Practical issues  | [EN](articles/en/day45-cost-and-latency.md) / [中文](articles/zh/day45-cost-and-latency.md) |
+| D45 | **Agent-Native Workflows** | From ad-hoc tools to orchestrated skill pipelines | Workflow architecture  | [EN](articles/en/day45-agent-native-workflows.md) / [中文](articles/zh/day45-agent-native-workflows.md) |
 
 ---
 
