@@ -109,7 +109,8 @@ The key steps:
 
 #### 3.3 Common Pitfalls
 
-- **Testing too many variables at once** — Change one thing per experiment, or you cannot tell what helped
+- **Confusing correlation with causality** — In production, one release often contains multiple changes. That is reality, not a mistake. The problem is changing tone, tool order, few-shot examples, and fallback copy at the same time, then claiming that "the tone change improved performance." If a version contains several changes, you can only say that the bundle performed better than the previous version.
+- **Not isolating high-risk changes** — Not every product idea deserves its own full A/B test. A more practical approach is to tier changes: bug, safety, and compliance fixes can ship directly; low-risk copy and formatting updates can be bundled; changes that affect conversion, quality, or safety boundaries should use feature flags, gradual rollout, or follow-up isolation tests.
 - **Stopping early** — A variant that looks better after 50 requests might regress at 500
 - **Ignoring novelty effects** — Users might rate a new style higher just because it is different
 - **Not defining "better" upfront** — If you decide what counts as winning after seeing results, you are p-hacking
@@ -170,7 +171,7 @@ Stanford NLP's DSPy, released in late 2023 and now at version 2.x with the MIPRO
 
 DSPy's key insight: stop hand-writing prompts. Write Python code that describes the task, provide training examples and a metric, and let the optimizer find the best prompt formulation.
 
-As a 2026 clinical QA case study showed, a team used DSPy's MIPROv2 to automatically discover high-performing prompts for medical question answering, jointly tuning instructions and few-shot demonstrations for each pipeline stage.
+Clinical QA provides a concrete example. In the BioNLP 2025 ArchEHR-QA shared task, Bogireddy et al.'s Neural system decomposed EHR question answering into evidence identification and citation-grounded answer generation, then used DSPy's MIPROv2 to optimize prompts for each stage, jointly tuning instructions and few-shot demonstrations. A 2026 Neural1.5 follow-up extended the same idea to four subtasks: question interpretation, evidence identification, answer generation, and evidence alignment.
 
 ---
 
@@ -342,7 +343,14 @@ Tools like DSPy and OPRO are powerful, but they optimize for the metric you give
 
 ## 9. Further Reading
 
-### Beginner
+### Prompt Engineering Resources
+1. [Prompt Engineering Guide](https://www.promptingguide.ai/) — Systematic coverage of zero-shot, few-shot, CoT, self-consistency, ReAct, and more
+2. [OpenAI Prompt Engineering Guide](https://developers.openai.com/api/docs/guides/prompt-engineering) — Engineering-focused: clear instructions, reference text, task decomposition, giving the model time to think, tool use, systematic testing
+3. [Anthropic Prompt Engineering Docs](https://platform.claude.com/docs/en/build-with-claude/prompt-engineering/overview) — Claude prompt structure, long context, roles, examples, format control
+4. [Anthropic Interactive Tutorial](https://github.com/anthropics/prompt-eng-interactive-tutorial) — Hands-on exercise-style tutorial for systematic learning
+5. [DAIR.AI Prompt Engineering Guide](https://github.com/dair-ai/Prompt-Engineering-Guide) — Community-maintained, broad coverage
+
+### Tools
 1. [Promptfoo Documentation](https://github.com/promptfoo/promptfoo) — Open-source prompt testing with declarative configs and CI/CD integration
 2. [Langfuse Prompt Management](https://langfuse.com/docs/prompts) — Open-source platform with versioning and deployment labels
 
@@ -354,7 +362,9 @@ Tools like DSPy and OPRO are powerful, but they optimize for the metric you give
 1. ["Large Language Models Are Human-Level Prompt Engineers"](https://arxiv.org/abs/2211.01910) (Zhou et al., 2022) — The APE paper
 2. ["Optimization by PROmpting"](https://arxiv.org/abs/2309.03409) (Yang et al., 2023) — OPRO from Google DeepMind
 3. ["DSPy: Compiling Declarative Language Model Calls into Self-Improving Pipelines"](https://arxiv.org/abs/2310.03769) (Khattab et al., 2023) — DSPy framework
-4. ["A Survey of Automatic Prompt Engineering: An Optimization Perspective"](https://arxiv.org/abs/2502.11560) (Li et al., 2025) — Comprehensive survey of automated prompt optimization methods
+4. ["Neural at ArchEHR-QA 2025: Agentic Prompt Optimization for Evidence-Grounded Clinical Question Answering"](https://aclanthology.org/2025.bionlp-share.13/) (Bogireddy et al., 2025) — Shared-task system paper using DSPy MIPROv2 for clinical QA pipeline optimization
+5. ["Neural at ArchEHR-QA 2026: One Method Fits All"](https://arxiv.org/abs/2605.10877) (Majeedi et al., 2026) — Follow-up extending the approach to four clinical QA subtasks
+6. ["A Survey of Automatic Prompt Engineering: An Optimization Perspective"](https://arxiv.org/abs/2502.11560) (Li et al., 2025) — Comprehensive survey of automated prompt optimization methods
 
 ---
 

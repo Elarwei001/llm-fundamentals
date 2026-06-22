@@ -56,15 +56,15 @@ Prompt 管理要解决的核心问题：
 ![版本控制流程](./images/day50/version-control-flow.png)
 *图 2：Git 风格的 prompt 版本控制工作流。Prompt 经过开发、Staging（带 eval gate）和 Production 环境，每个阶段都支持回滚。*
 
-#### 2.2 环境晋升（Environment Promotion）
+#### 2.2 跨环境部署（Environment Promotion）
 
-和代码走 dev → staging → production 一样，prompt 也应该遵循晋升路径：
+和代码走 dev → staging → production 一样，prompt 也应该遵循跨环境部署路径：
 
 1. **开发环境** — 自由编辑，实验措辞
 2. **Staging** — 用测试数据集跑自动化评估
 3. **Production** — 只有通过 eval gate 才能部署
 
-核心原则：**永远不要直接编辑 production 的 prompt**。先在开发环境改，让它通过评估，再晋升上去。
+核心原则：**永远不要直接编辑 production 的 prompt**。先在开发环境改，让它通过评估，再部署上去。
 
 #### 2.3 回滚策略
 
@@ -74,7 +74,7 @@ Prompt 管理要解决的核心问题：
 - 用旧 prompt 跑新模型，对比结果
 - 出问题立刻回滚
 
-正如 Prompt Assay 2026 指南所说：*"当新模型上线时，先用现有 prompt 跑一遍新模型，把对比结果作为新版本提交上去，然后再切换 production 标签。"*
+据 promptassay.ai 的版本管理博文所述：*"当新模型上线时，先用现有 prompt 跑一遍新模型，把对比结果作为新版本提交上去，然后再切换 production 标签。"*
 
 ---
 
@@ -109,7 +109,8 @@ Prompt 的 A/B 测试和网页设计的 A/B 测试完全一样。把流量分成
 
 #### 3.3 常见陷阱
 
-- **同时测太多变量** — 每次实验只改一个东西，否则你分不清什么起了作用
+- **混淆因果** — Production 里一个版本常常包含多个改动，这是现实，不是错误。问题不在于「同时改了很多东西」，而在于明明同时改了语气、工具调用顺序、few-shot 示例和 fallback 文案，却还声称「语气改动带来了提升」。如果一个版本包含多项改动，你只能说这一组改动整体优于旧版本，这叫 bundle test。
+- **没有拆分高风险改动** — 不是所有 PM idea 都值得单独占用一次 A/B 测试。更实际的做法是分层处理：bug、安全、合规修复可以直接上线；低风险文案和格式改动可以 bundle；会影响转化、质量、安全边界的改动，尽量用 feature flag、灰度发布或后续拆解实验隔离影响。
 - **过早停止** — 50 个请求后看起来更好的 variant，到 500 个可能就反转了
 - **忽略新奇效应** — 用户可能只是因为新风格不同而给更高评分
 - **事后定义「更好」** — 如果你看了结果才决定什么算赢，那就是 p-hacking
@@ -170,7 +171,7 @@ Stanford NLP 的 DSPy 在 2023 年底发布，目前版本到了 2.x（含 MIPRO
 
 DSPy 的核心洞察：停止手写 prompt。写描述任务的 Python 代码，提供训练样本和度量标准，让优化器找到最好的 prompt 表述。
 
-2026 年一个临床 QA 案例研究表明，一个团队使用 DSPy 的 MIPROv2 自动发现高性能 prompt 用于医学问答，联合调优每个 pipeline 阶段的指令和 few-shot 示例。
+临床 QA 是一个具体例子。在 BioNLP 2025 的 ArchEHR-QA shared task 中，Bogireddy 等人的 Neural 系统把电子病历问答拆成「证据识别」和「带引用的答案生成」两个阶段，并用 DSPy 的 MIPROv2 为每个阶段自动搜索 prompt，联合调优指令和 few-shot 示例。2026 年的 Neural1.5 follow-up 又把这个思路扩展到问题解释、证据识别、答案生成和证据对齐四个子任务。
 
 ---
 
@@ -206,7 +207,7 @@ DSPy 的核心洞察：停止手写 prompt。写描述任务的 Python 代码，
 
 **企业级（50+ prompt，多个模型）：**
 - 使用全生命周期平台（Confident AI、Maxim AI）
-- 带有 eval gate 的环境晋升
+- 带有 eval gate 的跨环境部署
 - 预算：每月 $500-5000
 
 ---
@@ -231,7 +232,7 @@ DSPy 的核心洞察：停止手写 prompt。写描述任务的 Python 代码，
     v
 [3] 与 production 基线对比得分
     |
-    +-- 得分 >= 阈值？ --> 晋升到 staging
+    +-- 得分 >= 阈值？ --> 部署到 staging
     +-- 得分 < 阈值？  --> 阻断，通知作者
     |
     v
@@ -342,7 +343,14 @@ DSPy 和 OPRO 等工具很强大，但它们优化的是你给定的指标。如
 
 ## 9. 延伸阅读
 
-### 入门
+### Prompt Engineering 学习资源
+1. [Prompt Engineering Guide](https://www.promptingguide.ai/) — 系统覆盖 zero-shot、few-shot、CoT、self-consistency、ReAct 等技术
+2. [OpenAI Prompt Engineering Guide](https://developers.openai.com/api/docs/guides/prompt-engineering) — 偏工程实践，强调 clear instructions、reference text、拆任务、给模型时间思考、用工具、系统化测试
+3. [Anthropic Prompt Engineering Docs](https://platform.claude.com/docs/en/build-with-claude/prompt-engineering/overview) — Claude 的 prompt 结构、长上下文、角色、示例、格式控制
+4. [Anthropic Interactive Tutorial](https://github.com/anthropics/prompt-eng-interactive-tutorial) — 像练习册一样的交互式教程，适合系统学一遍
+5. [DAIR.AI Prompt Engineering Guide](https://github.com/dair-ai/Prompt-Engineering-Guide) — 社区维护，覆盖面广
+
+### 工具入门
 1. [Promptfoo 文档](https://github.com/promptfoo/promptfoo) — 开源 prompt 测试工具，支持声明式配置和 CI/CD 集成
 2. [Langfuse Prompt 管理](https://langfuse.com/docs/prompts) — 开源平台，支持版本控制和部署标签
 
@@ -354,7 +362,9 @@ DSPy 和 OPRO 等工具很强大，但它们优化的是你给定的指标。如
 1. ["Large Language Models Are Human-Level Prompt Engineers"](https://arxiv.org/abs/2211.01910) (Zhou et al., 2022) — APE 论文
 2. ["Optimization by PROmpting"](https://arxiv.org/abs/2309.03409) (Yang et al., 2023) — Google DeepMind 的 OPRO
 3. ["DSPy: Compiling Declarative Language Model Calls into Self-Improving Pipelines"](https://arxiv.org/abs/2310.03769) (Khattab et al., 2023) — DSPy 框架
-4. ["A Survey of Automatic Prompt Engineering: An Optimization Perspective"](https://arxiv.org/abs/2502.11560) (Li et al., 2025) — 自动 prompt 优化方法的全面综述
+4. ["Neural at ArchEHR-QA 2025: Agentic Prompt Optimization for Evidence-Grounded Clinical Question Answering"](https://aclanthology.org/2025.bionlp-share.13/) (Bogireddy et al., 2025) — 用 DSPy MIPROv2 优化临床 QA pipeline 的 shared task 系统论文
+5. ["Neural at ArchEHR-QA 2026: One Method Fits All"](https://arxiv.org/abs/2605.10877) (Majeedi et al., 2026) — 将同一思路扩展到四个临床 QA 子任务的 follow-up
+6. ["A Survey of Automatic Prompt Engineering: An Optimization Perspective"](https://arxiv.org/abs/2502.11560) (Li et al., 2025) — 自动 prompt 优化方法的全面综述
 
 ---
 
@@ -373,7 +383,7 @@ DSPy 和 OPRO 等工具很强大，但它们优化的是你给定的指标。如
 | 概念 | 一句话解释 |
 |------|-----------|
 | Prompt 版本控制 | 类 Git 追踪每次 prompt 变更，带 diff、作者和回滚能力 |
-| 环境晋升 | Prompt 经过 dev → staging → production，带 eval gate |
+| 跨环境部署 | Prompt 经过 dev → staging → production，带 eval gate |
 | A/B 测试 | 在 prompt 变体之间分配流量，测量哪个表现更好 |
 | Eval Gate | 自动化质量检查，得分低于阈值时阻断部署 |
 | APE / OPRO | 用 LLM 自动搜索更好 prompt 的学术方法 |
