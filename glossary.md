@@ -49,6 +49,7 @@
 | Context Window | 上下文窗口 | 模型能处理的最大 token 数 |
 | Cosine Similarity | 余弦相似度 | 通过向量夹角的余弦值衡量相似度，常用于比较嵌入 |
 | Cross-Entropy Loss | 交叉熵损失 | 分类任务常用的损失函数 |
+| Channel Adapter | 渠道适配器 | 将 Telegram、Discord、Signal 等平台的原生消息转换为统一事件格式的组件 |
 | Coordination Drift | 协调漂移 | 多智能体系统中 agent 逐渐失去共同理解的现象 |
 | CrewAI | CrewAI | 基于角色的多智能体框架，以快速原型开发著称 |
 
@@ -97,6 +98,7 @@
 | Grounding | 基于证据对齐 / 落地支撑 | 让模型的回答明确建立在输入文档、检索结果或工具输出之上 |
 | Grouped-Query Attention (GQA) | 分组查询注意力 | 多个 query 头按组共享 key/value 的注意力变体，降低缓存开销 |
 | GAIA | GAIA | General AI Assistants Benchmark，Meta 等提出的通用助手评估基准，测试多步推理和工具使用 |
+| Gateway Router | 网关路由器 | 在多渠道 agent 系统中统一处理身份、权限、session、delivery route 和执行队列的路由层 |
 | Ground Truth | 金标答案 / 标准答案 | 评估中作为正确答案参考的标准输出 |
 
 ## H
@@ -116,6 +118,7 @@
 | In-context Learning | 上下文学习 | 通过 prompt 中的示例学习，无需更新参数 |
 | Inference | 推理 | 使用训练好的模型进行预测 |
 | Inference-Time Scaling | 推理时缩放 | 通过增加推理计算（如更长的思维链）提升性能 |
+| Idempotency | 幂等性 | 同一事件被重复投递时只触发一次实际动作的可靠性属性 |
 | Indirect Prompt Injection | 间接 Prompt 注入 | 通过 Agent 摄入的外部数据（邮件、网页等）隐藏恶意指令的攻击 |
 | Instruction Tuning | 指令微调 | 用指令-回答数据训练模型，使其更好地遵循自然语言指令 |
 
@@ -150,6 +153,7 @@
 |---------|------|----------|
 | Measurement Artifact | 测量假象 | 由离散指标（如准确率）导致的表面涌现现象 |
 | MLP | 多层感知机 | Multi-Layer Perceptron，基础神经网络 |
+| Message Routing | 消息路由 | 将不同渠道输入映射到正确身份、session、权限策略和回复路径的系统设计层 |
 | Model-Based Reinforcement Learning | 基于模型的强化学习 | 先学习或利用环境模型，再在模型中规划或生成训练信号的强化学习范式 |
 | Model-Predictive Control (MPC) | 模型预测控制 | 先用模型评估多条未来动作序列，只执行当前最优方案的前几步，再重新规划 |
 | MoE | 混合专家 | Mixture of Experts，稀疏激活架构 |
@@ -245,6 +249,7 @@
 | Self-supervised Learning | 自监督学习 | 标签来自数据本身的机器学习方法，无需人类标注 |
 | Speculative Decoding | 推测解码 | 用小模型先提议多个 token，再由大模型成批验证以加速推理 |
 | Semantic Space | 语义空间 | 嵌入向量所在的高维空间，相似含义的词距离更近 |
+| Session Docking | Session docking / 会话停靠 | 在保持同一 session 上下文的同时切换回复渠道或 delivery route 的机制 |
 | SentencePiece | SentencePiece | Google 的语言无关子词分词器 |
 | Skip-gram | Skip-gram | Word2Vec 的一种变体，从中心词预测上下文 |
 | Sliding-Window Attention | 滑动窗口注意力 | 每个 token 主要关注固定邻域内的 token，以降低长序列计算和内存成本 |

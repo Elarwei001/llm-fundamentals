@@ -1,6 +1,6 @@
 {
-  "current_day": 56,
-  "last_generated": "2026-06-22",
+  "current_day": 57,
+  "last_generated": "2026-06-23",
   "total_days": 60,
   "status": "active",
   "history": [
@@ -877,6 +877,22 @@
         "zh/images/day56/session-routing-matrix.png",
         "zh/images/day56/trust-boundary-map.png",
         "zh/images/day56/openclaw-frontier-timeline.png"
+      ]
+    },
+    {
+      "day": 57,
+      "date": "2026-06-23",
+      "topic": "Message Routing and Multi-Channel",
+      "en_path": "en/day57-message-routing-and-multi-channel.md",
+      "zh_path": "zh/day57-message-routing-and-multi-channel.md",
+      "qa_score": 92.7,
+      "qa_rounds": 0,
+      "images": [
+        "zh/images/day57/message-normalization-pipeline.png",
+        "zh/images/day57/routing-decision-tree.png",
+        "zh/images/day57/cross-channel-session-docking.png",
+        "zh/images/day57/policy-layer-stack.png",
+        "zh/images/day57/frontier-routing-timeline.png"
       ]
     }
   ]
