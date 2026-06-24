@@ -147,7 +147,7 @@
 
 | Day | 主题 | 核心问题 | 热度来源 | 文章链接 |
 |-----|------|----------|----------|----------|
-| D51 | 对话与客服 | Chatbot 的正确打开方式 | 应用场景  | [EN](articles/en/day51-conversation-and-customer-service.md) / [中文](articles/zh/day51-conversation-and-customer-service.md) |
+| D51 | SRE Oncall 机器人 | 构建生产可用的 AI 值班工程师 | 应用场景  | [EN](articles/en/day51-conversation-and-customer-service.md) / [中文](articles/zh/day51-conversation-and-customer-service.md) |
 | D52 | 内容生成 | 写作、营销、创意 —— AI 能替代人吗 | 应用场景  | |
 | D53 | 知识管理 | 企业知识库、文档问答 | 应用场景  | |
 | D54 | **开发者工具与 Vibe Coding** | Copilot、Cursor，AI 如何改变编程 | 🔥 vibe coding 飙升  | |
