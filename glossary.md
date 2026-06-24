@@ -52,6 +52,8 @@
 | Channel Adapter | 渠道适配器 | 将 Telegram、Discord、Signal 等平台的原生消息转换为统一事件格式的组件 |
 | Coordination Drift | 协调漂移 | 多智能体系统中 agent 逐渐失去共同理解的现象 |
 | CrewAI | CrewAI | 基于角色的多智能体框架，以快速原型开发著称 |
+| Capability Contract | 能力合约 | 对 tool 的名称、参数、权限、执行环境、结果和错误形态的结构化约定 |
+| Capability Control | 能力控制 | 根据 tool 的 blast radius 分配权限、approval、sandbox 和审计强度 |
 
 ## D
 
@@ -275,6 +277,14 @@
 | Verifier | 验证器 | 用来检查候选答案或中间步骤是否正确、是否有证据支撑的组件 |
 | τ-bench (tau-bench) | τ-bench | Sierra Research 提出的 Agent 可靠性基准测试，通过 pass^k 指标衡量策略遵循的一致性 |
 | Time Horizon | 时间窗口 | METR 提出的概念，衡量 Agent 在失败前能自主工作多长时间 |
+
+## T
+
+| English | 中文 | 简要说明 |
+|---------|------|----------|
+| Tool Schema | Tool Schema / 工具模式 | 描述 tool 输入输出、必填字段、类型、风险元数据和错误形态的结构化契约 |
+| Tool System | Tool System / 工具系统 | 管理 agent capabilities 的发现、schema、policy、执行和 trace 的系统层 |
+| Tool Registry | Tool Registry / 工具注册表 | 存放可用 tools、版本、发布者、权限范围和运行位置的发现层 |
 
 ## U
 

@@ -1,6 +1,6 @@
 {
-  "current_day": 57,
-  "last_generated": "2026-06-23",
+  "current_day": 58,
+  "last_generated": "2026-06-24",
   "total_days": 60,
   "status": "active",
   "history": [
@@ -893,6 +893,22 @@
         "zh/images/day57/cross-channel-session-docking.png",
         "zh/images/day57/policy-layer-stack.png",
         "zh/images/day57/frontier-routing-timeline.png"
+      ]
+    },
+    {
+      "day": 58,
+      "date": "2026-06-24",
+      "topic": "Tool System Design",
+      "en_path": "en/day58-tool-system-design.md",
+      "zh_path": "zh/day58-tool-system-design.md",
+      "qa_score": 93.0,
+      "qa_rounds": 0,
+      "images": [
+        "zh/images/day58/tool-system-stack.png",
+        "zh/images/day58/tool-call-lifecycle.png",
+        "zh/images/day58/capability-control-layers.png",
+        "zh/images/day58/parallel-tool-latency-curve.png",
+        "zh/images/day58/tool-system-frontier-timeline.png"
       ]
     }
   ]
