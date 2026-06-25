@@ -402,3 +402,13 @@
 - **Session key**: A routing/context selector used to choose the conversation state for a message; it is not an authorization token.
 - **Channel docking**: Moving the delivery route of an existing OpenClaw session to another linked channel while keeping the same transcript and context.
 - **Trust boundary**: The line that separates who is trusted to cause actions, which credentials/tools they can use, and which host or gateway should enforce that separation.
+
+## Day 59: Memory and Context Management
+
+- **Memory management**: The process of deciding what durable state an agent stores, updates, expires, retrieves, and deletes across turns and sessions.
+- **Context management**: The process of selecting and organizing the limited information that enters the model context window for one inference.
+- **Compaction**: Compressing long interaction history into a smaller task state while preserving goals, constraints, decisions, open questions, and provenance.
+- **Episodic memory**: Time-stamped memory of events, decisions, outcomes, and source traces.
+- **Semantic memory**: Stable facts, preferences, and domain knowledge used across tasks.
+- **Procedural memory**: Reusable rules, skills, workflows, policies, and conventions that guide behavior.
+- **Provenance**: Metadata that records where a memory or claim came from so it can be audited, corrected, or deleted.

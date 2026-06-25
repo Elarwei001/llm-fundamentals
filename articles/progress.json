@@ -1,6 +1,6 @@
 {
-  "current_day": 58,
-  "last_generated": "2026-06-24",
+  "current_day": 59,
+  "last_generated": "2026-06-25",
   "total_days": 60,
   "status": "active",
   "history": [
@@ -909,6 +909,22 @@
         "zh/images/day58/capability-control-layers.png",
         "zh/images/day58/parallel-tool-latency-curve.png",
         "zh/images/day58/tool-system-frontier-timeline.png"
+      ]
+    },
+    {
+      "day": 59,
+      "date": "2026-06-25",
+      "topic": "Memory and Context Management",
+      "en_path": "en/day59-memory-and-context-management.md",
+      "zh_path": "zh/day59-memory-and-context-management.md",
+      "qa_score": 92.3,
+      "qa_rounds": 0,
+      "images": [
+        "zh/images/day59/memory-layer-stack.png",
+        "zh/images/day59/context-budget-comparison.png",
+        "zh/images/day59/memory-control-loop.png",
+        "zh/images/day59/compaction-tradeoff-curve.png",
+        "zh/images/day59/memory-frontier-timeline.png"
       ]
     }
   ]

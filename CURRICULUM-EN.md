@@ -160,7 +160,7 @@
 | D56 | **OpenClaw Architecture Overview** | Gateway, Session, Channel | 🔥 openclaw rising  | [EN](articles/en/day56-openclaw-architecture-overview.md) / [中文](articles/zh/day56-openclaw-architecture-overview.md) |
 | D57 | Message Routing and Multi-Channel | Unified access for Telegram/Discord/Signal | System design  | [EN](articles/en/day57-message-routing-and-multi-channel.md) / [中文](articles/zh/day57-message-routing-and-multi-channel.md) |
 | D58 | Tool System Design | exec/browser/nodes — Capability extension | Tool system  | [EN](articles/en/day58-tool-system-design.md) / [中文](articles/zh/day58-tool-system-design.md) |
-| D59 | Memory and Context Management | Compaction, workspace, long-term memory | Memory system  | |
+| D59 | Memory and Context Management | Compaction, workspace, long-term memory | Memory system  | [EN](articles/en/day59-memory-and-context-management.md) / [中文](articles/zh/day59-memory-and-context-management.md) |
 | D60 | Sub-Agent Orchestration | sessions_spawn, subagent task decomposition | Orchestration system  | |
 
 ---

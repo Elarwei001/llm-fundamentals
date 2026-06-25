@@ -1,6 +1,6 @@
 {
-  "current_day": 24,
-  "last_generated": "2026-04-24",
+  "current_day": 59,
+  "last_generated": "2026-06-25",
   "total_days": 60,
   "status": "active",
   "history": [
@@ -276,7 +276,7 @@
       "day": 18,
       "date": "2026-04-16",
       "topic": "Speculative Decoding",
-      "en_path": "en/day18-speculative-decoding.md",
+      "en_path": "en/day18-speculative-deoding.md",
       "zh_path": "zh/day18-speculative-decoding.md",
       "qa_score": 92.4,
       "qa_rounds": 1,
@@ -375,6 +375,556 @@
         "zh/images/day24/next-token-vs-world-dynamics.png",
         "zh/images/day24/planning-in-latent-space.png",
         "zh/images/day24/world-model-limitations-radar.png"
+      ]
+    },
+    {
+      "day": 25,
+      "date": "2026-04-27",
+      "topic": "Evaluation & Benchmarks",
+      "en_path": "en/day25-evaluation-and-benchmarks.md",
+      "zh_path": "zh/day25-evaluation-and-benchmarks.md",
+      "qa_score": 91.6,
+      "qa_rounds": 1,
+      "images": [
+        "zh/images/day25/benchmark-landscape.png",
+        "zh/images/day25/benchmark-saturation-timeline.png",
+        "zh/images/day25/evaluation-pipeline.png",
+        "zh/images/day25/contamination-problem.png",
+        "zh/images/day25/benchmark-radar-comparison.png"
+      ]
+    },
+    {
+      "day": 26,
+      "date": "2026-04-28",
+      "topic": "Mixture of Experts (MoE)",
+      "en_path": "en/day26-mixture-of-experts.md",
+      "zh_path": "zh/day26-mixture-of-experts.md",
+      "qa_score": 0,
+      "qa_rounds": 0,
+      "images": [
+        "zh/images/day26/moe-architecture-overview.png",
+        "zh/images/day26/expert-routing-mechanism.png",
+        "zh/images/day26/moe-vs-dense-comparison.png",
+        "zh/images/day26/moe-model-evolution.png",
+        "zh/images/day26/load-balancing-problem.png"
+      ]
+    },
+    {
+      "day": 27,
+      "date": "2026-04-29",
+      "topic": "Knowledge Distillation",
+      "en_path": "en/day27-knowledge-distillation.md",
+      "zh_path": "zh/day27-knowledge-distillation.md",
+      "qa_score": 0,
+      "qa_rounds": 0,
+      "images": [
+        "zh/images/day27/kd-architecture-overview.png",
+        "zh/images/day27/temperature-dark-knowledge.png",
+        "zh/images/day27/kd-methods-comparison.png",
+        "zh/images/day27/deepseek-r1-distill-performance.png",
+        "zh/images/day27/kd-loss-function.png"
+      ]
+    },
+    {
+      "day": 28,
+      "date": "2026-04-30",
+      "topic": "FlashAttention & Sparse Attention",
+      "en_path": "en/day28-flashattention-and-sparse-attention.md",
+      "zh_path": "zh/day28-flashattention-and-sparse-attention.md",
+      "qa_score": 0,
+      "qa_rounds": 0,
+      "images": [
+        "zh/images/day28/flashattention-tiling-memory.png",
+        "zh/images/day28/flashattention-evolution-timeline.png",
+        "zh/images/day28/sparse-attention-patterns.png",
+        "zh/images/day28/attention-memory-bottleneck.png"
+      ]
+    },
+    {
+      "day": 29,
+      "date": "2026-05-01",
+      "topic": "Attention-Free Architectures",
+      "en_path": "en/day29-attention-free-architectures.md",
+      "zh_path": "zh/day29-attention-free-architectures.md",
+      "qa_score": 0,
+      "qa_rounds": 0,
+      "images": [
+        "zh/images/day29/architecture-comparison.png",
+        "zh/images/day29/compute-memory-comparison.png",
+        "zh/images/day29/mamba-selective-mechanism.png",
+        "zh/images/day29/ssm-recurrence-intuition.png",
+        "zh/images/day29/hybrid-architecture-timeline.png"
+      ]
+    },
+    {
+      "day": 30,
+      "date": "2026-05-04",
+      "topic": "Multimodal Basics",
+      "en_path": "en/day30-multimodal-basics.md",
+      "zh_path": "zh/day30-multimodal-basics.md",
+      "qa_score": 0,
+      "qa_rounds": 0,
+      "images": [
+        "zh/images/day30/multimodal-evolution-eras.png",
+        "zh/images/day30/clip-training-process.png",
+        "zh/images/day30/vit-patch-embedding.png",
+        "zh/images/day30/cross-attention-fusion.png"
+      ]
+    },
+    {
+      "day": 31,
+      "date": "2026-05-05",
+      "topic": "What is an AI Agent",
+      "en_path": "en/day31-what-is-an-ai-agent.md",
+      "zh_path": "zh/day31-what-is-an-ai-agent.md",
+      "qa_score": 0,
+      "qa_rounds": 0,
+      "images": [
+        "zh/images/day31/chatbot-vs-agent.png",
+        "zh/images/day31/agent-loop-react.png",
+        "zh/images/day31/agent-autonomy-spectrum.png",
+        "zh/images/day31/agent-timeline.png"
+      ]
+    },
+    {
+      "day": 32,
+      "date": "2026-05-06",
+      "topic": "Agent Architecture Patterns",
+      "en_path": "en/day32-agent-architecture-patterns.md",
+      "zh_path": "zh/day32-agent-architecture-patterns.md",
+      "qa_score": 0,
+      "qa_rounds": 0,
+      "images": [
+        "zh/images/day32/architecture-patterns-comparison.png",
+        "zh/images/day32/react-trace-example.png",
+        "zh/images/day32/pattern-decision-tree.png",
+        "zh/images/day32/framework-timeline.png"
+      ]
+    },
+    {
+      "day": 33,
+      "date": "2026-05-16",
+      "topic": "Tool Use",
+      "en_path": "en/day33-tool-use.md",
+      "zh_path": "zh/day33-tool-use.md",
+      "qa_score": 0,
+      "qa_rounds": 0,
+      "images": [
+        "zh/images/day33/tool-use-loop.png",
+        "zh/images/day33/function-calling-flow.png",
+        "zh/images/day33/tool-use-timeline.png",
+        "zh/images/day33/tool-training-approaches.png"
+      ]
+    },
+    {
+      "day": 34,
+      "date": "2026-05-18",
+      "topic": "Memory Systems",
+      "en_path": "en/day34-memory-systems.md",
+      "zh_path": "zh/day34-memory-systems.md",
+      "qa_score": 0,
+      "qa_rounds": 0,
+      "images": [
+        "zh/images/day34/memory-hierarchy-tiers.png",
+        "zh/images/day34/vector-database-architecture.png",
+        "zh/images/day34/memory-systems-comparison.png",
+        "zh/images/day34/memory-retrieval-tradeoffs.png"
+      ]
+    },
+    {
+      "day": 35,
+      "date": "2026-05-20",
+      "topic": "RAG Explained",
+      "en_path": "en/day35-rag-explained.md",
+      "zh_path": "zh/day35-rag-explained.md",
+      "qa_score": 0,
+      "qa_rounds": 0,
+      "images": [
+        "zh/images/day35/rag-pipeline-architecture.png",
+        "zh/images/day35/chunking-and-embedding-process.png",
+        "zh/images/day35/rag-variants-comparison.png",
+        "zh/images/day35/rag-performance-charts.png",
+        "zh/images/day35/rag-evolution-timeline.png"
+      ]
+    },
+    {
+      "day": 36,
+      "date": "2026-05-22",
+      "topic": "Multi-Agent Systems",
+      "en_path": "en/day36-multi-agent-systems.md",
+      "zh_path": "zh/day36-multi-agent-systems.md",
+      "qa_score": 0,
+      "qa_rounds": 0,
+      "images": [
+        "zh/images/day36/multi-agent-topologies.png",
+        "zh/images/day36/multi-agent-lifecycle.png",
+        "zh/images/day36/multi-agent-failure-modes.png",
+        "zh/images/day36/agent-protocol-stack.png"
+      ]
+    },
+    {
+      "day": 37,
+      "date": "2026-05-23",
+      "topic": "Agentic RAG",
+      "en_path": "en/day37-agentic-rag.md",
+      "zh_path": "zh/day37-agentic-rag.md",
+      "qa_score": 0,
+      "qa_rounds": 0,
+      "images": [
+        "zh/images/day37/traditional-vs-agentic-rag-pipeline.png",
+        "zh/images/day37/agentic-rag-control-loop.png",
+        "zh/images/day37/agentic-rag-routing-flow.png",
+        "zh/images/day37/rag-performance-comparison.png",
+        "zh/images/day37/rag-evolution-timeline.png"
+      ]
+    },
+    {
+      "day": 38,
+      "date": "2026-05-25",
+      "topic": "MCP (Model Context Protocol)",
+      "en_path": "en/day38-mcp-model-context-protocol.md",
+      "zh_path": "zh/day38-mcp-model-context-protocol.md",
+      "qa_score": 0,
+      "qa_rounds": 0,
+      "images": [
+        "zh/images/day38/mcp-architecture-overview.png",
+        "zh/images/day38/mcp-vs-traditional-api.png",
+        "zh/images/day38/mcp-request-response-flow.png",
+        "zh/images/day38/mcp-sdk-downloads-growth.png",
+        "zh/images/day38/mcp-adoption-timeline.png"
+      ]
+    },
+    {
+      "day": 39,
+      "date": "2026-05-26",
+      "topic": "Google ADK (Agent Development Kit)",
+      "en_path": "en/day39-google-adk-agent-development-kit.md",
+      "zh_path": "zh/day39-google-adk-agent-development-kit.md",
+      "qa_score": 0,
+      "qa_rounds": 0,
+      "images": [
+        "zh/images/day39/adk-architecture-overview.png",
+        "zh/images/day39/adk-workflow-agent-types.png",
+        "zh/images/day39/adk-a2a-mcp-ecosystem.png",
+        "zh/images/day39/agent-framework-comparison.png",
+        "zh/images/day39/adk-evolution-timeline.png"
+      ]
+    },
+    {
+      "day": 40,
+      "date": "2026-05-27",
+      "topic": "Agent Tool Comparison",
+      "en_path": "en/day40-agent-tool-comparison.md",
+      "zh_path": "zh/day40-agent-tool-comparison.md",
+      "qa_score": 0,
+      "qa_rounds": 0,
+      "images": [
+        "zh/images/day40/framework-landscape-2026.png",
+        "zh/images/day40/architecture-comparison-v2.png",
+        "zh/images/day40/framework-decision-tree.png",
+        "zh/images/day40/framework-radar-comparison.png",
+        "zh/images/day40/framework-timeline.png"
+      ]
+    },
+    {
+      "day": 41,
+      "date": "2026-05-28",
+      "topic": "Reliability Issues",
+      "en_path": "en/day41-reliability-issues.md",
+      "zh_path": "zh/day41-reliability-issues.md",
+      "qa_score": 0,
+      "qa_rounds": 0,
+      "images": [
+        "zh/images/day41/compound-accuracy-chart.png",
+        "zh/images/day41/day41-failure-mode-taxonomy.png",
+        "zh/images/day41/day41-error-cascade-pipeline.png",
+        "zh/images/day41/day41-reliability-patterns.png",
+        "zh/images/day41/day41-reliability-timeline.png"
+      ]
+    },
+    {
+      "day": 42,
+      "date": "2026-05-29",
+      "topic": "Evaluation Challenges",
+      "en_path": "en/day42-evaluation-challenges.md",
+      "zh_path": "zh/day42-evaluation-challenges.md",
+      "qa_score": 0,
+      "qa_rounds": 0,
+      "images": [
+        "zh/images/day42/benchmark-landscape.png",
+        "zh/images/day42/benchmark-exploit-problem.png",
+        "zh/images/day42/evaluation-dimensions-comparison.png",
+        "zh/images/day42/pass-k-metrics-and-sota.png",
+        "zh/images/day42/swebench-progress-timeline.png"
+      ]
+    },
+    {
+      "day": 43,
+      "date": "2026-06-01",
+      "topic": "Safety and Alignment",
+      "en_path": "en/day43-safety-and-alignment.md",
+      "zh_path": "zh/day43-safety-and-alignment.md",
+      "qa_score": 0,
+      "qa_rounds": 0,
+      "images": [
+        "zh/images/day43/day43-threat-taxonomy.png",
+        "zh/images/day43/day43-indirect-prompt-injection-flow.png",
+        "zh/images/day43/day43-defense-in-depth.png",
+        "zh/images/day43/defense-effectiveness-chart.png",
+        "zh/images/day43/day43-safety-alignment-timeline.png"
+      ]
+    },
+    {
+      "day": 44,
+      "date": "2026-06-02",
+      "topic": "Human-AI Collaboration",
+      "en_path": "en/day44-human-ai-collaboration.md",
+      "zh_path": "zh/day44-human-ai-collaboration.md",
+      "qa_score": 0,
+      "qa_rounds": 0,
+      "images": [
+        "zh/images/day44/day44-autonomy-spectrum.png",
+        "zh/images/day44/day44-collaboration-modes.png",
+        "zh/images/day44/day44-intervention-decision-tree.png",
+        "zh/images/day44/day44-jagged-frontier-concept.png",
+        "zh/images/day44/day44-collaboration-timeline.png"
+      ]
+    },
+    {
+      "day": 45,
+      "date": "2026-06-03",
+      "topic": "Cost and Latency",
+      "en_path": "en/day45-cost-and-latency.md",
+      "zh_path": "zh/day45-cost-and-latency.md",
+      "qa_score": 0,
+      "qa_rounds": 0,
+      "images": [
+        "zh/images/day45/cost-breakdown-stack.png",
+        "zh/images/day45/agent-latency-breakdown.png",
+        "zh/images/day45/model-pricing-landscape.png",
+        "zh/images/day45/optimization-strategy-map.png"
+      ]
+    },
+    {
+      "day": 46,
+      "date": "2026-06-04",
+      "topic": "API Design and Selection",
+      "en_path": "en/day46-api-design-and-selection.md",
+      "zh_path": "zh/day46-api-design-and-selection.md",
+      "qa_score": 0,
+      "qa_rounds": 0,
+      "images": [
+        "zh/images/day46/provider-landscape.png",
+        "zh/images/day46/cost-comparison-by-usecase.png",
+        "zh/images/day46/capability-radar.png",
+        "zh/images/day46/selection-decision-tree.png"
+      ]
+    },
+    {
+      "day": 47,
+      "date": "2026-06-05",
+      "topic": "Open Source vs Closed Source",
+      "en_path": "en/day47-open-source-vs-closed-source.md",
+      "zh_path": "zh/day47-open-source-vs-closed-source.md",
+      "qa_score": 0,
+      "qa_rounds": 0,
+      "images": [
+        "zh/images/day47/openness-spectrum.png",
+        "zh/images/day47/benchmark-gap-over-time.png",
+        "zh/images/day47/open-source-timeline.png",
+        "zh/images/day47/decision-tree-open-source.png"
+      ]
+    },
+    {
+      "day": 48,
+      "date": "2026-06-08",
+      "topic": "Local Deployment",
+      "en_path": "en/day48-local-deployment.md",
+      "zh_path": "zh/day48-local-deployment.md",
+      "qa_score": 0,
+      "qa_rounds": 0,
+      "images": [
+        "zh/images/day48/local-deployment-ecosystem.png",
+        "zh/images/day48/quantization-methods-comparison.png",
+        "zh/images/day48/framework-decision-tree.png",
+        "zh/images/day48/inference-throughput-comparison.png",
+        "zh/images/day48/local-deployment-timeline.png"
+      ]
+    },
+    {
+      "day": 49,
+      "date": "2026-06-09",
+      "topic": "Evaluation and Monitoring",
+      "en_path": "en/day49-evaluation-and-monitoring.md",
+      "zh_path": "zh/day49-evaluation-and-monitoring.md",
+      "qa_score": 0,
+      "qa_rounds": 0,
+      "images": [
+        "zh/images/day49/eval-lifecycle-pipeline.png",
+        "zh/images/day49/llm-as-judge-flow.png",
+        "zh/images/day49/monitoring-tool-comparison.png",
+        "zh/images/day49/eval-timeline.png",
+        "zh/images/day49/bias-chart.png"
+      ]
+    },
+    {
+      "day": 50,
+      "date": "2026-06-10",
+      "topic": "Prompt Management",
+      "en_path": "en/day50-prompt-management.md",
+      "zh_path": "zh/day50-prompt-management.md",
+      "qa_score": 0,
+      "qa_rounds": 0,
+      "images": [
+        "zh/images/day50/prompt-lifecycle.png",
+        "zh/images/day50/version-control-flow.png",
+        "zh/images/day50/ab-testing-flow.png",
+        "zh/images/day50/optimization-methods-comparison.png",
+        "zh/images/day50/prompt-management-timeline.png"
+      ]
+    },
+    {
+      "day": 51,
+      "date": "2026-06-11",
+      "topic": "Conversation and Customer Service",
+      "en_path": "en/day51-conversation-and-customer-service.md",
+      "zh_path": "zh/day51-conversation-and-customer-service.md",
+      "qa_score": 0,
+      "qa_rounds": 0,
+      "images": [
+        "zh/images/day51/customer-service-evolution.png",
+        "zh/images/day51/llm-agent-architecture.png",
+        "zh/images/day51/escalation-decision-flow.png",
+        "zh/images/day51/performance-by-generation.png",
+        "zh/images/day51/customer-service-timeline.png"
+      ]
+    },
+    {
+      "day": 52,
+      "date": "2026-06-15",
+      "topic": "Content Generation",
+      "en_path": "en/day52-content-generation.md",
+      "zh_path": "zh/day52-content-generation.md",
+      "qa_score": 91,
+      "qa_rounds": 0,
+      "images": [
+        "zh/images/day52/content-generation-evolution.png",
+        "zh/images/day52/content-generation-pipeline.png",
+        "zh/images/day52/ai-slop-model-collapse.png",
+        "zh/images/day52/content-quality-radar.png",
+        "zh/images/day52/tool-selection-decision-tree.png"
+      ]
+    },
+    {
+      "day": 53,
+      "date": "2026-06-17",
+      "topic": "Knowledge Management",
+      "en_path": "en/day53-knowledge-management.md",
+      "zh_path": "zh/day53-knowledge-management.md",
+      "qa_score": 92.4,
+      "qa_rounds": 0,
+      "images": [
+        "zh/images/day53/knowledge-management-pipeline.png",
+        "zh/images/day53/retrieval-stack.png",
+        "zh/images/day53/knowledge-strategy-tradeoffs.png",
+        "zh/images/day53/document-qa-reliability-loop.png",
+        "zh/images/day53/frontier-agentic-rag-map.png"
+      ]
+    },
+    {
+      "day": 54,
+      "date": "2026-06-18",
+      "topic": "Developer Tools & Vibe Coding",
+      "en_path": "en/day54-developer-tools-and-vibe-coding.md",
+      "zh_path": "zh/day54-developer-tools-and-vibe-coding.md",
+      "qa_score": 92.8,
+      "qa_rounds": 0,
+      "images": [
+        "zh/images/day54/ai-coding-evolution.png",
+        "zh/images/day54/coding-agent-loop.png",
+        "zh/images/day54/developer-tool-layers.png",
+        "zh/images/day54/vibe-coding-workflow.png",
+        "zh/images/day54/coding-agent-evaluation-gap.png"
+      ]
+    },
+    {
+      "day": 55,
+      "date": "2026-06-19",
+      "topic": "Research and Science",
+      "en_path": "en/day55-research-and-science.md",
+      "zh_path": "zh/day55-research-and-science.md",
+      "qa_score": 92,
+      "qa_rounds": 0,
+      "images": [
+        "zh/images/day55/ai-science-discovery-stack.png",
+        "zh/images/day55/alphafold-to-ai-science-timeline.png",
+        "zh/images/day55/closed-loop-active-learning.png",
+        "zh/images/day55/frontier-taxonomy-control-surface.png",
+        "zh/images/day55/active-learning-efficiency-curve.png"
+      ]
+    },
+    {
+      "day": 56,
+      "date": "2026-06-22",
+      "topic": "OpenClaw Architecture Overview",
+      "en_path": "en/day56-openclaw-architecture-overview.md",
+      "zh_path": "zh/day56-openclaw-architecture-overview.md",
+      "qa_score": 92,
+      "qa_rounds": 0,
+      "images": [
+        "zh/images/day56/openclaw-gateway-architecture-ai.png",
+        "zh/images/day56/message-to-action-flow.png",
+        "zh/images/day56/session-routing-matrix.png",
+        "zh/images/day56/trust-boundary-map.png",
+        "zh/images/day56/openclaw-frontier-timeline.png"
+      ]
+    },
+    {
+      "day": 57,
+      "date": "2026-06-23",
+      "topic": "Message Routing and Multi-Channel",
+      "en_path": "en/day57-message-routing-and-multi-channel.md",
+      "zh_path": "zh/day57-message-routing-and-multi-channel.md",
+      "qa_score": 92.7,
+      "qa_rounds": 0,
+      "images": [
+        "zh/images/day57/message-normalization-pipeline.png",
+        "zh/images/day57/routing-decision-tree.png",
+        "zh/images/day57/cross-channel-session-docking.png",
+        "zh/images/day57/policy-layer-stack.png",
+        "zh/images/day57/frontier-routing-timeline.png"
+      ]
+    },
+    {
+      "day": 58,
+      "date": "2026-06-24",
+      "topic": "Tool System Design",
+      "en_path": "en/day58-tool-system-design.md",
+      "zh_path": "zh/day58-tool-system-design.md",
+      "qa_score": 93.0,
+      "qa_rounds": 0,
+      "images": [
+        "zh/images/day58/tool-system-stack.png",
+        "zh/images/day58/tool-call-lifecycle.png",
+        "zh/images/day58/capability-control-layers.png",
+        "zh/images/day58/parallel-tool-latency-curve.png",
+        "zh/images/day58/tool-system-frontier-timeline.png"
+      ]
+    },
+    {
+      "day": 59,
+      "date": "2026-06-25",
+      "topic": "Memory and Context Management",
+      "en_path": "en/day59-memory-and-context-management.md",
+      "zh_path": "zh/day59-memory-and-context-management.md",
+      "qa_score": 92.3,
+      "qa_rounds": 0,
+      "images": [
+        "zh/images/day59/memory-layer-stack.png",
+        "zh/images/day59/context-budget-comparison.png",
+        "zh/images/day59/memory-control-loop.png",
+        "zh/images/day59/compaction-tradeoff-curve.png",
+        "zh/images/day59/memory-frontier-timeline.png"
       ]
     }
   ]
