@@ -412,3 +412,12 @@
 - **Semantic memory**: Stable facts, preferences, and domain knowledge used across tasks.
 - **Procedural memory**: Reusable rules, skills, workflows, policies, and conventions that guide behavior.
 - **Provenance**: Metadata that records where a memory or claim came from so it can be audited, corrected, or deleted.
+
+## Day 60: Sub-Agent Orchestration
+
+- **Orchestrator**: The agent or runtime responsible for decomposing work, delegating subtasks, merging results, enforcing budgets, and deciding when to stop.
+- **Sub-agent**: A bounded execution context with its own objective, context, tools, model, permissions, timeout, and return contract.
+- **Orchestration topology**: The coordination shape used for a task, such as parallel fan-out, sequential pipeline, hierarchical supervisor-worker, or hybrid plan-execute-verify.
+- **Minimal sub-agent contract**: A scoped briefing that defines a sub-agent's objective, evidence, allowed capabilities, and expected return shape.
+- **Coordination tax**: The extra cost, latency, merge risk, and safety risk introduced when work is split across multiple agents.
+- **Orchestration trace**: A record of spawning, delegation, communication, tool use, aggregation, and stopping decisions for audit, debugging, and possible learning.

@@ -1,8 +1,8 @@
 {
-  "current_day": 59,
-  "last_generated": "2026-06-25",
+  "current_day": 60,
+  "last_generated": "2026-06-26",
   "total_days": 60,
-  "status": "active",
+  "status": "complete",
   "history": [
     {
       "day": 1,
@@ -925,6 +925,22 @@
         "zh/images/day59/memory-control-loop.png",
         "zh/images/day59/compaction-tradeoff-curve.png",
         "zh/images/day59/memory-frontier-timeline.png"
+      ]
+    },
+    {
+      "day": 60,
+      "date": "2026-06-26",
+      "topic": "Sub-Agent Orchestration",
+      "en_path": "en/day60-sub-agent-orchestration.md",
+      "zh_path": "zh/day60-sub-agent-orchestration.md",
+      "qa_score": 92.0,
+      "qa_rounds": 0,
+      "images": [
+        "zh/images/day60/subagent-orchestration-lifecycle.png",
+        "zh/images/day60/orchestration-topologies.png",
+        "zh/images/day60/subagent-context-contract.png",
+        "zh/images/day60/coordination-overhead-curve.png",
+        "zh/images/day60/orchestration-frontier-timeline.png"
       ]
     }
   ]
