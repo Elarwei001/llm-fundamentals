@@ -468,16 +468,16 @@ This is why SRE agents should use narrow tools and strong policy, not general br
 
 ### Scenario: Payment Success Rate Drops
 
-**03:12**: `CheckoutPaymentSuccessRateLow` fires. Success rate drops from 97.8% to 89.4%.
-**03:13**: The agent creates an incident candidate and groups checkout, payment-api, and fraud-service alerts.
-**03:14**: It queries deploy history and finds a payment-api release 10 minutes earlier plus a feature flag change 17 minutes earlier.
-**03:15**: It groups error rate by `service_version` and finds the new payment-api pods are much worse.
-**03:16**: It queries traces and confirms failures concentrate in the `POST /risk-score` span.
-**03:17**: It retrieves a similar incident where rolling back payment-api worked and restarting checkout did not.
-**03:18**: It generates a rollback dry-run plan with blast radius, risks, and validation metrics.
-**03:19**: The incident commander approves rollback.
-**03:24**: checkout 5xx falls. The agent updates the status-page draft and incident timeline.
-**Next day**: The postmortem updates the runbook with a standard "compare error rate by image version" probe.
+- **03:12** — `CheckoutPaymentSuccessRateLow` fires. Success rate drops from 97.8% to 89.4%.
+- **03:13** — The agent creates an incident candidate and groups checkout, payment-api, and fraud-service alerts.
+- **03:14** — It queries deploy history and finds a payment-api release 10 minutes earlier plus a feature flag change 17 minutes earlier.
+- **03:15** — It groups error rate by `service_version` and finds the new payment-api pods are much worse.
+- **03:16** — It queries traces and confirms failures concentrate in the `POST /risk-score` span.
+- **03:17** — It retrieves a similar incident where rolling back payment-api worked and restarting checkout did not.
+- **03:18** — It generates a rollback dry-run plan with blast radius, risks, and validation metrics.
+- **03:19** — The incident commander approves rollback.
+- **03:24** — checkout 5xx falls. The agent updates the status-page draft and incident timeline.
+- **Next day** — The postmortem updates the runbook with a standard "compare error rate by image version" probe.
 
 The AI did not magically know the root cause. It performed the investigation faster and kept risky actions behind approval.
 
