@@ -22,7 +22,7 @@ Think of enterprise knowledge like a house where every room has a junk drawer. E
 
 Traditional search assumes the user already knows the right words. That fails in companies because the same idea has many names: "customer churn," "logo loss," "renewal risk," and "retention issue" may describe related events. Dense embeddings help because they match meaning, not only exact words, but meaning alone is not enough. Enterprise systems also need freshness, permissions, provenance, and operational ownership.
 
-![Figure 1: Enterprise Knowledge Management Pipeline](./images/day53/knowledge-management-pipeline.png)
+![Figure 1: Enterprise Knowledge Management Pipeline](./images/day53/knowledge-management-pipeline-v2.png)
 *Figure 1: The knowledge pipeline turns scattered sources into governed, testable document Q&A.*
 
 | Problem | Why It Appears | What Breaks If Ignored |
@@ -48,14 +48,14 @@ The basic RAG equation is simple:
 $$
 \begin{aligned}
 q &= \text{user question} \\
-D_q &= \operatorname{TopK}(\operatorname{retrieve}(q, D)) \\
-a &= \operatorname{LLM}(q, D_q)
+D_q &= \text{TopK}(\text{retrieve}(q, D)) \\
+a &= \text{LLM}(q, D_q)
 \end{aligned}
 $$
 
 The formula says: retrieve a small evidence set from the document corpus, then generate an answer conditioned on that evidence. The simplicity is useful, but it hides most production complexity. In a real enterprise system, `retrieve` usually includes query rewriting, sparse search, dense vector search, metadata filters, access-control filters, reranking, deduplication, and context packing.
 
-![Figure 2: Retrieval Stack](./images/day53/retrieval-stack.png)
+![Figure 2: Retrieval Stack](./images/day53/retrieval-stack-v2.png)
 *Figure 2: A production retrieval stack combines query understanding, hybrid retrieval, permission filtering, and context packing before generation.*
 
 The retrieval stack usually has four layers:
@@ -118,7 +118,7 @@ For regulated domains, governance also includes retention, deletion, and data re
 
 There are four common strategies for enterprise knowledge systems. They solve different problems, so they should not be treated as interchangeable products.
 
-![Figure 3: Knowledge Strategy Trade-offs](./images/day53/knowledge-strategy-tradeoffs.png)
+![Figure 3: Knowledge Strategy Trade-offs](./images/day53/knowledge-strategy-tradeoffs-v2.png)
 *Figure 3: An illustrative comparison of freshness, complexity, and governance fit across knowledge strategies.*
 
 | Strategy | Best When | Main Risk |
@@ -154,7 +154,7 @@ Useful metrics include:
 | Abstention quality | Does it say "not enough evidence" when needed? | Overconfident guessing |
 | Permission safety | Did retrieval respect user access? | Data leakage |
 
-![Figure 4: Document QA Reliability Loop](./images/day53/document-qa-reliability-loop.png)
+![Figure 4: Document QA Reliability Loop](./images/day53/document-qa-reliability-loop-v2.png)
 *Figure 4: Reliable document Q&A requires a loop of gold questions, offline evaluation, deployment monitoring, drift detection, corpus repair, and policy review.*
 
 A good evaluation set should include ordinary questions, hard questions, unanswerable questions, permission-sensitive questions, and stale-document traps. For example:
@@ -228,7 +228,7 @@ The key line is the permission filter inside `retrieve`. Even in a toy system, a
 
 ## 8. Frontier: What Changed in 2026
 
-![Figure 5: 2026 Frontier Map](./images/day53/frontier-agentic-rag-map.png)
+![Figure 5: 2026 Frontier Map](./images/day53/frontier-agentic-rag-map-v2.png)
 *Figure 5: The frontier is moving from passive one-shot retrieval toward agentic and navigable knowledge systems.*
 
 ### May 2026: AgenticRAG for Enterprise Knowledge Bases

@@ -22,7 +22,7 @@
 
 传统搜索假设用户已经知道正确关键词。这个假设在公司里经常失败，因为同一件事会有很多名字：“customer churn”“logo loss”“renewal risk”“retention issue”可能描述的是相近问题。Dense embedding 有帮助，因为它匹配的是语义，而不只是字面词。但语义还不够。企业系统还需要 freshness、权限、provenance 和运维责任。
 
-![Figure 1: Enterprise Knowledge Management Pipeline](./images/day53/knowledge-management-pipeline.png)
+![Figure 1: Enterprise Knowledge Management Pipeline](./images/day53/knowledge-management-pipeline-v2.png)
 *图 1：知识管线把分散来源变成受治理、可测试的文档问答系统。*
 
 | 问题 | 为什么会出现 | 如果忽略会怎样 |
@@ -48,14 +48,14 @@ Retrieval-Augmented Generation（RAG）像一场开卷考试。模型回答前�
 $$
 \begin{aligned}
 q &= \text{user question} \\
-D_q &= \operatorname{TopK}(\operatorname{retrieve}(q, D)) \\
-a &= \operatorname{LLM}(q, D_q)
+D_q &= \text{TopK}(\text{retrieve}(q, D)) \\
+a &= \text{LLM}(q, D_q)
 \end{aligned}
 $$
 
 这个公式的意思是：先从文档集合中检索一小组证据，再让模型基于这些证据生成答案。它足够简洁，但也隐藏了生产环境里大部分复杂度。真实企业系统里的 `retrieve` 通常包含 query rewrite、稀疏搜索、dense vector search、metadata filter、访问控制过滤、reranking、去重和 context packing。
 
-![Figure 2: Retrieval Stack](./images/day53/retrieval-stack.png)
+![Figure 2: Retrieval Stack](./images/day53/retrieval-stack-v2.png)
 *图 2：生产级 retrieval stack 会在生成前完成 query 理解、hybrid retrieval、权限过滤和 context packing。*
 
 检索栈通常有四层：
@@ -118,7 +118,7 @@ Hybrid retrieval 强，是因为公司里的问题经常同时包含精确信号
 
 企业知识系统常见有四种策略。它们解决的问题不同，所以不应该被当成同一种产品来比较。
 
-![Figure 3: Knowledge Strategy Trade-offs](./images/day53/knowledge-strategy-tradeoffs.png)
+![Figure 3: Knowledge Strategy Trade-offs](./images/day53/knowledge-strategy-tradeoffs-v2.png)
 *图 3：用示意方式比较几种知识策略在 freshness、复杂度和治理适配上的差异。*
 
 | 策略 | 最适合 | 主要风险 |
@@ -154,7 +154,7 @@ Demo 可以靠十个友好问题看起来很漂亮。生产级知识助手需要
 | Abstention quality | 证据不足时是否拒答 | 过度自信乱猜 |
 | Permission safety | 检索是否尊重用户权限 | 数据泄露 |
 
-![Figure 4: Document QA Reliability Loop](./images/day53/document-qa-reliability-loop.png)
+![Figure 4: Document QA Reliability Loop](./images/day53/document-qa-reliability-loop-v2.png)
 *图 4：可靠的文档问答需要 gold questions、离线评估、部署监控、漂移检测、语料修复和政策审查形成闭环。*
 
 好的评估集应该包含普通问题、困难问题、不可回答问题、权限敏感问题，以及过期文档陷阱。例如：
@@ -228,7 +228,7 @@ print(answer(query, evidence))
 
 ## 8. 前沿：2026 年发生了什么变化
 
-![Figure 5: 2026 Frontier Map](./images/day53/frontier-agentic-rag-map.png)
+![Figure 5: 2026 Frontier Map](./images/day53/frontier-agentic-rag-map-v2.png)
 *图 5：前沿正在从被动的一次性 retrieval，转向 agentic 和可导航的知识系统。*
 
 ### 2026 年 5 月：面向企业知识库的 AgenticRAG
