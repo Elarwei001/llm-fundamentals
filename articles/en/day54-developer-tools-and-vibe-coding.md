@@ -70,11 +70,11 @@ A simplified agent loop can be written as:
 
 $$
 \begin{aligned}
-c_t &= \operatorname{Context}(r, g, h_t) \\
-p_t &= \operatorname{Plan}(g, c_t) \\
-a_t &= \operatorname{Act}(p_t, c_t) \\
-o_t &= \operatorname{Observe}(\operatorname{tools}(a_t)) \\
-h_{t+1} &= \operatorname{Update}(h_t, a_t, o_t)
+c_t &= \text{Context}(r, g, h_t) \\
+p_t &= \text{Plan}(g, c_t) \\
+a_t &= \text{Act}(p_t, c_t) \\
+o_t &= \text{Observe}(\text{tools}(a_t)) \\
+h_{t+1} &= \text{Update}(h_t, a_t, o_t)
 \end{aligned}
 $$
 
