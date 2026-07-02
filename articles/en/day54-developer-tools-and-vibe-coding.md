@@ -20,7 +20,7 @@ The deeper lesson is not "developers are obsolete." It is that programming effor
 
 Think of the evolution like office tools. A calculator helps you do arithmetic faster, but it does not decide which budget to build. A spreadsheet can recompute many scenarios, but you still design the model. A junior teammate can take a ticket, ask questions, make a draft, and come back with something reviewable. Modern coding agents are moving from calculator-like assistance toward junior-teammate-like assistance.
 
-![Figure 1: AI coding tool evolution](./images/day54/ai-coding-evolution.png)
+![Figure 1: AI coding tool evolution](./images/day54/ai-coding-evolution-v2.png)
 *Figure 1: AI coding tools evolved from line completion to agentic systems that can act across files, tools, and deployment workflows.*
 
 The shift happened because three capabilities improved together:
@@ -63,7 +63,7 @@ These workflows should not be judged by the same standard. A prototype builder o
 
 A coding agent is not just a chat window that emits files. It is closer to a detective with a lab notebook. It receives a case, gathers evidence from the codebase, forms a hypothesis, changes something, runs experiments, records results, and revises the hypothesis. The notebook matters because without a trace of what it did, the human reviewer cannot tell whether the conclusion is trustworthy.
 
-![Figure 2: Coding agent loop](./images/day54/coding-agent-loop.png)
+![Figure 2: Coding agent loop](./images/day54/coding-agent-loop-v2.png)
 *Figure 2: A coding agent loops through goal understanding, context gathering, planning, action, verification, patch production, and human review.*
 
 A simplified agent loop can be written as:
@@ -90,7 +90,7 @@ OpenAI's February 2026 technical post, [Unrolling the Codex agent loop](https://
 
 Asking "Which AI coding tool is best?" can be like asking whether an engine is better than a car, a road, or a driving school. They are related, but they occupy different layers. A model may be excellent at code reasoning. A command-line harness may be excellent at safe repository edits. An IDE may be excellent at local navigation. A prompt-to-app platform may be excellent at deployment for beginners.
 
-![Figure 3: Developer tool layers](./images/day54/developer-tool-layers.png)
+![Figure 3: Developer tool layers](./images/day54/developer-tool-layers-v2.png)
 *Figure 3: Developer tools should be compared within layers, not flattened into one misleading product ranking.*
 
 | Layer | What It Provides | Examples |
@@ -113,7 +113,7 @@ For example, a solo founder building a throwaway demo may care about app-builder
 
 An agent cannot improve a task it cannot grade. Imagine asking a student to "write something good" versus giving a rubric: target audience, required sections, examples, word limit, forbidden sources, and grading criteria. The second request is not less creative; it is more inspectable. Coding agents need the same kind of report card.
 
-![Figure 4: Reliable vibe-coding workflow](./images/day54/vibe-coding-workflow.png)
+![Figure 4: Reliable vibe-coding workflow](./images/day54/vibe-coding-workflow-v2.png)
 *Figure 4: A reliable workflow converts vague intent into acceptance criteria, small vertical slices, tests, telemetry, and review.*
 
 A practical workflow looks like this:
@@ -145,7 +145,7 @@ Cursor's January 2026 guide, [Best practices for coding with agents](https://cur
 
 A driving test is useful. It checks mirrors, turns, parking, and traffic rules. But passing a driving test does not prove someone can deliver medicine across a crowded city during a storm. Coding benchmarks are similar. They are necessary, but each benchmark captures only part of software engineering.
 
-![Figure 5: Coding-agent evaluation gap](./images/day54/coding-agent-evaluation-gap.png)
+![Figure 5: Coding-agent evaluation gap](./images/day54/coding-agent-evaluation-gap-v2.png)
 *Figure 5: As tasks become more realistic and long-horizon, benchmark confidence usually falls because there are more hidden dependencies and operational constraints.*
 
 [SWE-bench](https://www.swebench.com/) was introduced to evaluate whether models can resolve real GitHub issues. It remains important because it moved coding evaluation beyond toy functions. But real engineering also includes ambiguous requirements, multi-week evolution, product judgment, dependency upgrades, flaky tests, migrations, observability, security, and human coordination.

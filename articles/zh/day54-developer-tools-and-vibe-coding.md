@@ -20,7 +20,7 @@ AI developer tools 正在经历类似的变化。早期工具只是补全代码�
 
 可以把这条演进线想成办公工具的变化。计算器能帮你更快算数，但不会替你决定预算怎么编。电子表格能自动重算很多场景，但模型结构仍然要你设计。一个初级同事则可以接一张 ticket、问几个问题、做一版草稿，然后把可审查的结果交回来。现代 coding agent 正在从「计算器式辅助」走向「初级同事式辅助」。
 
-![图 1：AI 编程工具演进](./images/day54/ai-coding-evolution.png)
+![图 1：AI 编程工具演进](./images/day54/ai-coding-evolution-v2.png)
 *图 1：AI 编程工具从代码行补全，演进到可以跨文件、跨工具、跨部署流程行动的 Agentic system。*
 
 这次变化之所以能发生，是因为三个能力同时进步了：
@@ -63,7 +63,7 @@ Vibe coding 像是在餐巾纸上画房子草图。草图很有价值，因为�
 
 Coding agent 不只是一个会吐文件的聊天窗口。它更像一个带实验记录本的侦探：接到案件，从代码库收集证据，形成假设，改一点东西，跑实验，记录结果，再修正假设。记录本很重要，因为如果没有行动轨迹，人类 reviewer 很难判断它的结论是否可靠。
 
-![图 2：Coding agent loop](./images/day54/coding-agent-loop.png)
+![图 2：Coding agent loop](./images/day54/coding-agent-loop-v2.png)
 *图 2：Coding agent 在目标理解、context 收集、规划、行动、验证、patch 生成和人工 review 之间循环。*
 
 一个简化的 agent loop 可以写成：
@@ -90,7 +90,7 @@ OpenAI 在 2026 年 2 月发布的技术文章 [Unrolling the Codex agent loop](
 
 问「哪个 AI coding tool 最好？」有时就像问发动机、汽车、道路和驾校谁更好。它们有关联，但位于不同层。一个模型可能很擅长代码推理。一个命令行 harness 可能很擅长安全地修改仓库。一个 IDE 可能很擅长本地导航和 review。一个 prompt-to-app 平台可能很擅长让新手快速部署。
 
-![图 3：Developer tool layers](./images/day54/developer-tool-layers.png)
+![图 3：Developer tool layers](./images/day54/developer-tool-layers-v2.png)
 *图 3：Developer tools 应该在同一层内比较，而不是被压成一个误导性的总榜。*
 
 | 层级 | 提供什么 | 例子 |
@@ -113,7 +113,7 @@ OpenAI 在 2026 年 2 月发布的技术文章 [Unrolling the Codex agent loop](
 
 Agent 无法改进一个无法评分的任务。想象你让学生「写点好的」，和给他一张 rubric：目标读者、必需章节、例子、字数、禁用来源、评分标准。第二种要求并不会减少创造力，反而让结果更可检查。Coding agent 也需要这样的评分表。
 
-![图 4：可靠的 vibe-coding 工作流](./images/day54/vibe-coding-workflow.png)
+![图 4：可靠的 vibe-coding 工作流](./images/day54/vibe-coding-workflow-v2.png)
 *图 4：可靠的工作流会把模糊意图转化为验收标准、小的端到端切片、测试、telemetry 和 review。*
 
 一个实用流程是：
@@ -145,7 +145,7 @@ Cursor 在 2026 年 1 月发布的 [Best practices for coding with agents](https
 
 驾照考试有用。它检查后视镜、转弯、停车和交通规则。但通过驾照考试，并不证明一个人能在暴雨夜穿过拥堵城市去送急救药。Coding benchmark 也是这样。它们必要，但每个 benchmark 只能覆盖软件工程的一部分。
 
-![图 5：Coding-agent evaluation gap](./images/day54/coding-agent-evaluation-gap.png)
+![图 5：Coding-agent evaluation gap](./images/day54/coding-agent-evaluation-gap-v2.png)
 *图 5：任务越接近真实长期工程，benchmark confidence 通常越低，因为隐藏依赖和运营约束更多。*
 
 [SWE-bench](https://www.swebench.com/) 被提出，是为了评估模型能否解决真实 GitHub issue。它很重要，因为它把 coding evaluation 从玩具函数推进到了真实 patch。但真实工程还包括含糊需求、多周演进、产品判断、依赖升级、flaky tests、迁移、observability、安全和人类协作。
