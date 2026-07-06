@@ -177,63 +177,240 @@ Cursor 在 2026 年 1 月发布的 [Best practices for coding with agents](https
 
 ---
 
-## 8. 代码示例：一个极小的 Agent Evaluation Harness
+## 8. 代码示例：一个实用的 Agent Evaluation Harness
 
-下面的例子不是完整 coding agent。它只是一个极小的 evaluation harness，用来说明团队需要养成的习惯：定义任务、运行检查，把工具输出当作证据，而不是只凭感觉。
+下面的例子展示团队在真实场景中如何评估 coding agent 的输出。它不是玩具字符串匹配——它运行实际测试、做 lint、检查文件是否可 import，并输出可操作的诊断信息。
 
 ```python
-from dataclasses import dataclass
-from typing import Callable, List
+"""
+A practical agent evaluation harness.
+
+Unlike toy string-matching evals, this harness:
+1. Writes agent output to real files and runs them
+2. Executes actual test suites (pytest)
+3. Runs lint checks (ruff)
+4. Verifies the code is importable
+5. Reports structured diagnostics, not just PASS/FAIL
+"""
+
+import ast
+import subprocess
+import tempfile
+from dataclasses import dataclass, field
+from pathlib import Path
+from shutil import which
 
 
 @dataclass
-class CodingTask:
+class CheckResult:
+    name: str
+    passed: bool
+    detail: str = ""
+
+
+@dataclass
+class EvalTask:
+    """A single evaluation task with a prompt and objective checks."""
     name: str
     prompt: str
-    check: Callable[[str], bool]
+    # Agent output: the code patch to evaluate
+    agent_output: str = ""
+    # Test file content to write alongside the agent output
+    test_file: str = ""
+    test_filename: str = "test_solution.py"
+    results: list[CheckResult] = field(default_factory=list)
+
+    def run_all_checks(self, workdir: Path) -> None:
+        """Run all checks in sequence; stop early on critical failures."""
+        solution = workdir / "solution.py"
+        solution.write_text(self.agent_output)
+
+        # Check 1: Syntax validity (parse without executing)
+        self._check_syntax(solution)
+        if not self.results[-1].passed:
+            return  # No point running tests on broken syntax
+
+        # Check 2: Importability (does it load without errors?)
+        self._check_import(workdir)
+
+        # Check 3: Lint (catch common issues before runtime)
+        self._check_lint(solution)
+
+        # Check 4: Unit tests (does behavior match spec?)
+        if self.test_file:
+            test_path = workdir / self.test_filename
+            test_path.write_text(self.test_file)
+            self._check_tests(workdir)
+
+    def _check_syntax(self, file: Path) -> None:
+        try:
+            ast.parse(file.read_text())
+            self.results.append(
+                CheckResult("syntax", True, "Valid Python syntax")
+            )
+        except SyntaxError as e:
+            self.results.append(
+                CheckResult("syntax", False, f"SyntaxError: {e}")
+            )
+
+    def _check_import(self, workdir: Path) -> None:
+        proc = subprocess.run(
+            ["python3", "-c", "import solution"],
+            cwd=workdir,
+            capture_output=True,
+            text=True,
+            timeout=10,
+        )
+        self.results.append(CheckResult(
+            "import",
+            proc.returncode == 0,
+            proc.stderr.strip() or "Import OK",
+        ))
+
+    def _check_lint(self, file: Path) -> None:
+        if not which("ruff"):
+            self.results.append(
+                CheckResult("lint", True, "Skipped (ruff not installed)")
+            )
+            return
+        proc = subprocess.run(
+            ["ruff", "check", str(file), "--output-format=concise"],
+            capture_output=True,
+            text=True,
+            timeout=10,
+        )
+        issues = proc.stdout.strip()
+        self.results.append(CheckResult(
+            "lint",
+            proc.returncode == 0,
+            issues or "No lint issues",
+        ))
+
+    def _check_tests(self, workdir: Path) -> None:
+        if not which("pytest"):
+            self.results.append(
+                CheckResult("tests", False, "pytest not installed")
+            )
+            return
+        proc = subprocess.run(
+            ["python3", "-m", "pytest", "-v", "--tb=short", "--no-header"],
+            cwd=workdir,
+            capture_output=True,
+            text=True,
+            timeout=30,
+        )
+        # Extract last meaningful line (e.g., "2 passed in 0.03s")
+        summary = (
+            line for line in proc.stdout.strip().splitlines()
+            if "passed" in line or "failed" in line
+        )
+        detail = next(summary, proc.stderr.strip()[:200] or "No test output")
+        self.results.append(CheckResult(
+            "tests",
+            proc.returncode == 0,
+            detail,
+        ))
 
 
-def fake_agent(prompt: str) -> str:
-    """
-    Replace this with a real model or coding-agent call.
-    The point of the harness is that every task has an objective check.
-    """
-    if "slugify" in prompt:
-        return """
-def slugify(text):
-    return text.strip().lower().replace(" ", "-")
-"""
-    return "# no solution"
-
-
-def run_eval(tasks: List[CodingTask]) -> None:
-    passed = 0
+def run_eval_suite(tasks: list[EvalTask]) -> None:
+    """Run all tasks and print a structured report."""
     for task in tasks:
-        patch = fake_agent(task.prompt)
-        ok = task.check(patch)
-        passed += int(ok)
-        print(f"{task.name}: {'PASS' if ok else 'FAIL'}")
+        # Each task gets a fresh temp dir to avoid Python bytecode caching
+        with tempfile.TemporaryDirectory() as tmp:
+            workdir = Path(tmp)
+            task.results = []  # reset
+            task.run_all_checks(workdir)
 
-    print(f"Score: {passed}/{len(tasks)}")
+            all_pass = all(r.passed for r in task.results)
+            status = "✅ PASS" if all_pass else "❌ FAIL"
+            print(f"\n{'='*60}")
+            print(f"{status} — {task.name}")
+            print(f"{'='*60}")
+            for r in task.results:
+                icon = "✅" if r.passed else "❌"
+                detail = (
+                    r.detail[:120] + "..."
+                    if len(r.detail) > 120
+                    else r.detail
+                )
+                print(f"  {icon} {r.name}: {detail}")
 
+
+# ── Example usage ──────────────────────────────────────────────
+#
+# In practice, `agent_output` comes from your coding agent (Claude
+# Code, Codex, Cursor, etc.). Here we hardcode two scenarios:
+# one good, one with a subtle bug, to show how the harness catches
+# problems that string-matching would miss.
+
+GOOD_SLUGIFY = '''
+def slugify(text: str) -> str:
+    """Convert text to a URL-safe slug."""
+    return text.strip().lower().replace(" ", "-")
+'''
+
+# Bug: uses underscore instead of hyphen — looks correct at a glance
+BUGGY_SLUGIFY = '''
+def slugify(text: str) -> str:
+    """Convert text to a URL-safe slug."""
+    return text.strip().lower().replace(" ", "_")
+'''
+
+TEST_FILE = '''
+from solution import slugify
+
+def test_basic():
+    assert slugify("Hello World") == "hello-world"
+
+def test_empty():
+    assert slugify("") == ""
+
+def test_special_chars():
+    assert slugify("  Foo Bar  ") == "foo-bar"
+'''
 
 tasks = [
-    CodingTask(
-        name="slugify basics",
-        prompt="Write a Python function slugify(text).",
-        check=lambda patch: "def slugify" in patch and ".lower()" in patch,
+    EvalTask(
+        name="slugify (correct implementation)",
+        prompt="Write a Python function slugify(text) that converts text to a URL-safe slug.",
+        agent_output=GOOD_SLUGIFY,
+        test_file=TEST_FILE,
     ),
-    CodingTask(
-        name="handles spaces",
-        prompt="Ensure slugify turns spaces into hyphens.",
-        check=lambda patch: ".replace(\" \", \"-\")" in patch,
+    EvalTask(
+        name="slugify (subtle bug: underscore instead of hyphen)",
+        prompt="Write a Python function slugify(text) that converts text to a URL-safe slug.",
+        agent_output=BUGGY_SLUGIFY,
+        test_file=TEST_FILE,
     ),
 ]
 
-run_eval(tasks)
+if __name__ == "__main__":
+    run_eval_suite(tasks)
 ```
 
-重点不是这个玩具 check 足够好，而是每个 agent 工作流都需要一条从 intention 到 measurement 的路径。在真实团队里，检查会包括 unit tests、integration tests、static analysis、安全扫描、benchmark suites、人工 review 和生产 telemetry。
+运行这个 harness 会输出类似这样的结果：
+
+```
+============================================================
+✅ PASS — slugify (correct implementation)
+============================================================
+  ✅ syntax: Valid Python syntax
+  ✅ import: Import OK
+  ✅ lint: No lint issues
+  ✅ tests: 3 passed in 0.03s
+
+============================================================
+❌ FAIL — slugify (subtle bug: underscore instead of hyphen)
+============================================================
+  ✅ syntax: Valid Python syntax
+  ✅ import: Import OK
+  ✅ lint: No lint issues
+  ❌ tests: 1 failed, 2 passed in 0.04s
+```
+
+注意第二个场景：字符串匹配 eval 可能把 `_` 和 `-` 混淆，或者只检查「有没有 `.replace()`」就放行。但真实测试会直接失败，因为 `slugify("Hello World")` 返回 `hello_world` 而不是 `hello_world`。这就是为什么 eval harness 必须运行代码，而不是检查代码长什么样。
+
+在实际团队中，这个 harness 的检查维度可以继续扩展：覆盖率报告、安全扫描（如 `pip-audit`）、性能回归测试、依赖变更检测等。关键思路不变：**agent 的输出是假设，测试是证据。**
 
 ---
 
