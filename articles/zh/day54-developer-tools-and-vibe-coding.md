@@ -95,7 +95,7 @@ OpenAI 在 2026 年 2 月发布的技术文章 [Unrolling the Codex agent loop](
 
 | 层级 | 提供什么 | 例子 |
 |------|----------|------|
-| Model / reasoning | 代码生成、规划、tool-use reasoning | [OpenAI GPT-5.3-Codex](https://openai.com/index/introducing-gpt-5-3-codex/)、[Claude Opus 4.6](https://www.anthropic.com/news/claude-opus-4-6)、Gemini models |
+| Model / reasoning | 代码生成、规划、tool-use reasoning | [OpenAI GPT-5.5-Codex](https://openai.com/index/introducing-gpt-5-5-codex/)、[Claude Opus 4.8](https://www.anthropic.com/news/claude-opus-4-8)、Gemini models |
 | Harness / CLI | Agent loop、sandbox、文件编辑、命令执行 | [Codex CLI](https://github.com/openai/codex)、[Claude Code](https://www.anthropic.com/product/claude-code)、Gemini CLI |
 | IDE / workspace | 代码导航、inline change、review interface | [Cursor](https://cursor.com/)、[GitHub Copilot](https://github.com/features/copilot)、Windsurf |
 | App builder | Prompt-to-app、hosting、集成能力 | [Replit](https://replit.com/)、[Lovable](https://lovable.dev/)、[Bolt](https://bolt.new/)、[v0](https://v0.dev/) |
@@ -165,6 +165,8 @@ Cursor 在 2026 年 1 月发布的 [Best practices for coding with agents](https
 | 日期 | 更新 | 为什么重要 |
 |------|------|------------|
 | 2026-02-05 | [Anthropic 发布 Claude Opus 4.6](https://www.anthropic.com/news/claude-opus-4-6)，强调更强 coding、更长 agentic tasks，并在 beta 中提供 1M-token context window | 更大的工作记忆让 repository-scale reasoning 更现实，但不自动等于正确 |
+| 2026-05-28 | [Anthropic 发布 Claude Opus 4.8](https://www.anthropic.com/news/claude-opus-4-8)，引入 dynamic workflows、parallel subagents，coding 和 agentic benchmark 显著提升 | Agent 从单线程走向并行编排，但编排复杂度也带来新的调试挑战 |
+| 2026-06 | GPT-5.5 成为 ChatGPT 默认模型，[Codex Remote 正式全量发布](https://help.openai.com/en/articles/6825453-chatgpt-release-notes) | OpenAI 将 coding agent 从 CLI 扩展到云端远程执行 |
 | 2026-02 | [OpenAI 发布 Codex agent-loop 技术文章](https://openai.com/index/unrolling-the-codex-agent-loop/) | 讨论重点从「模型写代码」转向「harness 如何组织 context、tools 和 observations」 |
 | 2026-03 | [Replit Agent 4](https://replit.com/agent4) 强调 design canvas、团队协作、并行任务和发布工作流 | Vibe coding 从个人 prompt 走向协作式 app-building |
 | 2026-04 | [Cursor 3](https://cursor.com/blog/cursor-3) 引入面向 local 和 cloud agents 的 unified workspace | IDE 正在变成 agent management surface，而不只是文本编辑器 |

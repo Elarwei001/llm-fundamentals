@@ -95,7 +95,7 @@ Asking "Which AI coding tool is best?" can be like asking whether an engine is b
 
 | Layer | What It Provides | Examples |
 |-------|------------------|----------|
-| Model / reasoning | Code generation, planning, tool-use reasoning | [OpenAI GPT-5.3-Codex](https://openai.com/index/introducing-gpt-5-3-codex/), [Claude Opus 4.6](https://www.anthropic.com/news/claude-opus-4-6), Gemini models |
+| Model / reasoning | Code generation, planning, tool-use reasoning | [OpenAI GPT-5.5-Codex](https://openai.com/index/introducing-gpt-5-5-codex/), [Claude Opus 4.8](https://www.anthropic.com/news/claude-opus-4-8), Gemini models |
 | Harness / CLI | Agent loop, sandbox, file edits, command execution | [Codex CLI](https://github.com/openai/codex), [Claude Code](https://www.anthropic.com/product/claude-code), Gemini CLI |
 | IDE / workspace | Code navigation, inline changes, review interface | [Cursor](https://cursor.com/), [GitHub Copilot](https://github.com/features/copilot), Windsurf |
 | App builder | Prompt-to-app workflow, hosting, integrations | [Replit](https://replit.com/), [Lovable](https://lovable.dev/), [Bolt](https://bolt.new/), [v0](https://v0.dev/) |
@@ -165,6 +165,8 @@ The most important recent updates are not merely bigger models. They are about l
 | Date | Update | Why It Matters |
 |------|--------|----------------|
 | Feb 5, 2026 | [Anthropic introduced Claude Opus 4.6](https://www.anthropic.com/news/claude-opus-4-6) with stronger coding, longer agentic tasks, and a 1M-token context window in beta | Larger working memory makes repository-scale reasoning more practical, though not automatically correct |
+| May 28, 2026 | [Anthropic released Claude Opus 4.8](https://www.anthropic.com/news/claude-opus-4-8), introducing dynamic workflows, parallel subagents, and significant gains in coding and agentic benchmarks | Agents move from single-threaded to parallel orchestration, but orchestration complexity brings new debugging challenges |
+| Jun 2026 | GPT-5.5 became the default ChatGPT model, with [Codex Remote GA](https://help.openai.com/en/articles/6825453-chatgpt-release-notes) for cloud-based remote execution | OpenAI extends coding agents from CLI to cloud-native remote workflows |
 | Feb 2026 | [OpenAI published the Codex agent-loop deep dive](https://openai.com/index/unrolling-the-codex-agent-loop/) | It shifted discussion from "model writes code" to "harness orchestrates context, tools, and observations" |
 | Mar 2026 | [Replit Agent 4](https://replit.com/agent4) emphasized design canvas, team collaboration, parallel tasks, and shipping workflows | Vibe coding moved from solo prompting toward collaborative app-building |
 | Apr 2026 | [Cursor 3](https://cursor.com/blog/cursor-3) introduced a unified workspace for local and cloud agents | IDEs are becoming agent-management surfaces, not just text editors |
