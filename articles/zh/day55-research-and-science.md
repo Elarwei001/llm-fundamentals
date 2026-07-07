@@ -161,9 +161,6 @@ for rank, idx in enumerate(chosen, start=1):
 
 真实系统里的 predicted value 可能来自 graph neural network、diffusion model、protein language model 或物理模拟器。Uncertainty 可能来自 ensemble、Bayesian model、conformal prediction，或多个工具之间的分歧。Cost 可能包括试剂价格、仪器时间、毒性风险、合成难度或机会成本。
 
-![图 5：Active learning 效率](./images/day55/active-learning-efficiency-curve.png)
-*图 5：示意曲线展示为什么闭环选择能用更少实验轮次找到更好候选。这里是教学用合成数据，不是 benchmark。*
-
 重点不是这个简单公式能解决药物发现，而是：科学 AI 应该按它如何使用稀缺证据来评价。
 
 ---

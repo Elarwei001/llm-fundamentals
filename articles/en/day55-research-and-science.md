@@ -161,9 +161,6 @@ for rank, idx in enumerate(chosen, start=1):
 
 In a real system, the predicted value might come from a graph neural network, diffusion model, protein language model, or physics simulator. Uncertainty might come from ensembles, Bayesian models, conformal prediction, or disagreement across tools. Cost might include reagent price, instrument time, toxicity risk, synthesis difficulty, or opportunity cost.
 
-![Figure 5: Active learning efficiency](./images/day55/active-learning-efficiency-curve.png)
-*Figure 5: An illustrative curve showing why closed-loop selection can find better candidates with fewer experimental rounds. This is synthetic teaching data, not a benchmark.*
-
 The lesson is not that this simple formula solves drug discovery. The lesson is that scientific AI should be evaluated by how it spends scarce evidence.
 
 ---

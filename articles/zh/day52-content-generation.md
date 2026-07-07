@@ -101,6 +101,8 @@ AI 将已审核的内容重新排版到不同渠道：博客、LinkedIn 轮播�
 
 [Model collapse 现象](https://arxiv.org/abs/2305.17493)——由 Shumailov 等人在 2023 年首次描述，此后被广泛证实——表明用前一代模型产生的合成数据训练的模型，会逐渐丧失质量、多样性和准确性。用内容营销的话来说：如果所有人都发布 AI 生成的文章，未来的 AI 模型又在这些输出上训练，整个内容生态系统就会退化。
 
+这个问题不只影响模型训练，也会影响搜索生态。大量模板化页面会挤占搜索结果、降低用户信任，并制造一种错误激励：谁能用 AI 更快铺量，谁就能短期获得更多曝光。
+
 **AI slop 的特征：**
 
 - **通用结构**：可预测的标题模式（「在当今快节奏的世界中……」）
@@ -108,7 +110,7 @@ AI 将已审核的内容重新排版到不同渠道：博客、LinkedIn 轮播�
 - **重复用语**：企业套话和空洞的过渡句
 - **没有独特视角**：内容适用于任何行业的任何公司
 
-Google 的回应是对「scaled content abuse」（大规模内容滥用）实施算法惩罚——发布大量低质量 AI 内容的网站面临被移出索引的风险。这意味着用 AI 内容刷量的经济激励正在快速消失。
+所以搜索平台开始把「AI 内容」和「内容滥用」区分开来。Google 的 [scaled content abuse 政策](https://developers.google.com/search/docs/essentials/spam-policies#scaled-content-abuse)针对的不是 AI 写作本身，而是为了操纵搜索排名而批量生成、缺少原创价值的页面；违规网站可能被降权，严重时甚至从搜索结果中移除。这意味着用 AI 内容刷量的经济激励正在快速消失。
 
 ---
 
@@ -163,7 +165,7 @@ Radar chart 讲了一个清晰的故事：AI 单独使用速度快、一致性�
 
 ## 7. 监管环境：标注截止日期
 
-AI 生成的内容现在面临监管审查。[EU AI Act](https://artificialintelligenceact.eu/) 第 50 条透明度义务已于 **2026 年 8 月 2 日**生效，要求：
+AI 生成的内容现在面临监管审查。[EU AI Act](https://artificialintelligenceact.eu/) 第 50 条透明度义务将于 **2026 年 8 月 2 日**生效，要求：
 
 - **机器可读标记** AI 生成的内容（文本、图像、音频、视频）
 - 对 deepfake 和涉及公共利益的 AI 生成内容进行**可见披露**
@@ -207,7 +209,7 @@ AI 取代的是*任务*，不是*角色*。使用 AI 的写作者会取代不使
 
 ### ❌「AI 内容越多 = SEO 越好」
 
-恰恰相反。Google 的 [scaled content abuse 政策](https://www.seo.com/blog/ai-slop/)专门针对发布大量低质量 AI 内容的网站。质量、原创性和人类价值才是排名的关键——不是数量。
+恰恰相反。Google 的 [scaled content abuse 政策](https://developers.google.com/search/docs/essentials/spam-policies#scaled-content-abuse)针对的是大规模、低价值、以操纵排名为目的的内容生产，而不是 AI 工具本身。质量、原创性和人类价值才是排名的关键——不是数量。
 
 ### ❌「读起来流畅就是好内容」
 
@@ -290,7 +292,7 @@ print(draft)
 
 ### 入门
 1. [2026 年最佳 AI 写作工具](https://www.eesel.ai/blog/ai-writing-tools-comparison) — Jasper、Copy.ai、Writer 等工具的实操对比
-2. [Google 的 AI 内容与 SEO 指南](https://www.seo.com/blog/ai-slop/) — Google 如何评估 AI 生成内容
+2. [Google Search 关于生成式 AI 内容的指南](https://developers.google.com/search/docs/fundamentals/using-gen-ai-content) — Google 如何区分有用的 AI 辅助内容与 scaled content abuse
 
 ### 进阶
 1. [WritingBench: A Comprehensive Benchmark for Generative Writing](https://arxiv.org/abs/2503.05244) — 迄今最全面的 LLM 写作质量评估
